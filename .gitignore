@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+# 4,8 GB Checkpoint-Gewichte: regenerierbar via convert_gemma3_to_kenosis.py
+kenosis_logos_1b/model.safetensors
