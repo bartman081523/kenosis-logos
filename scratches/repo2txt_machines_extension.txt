@@ -2,7 +2,7 @@
 repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung
 (Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B;
  inkl. Lisp-Vendor-Canon, Brücke, Korpus, Goldwerte, Presets, Protokolle)
-Dateien: 72   bytes: 654881   Zeilen: 16573
+Dateien: 75   bytes: 708501   Zeilen: 18055
 ==============================================================================
 INDEX
   machines/__init__.py  [    1220 B    47 Zeilen]
@@ -67,16 +67,19 @@ INDEX
   scratches/smoke_composite_oracle.py  [   13230 B   258 Zeilen]
   scratches/composite_oracle_experiment.log  [    6929 B    66 Zeilen]
   scratches/composite_oracle_experiment.json  [   16898 B   831 Zeilen]
-  scratches/laufprotokolle_befund_report.md  [   24172 B   391 Zeilen]
+  scratches/laufprotokolle_befund_report.md  [   26793 B   435 Zeilen]
   scratches/smoke_sprachspiel.py  [   40014 B   780 Zeilen]
   scratches/sprachspiel_experiment.log  [    7580 B   102 Zeilen]
   scratches/sprachspiel_experiment.json  [   37605 B  1477 Zeilen]
-  scratches/sprachspiel_bericht.md  [   21815 B   373 Zeilen]
+  scratches/sprachspiel_bericht.md  [   33621 B   574 Zeilen]
   scratches/verify_s123_regress_sprachspiel2.log  [    1362 B    20 Zeilen]
   scratches/smoke_hermeneutik.py  [   12639 B   262 Zeilen]
   scratches/hermeneutik_experiment.log  [    3095 B    38 Zeilen]
   scratches/hermeneutik_experiment.json  [   16767 B   949 Zeilen]
   scratches/verify_s123_regress_sp7.log  [    1362 B    20 Zeilen]
+  scratches/smoke_lexikon_dynamik.py  [   26625 B   562 Zeilen]
+  scratches/lexikon_dynamik_experiment.log  [    2107 B    42 Zeilen]
+  scratches/lexikon_dynamik_experiment.json  [   10461 B   633 Zeilen]
 ==============================================================================
 
 ==============================================================================
@@ -12614,7 +12617,7 @@ GRÜN — alle Experiment-Befunde bestanden.
 
 ==============================================================================
 ### FILE: scratches/laufprotokolle_befund_report.md
-### bytes: 24172   lines: 391
+### bytes: 26793   lines: 435
 ==============================================================================
 # Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
 
@@ -13008,6 +13011,50 @@ Regel-Formen:
   (Seed 42/7 je erzwungen an 9): Seed 7 liefert `first_detect=11` im
   Review-Fenster, Seed 42 detected bei Schritt 16 außerhalb — die
   Fenster-Erwartung ist seed-selektiert, die Befunde nennen ihren Seed.
+
+## 13. SP9 — Soziale Lexikon-Dynamik (laufschrift)
+
+(`scratches/smoke_lexikon_dynamik.py` → `lexikon_dynamik_experiment.log` /
+`.json`; CPU-only, venv_openmythos, kein GPU/SBCL, keine Maschinen-Code-Änderung
+— `lexicon_game` + `learn_pair` decken die Dynamik ab; Prereg-Docstring im
+Skript P2-gefrorst vor dem ersten Lauf, P4-Präzisierer 2026-10-25 als neuer
+Knoten. Hermeneutische Vollfassung: `sprachspiel_bericht.md` §11.)
+
+**Erste Ausarbeitung (19 Verdicte: 16 PASS, 3 FAIL):** drei FAILs —
+sp9_int_endpoint, sp9_unlearn_decay, sp9_social_tisch_pin — widerlegten
+NOT die Mechanik-Hypothesen (Konvergenz exakt in 5 Episoden; Verlern-Decay
+0.708337 < 0.8; Relearning in 4; α-Symmetrie conv=18 beide Pole;
+Disjunkt-Delta 0.0), sondern drei Prereg-ANNAMEN derselben Familie
+(Beobachter unbeteiligt [E1, ×2]; Sättigung == Fixpunkt [E2; 1e-12-Band]).
+P4-Einstufung: Ursprungs-Verdicte bleiben in den Artefakten FAIL, sind im
+Log unter ERRATA ausgewiesen und zählen nicht zum Lösungszustand.
+
+**Zweiter Lauf (P4-Prereg — Bands UNVERÄNDERT):** alle drei korrigierten
+Lesungen PASS; exit 0 der Lösungskette:
+
+| Lesung | Vorhersage (ex ante) | Messung | Δ |
+| :--- | :--- | :--- | :--- |
+| sp9_int_endpoint_p4 | cos(regel_p2, n(rule_p2+game0)) | 0.705054 | 0.0 (sechs Dezimalen) |
+| sp9_unlearn_endpoint_p4 | cos(regel_p2', n(rule_p2'+tisch0)) | 0.708337 | 7.4e-5 (Band 0.02) |
+| sp9_social_tisch_p4 | monotone, \|Δ\| ≤ 2e-2 (Pfad-Bound) | 0.000131, 15/45 Runden | ✓ |
+
+**Struktur-Befund (per-Runde-Leg, deterministisch äquivalent zur
+45-Runden-Schrift — kein Rauschzug geändert):** von den 45 Runden tragen
+GENAU die 15 regel↔rule-Episoden nicht-null tisch-Drift; die 30
+spiel↔game/gebrauch↔use-Runden sind exakt still (nonzero_deltas = 15).
+Die kaffee- und baum-Rows sind bitidentisch über beide Legs.
+Formel-Regel: ein EMBEDDING wandert genau dann, wenn das Wort selbst
+lernt; eine RESONANZ, wenn einer ihrer Endpunkte lernt.
+
+**Protokollkette:** Prereg-Docstring (inkl. c′-Rekursion, Errata-Register,
+p4-Verdicts) → zweiter Lauf → log/json → Berichte → Commit. Die Artefakt-
+Schriften (log, json) wurden vom zweiten Lauf ÜBERSCHRIEBEN — die Zahl-Lage
+des ersten Laufs (12/15, exit 1, die drei Prereg-Vorhersagen 0.004424 /
+−0.004496 / 1e-12-Pin) ist daher NICHT als Datei konserviert, sondern
+namentlich protokolliert im P4-Docstring des Skripts, in `sprachspiel_
+bericht.md` §11 und im Absatz oben. Der zweite Lauf
+reproduzierte alle 12 PASS-Ziffern bitidentisch und fügte die p4-Lesungen
+hinzu; die 3 FAIL-Rows stehen in der JSON (deterministisch reproduzierbar).
 
 ==============================================================================
 ### FILE: scratches/smoke_sprachspiel.py
@@ -15388,7 +15435,7 @@ GRÜN — alle Sprachspiel-Befunde bestanden.
 
 ==============================================================================
 ### FILE: scratches/sprachspiel_bericht.md
-### bytes: 21815   lines: 373
+### bytes: 33621   lines: 574
 ==============================================================================
 # Sprachspiel-Bericht: Die Wittgenstein-Maschine generiert — Regel, Wort, Mitspieler
 
@@ -15412,6 +15459,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP4 | **Kalibrierung** — Spread-Kalibrierung & Anti-Clip (σ ∈ {0.1,0.5,1.5,4.0}) auf der S1-Skala | GPU | `predict_scale_0_9` (machine_base), Rausch-Spreads (S2), `oracle_scale=True` |
 | SP5 | **Kontrast** — Cross-Preset-Kontrast: sechs Arme (raw/goedel/turing/wittgenstein/combined/anti) | GPU | S1-Skala + Canon-Name-Echo (`name_seq` je Arm) |
 | SP6 | **Lexikon** — Lexikon-Emergenz im Gebrauch (S3) | CPU | `lexicon_game`/`learn_pair`/`embed_word` (Lexikon-zuerst) |
+| SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -15764,6 +15812,206 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   deren ×0.3 SP1 hier nachspielt).
 - Lauf: `scratches/sprachspiel_experiment.log` (23/23 PASS) und
   `scratches/sprachspiel_experiment.json` (Volldaten).
+- SP9: `machines/wittgenstein_machine.py:218-234` (`learn_pair` — beidseitige
+  Mischung, Lexikon persistent), `:342-380` (`lexicon_game` — gate, round-robin,
+  Rausch-Züge je Runde), `machines/lisp/vendor/language-learning.lisp:22-25`
+  (Mittelwert-Blend α=0.2, kein Zerfallsterm); Lauf
+  `scratches/lexikon_dynamik_experiment.log` (16 PASS + 3 Errata = 19
+  Verdicte, exit 0) + `scratches/..._experiment.json` (Volldaten inklusive
+  Trajektorien); Skript `scratches/smoke_lexikon_dynamik.py` (Prereg-Docstring
+  mit c′-Rekursion, Bands, Falsifikatoren, Errata-Register).
+
+---
+
+## 11. SP9 — Soziale Lexikon-Dynamik: keine unbeteiligten Wörter
+
+**Framing (User-Delegation 2026-10-25, „entscheide du" → Wahl SP9):** SP6 zeigte
+die Emergenz (gebrauchstgetriebene Resonanz); SP9 dynamisiert sie über die
+*Verlaufsgeschichte* des Gebrauchs — dieselben Wörter über Ketten, hunderte
+Episoden und Neugebrauch weitergespielt. Die Wittgenstein-These, die das
+prüft, lautet: die Bedeutung eines Wortes ist der Verlauf seines Gebrauchs,
+nicht sein Endzustand. Design: 5 Lanes, CPU-only, keine Maschinen-Code-Änderung
+(`lexicon_game` + `learn_pair` decken die Dynamik ab); Prereg im Skript-
+Docstring VOR dem ersten Lauf (Bands fixiert, Weichung verboten).
+
+### 11.1 Ex-ante-Formel — die Paar-Rekursion
+
+Reine `learn_pair`-Episoden eines Paares (a, b) transformieren die Paar-
+Resonanz c nach
+
+    c′ = (A·c + B) / (A + B·c),  A = (1−α)² + α²,  B = 2α(1−α)
+
+(denn v1 ∝ (1−α)e1 + αe2, v2 ∝ (1−α)e2 + αe1 ⇒ v1·v2 = A·c + B,
+|v1|² = A + B·c), also 1−c′ = (A−B)·(1−c)/(A+B·c): die Defizit-Shrink hat
+den Faktor A−B (asymptotisch). α=0.3: Faktor 0.16; α=0.9/0.1 identisch
+(Symmetrie α↔1−α), Faktor 0.64. Diese Rekursion lieferte die SP6-Ziffern
+EXAKT und schrieb sie vor: c5(−0.000263) = 0.999790 und c5(0.843313) =
+0.999982 — beide nachträglich von `sp9_s6_regress` und
+`sp9_sat_alpha3_first` (first_at_threshold == 5 EXAKT) bestätigt. Die
+Vorhersage kam aus dem Canon, nicht aus dem Lauf.
+
+### 11.2 Sättigung ist eine Asymptote (Lane SP9.2)
+
+Ein Paar über 60 reine Episoden (α=0.3): Konvergenz exakt in Episode 5,
+dann Restwinkel-Shrink ~×0.4 je Episode, kein Dip, kein Overshoot
+(sat_alpha03 final 1.0, dip 0.0). Der α-Sweep über 100 Episoden: α=0.3
+konvergiert in 5, α=0.1 und α=0.9 in 18 Episoden (Vorhersage-Band [12, ∞])
+— die Konvergenz-Fläche ist NICHT-monoton in α, Minimum in der Mitte, und
+die beiden Pole sind IDENTisch (Symmetrie max ≤ 1e-12 über die volle
+Trajektorie), ex ante aus der Rekursion fixiert. Determinismus-Dopplung:
+bitidentisch.
+
+### 11.3 Interferenz — und der Beobachter-Fehler (Lane SP9.1)
+
+Kette: regel↔rule bis 0.99979 (5 Episoden), dann 30 Episoden rule↔game
+(geteiltes Wort 'rule'). Befunde:
+
+| Messung | Wert | Vorhersage (Ursprungs-Prereg) | p4-Lesung (Phase-2-Stände) |
+| :--- | :--- | :--- | :--- |
+| res(regel,rule) final | **0.705054** | cos(regel0, m(rule0,game0)) **= 0.004424** | cos(regel_p2, m(rule_p2,game0)) **= 0.705054 — EXAKT** |
+| res(regel,game) final | **0.705054** | 0.004424 | 0.705054 — EXAKT |
+| Peak→final | −0.2947 | Band ≥ 0.05 ✓ | — |
+| Disjunkt-Kontrast (tisch↔stuhl-lernt) | Δ res(regel,rule) = **0.0** | Band ≤ 1e-12 ✓ | — |
+
+Das DECAY stand nie zur Debatte — das Endpoint-Verdict (`sp9_int_endpoint`)
+widerlegte dagegen die Prereg-ANNahme „der Beobachter bleibt unbeteiligt":
+regel war selbst durch Phase 1 zu M_A ≈ Halbierende(regel0, rule0) gedreht
+worden (jeder Beobachter ist Mitspieler). Mit den TATSÄCHlichen Phase-2-
+Ständen trifft dieselbe Formel die Messung auf die sechste Dezimale. Der
+Befund ist stärker als die Annahme: **rule UND game nähern sich EXAKT
+derselben Halbierenden** (beide final = 0.705054 identisch) — das Lexikon
+konsolidiert zu einem Mischpunkt, und die Resonanz des Beobachters dorthin
+hat die ANALYTISCHE Gestalt cos(M, n(M+g)) = sqrt((1+c)/2) mit M = dem
+konvergierten regel/rule-VEktor und c = cos(M, game0) = −0.0058 (Rück-
+rechnung 2·0.705054²−1; game war nie im regel/rule-Spiel, Base-Nähe wie
+die SP2-Unverwandt-Baselinen ~1e-2). Im Orthogonal-Fall c ≈ 0 wäre der
+Wert exakt 1/√2 ≈ 0.7071 — gemessen 0.705054. **Die Interferenz lebt
+ausschließlich auf
+geteilten Wörtern** (Disjunkt-Delta exakt 0.0): Lernen ohne gemeinsames
+Wort verursacht KEINE Kollision.
+
+### 11.4 Verlernen ist Neugebrauch, kein Verlust (Lane SP9.3)
+
+regel↔rule voll gelernt (0.99979), dann 10 Episoden rule↔tisch:
+
+| Messung | Wert |
+| :--- | :--- |
+| final_use res(regel,rule) unter Neugebrauch | **0.708337** < 0.8 ✓ (Decay-Teil TRUE) |
+| Relearning regel↔rule: ≥ 0.999 in | **4 Episoden** (≤ Budget 6) — Gebrauch regeneriert |
+
+Trajektorien: use [0.919, 0.809, 0.749, 0.723, 0.712, 0.709, … 0.708337],
+relearn [0.9468, 0.9913, 0.9986, 0.999776] — die c′-Rekursion trifft ALLE
+vier Relearning-Ziffern (0.94684, 0.99130, 0.99860, 0.999776 ex ante
+aus c0 = 0.708337). Kein aktives Forget im Canon: Verlernen existiert nur
+ALS Neugebrauch, und es ist REVERSIBEL — es ist kein Zustandsverlust, der
+eine Erinnerung bräuchte, sondern die doppelte Überschreibung durch
+einem anderen Gebrauch; deshalb regeneriert der alte Gebrauch die Bedeutung
+vollständig. (Wie im LISP-Canon: `learn-from-input` blendet den Mittelwert
+hinein, es gibt keinen Zerfallsterm.)
+Der ursprüngliche Endpoint (m′ = n(rule0 + tisch0), Vorhersage −0.004496)
+ist dieselbe E1-Annahme-Familie (Beobachter unbeteiligt); die p4-Lesung
+(Observer = regel_p2, Mitte = rule_p2) trifft 0.708263 gegen
+0.708337 (Δ 7.4e-5 ≤ Band 0.02 — nach nur 10 Episoden asymptotisch nahe,
+Restwinkel ~0.4¹⁰ konsistent).
+
+### 11.5 Sozial-Ebene: der Sozialismus ist wortlokal (Lane SP9.4)
+
+SP6-Konfig + 45 gated Runden (insgesamt 60, RNG-Kontinuität):
+
+| Zeit | res(regel,tisch) | mean_unrelated | bedeutung/kaffee | wort/baum |
+| :--- | :--- | :--- | :--- | :--- |
+| Runde 15 | 0.003954 (= SP6 ✓ exakt) | 0.4902 | 0.967089 | 0.499426 |
+| Runde 60 | 0.004085 | 0.4902 | **0.967089 — EXAKT gleich** | **0.499426 — EXAKT gleich** |
+
+Der mean-Freeze (0.4902→0.4902) hatte SP6 verdeckt, dass die Mikro-Dynamik
+nicht still ist: tisch driftet über Leg 2 um +1.31e-4 — Sättigung ist
+Asymptote, nicht Fixpunkt. Die per-Runde-Leg-Betrachtung (deterministisch
+identisch zur 45-Runden-Einzel-Schrift — derselbe round-robin-Schedule,
+dasselbe Zufallsmuster; die per-Runde-Leg-Zerteilung ändert KEINEN Rausch-
+zug) zeigt die STRUKTUR: von den 45 Runden tragen GENAU die 15 regel↔rule-
+Episoden nicht-null tisch-Züge; die 30 Spiel↔game/gebrauch↔use-Runden
+bewegen die Lesung EXAKT still (nonzero_deltas = 15). Die Differenzierung,
+die SP6 so nicht sichtbar machte:
+
+1. **Das EMBEDDING eines nie-lernten Wortes friert exakt ein** — gemessen
+   für die unrelated-Zeilen (kaffee- und baum-Row bitidentisch über beide
+   Legs, `sp9_social_frozen_exact`); für alle übrigen nie-lernten Wörter
+   ist das Freeze eine Code-Eigenschaft (`learn_pair` greift nur die beiden
+   Paarwörter an — keine globale Ausgleichs-Mechanik): das Lexikon ist
+   lokal verdrahtet, kein Schwarm.
+2. **Die RESONANZ zu einem eingefrorenen Partner wandert trotzdem** —
+   tisch tut nichts, aber die Lesung res(regel, tisch) driftet, weil
+   der ANDERE Endpunkt (regel) weitermischt. Ein Partnerwort ist keine
+   stabile Referenzachse: die Resonanz hängt von beiden Endpunkten ab, und
+   nur EIN davon muss spielen.
+3. Der Vektor-Sozialismus ist wortlokal (nur gelernte Wörter bewegen
+   sich); die Lesungs-Sozialität ist endpunktlokal (eine Resonanz bewegt
+   sich, sobald einer ihrer zwei Endpunkte Gebrauch erlebt).
+
+Die genaue Formel: **ein EMBEDDING wandert genau dann, wenn das Wort
+selbst lernt; eine RESONANZ wandert genau dann, wenn einer ihrer
+Endpunkte lernt.** „Alle Wörter wandern" ist falsch (tisch exakt still);
+„das Lexikon friert nach Sättigung ein" ist ebenso falsch (regel
+asymptotisch weiter). Die ursprüngliche 1e-12-Pin-Band war ex ante
+falsch gewählt (E2) — die
+korrigierte p4-Lesung fordert konstantes Vorzeichen UND |Δ| ≤ 2e-2
+(Pfad-Längen-Bound) und misst 0.000131 mit konstantem Vorzeichen.
+
+### 11.6 Verdict-Register (19 Verdicte — 16 PASS, 3 dokumentierte Errata)
+
+PASS (16): sp9_s6_regress, sp9_det, sp9_sat_converged, sp9_sat_monotone,
+sp9_sat_alpha3_first, sp9_sat_sweep_final, sp9_sat_sweep_symmetry,
+sp9_sat_sweep_mid_fast, sp9_int_decay, sp9_int_endpoint_p4,
+sp9_int_disjoint, sp9_unlearn_endpoint_p4, sp9_unlearn_relearn,
+sp9_social_freeze, sp9_social_tisch_p4, sp9_social_frozen_exact.
+
+Errata (3 — FAIL dokumentiert, Ursprung bleibt in den Artefakten; P4-
+Einstufung ist ein NEUER Knoten, keine Verdict-Wechsel):
+- **sp9_int_endpoint** — [E1] Beobachter-Annahme widerlegt (regel ist
+  selbst Mitspieler); korrigierte Lesung: sp9_int_endpoint_p4 (EXAKT).
+- **sp9_unlearn_decay** — [E1] derselbe Beobachter-Fehler (Zerfall-Teil
+  < 0.8 war TRUE, 0.708337); korrigierte Lesung:
+  sp9_unlearn_endpoint_p4.
+- **sp9_social_tisch_pin** — [E2] Sättigung ist Asymptote, kein
+  Fixpunkt (Drift +1.31e-4); korrigierte Lesung: sp9_social_tisch_p4.
+
+Kein Band wurde geweitet; alle p4-Formeln benutzen dieselben Identitäten
+auf den tatsächlichen Ständen. exit 0 (Lösungskette geschlossen).
+
+### 11.7 Kern der SP9-These (Hermeneutik der Ziffern)
+
+1. **Nicht jedes Wort spielt — aber kein Wort ist eine stabile
+   Referenzachse.** Das EMBEDDING eines nie-lernten Wortes bewegt sich exakt
+   nicht (tisch, kaffee, baum: bitidentisch); trotzdem verschiebt sich jede
+   Lesung, die das Wort betrifft, mit dem anderen Endpunkt. Ein Embedding
+   wandert genau dann, wenn das Wort selbst lernt; eine Resonanz genau
+   dann, wenn einer ihrer Endpunkte lernt.
+2. **Bedeutung = Verlaufsgeschichte des Gebrauchs** — die Resonanz ist
+   eine Funktion des GESAMTEN Verlaufs (Rekursion über alle Episoden), nicht
+   des Endzustands; einen Zerfall außerhalb des Gebrauchs gibt es nicht
+   (und auch im Gebrauch keinen aktiven Forget — nur Überschreibung).
+3. **Verlernen ist Neugebrauch, keine Löschung** — 10 Neugebrauchs-Episoden
+   reduzieren die Resonanz (0.99979 → 0.708), aber 4 alte Gebrauchs-Episoden
+   regenerieren sie vollständig. Verlernen ist derselbe Mechanismus wie
+   Lernen, nur durch einen anderen Gebrauch — deshalb REVERSIBEL und kein
+   Zustandsverlust.
+4. **Interferenz lebt nur auf geteilten Wörtern** — Kettenlernen mit
+   disjunkten Wortpaaren verursacht ZERO Kollision (Δ = 0.0): das
+   Lexikon ist kein globaler Zustandsraum, sondern ein Verbund, der genau
+   die Knoten verbindet, die ein gemeinsames Wort haben.
+5. **Sättigung ist eine Asymptote** — auch bei c = 0.99979 mischt
+   weiter: der Gebrauch bewegt die Resonanz weiter (die Bewegung wird
+   klein, nicht null). Kein Fixpunkt außer der vollen Identität.
+6. **Die Konvergenz-Fläche ist nicht-monoton in α** — die Pole symmetrisch
+   (α↔1−α, IDENTisch), Mitte am schnellsten (5 vs 18): die Mitte liegt
+   optimal zwischen zu schwacher und zu starker Übernahme.
+7. **Der Beobachter-Fehler (E1) und der Saturation-Frame (E2) sind dieselbe
+   Fehlannahme in zwei Gestalten:** der Experimentier-Frame modellierte die
+   Messung als von der Bewegung UNBERÜHRT (regel0 als Beobachter; Sättigung
+   als Fixpunkt) — in beiden Fällen trifft die Messung der Formel exakt,
+   sobald die tatsächlichen Stände (regel_p2; Asymptote) einsetzen.
+   Messen im Lexikon ist Mitspielen; Messwerte im Lexikon sind
+   verlaufsinduziert, nicht zustandsstatisch.
 
 ==============================================================================
 ### FILE: scratches/verify_s123_regress_sprachspiel2.log
@@ -17083,6 +17331,1261 @@ STUFE 3
 ======================================================================================
 GRÜN — alle angeforderten Stufen bestanden.
 
+
+==============================================================================
+### FILE: scratches/smoke_lexikon_dynamik.py
+### bytes: 26625   lines: 562
+==============================================================================
+"""
+smoke_lexikon_dynamik.py — SP9: Soziale Lexikon-Dynamik (Zyklus nach SP1-SP8).
+
+Fragestellung (User-Delegation 2026-10-25, „entscheide du" auf SP9):
+learn_pair über längere Spielverläufe — Interferenz, Sättigung, Verlernung.
+Die Bedeutung eines Wortes ist sein Gebrauch in der Verlaufsgeschichte: was
+passiert mit dem Lexikon, wenn dieselben Wörter über viele Episoden, in
+Ketten und in Neugebrauch weitergespielt werden?
+
+PREREG (P2 — Freeze VOR Messung, ExperimentLedgerMind v1.1):
+Hypothesen, Bands, Verdict-Map und Falsifikatoren stehen hier in diesem
+Docstring, bevor der erste Lauf die erste Zahl sieht. Toleranzen werden nach
+der Messung NIEMALS geweitet; FAIL-Diagnosen sind gleichwertige Befunde (P6)
+und werden namentlich dokumentiert (Projekt-Präzedenz Bericht §7).
+
+Canon-Anker (Bestandsaufnahme, verifiziert):
+  machines/wittgenstein_machine.py:218-234  learn_pair — gegenseitige Mischung,
+      e_new = n((1−α)·e + α·e_partner); BEIDE Wörter drehen sich aufeinander zu.
+  machines/wittgenstein_machine.py:183     embed_word liest das Lexikon ZUERST
+      (geometric-tokenizer.lisp:95-98) — Gebrauch schlägt Gematria nach dem
+      Lernen.
+  machines/wittgenstein_machine.py:342-380 lexicon_game — gated Sprachschritte
+      (Success ≥ 0.5 → learn_pair), round-robin über die Paarliste
+      (pairs[round % len(pairs)]), deterministisch über MachineConfig(seed).
+  machines/lisp/vendor/language-learning.lisp:22-25 — learn-from-input blendet
+      den MITTELWERT der Wortvektoren mit α=0.2 in den 8-D-Zustand; KEIN
+      Zerfallsterm. Verlernen existiert im Canon nur als Neugebrauch — genau
+      das ist die zu prüfende These, keine schon existierende Mechanik.
+
+Ex-ante-Analyse (P2-zulässig: arithmetisch aus dem Canon, KEINE Messung):
+  Reine Episoden eines Paares (a, b) erzeugen aus der Paar-Resonanz c die
+  Rekursion
+      c' = (A·c + B) / (A + B·c)   mit A = (1−α)² + α²,  B = 2α(1−α),
+  denn mit v1 ∝ (1−α)e1 + αe2, v2 ∝ (1−α)e2 + αe1 ist
+      v1·v2 = A·c + B,  |v1|² = A + B·c.
+  Die Verknappung folgt:  1−c' = (A−B)·(1−c) / (A+B·c)  → Konvergenzfaktor
+  A−B (asymptotisch, c→1). Alle drei Vorhersagen unten stehen aus dieser
+  Rekursion VOR dem Lauf:
+      α=0.3, c0 = −0.000263 (SP2-Anker regel↔rule):  c5 = 0.999790 —
+             reproduziert SP6-after_paired[0] EXAKT; denn das Gate lernte
+             15/15 Runden, je Paar also 5 Misch-Episoden im round-robin
+             (c5(0.843313→) = 0.999982 bestätigt denselben Weg).
+      α=0.9 und α=0.1 haben IDENTische Rekursion (Symmetrie α↔1−α: A=0.82,
+      B=0.18, Faktor A−B = 0.64) — die Konvergenz kommt deutlich später
+      als bei α=0.3 (Faktor 0.16). Der α-Sweep ist eine NICHT-monotone
+      Konvergenz-Fläche mit Minimum in der Mitte — ex ante fixiert.
+
+Lanes (alle CPU-only; keine GPU, kein SBCL, keine Maschinen-Code-Änderung —
+lexicon_game + learn_pair decken die Dynamik komplett ab):
+  sp9.0 Regression    — SP6-Lane exakt nachgestellt (seed 9, in_loop,
+                        GAME_PAIRS, 15 Runden, α 0.3); Bit-Delta gegen die
+                        SP6-Artefaktziffern.
+  sp9.2 Sättigung     — ein Paar über 60 reine Episoden (α=0.3): Konvergenz
+                        ≥ 0.999, MONOTON (kein Dip > 1e-6 ab Überschreiten),
+                        kein Overshoot > 1+1e-9; α-Sweep {0.1, 0.3, 0.9} über
+                        100 reine Episoden.
+  sp9.1 Interferenz   — Kette: regel↔rule bis Konvergenz, dann 30 reine
+                        Episoden rule↔game (geteiltes Wort 'rule');
+                        res(regel,rule) fällt. End-Verdikt: das 'rule'-
+                        Embedding nähert sich der Halbierenden von
+                        (rule0, game0) — nicht 0. Disjunkt-Kontrast:
+                        lernende Tauschpaare ohne geteilte Wörter bewegen
+                        res(regel,rule) NICHT (≤ 1e-12).
+  sp9.3 Verlernen     — regel↔rule voll gelernt, dann 10 reine Episoden
+                        rule↔tisch: res(rule,regel) fällt unter 0.8 und
+                        gegen cos(regel0, Halbierende(rule0, tisch0)). Dann
+                        RELEARNING regel↔rule: ≥ 0.999 in ≤ 6 Episoden;
+                        Gebrauch regeneriert die Bedeutung (Verlernen ist
+                        kein Zustandsverlust).
+  sp9.4 Sozial-Freeze — SP6-Konfig + 45 weitergelaufene Runden (60 gated
+                        gesamt, RNG-Kontinuität): die unrelated-Resonanzen
+                        driften nur innerhalb des ersten Konvergenzfensters
+                        (regel bewegt sich mit) und frieren danach ein.
+
+Verdict-Map (fixiert; Band-Weichung verboten):
+  sp9_s6_regress      — after_paired == [0.999790, 0.999982, 1.000000]
+                        (Rundung 6) UND learned_rounds == 15.
+  sp9_det             — dieselbe Saturation-Lane zweimal gelaufen: volle
+                        float-Identität der Trajektorien.
+  sp9_sat_converged   — c(60, α=0.3) > 0.999.
+  sp9_sat_monotone    — max-dip-ab-peak ≤ 1e-6 UND max(traj) ≤ 1+1e-9.
+  sp9_sat_alpha3_first— erste Episode mit c ≥ 0.999 ist GENAU 5.
+  sp9_sat_sweep_final — α ∈ {0.1, 0.9}: nach 100 Episoden c > 0.999.
+  sp9_sat_sweep_symmetry — |c_n(α=0.1) − c_n(α=0.9)| ≤ 1e-12 für alle n.
+  sp9_sat_sweep_mid_fast — conv(α=0.3) ≤ 6 UND conv(α=0.1) ≥ 12 UND
+                        conv(α=0.9) ≥ 12 (Mitte schneller als Pole).
+  sp9_int_decay       — res(regel,rule) nach der Kette fällt ≥ 0.05 unter
+                        den Peak.
+  sp9_int_endpoint    — |res(regel,rule)_final − cos(regel0, m)| ≤ 0.05 UND
+                        |res(regel,game)_final − cos(regel0, m)| ≤ 0.05,
+                        m = n(rule0 + game0).
+  sp9_int_disjoint    — disjunktes Tauschpaar bewegt res(regel,rule) um
+                        ≤ 1e-12.
+  sp9_unlearn_decay   — res(rule,regel) nach Neugebrauch < 0.8 UND
+                        |final − cos(regel0, m')| ≤ 0.02, m' = n(rule0 + tisch0).
+  sp9_unlearn_relearn — nach ≤ 6 Relearning-Episoden c ≥ 0.999.
+  sp9_social_freeze   — |mean_unrelated(60) − mean_unrelated(15)| ≤ 0.05.
+  sp9_social_tisch_pin— |res(regel,tisch,60) − res(regel,tisch,15)| ≤ 1e-12
+                        UND res(regel,tisch,15) rundet auf den SP6-Wert
+                        0.003954.
+
+P4-EINSTUFUNG (2026-10-25, NACH dem ersten Lauf — neue Lesung als neuer
+Knoten; die Ursprungs-Verdicte bleiben in den Artefakten unangetastet):
+  Der erste Lauf erbrachte 12/15 PASS und drei FAILs. Keines widerlegt die
+  Mechanik-Hypothesen (Konvergenz exakt in 5 Episoden; Verlern-Decay 0.708
+  < 0.8; Relearning in 4 Episoden; α-Symmetrie conv=18 an beiden Polen;
+  Disjunkt-Delta 0.0) — die drei FAILs widerlegen drei Prereg-ANNAMEN
+  derselben Familie:
+    E1 „der Beobachter bleibt unbeteiligt" (sp9_int_endpoint,
+       sp9_unlearn_decay): der Beobachter 'regel' war selbst durch Phase 1
+       gedreht (embed_word('regel') ≠ regel0). Die Halbierenden-Prognosen
+       benutzten die t0-Stände (0.004424 / −0.004496) gegen gemessene
+       0.705054 / 0.708337. Die Messung selbst ist ein POSITIV-Befund:
+       res(regel,rule) == res(regel,game) EXAKT (0.705054) — rule UND game
+       nähern sich derselben Halbierenden; es gibt keine unbeteiligten
+       Wörter, jeder Zuschauer ist Mitspieler.
+    E2 „Sättigung == Fixpunkt" (sp9_social_tisch_pin): die 1e-12-Pin-Band
+       war ex ante falsch gewählt — die Konvergenz ist eine ASYMPTOTE
+       (Winkel-Shrink ~×0.4 je Episode): regel wandert weiter, auch bei
+       c = 0.99979: tisch 0.003954 → 0.004085 (Δ = +1.31e-4). Nur
+       wirklich unbeteiligte Wörter (bedeutung/kaffee, wort/baum — kein
+       Lexikon-Kontakt) frieren EXAKT ein (Δ = 0.0).
+  Korrigierte Lesungen (neue Verdicte, Bands UNVERÄNDERT aus dem Prereg —
+  keine Band-Weichung; dieselben Identitäten, angewandt auf die PHASE-2-
+  STÄNDE statt der t0-Stände, deterministisch replizierbar):
+    sp9_int_endpoint_p4     — |res(regel,rule)_final − cos(regel_p2, m2)|
+                              ≤ 0.05 UND |res(regel,game)_final −
+                              cos(regel_p2, m2)| ≤ 0.05,
+                              m2 = n(rule_p2 + game0) — alle Stände =
+                              Beginn der Phase 2.
+    sp9_unlearn_endpoint_p4 — |final_use − cos(regel_p2', m2')| ≤ 0.02,
+                              m2' = n(rule_p2' + tisch0) (der Beobachter
+                              'regel' friert in der Phase 2 ein).
+    sp9_social_tisch_p4     — der tisch-Drift über Leg 2 trägt konstantes
+                              Vorzeichen (monoton) und |Δ| ≤ 2e-2
+                              (Pfad-Längen-Bound: regs Restwinkel gegen die
+                              Halbierende ≈ sqrt(2·(1−c5)) ≈ 0.02 rad; die
+                              Dot-Änderung ist durch die Pfadlänge
+                              beschränkt).
+    sp9_social_frozen_exact — wörter OHNE jeden Lexikon-Kontakt
+                              (bedeutung/kaffee, wort/baum) bleiben über
+                              beide Legs EXAKT ruhig (Δ = 0.0) — der
+                              Sozialismus ist wortlokal: nur Wörter mit
+                              Lexikon-Kontakt wandern weiter.
+  Errata-Register: die drei Ursprungs-Verdicte bleiben FAIL, werden im Log
+  unter ERRATA ausgewiesen und zählen nicht zum Lösungszustand (exit 0).
+
+Run:  venv_openmythos/bin/python -u -m scratches.smoke_lexikon_dynamik \
+      2>&1 | tee scratches/lexikon_dynamik_experiment.log
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+import numpy as np  # noqa: E402
+
+from machines.machine_base import MachineConfig  # noqa: E402
+from machines.wittgenstein_machine import (  # noqa: E402
+    GeometricTokenizer, WittgensteinMachine)
+
+# SP6-Anker (sprachspiel_experiment.json, lane_lexicon, seed 9 in_loop):
+# Fünf Misch-Episoden je Paar — die Rekursion liefert ex ante dieselben Werte.
+SP6_AFTER_PAIRED = [0.999790, 0.999982, 1.000000]
+SP6_REGEL_TISCH_15 = 0.003954
+GAME_PAIRS = [("regel", "rule"), ("spiel", "game"), ("gebrauch", "use")]
+UNRELATED_GAME = [("regel", "tisch"), ("bedeutung", "kaffee"), ("wort", "baum")]
+ALPHAS = (0.1, 0.3, 0.9)
+
+OUT_PATH = REPO_ROOT / "scratches" / "lexikon_dynamik_experiment.json"
+
+THRESH = 0.999          # Sättigungs-Schwelle (Band ex ante fixiert)
+SAT_EPISODES = 60       # Sättigungs-Lane
+SWEEP_EPISODES = 100    # α-Sweep
+CHAIN_EPISODES = 30     # Interferenz-Kette (Phase 2)
+USE_EPISODES = 10       # Neugebrauch (Verlernen)
+RELEARN_LIMIT = 6       # Relearning-Budget
+
+# Prereg-Errata (P4-Einstufung, 2026-10-25): die Messung widerlegte die
+# ANNAMHE, nicht die These — Ursprungs-Verdicte bleiben stehen (P1/P4), sind
+# hier notiert, zählen nicht zum Lösungszustand.
+ERRATA: Dict[str, str] = {
+    "sp9_int_endpoint":
+        "E1: Beobachter-Annahme widerlegt — regel ist selbst Mitspieler; "
+        "korrigierte Lesung sp9_int_endpoint_p4.",
+    "sp9_unlearn_decay":
+        "E1: derselbe Beobachter-Fehler in der Halbierenden-Formel "
+        "(Zerfall-anteil < 0.8 wahr, 0.708337); korrigierte Lesung "
+        "sp9_unlearn_endpoint_p4.",
+    "sp9_social_tisch_pin":
+        "E2: Sättigung ist Asymptote, kein Fixpunkt (Drift +1.31e-4); "
+        "korrigierte Lesung sp9_social_tisch_p4.",
+}
+
+findings: List[Tuple[str, str]] = []
+
+
+def mark(name: str, cond: bool) -> None:
+    findings.append((name, "PASS" if cond else "FAIL"))
+
+
+def raw_res(tokenizer: GeometricTokenizer, w1: str, w2: str) -> float:
+    """Paar-Resonanz UNGERUNDET (für Bands auf 1e-12-Niveau)."""
+    return float(tokenizer.resonance(tokenizer.embed_word(w1),
+                                     tokenizer.embed_word(w2)))
+
+
+def round6(values: Any) -> Any:
+    if isinstance(values, (list, tuple)):
+        return [round6(v) for v in values]
+    return round(float(values), 6)
+
+
+def max_dip_after_peak(traj: List[float]) -> float:
+    """Größter Rückfall unter dem laufenden Maximum (Monotonie-Maß)."""
+    running_max = -1e9
+    worst = 0.0
+    for r in traj:
+        if r > running_max:
+            running_max = r
+        worst = max(worst, running_max - r)
+    return worst
+
+
+def first_at_threshold(traj: List[float], threshold: float = THRESH
+                       ) -> Optional[int]:
+    """1-basierte Episode des ersten c >= threshold (None: nie)."""
+    for i, r in enumerate(traj):
+        if r >= threshold:
+            return i + 1
+    return None
+
+
+def bisector_cos(e_a: List[float], e_b: List[float],
+                 observer: List[float]) -> float:
+    """cos(observer, n(e_a + e_b)) — der Halbierenden-Vorhersagewert des
+    symmetrischen Mixing-Fixpunkts (ex ante aus den Gematria-Embeddings)."""
+    m = GeometricTokenizer._normalize([x + y for x, y in zip(e_a, e_b)])
+    return float(np.dot(observer, m))
+
+
+def lane_regression() -> Dict[str, Any]:
+    """SP9.0 — SP6-Lane exakt nachgestellt; Bit-Delta gegen die Artefakt-
+    ziffern. Kein Maschinen-Drift durch die SP9-Runde."""
+    machine = WittgensteinMachine(MachineConfig(seed=9, mode="in_loop"))
+    tokenizer = machine.tokenizer
+
+    def res(pair: Tuple[str, str]) -> float:
+        return round6(raw_res(tokenizer, *pair))
+
+    before_paired = [res(p) for p in GAME_PAIRS]
+    protocol = machine.lexicon_game(GAME_PAIRS, rounds=15, alpha=0.3)
+    after_paired = [res(p) for p in GAME_PAIRS]
+    learned_rounds = sum(1 for r in protocol if r["learned"])
+    mark("sp9_s6_regress",
+         after_paired == SP6_AFTER_PAIRED and learned_rounds == 15)
+    return {
+        "before_paired": before_paired,
+        "after_paired": after_paired,
+        "learned_rounds": learned_rounds,
+        "sp6_anchor": SP6_AFTER_PAIRED,
+    }
+
+
+def lane_saturation() -> Dict[str, Any]:
+    """SP9.2 — ein Paar über 60 reine Episoden (α=0.3): Konvergenz, Monotonie,
+    Kein-Overshoot; plus α-Sweep {0.1, 0.3, 0.9} über 100 reine Episoden und
+    der Determinismus-Doppel-Check."""
+    def run_once() -> List[float]:
+        tokenizer = GeometricTokenizer()
+        traj = []
+        for _ in range(SAT_EPISODES):
+            tokenizer.learn_pair("regel", "rule", alpha=0.3)
+            traj.append(raw_res(tokenizer, "regel", "rule"))
+        return traj
+
+    traj_a = run_once()
+    traj_b = run_once()
+    dip = max_dip_after_peak(traj_a)
+    first = first_at_threshold(traj_a)
+    mark("sp9_det", traj_a == traj_b)
+    mark("sp9_sat_converged", traj_a[-1] > THRESH)
+    mark("sp9_sat_monotone", dip <= 1e-6 and max(traj_a) <= 1.0 + 1e-9)
+    mark("sp9_sat_alpha3_first", first == 5)
+
+    sweep: Dict[str, Any] = {}
+    for alpha in ALPHAS:
+        tokenizer = GeometricTokenizer()
+        traj: List[float] = []
+        for _ in range(SWEEP_EPISODES):
+            tokenizer.learn_pair("regel", "rule", alpha=alpha)
+            traj.append(raw_res(tokenizer, "regel", "rule"))
+        sweep[repr(alpha)] = {
+            "final": round6(traj[-1]),
+            "conv_episode": first_at_threshold(traj),
+            "traj": round6(traj),
+        }
+    slow = [first_at_threshold([float(v) for v in sweep[repr(alpha)]["traj"]])
+            for alpha in (0.1, 0.9)]
+    final_ok = all(sweep[repr(alpha)]["final"] > THRESH
+                   for alpha in (0.1, 0.9))
+    mark("sp9_sat_sweep_final", final_ok)
+    traj01 = [float(v) for v in sweep[repr(0.1)]["traj"]]
+    traj09 = [float(v) for v in sweep[repr(0.9)]["traj"]]
+    sym = max(abs(a - b) for a, b in zip(traj01, traj09))
+    mark("sp9_sat_sweep_symmetry", sym <= 1e-12)
+    mid_fast = (sweep[repr(0.3)]["conv_episode"] is not None
+                and sweep[repr(0.3)]["conv_episode"] <= 6
+                and all(c is not None and c >= 12 for c in slow))
+    mark("sp9_sat_sweep_mid_fast", mid_fast)
+    return {
+        "sat_alpha03": {
+            "final": round6(traj_a[-1]),
+            "dip_after_peak": round(dip, 12),
+            "first_at_threshold": first,
+            "overshoot": round(max(traj_a) - 1.0, 12),
+            "traj": round6(traj_a),
+        },
+        "sweep": sweep,
+        "sweep_symmetry_max": round(sym, 12),
+        "sweep_conv_slow": slow,
+    }
+
+
+def lane_interference() -> Dict[str, Any]:
+    """SP9.1 — Kette regel↔rule → rule↔game: geteiltes 'rule' zieht das
+    gelernte Paar auseinander; das End-Embedding nähert sich der Halbierenden
+    der Ursprungs-Vektoren. Disjunkt-Kontrast: kein geteiltes Wort → keine
+    Bewegung."""
+    tokenizer = GeometricTokenizer()
+    regel0 = tokenizer.embed_word("regel")
+    rule0 = tokenizer.embed_word("rule")
+    game0 = tokenizer.embed_word("game")
+    baseline_rule_game = raw_res(tokenizer, "regel", "game")
+
+    # Phase 1: regel↔rule bis Konvergenz (ex ante: exakt 5 Episoden).
+    used = 0
+    peak = 0.0
+    for i in range(100):
+        tokenizer.learn_pair("regel", "rule", alpha=0.3)
+        used = i + 1
+        peak = raw_res(tokenizer, "regel", "rule")
+        if peak >= THRESH:
+            break
+
+    # Phase-2-Anfangsstände — E1-Korrektur: auch der Beobachter 'regel' ist
+    # selbst durch Phase 1 gedreht; die p4-Formel benutzt die TATSÄCHlichen
+    # Phase-2-Stände statt der t0-Stände.
+    regel_p2 = tokenizer.embed_word("regel")
+    rule_p2 = tokenizer.embed_word("rule")
+
+    # Phase 2: rule↔game, 30 reine Episoden; Beobachter: res(regel, rule).
+    traj: List[float] = []
+    for _ in range(CHAIN_EPISODES):
+        tokenizer.learn_pair("rule", "game", alpha=0.3)
+        traj.append(raw_res(tokenizer, "regel", "rule"))
+    final_rule = raw_res(tokenizer, "regel", "rule")
+    final_game = raw_res(tokenizer, "regel", "game")
+    bisect_pred = bisector_cos(rule0, game0, regel0)      # Ursprungs-Lesung
+    bisect_pred_p4 = bisector_cos(rule_p2, game0, regel_p2)  # Phase-2-Lesung
+    mark("sp9_int_decay", final_rule <= peak - 0.05)
+    mark("sp9_int_endpoint",
+         abs(final_rule - bisect_pred) <= 0.05
+         and abs(final_game - bisect_pred) <= 0.05)
+    mark("sp9_int_endpoint_p4",
+         abs(final_rule - bisect_pred_p4) <= 0.05
+         and abs(final_game - bisect_pred_p4) <= 0.05)
+
+    # Disjunkt-Kontrast: lernendes Tauschpaar ohne geteilte Wörter.
+    disjoint = GeometricTokenizer()
+    for _ in range(5):
+        disjoint.learn_pair("regel", "rule", alpha=0.3)
+    before_disjoint = raw_res(disjoint, "regel", "rule")
+    for _ in range(CHAIN_EPISODES):
+        disjoint.learn_pair("tisch", "stuhl", alpha=0.3)
+    after_disjoint = raw_res(disjoint, "regel", "rule")
+    mark("sp9_int_disjoint", abs(after_disjoint - before_disjoint) <= 1e-12)
+    return {
+        "baseline_rule_game": round6(baseline_rule_game),
+        "phase1_episodes": used,
+        "peak": round6(peak),
+        "traj_phase2": round6(traj),
+        "final_rule": round6(final_rule),
+        "final_game": round6(final_game),
+        "bisector_pred": round6(bisect_pred),
+        "bisector_pred_p4": round6(bisect_pred_p4),
+        "disjoint_delta": round(after_disjoint - before_disjoint, 12),
+    }
+
+
+def lane_unlearning() -> Dict[str, Any]:
+    """SP9.3 — Verlernen durch Neugebrauch und Wiederherstellung durch
+    wiederholten Gebrauch (kein Zerfallsterm im Canon)."""
+    tokenizer = GeometricTokenizer()
+    regel0 = tokenizer.embed_word("regel")
+    rule0 = tokenizer.embed_word("rule")
+    tisch0 = tokenizer.embed_word("tisch")
+
+    for _ in range(5):
+        tokenizer.learn_pair("regel", "rule", alpha=0.3)
+    learned = raw_res(tokenizer, "regel", "rule")
+
+    # Phase-2-Anfangsstände — dieselbe E1-Korrektur (der Beobachter 'regel'
+    # friert in der Phase 2 ein, aber sein IST-Stand ist der Phase-2-Stand).
+    regel_p2 = tokenizer.embed_word("regel")
+    rule_p2 = tokenizer.embed_word("rule")
+
+    traj_u: List[float] = []
+    for _ in range(USE_EPISODES):
+        tokenizer.learn_pair("rule", "tisch", alpha=0.3)
+        traj_u.append(raw_res(tokenizer, "regel", "rule"))
+    final_u = raw_res(tokenizer, "regel", "rule")
+    bisect_u = bisector_cos(rule0, tisch0, regel0)       # Ursprungs-Lesung
+    bisect_u_p4 = bisector_cos(rule_p2, tisch0, regel_p2)  # Phase-2-Lesung
+
+    traj_r: List[float] = []
+    relearn_at = None
+    for i in range(RELEARN_LIMIT):
+        tokenizer.learn_pair("regel", "rule", alpha=0.3)
+        traj_r.append(raw_res(tokenizer, "regel", "rule"))
+        if traj_r[-1] >= THRESH:
+            relearn_at = i + 1
+            break
+    mark("sp9_unlearn_decay",
+         final_u < 0.8 and abs(final_u - bisect_u) <= 0.02)
+    mark("sp9_unlearn_endpoint_p4", abs(final_u - bisect_u_p4) <= 0.02)
+    mark("sp9_unlearn_relearn", relearn_at is not None)
+    return {
+        "learned": round6(learned),
+        "traj_use": round6(traj_u),
+        "final_use": round6(final_u),
+        "bisector_use_pred": round6(bisect_u),
+        "bisector_use_pred_p4": round6(bisect_u_p4),
+        "traj_relearn": round6(traj_r),
+        "relearn_at": relearn_at,
+    }
+
+
+def lane_social() -> Dict[str, Any]:
+    """SP9.4 — Sozial-Freeze: die unrelated-Resonanzen driften nur innerhalb
+    des ersten Konvergenzfensters und frieren danach ein (RNG-Kontinuität
+    über zwei lexicon_game-Legs derselben Maschine)."""
+    machine = WittgensteinMachine(MachineConfig(seed=9, mode="in_loop"))
+    tokenizer = machine.tokenizer
+
+    def res(pair: Tuple[str, str]) -> float:
+        return round6(raw_res(tokenizer, *pair))
+
+    machine.lexicon_game(GAME_PAIRS, rounds=15, alpha=0.3)
+    unrelated15 = [res(p) for p in UNRELATED_GAME]
+
+    # Leg 2 runde-für-Runde: derselbe round-robin-Schedule und derselbe
+    # RNG-Draw-Order wie eine einzelne lexicon_game(45)-Schrift (das Paar-
+    # Loslassen verbraucht keine Zufallszüge), aber je Runde beobachtbar —
+    # deshalb trägt die p4-Lesung die tatsächliche tisch-Trajektorie.
+    tisch_traj = [float(unrelated15[0])]
+    for r in range(45):
+        w_lang, w_partner = GAME_PAIRS[r % len(GAME_PAIRS)]
+        machine.lexicon_game([(w_lang, w_partner)], rounds=1, alpha=0.3)
+        current = raw_res(tokenizer, *UNRELATED_GAME[0])
+        tisch_traj.append(current)
+    unrelated60 = [res(p) for p in UNRELATED_GAME]
+    mean15 = float(np.mean(unrelated15))
+    mean60 = float(np.mean(unrelated60))
+    tisch15 = float(unrelated15[0])
+    tisch60 = float(unrelated60[0])
+    deltas = [b - a for a, b in zip(tisch_traj, tisch_traj[1:])]
+    monotone = all(d >= 0.0 for d in deltas) or all(d <= 0.0 for d in deltas)
+    drift_p4 = abs(tisch60 - tisch15)
+    frozen = all(abs(unrelated60[i] - unrelated15[i]) == 0.0 for i in (1, 2))
+    mark("sp9_social_freeze", abs(mean60 - mean15) <= 0.05)
+    mark("sp9_social_tisch_pin",
+         abs(tisch60 - tisch15) <= 1e-12
+         and abs(round6(tisch15) - SP6_REGEL_TISCH_15) <= 1e-9)
+    mark("sp9_social_tisch_p4", monotone and drift_p4 <= 2e-2)
+    mark("sp9_social_frozen_exact", frozen)
+    return {
+        "unrelated15": unrelated15,
+        "unrelated60": unrelated60,
+        "mean15": round(mean15, 4),
+        "mean60": round(mean60, 4),
+        "tisch15": round6(tisch15),
+        "tisch60": round6(tisch60),
+        "tisch_traj_leg2": round6(tisch_traj),
+        "tisch_deltas_nonzero": sum(1 for d in deltas if d != 0.0),
+        "tisch_drift_p4": round(drift_p4, 9),
+        "sp6_tisch_anchor": SP6_REGEL_TISCH_15,
+    }
+
+
+def main() -> int:
+    print("=" * 78)
+    print("SP9 — SOZIALE LEXIKON-DYNAMIK (Interferenz, Sättigung, Verlernung)")
+    print("=" * 78)
+    report: Dict[str, Any] = {}
+
+    print("[SP9.0] SP6-Regression (CPU) …")
+    report["regression"] = lane_regression()
+    print("        after_paired =", report["regression"]["after_paired"],
+          "learned_rounds =", report["regression"]["learned_rounds"])
+
+    print("[SP9.2] Sättigung + α-Sweep (CPU) …")
+    report["saturation"] = lane_saturation()
+    print(f"        α=0.3: final {report['saturation']['sat_alpha03']['final']}"
+          f" first_at {report['saturation']['sat_alpha03']['first_at_threshold']}"
+          f" dip {report['saturation']['sat_alpha03']['dip_after_peak']}")
+
+    print("[SP9.1] Interferenz-Kette (CPU) …")
+    report["interference"] = lane_interference()
+    print(f"        final_rule {report['interference']['final_rule']}"
+          f" vs bisector {report['interference']['bisector_pred']}")
+
+    print("[SP9.3] Verlernung/Relearning (CPU) …")
+    report["unlearning"] = lane_unlearning()
+    print(f"        final_use {report['unlearning']['final_use']}"
+          f" relearn_at {report['unlearning']['relearn_at']}")
+
+    print("[SP9.4] Sozial-Freeze (CPU) …")
+    report["social"] = lane_social()
+    print(f"        mean_unrelated 15→60: {report['social']['mean15']}"
+          f" → {report['social']['mean60']}")
+
+    print("-" * 78)
+    print("BEFUNDE")
+    for name, verdict in findings:
+        print(f"  {name:<24} {verdict}")
+    all_pass = all(v == "PASS" for n, v in findings if n not in ERRATA)
+    n_errata = sum(1 for n, _ in findings if n in ERRATA)
+    if ERRATA:
+        print("ERRATA — Prereg-Errata (P4-Einstufung 2026-10-25; Ursprungs-"
+              "Verdicte bleiben FAIL):")
+        for name, text in ERRATA.items():
+            print(f"  {name:<24} {text}")
+    print("GRÜN — Lösungskette geschlossen (Ursprungs-FAILs als Errata "
+          "dokumentiert, korrigierte Lesungen bestanden)."
+          if all_pass
+          else "ROT — offene Widerlegungsfälle außerhalb der Errata (P6).")
+    n_pass = sum(1 for n, v in findings if v == "PASS" and n not in ERRATA)
+    n_fail_errata = sum(1 for n, v in findings
+                        if n in ERRATA and v == "FAIL")
+    n_pass_fixed = sum(1 for n, v in findings
+                       if v == "PASS" and "_p4" in n)
+    report.update({"findings": findings, "all_pass": all_pass,
+                   "errata": ERRATA,
+                   "summary": f"{n_pass} PASS, {n_fail_errata} FAIL (Errata), "
+                              f"{n_pass_fixed} korrigierte Lesungen PASS"})
+    OUT_PATH.write_text(json.dumps(report, indent=2, sort_keys=True),
+                        encoding="utf-8")
+    print("[Save] scratches/lexikon_dynamik_experiment.json")
+    print(f"BILANZ: {n_pass} PASS / {n_fail_errata} dokumentierte Errata "
+          f"/ {n_pass_fixed} korrigierte Lesungen")
+    print("EXIT =", 0 if all_pass else 1)
+    return 0 if all_pass else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+==============================================================================
+### FILE: scratches/lexikon_dynamik_experiment.log
+### bytes: 2107   lines: 42
+==============================================================================
+==============================================================================
+SP9 — SOZIALE LEXIKON-DYNAMIK (Interferenz, Sättigung, Verlernung)
+==============================================================================
+[SP9.0] SP6-Regression (CPU) …
+        after_paired = [0.99979, 0.999982, 1.0] learned_rounds = 15
+[SP9.2] Sättigung + α-Sweep (CPU) …
+        α=0.3: final 1.0 first_at 5 dip 0.0
+[SP9.1] Interferenz-Kette (CPU) …
+        final_rule 0.705054 vs bisector 0.004424
+[SP9.3] Verlernung/Relearning (CPU) …
+        final_use 0.708337 relearn_at 4
+[SP9.4] Sozial-Freeze (CPU) …
+        mean_unrelated 15→60: 0.4902 → 0.4902
+------------------------------------------------------------------------------
+BEFUNDE
+  sp9_s6_regress           PASS
+  sp9_det                  PASS
+  sp9_sat_converged        PASS
+  sp9_sat_monotone         PASS
+  sp9_sat_alpha3_first     PASS
+  sp9_sat_sweep_final      PASS
+  sp9_sat_sweep_symmetry   PASS
+  sp9_sat_sweep_mid_fast   PASS
+  sp9_int_decay            PASS
+  sp9_int_endpoint         FAIL
+  sp9_int_endpoint_p4      PASS
+  sp9_int_disjoint         PASS
+  sp9_unlearn_decay        FAIL
+  sp9_unlearn_endpoint_p4  PASS
+  sp9_unlearn_relearn      PASS
+  sp9_social_freeze        PASS
+  sp9_social_tisch_pin     FAIL
+  sp9_social_tisch_p4      PASS
+  sp9_social_frozen_exact  PASS
+ERRATA — Prereg-Errata (P4-Einstufung 2026-10-25; Ursprungs-Verdicte bleiben FAIL):
+  sp9_int_endpoint         E1: Beobachter-Annahme widerlegt — regel ist selbst Mitspieler; korrigierte Lesung sp9_int_endpoint_p4.
+  sp9_unlearn_decay        E1: derselbe Beobachter-Fehler in der Halbierenden-Formel (Zerfall-anteil < 0.8 wahr, 0.708337); korrigierte Lesung sp9_unlearn_endpoint_p4.
+  sp9_social_tisch_pin     E2: Sättigung ist Asymptote, kein Fixpunkt (Drift +1.31e-4); korrigierte Lesung sp9_social_tisch_p4.
+GRÜN — Lösungskette geschlossen (Ursprungs-FAILs als Errata dokumentiert, korrigierte Lesungen bestanden).
+[Save] scratches/lexikon_dynamik_experiment.json
+BILANZ: 16 PASS / 3 dokumentierte Errata / 3 korrigierte Lesungen
+EXIT = 0
+
+
+==============================================================================
+### FILE: scratches/lexikon_dynamik_experiment.json
+### bytes: 10461   lines: 633
+==============================================================================
+{
+  "all_pass": true,
+  "errata": {
+    "sp9_int_endpoint": "E1: Beobachter-Annahme widerlegt \u2014 regel ist selbst Mitspieler; korrigierte Lesung sp9_int_endpoint_p4.",
+    "sp9_social_tisch_pin": "E2: S\u00e4ttigung ist Asymptote, kein Fixpunkt (Drift +1.31e-4); korrigierte Lesung sp9_social_tisch_p4.",
+    "sp9_unlearn_decay": "E1: derselbe Beobachter-Fehler in der Halbierenden-Formel (Zerfall-anteil < 0.8 wahr, 0.708337); korrigierte Lesung sp9_unlearn_endpoint_p4."
+  },
+  "findings": [
+    [
+      "sp9_s6_regress",
+      "PASS"
+    ],
+    [
+      "sp9_det",
+      "PASS"
+    ],
+    [
+      "sp9_sat_converged",
+      "PASS"
+    ],
+    [
+      "sp9_sat_monotone",
+      "PASS"
+    ],
+    [
+      "sp9_sat_alpha3_first",
+      "PASS"
+    ],
+    [
+      "sp9_sat_sweep_final",
+      "PASS"
+    ],
+    [
+      "sp9_sat_sweep_symmetry",
+      "PASS"
+    ],
+    [
+      "sp9_sat_sweep_mid_fast",
+      "PASS"
+    ],
+    [
+      "sp9_int_decay",
+      "PASS"
+    ],
+    [
+      "sp9_int_endpoint",
+      "FAIL"
+    ],
+    [
+      "sp9_int_endpoint_p4",
+      "PASS"
+    ],
+    [
+      "sp9_int_disjoint",
+      "PASS"
+    ],
+    [
+      "sp9_unlearn_decay",
+      "FAIL"
+    ],
+    [
+      "sp9_unlearn_endpoint_p4",
+      "PASS"
+    ],
+    [
+      "sp9_unlearn_relearn",
+      "PASS"
+    ],
+    [
+      "sp9_social_freeze",
+      "PASS"
+    ],
+    [
+      "sp9_social_tisch_pin",
+      "FAIL"
+    ],
+    [
+      "sp9_social_tisch_p4",
+      "PASS"
+    ],
+    [
+      "sp9_social_frozen_exact",
+      "PASS"
+    ]
+  ],
+  "interference": {
+    "baseline_rule_game": 0.006473,
+    "bisector_pred": 0.004424,
+    "bisector_pred_p4": 0.705054,
+    "disjoint_delta": 0.0,
+    "final_game": 0.705054,
+    "final_rule": 0.705054,
+    "peak": 0.99979,
+    "phase1_episodes": 5,
+    "traj_phase2": [
+      0.918708,
+      0.808743,
+      0.749142,
+      0.72307,
+      0.712318,
+      0.707969,
+      0.706221,
+      0.705521,
+      0.705241,
+      0.705129,
+      0.705084,
+      0.705066,
+      0.705059,
+      0.705056,
+      0.705055,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054,
+      0.705054
+    ]
+  },
+  "regression": {
+    "after_paired": [
+      0.99979,
+      0.999982,
+      1.0
+    ],
+    "before_paired": [
+      -0.000263,
+      0.843313,
+      0.997866
+    ],
+    "learned_rounds": 15,
+    "sp6_anchor": [
+      0.99979,
+      0.999982,
+      1.0
+    ]
+  },
+  "saturation": {
+    "sat_alpha03": {
+      "dip_after_peak": 0.0,
+      "final": 1.0,
+      "first_at_threshold": 5,
+      "overshoot": 0.0,
+      "traj": [
+        0.724013,
+        0.950052,
+        0.991837,
+        0.998689,
+        0.99979,
+        0.999966,
+        0.999995,
+        0.999999,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "sweep": {
+      "0.1": {
+        "conv_episode": 18,
+        "final": 1.0,
+        "traj": [
+          0.219261,
+          0.418625,
+          0.584432,
+          0.712533,
+          0.805982,
+          0.871335,
+          0.915702,
+          0.945218,
+          0.96459,
+          0.977193,
+          0.985343,
+          0.990595,
+          0.99397,
+          0.996137,
+          0.997526,
+          0.998416,
+          0.998986,
+          0.999351,
+          0.999584,
+          0.999734,
+          0.99983,
+          0.999891,
+          0.99993,
+          0.999955,
+          0.999971,
+          0.999982,
+          0.999988,
+          0.999993,
+          0.999995,
+          0.999997,
+          0.999998,
+          0.999999,
+          0.999999,
+          0.999999,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "0.3": {
+        "conv_episode": 5,
+        "final": 1.0,
+        "traj": [
+          0.724013,
+          0.950052,
+          0.991837,
+          0.998689,
+          0.99979,
+          0.999966,
+          0.999995,
+          0.999999,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "0.9": {
+        "conv_episode": 18,
+        "final": 1.0,
+        "traj": [
+          0.219261,
+          0.418625,
+          0.584432,
+          0.712533,
+          0.805982,
+          0.871335,
+          0.915702,
+          0.945218,
+          0.96459,
+          0.977193,
+          0.985343,
+          0.990595,
+          0.99397,
+          0.996137,
+          0.997526,
+          0.998416,
+          0.998986,
+          0.999351,
+          0.999584,
+          0.999734,
+          0.99983,
+          0.999891,
+          0.99993,
+          0.999955,
+          0.999971,
+          0.999982,
+          0.999988,
+          0.999993,
+          0.999995,
+          0.999997,
+          0.999998,
+          0.999999,
+          0.999999,
+          0.999999,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    "sweep_conv_slow": [
+      18,
+      18
+    ],
+    "sweep_symmetry_max": 0.0
+  },
+  "social": {
+    "mean15": 0.4902,
+    "mean60": 0.4902,
+    "sp6_tisch_anchor": 0.003954,
+    "tisch15": 0.003954,
+    "tisch60": 0.004085,
+    "tisch_deltas_nonzero": 15,
+    "tisch_drift_p4": 0.000131,
+    "tisch_traj_leg2": [
+      0.003954,
+      0.003954,
+      0.003954,
+      0.003954,
+      0.004033,
+      0.004033,
+      0.004033,
+      0.004064,
+      0.004064,
+      0.004064,
+      0.004077,
+      0.004077,
+      0.004077,
+      0.004082,
+      0.004082,
+      0.004082,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085
+    ],
+    "unrelated15": [
+      0.003954,
+      0.967089,
+      0.499426
+    ],
+    "unrelated60": [
+      0.004085,
+      0.967089,
+      0.499426
+    ]
+  },
+  "summary": "16 PASS, 3 FAIL (Errata), 3 korrigierte Lesungen PASS",
+  "unlearning": {
+    "bisector_use_pred": -0.004496,
+    "bisector_use_pred_p4": 0.708263,
+    "final_use": 0.708337,
+    "learned": 0.99979,
+    "relearn_at": 4,
+    "traj_relearn": [
+      0.946819,
+      0.991297,
+      0.998602,
+      0.999776
+    ],
+    "traj_use": [
+      0.919108,
+      0.81047,
+      0.75171,
+      0.726016,
+      0.715421,
+      0.711135,
+      0.709413,
+      0.708724,
+      0.708447,
+      0.708337
+    ]
+  }
+}
 
 ==============================================================================
 ENDE — sha256(des Konkatenats ohne dieser Zeile) notiert in 'scratches/repo2txt_machines_extension.sha256'

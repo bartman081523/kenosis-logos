@@ -102,6 +102,10 @@ FILES: List[str] = [
     "scratches/hermeneutik_experiment.log",
     "scratches/hermeneutik_experiment.json",
     "scratches/verify_s123_regress_sp7.log",
+    # -- SP9 Soziale Lexikon-Dynamik (Interferenz, Sättigung, Verlernung) ---------
+    "scratches/smoke_lexikon_dynamik.py",
+    "scratches/lexikon_dynamik_experiment.log",
+    "scratches/lexikon_dynamik_experiment.json",
 ]
 
 SEPARATOR = "=" * 78
