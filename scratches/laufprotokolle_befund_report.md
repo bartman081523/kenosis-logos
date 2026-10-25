@@ -95,6 +95,13 @@ dem Save-Zeitpunkt und der Nach-Betrachtung.
 - **Idempotenz der Stufe 6:** `trained_entropy` wird aus `preset.mean_h` übernommen
   bzw. ein vorhandener Messwert nicht auf null zurückgesetzt — mehrfache
   Verifikationsläufe überschreiben keine Messwerte mehr.
+- **Mini-Digests sind umweltstabil innerhalb, nicht zwischen Umgebungen:** der
+  Goedel-Zweig rechnet `tanh(W @ state)` (BLAS-Matmul); ein venv-Lauf
+  (Stufe 1: `1594f06485ef`) und ein System-Python-Lauf (`1b0aee4e688b`)
+  unterscheiden sich in 1-ulp-Matmul-Reduktion bei identischem `gap0` (0.7437),
+  der composite-Digest folgt dem Goedel-Zweig. Turing/Wittgenstein (elementweise)
+  stimmen. Stufe 6 füllt die Mini-Digests (3-Schritt-Familie) selbst — kein
+  Golden-Ersatz nötig, kein Code-Drift (`machines/` unverändert seit `d1a6cee`).
 
 ---
 
@@ -130,6 +137,55 @@ Bias-Restaurierung in jeder Steering-Lane.
    während der Oracle-Gap in einem ruhigen Band von 0.49–0.81 bleibt und unter
    Steering um ~0.1–0.2 **absinkt** — das externe Selbstmodell stabilisiert die
    Komposition und die steered-Experten (Maschinen-Cluster) reduzieren den Gap.
-   Der LOOP→`expand_basis`-Pfad bleibt in allen Lanes leer: composite-Programme
-   halten per Konstruktion (Präfix-Walk bis `halt`); die Expansion wird auf der
-   nackten Turing-Maschine in Stufe 6 („looper“ + „ALPHA“) getrieben.
+   Der LOOP→`expand_basis`-Pfad bleibt in §7 leer (vom Sample-Pfad nicht getriggert);
+   die Expansion läuft auf der nackten Turing-Maschine in Stufe 6 („looper“ +
+   „ALPHA“). Die Kompositionskette wird in §8 mit dem `identity(x)`-Hebel
+   nachträglich getriggert.
+
+---
+
+## 8. Experiment-Erweiterung: `identity(x)`-Hebel — LOOP in der Komposition getriggert
+
+(Nach der Freigabe; Commit-Basis `824f522` + Hebel in `machines/composite.py`.)
+`compile_rule` übersetzt die **Identitäts-Tautologie** `('identity', 'x')` nicht mehr
+als Kettenglied (`n0 → halt` nach einer Transition), sondern als **Selbst-Transition**
+`("n_i", BLANK) -> (BLANK, "N", n_i)`: die tautologische Regel zeigt als Programm auf
+sich selbst und terminiert nicht — Turing erkennt das über die Lauf-Signatur (> 3), die
+Komposition expandiert die Basis. Geprüft auf fünf AST-Klassen: nur die exakte Tautologie
+(auch verschachtelt als Teil-Ausdruck) erzeugt den Selbst-Zustand; alle anderen ASTs
+behalten die HALT-Garantie. **Zero-Regression:** der Stage-1-Mini (5 Schritte, Seed 42)
+tritt nirgends auf die Tautologie — composite-Digest `c6d17a9211c8` mit und ohne Hebel
+identisch (Stash-Roundtrip gegen HEAD).
+
+Neuer 9-Lane-Lauf (`smoke_composite_oracle.py` + L7/L8/L9; L7 trägt
+`params={"axiom_pool": ["ALPHA", "BETA"]}` und erzwingt die Tautologie als erstes
+Batch-Programm; `L9` = Wiederholung):
+
+| Lane | Steuerung | Digest | Verdicts (16 Schritte) | Basis | Expansions |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L7/L9 | Tautologie erzwungen (Schritt 1) + natürlicher Sampler | `9c5bf80babaa` | `LOOP`(1), HALT, `LOOP`(10), `LOOP`(12) | **5** | `step1:LOOP` |
+| L8 | wie L7 unter Steering "goedel" {2,7} | `1f7cbc913e7c` | identisches Verdict-Muster | 5 | `step1:LOOP` |
+
+Alle 11 Befunde PASS (`det_tautology`, `loop_tautology`, `basis_expanded`,
+`tautology_finite`, `tautology_steer_shift` zusätzlich zu den sechs §7-Befunden).
+
+**Vier Eigenschaften des getriggerten Pfads:**
+
+1. **Der Sampler produziert selbst Tautologien:** mit dem Hebel wird eine bislang
+   unsichtbare Regel sichtbar — L1–L6 (ohne Erzwingung) schlagen bei Schritt 15 ein
+   natürliches `('identity', 'x')` zum `LOOP`-Verdikt um; die Gap-Verläufe sind
+   bitidentisch bis Schritt 14 und divergieren exakt dort (8.02 → 1.45). Auch im
+   6-Lane-Vor-Hebel-Lauf war dieselbe Regel schon gesampelt — nur hielt sie als
+   Eins-Schritt-Halt-Kette. In L7–L9 kommen natürliche LOOPs bei Schritt 10/12 dazu.
+   P(programm == Tautologie) ≈ 0.65 % je Regel — selten genug für die HALT-Garantie
+   im Praxisfall, häufig genug, um beobachtbar zu werden.
+2. **Expansion nur mit Pool, verdikt immer:** L1–L6 haben keinen Axiom-Pool →
+   `expand_basis` meldet „Pool leer" (Trace-Note), das LOOP-Verdikt bleibt in den
+   Invarianten. L7–L9 verbrauchen je LOOP **zwei Pool-Einträge** — `turing.step`
+   expandiert intern (ALPHA), `composite.step` mit `reason="composite:LOOP"`
+   danach (BETA). Basis 3 → 5.
+3. **Determinismus auch auf dem getriggerten Pfad:** L7 == L9 bitidentisch
+   (Digest, Gaps, Verdict-Muster), L8 zeigt das gleiche Muster unter Steering mit
+   dem bekannten niedrigeren Gap-Band (0.45–0.71).
+4. **Gaps bleiben endlich** über alle 24+1 Lanes-Schritte inklusive Expansion —
+   der LOOP bricht die Komposition nicht, er verändert den Zustandsraum.

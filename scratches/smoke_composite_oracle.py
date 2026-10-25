@@ -7,12 +7,23 @@ Lanes:
   L3/L4 — composite oracle   ungesteuert, 2 Läufe -> Determinismus-Digests
   L5    — composite oracle unter expert_bias-Steering "combined" (6 Experten)
   L6    — composite oracle unter expert_bias-Steering "goedel"   ({2,7})
+  L7/L9 — composite oracle mit erzwungener Identitäts-Tautologie ('identity','x')
+          als erstes Batch-Programm (Schritt 1): der compile_rule-Hebel übersetzt
+          die Regel als Selbst-Transition ("n_i", BLANK) -> (BLANK, "N", "n_i"),
+          Turing liefert LOOP, die Komposition expandiert die Basis (uni_256:113);
+          L9 = Wiederholung von L7 (Determinismus auf dem getriggerten Pfad).
+  L8    — wie L7 unter expert_bias-Steering "goedel" ({2,7}).
+          L7-L9 tragen params={"axiom_pool": ["ALPHA", "BETA"]}; die Expansion
+          frisst je LOOP zwei Pool-Einträge (turing.step expandiert intern,
+          composite.step mit reason="composite:LOOP" danach).
 
 Messgrößen je Lane: 16-Schritt-Gap-Verlauf, Digest, Axiom-Expansionen,
-Turing-Basis-Groesse, Router-Entropie auf Fixprobe (oracle.entropy_scalar).
+Verdict-Verlauf, Turing-Basis-Groesse, Router-Entropie auf Fixprobe
+(oracle.entropy_scalar).
 
 Pass-Kriterien:
-  - L1==L2 und L3==L4 (bitidentische Digests — Determinismus in beiden Modis)
+  - L1==L2 und L3==L4 und L7==L9 (bitidentische Digests — Determinismus in
+    beiden Modis und auf dem Expansion-Pfad)
   - alle Gaps endlich (keine NaN/Inf)
   - entropy_bias_free: |ΔH(probe, standard→steer)| < 0.02 — DOKUMENTIERTE
     Design-Eigenschaft: die Router-Entropie wird VOR dem expert_bias berechnet
@@ -21,7 +32,10 @@ Pass-Kriterien:
     bias-invariant; das Steering-Signal liegt in der AUSWAHL (Stufe-5-Lauf:
     Anteil 1.000, TV 0.36-0.41) und in der Trajektorie
   - steer_traj_shift: die Oracle-Gap-Trajektorie unter Steering != ungesteuert
-    (L5/L6 != L3), ohne die Bias-Zustände zu hinterlassen (Restaurierung)
+    (L5/L6 != L3, L8 != L7), ohne die Bias-Zustände zu hinterlassen
+    (Restaurierung)
+  - loop_tautology: L7 enthält mindestens ein "LOOP"-Verdikt und >= 1
+    Expansion; basis_expanded: Turing-Basis > 3 Dimensionen nach dem Lauf.
 Run:  PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
       venv_openmythos/bin/python -u -m scratches.smoke_composite_oracle
 """
@@ -41,6 +55,7 @@ import torch  # noqa: E402
 
 from machines.composite import CompositeMachine  # noqa: E402
 from machines.machine_base import ArgonOracle, MachineConfig  # noqa: E402
+from machines.wittgenstein_machine import GeneratedSymbolicRule  # noqa: E402
 from machines.verify_machines import _load_machines_model  # noqa: E402
 
 STEPS = 16
@@ -48,23 +63,56 @@ PROBE = ("Die Wittgenstein-Regel wird Programm: Turing führt den AST aus, "
          "Gödel predet das Ergebnis; die Regel zeigt, wie man sie ausführt. "
          "gap=0.36 trend=STABLE basis=SCALAR,TIME,SPACE")
 
+TAUTAST = ("identity", "x")           # die Identitäts-Tautologie (compile_rule-Hebel)
+TAUT_POOL = {"axiom_pool": ["ALPHA", "BETA"]}
 
-def run_lane(mode: str, preset: str | None, oracle: ArgonOracle) -> Dict[str, Any]:
+
+def force_first_rule(machine: CompositeMachine, ast: Any) -> None:
+    """
+    Probe-Pfad: ersetzt deterministisch die ERSTE generierte Regel des Laufs
+    durch `ast`, ohne den AST-Sampler der Wittgenstein-Maschine anzutasten —
+    die Tautologie wird dem compile_rule-Präfix-Walk als Batch-Regel 0
+    ausgeliefert und compiliert zum Selbst-Programm.
+    """
+    wm = machine.wittgenstein
+    original = wm.create_rule
+    used = {"done": False}
+
+    def patched() -> GeneratedSymbolicRule:
+        if not used["done"]:
+            used["done"] = True
+            rule = GeneratedSymbolicRule(ast)
+            wm.generated_rules.append(rule)
+            return rule
+        return original()
+
+    wm.create_rule = patched
+
+
+def run_lane(mode: str, preset: str | None, oracle: ArgonOracle,
+             params: Dict[str, Any] | None = None,
+             force_ast: Any | None = None) -> Dict[str, Any]:
     """16 Composite-Schritte in einem Modus (+ optional unter Steering)."""
-    machine = CompositeMachine(MachineConfig(seed=42, mode=mode), oracle=oracle)
+    machine = CompositeMachine(MachineConfig(seed=42, mode=mode, params=dict(params or {})),
+                               oracle=oracle)
+    if force_ast is not None:
+        force_first_rule(machine, force_ast)
+    verdicts: List[str] = []
     h_probe: float | None = None
     restored = True
     if preset is None:
         h_probe = oracle.entropy_scalar(PROBE)
         for _ in range(STEPS):
-            machine.step(None)
+            result = machine.step(None)
+            verdicts.append(str(result.invariants["verdict"]))
     else:
         bias_before = [layer.moe.gate.expert_bias.data.clone()
                        for layer in oracle.model.model.layers]
         with oracle.steer(preset) as info:
             h_probe = oracle.entropy_scalar(PROBE)
             for _ in range(STEPS):
-                machine.step(None)
+                result = machine.step(None)
+                verdicts.append(str(result.invariants["verdict"]))
             info_experts = list(info["experts"])
         bias_after = [layer.moe.gate.expert_bias.data
                       for layer in oracle.model.model.layers]
@@ -74,6 +122,8 @@ def run_lane(mode: str, preset: str | None, oracle: ArgonOracle) -> Dict[str, An
     return {"mode": mode, "preset": preset or "(standard)",
             "digest": machine.digest(), "gaps": gaps, "finite": finite,
             "expansions": list(machine.expansions),
+            "verdicts": verdicts, "halt_verdicts": int(sum(1 for v in verdicts
+                                                           if v in ("LOOP", "COLLAPSE", "EXPLOSION"))),
             "basis_len": len(machine.turing.basis),
             "h_probe": h_probe, "restored": bool(restored),
             "top2_gap_delta": round(float(gaps[0] - gaps[-1]), 6)}
@@ -98,6 +148,9 @@ def main() -> int:
     lanes["L4"] = run_lane("oracle", None, oracle)
     lanes["L5"] = run_lane("oracle", "combined", oracle)
     lanes["L6"] = run_lane("oracle", "goedel", oracle)
+    lanes["L7"] = run_lane("oracle", None, oracle, params=TAUT_POOL, force_ast=TAUTAST)
+    lanes["L8"] = run_lane("oracle", "goedel", oracle, params=TAUT_POOL, force_ast=TAUTAST)
+    lanes["L9"] = run_lane("oracle", None, oracle, params=TAUT_POOL, force_ast=TAUTAST)
 
     print("=" * 88)
     print("COMPOSITE: ORACLE- VS. IN-LOOP-TRAJEKTORIEN UNTER PRESET-STEERING")
@@ -107,8 +160,11 @@ def main() -> int:
         print(f"{name} mode={lane['mode']:7s} preset={lane['preset']:10s} "
               f"digest={lane['digest'][:12]} h_probe={lane['h_probe']:.4f} "
               f"restored={lane['restored']} expansions={lane['expansions']} "
-              f"basis={lane['basis_len']} gapΔ0→end={lane['top2_gap_delta']:+.4f}")
+              f"halt={lane['halt_verdicts']} basis={lane['basis_len']} "
+              f"gapΔ0→end={lane['top2_gap_delta']:+.4f}")
         print(f"    gaps: {gaps_str}")
+        if lane["halt_verdicts"]:
+            print(f"    verdicts: {lane['verdicts']}")
 
     findings: List[Tuple[str, str]] = []
     det = lanes["L1"]["digest"] == lanes["L2"]["digest"]
@@ -124,6 +180,17 @@ def main() -> int:
     traj_shift = (lanes["L5"]["gaps"] != lanes["L3"]["gaps"]
                   and lanes["L6"]["gaps"] != lanes["L3"]["gaps"])
     findings.append(("steer_traj_shift", "PASS" if traj_shift else "FAIL"))
+    det_t = lanes["L7"]["digest"] == lanes["L9"]["digest"]
+    findings.append(("det_tautology", "PASS" if det_t else "FAIL"))
+    loop_ok = ("LOOP" in lanes["L7"]["verdicts"]
+               and len(lanes["L7"]["expansions"]) > 0)
+    findings.append(("loop_tautology", "PASS" if loop_ok else "FAIL"))
+    grew = lanes["L7"]["basis_len"] > 3
+    findings.append(("basis_expanded", "PASS" if grew else "FAIL"))
+    finite_t = all(lanes[name]["finite"] for name in ("L7", "L8", "L9"))
+    findings.append(("tautology_finite", "PASS" if finite_t else "FAIL"))
+    traj_t = lanes["L8"]["gaps"] != lanes["L7"]["gaps"]
+    findings.append(("tautology_steer_shift", "PASS" if traj_t else "FAIL"))
     clean = all(l["restored"] for l in lanes.values())
     findings.append(("bias_restored", "PASS" if clean else "FAIL"))
 

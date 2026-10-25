@@ -4,18 +4,33 @@
 ========================================================================================
 COMPOSITE: ORACLE- VS. IN-LOOP-TRAJEKTORIEN UNTER PRESET-STEERING
 ========================================================================================
-L1 mode=in_loop preset=(standard) digest=d63f6d6cec55 h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-1.1795
-    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 8.02 1.86
-L2 mode=in_loop preset=(standard) digest=d63f6d6cec55 h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-1.1795
-    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 8.02 1.86
-L3 mode=oracle  preset=(standard) digest=2565609bc3dc h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-0.1192
-    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.81 0.73
-L4 mode=oracle  preset=(standard) digest=2565609bc3dc h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-0.1192
-    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.81 0.73
-L5 mode=oracle  preset=combined   digest=0d1479f2f804 h_probe=1.7441 restored=True expansions=[] basis=3 gapΔ0→end=-0.1209
-    gaps: 0.48 0.59 0.55 0.66 0.64 0.67 0.67 0.59 0.66 0.37 0.49 0.47 0.65 0.66 0.67 0.60
-L6 mode=oracle  preset=goedel     digest=b4cd8edcf5da h_probe=1.7420 restored=True expansions=[] basis=3 gapΔ0→end=-0.1217
-    gaps: 0.48 0.59 0.56 0.65 0.64 0.67 0.67 0.60 0.66 0.37 0.49 0.47 0.64 0.66 0.67 0.60
+L1 mode=in_loop preset=(standard) digest=5cb5d245e5a7 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-1.4541
+    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 1.45 2.13
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L2 mode=in_loop preset=(standard) digest=5cb5d245e5a7 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-1.4541
+    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 1.45 2.13
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L3 mode=oracle  preset=(standard) digest=11e246eddf07 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0375
+    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.77 0.65
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L4 mode=oracle  preset=(standard) digest=11e246eddf07 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0375
+    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.77 0.65
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L5 mode=oracle  preset=combined   digest=eda6fc23ed71 h_probe=1.7441 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0420
+    gaps: 0.48 0.59 0.55 0.66 0.64 0.67 0.67 0.59 0.66 0.37 0.49 0.47 0.65 0.66 0.63 0.52
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L6 mode=oracle  preset=goedel     digest=063d92c0f354 h_probe=1.7420 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0411
+    gaps: 0.48 0.59 0.56 0.65 0.64 0.67 0.67 0.60 0.66 0.37 0.49 0.47 0.64 0.66 0.63 0.52
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L7 mode=oracle  preset=(standard) digest=9c5bf80babaa h_probe=1.7432 restored=True expansions=['step1:LOOP'] halt=3 basis=5 gapΔ0→end=-0.1688
+    gaps: 0.61 0.81 0.72 0.78 0.83 0.58 0.72 0.71 0.57 0.74 0.77 0.80 0.64 0.59 0.60 0.78
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+L8 mode=oracle  preset=goedel     digest=1f7cbc913e7c h_probe=1.7420 restored=True expansions=['step1:LOOP'] halt=3 basis=5 gapΔ0→end=-0.1673
+    gaps: 0.48 0.67 0.61 0.65 0.71 0.47 0.60 0.56 0.46 0.62 0.64 0.67 0.51 0.45 0.46 0.65
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+L9 mode=oracle  preset=(standard) digest=9c5bf80babaa h_probe=1.7432 restored=True expansions=['step1:LOOP'] halt=3 basis=5 gapΔ0→end=-0.1688
+    gaps: 0.61 0.81 0.72 0.78 0.83 0.58 0.72 0.71 0.57 0.74 0.77 0.80 0.64 0.59 0.60 0.78
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
 ----------------------------------------------------------------------------------------
 BEFUNDE
   det_in_loop          PASS
@@ -23,6 +38,11 @@ BEFUNDE
   finite_gaps          PASS
   entropy_bias_free    PASS
   steer_traj_shift     PASS
+  det_tautology        PASS
+  loop_tautology       PASS
+  basis_expanded       PASS
+  tautology_finite     PASS
+  tautology_steer_shift PASS
   bias_restored        PASS
 [Save] scratches/composite_oracle_experiment.json
 GRÜN — alle Experiment-Befunde bestanden.

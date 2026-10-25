@@ -66,12 +66,25 @@ class CompositeMachine(BaseMachine):
         „Die Regel wird Programm": Präfix-Walk über den AST; jeder Knoten ist
         ein Zustand, ein Leseschritt ohne Bewegung; das Ende halt. Ein Blatt
         ('x'/Konstante) ohne Knoten hält sofort. Blank = ``▁``.
+
+        Ausnahme — die Identitäts-Tautologie: ``('identity', 'x')`` wird nicht
+        als Kettenglied übersetzt, sondern als Selbst-Transition
+        ``("n_i", BLANK) -> (BLANK, "N", "n_i")``: die tautologische Regel
+        zeigt als Programm auf sich selbst und terminiert nicht — Turing
+        erkennt das LOOP-Verdikt über die Lauf-Signatur, die Komposition
+        expandiert die Basis (uni_256:113). Alle anderen ASTs behalten die
+        HALT-Garantie des Präfix-Walks.
         """
         nodes: List[str] = []
+        tautologies: set = set()
 
         def walk(node: Any) -> None:
             if isinstance(node, tuple):
+                index = len(nodes)
                 nodes.append(str(node[0]))
+                if len(node) == 2 and node[0] == "identity" and node[1] == "x":
+                    tautologies.add(index)   # Tautologie: der Zustand zeigt auf sich
+                    return                    # das 'x'-Blatt wird konsumiert
                 if len(node) == 3:
                     walk(node[1])
                     walk(node[2])
@@ -83,8 +96,11 @@ class CompositeMachine(BaseMachine):
         if not nodes:
             transitions[("n0", BLANK)] = (BLANK, "N", "halt")
         for idx, op in enumerate(nodes):
-            next_state = f"n{idx + 1}" if idx + 1 < len(nodes) else "halt"
-            transitions[(f"n{idx}", BLANK)] = (BLANK, "N", next_state)
+            if idx in tautologies:
+                transitions[(f"n{idx}", BLANK)] = (BLANK, "N", f"n{idx}")
+            else:
+                next_state = f"n{idx + 1}" if idx + 1 < len(nodes) else "halt"
+                transitions[(f"n{idx}", BLANK)] = (BLANK, "N", next_state)
         return TransitionTable(transitions, blank=BLANK)
 
     # -- Protokoll ------------------------------------------------------------
