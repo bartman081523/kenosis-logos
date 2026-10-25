@@ -1,6 +1,8 @@
 == SP11 — Der Ursprung der Paradigmen ==
 Canon: composite.py:132-140/:167-182, goedel_machine.py:229-239,
        turing_machine.py:144-157 (loop_detector-Reset), GAP_EPS 1e-6
+P4: turing_machine.py:197/:234/:250/:293 (Akkumulationsgesetz),
+       machine_base.py:54/:531, wittgenstein_machine.py:413-414
 
 BEFUNDE:
   sp11_l0_anchor             PASS
@@ -11,6 +13,8 @@ BEFUNDE:
   sp11_t3b_turing_echo       FAIL
   sp11_t3c_goedel_vergleich  PASS
   sp11_t4_forced             PASS
+  sp11_t3_accumulation_law_p4 PASS
+  sp11_t3_dedrifted_echo_p4  PASS
 
 NOTIZEN:
   - sp11_l0_anchor: Feldvergleich kripke+quus inkl. committeter Signal-Kolumnen (paradigm_ratio = Goedel, paradigm_detected = Composite)
@@ -21,7 +25,13 @@ NOTIZEN:
   - sp11_t3b_turing_echo: Fehler: ['seed13: Überlebende [12, 13, 14, 16, 17, 18, 19, 20, 21]', 'zw_twin: Überlebende [11, 12, 13, 14, 17, 18, 19]', 'zw_forced: Überlebende [11, 12, 13, 14]']
   - sp11_t3c_goedel_vergleich: Detection-Mengen in 6 Gegenproben unverändert
   - sp11_t4_forced: induzierte Paradigmas [20]; in Band [14, 22]: [20]
+  - sp11_t3_accumulation_law_p4: t_n == |C(n-1) - s_n|/(1+s_n+1e-6) in allen 10 Läufen; max Residuum 0.0; Kontostand == kumulierte Summe in jedem Schritt (turing_machine.py:234/:197/:293)
+  - sp11_t3_dedrifted_echo_p4: dedrifted Detect-Menge == leer in den expansion-freien Läufen ['seed12', 'seed14', 'seed15', 'seed16'] (Gleitfenster-Präzedenz wittgenstein_machine.py:413-414); Rest-Läufe als Daten
 
-BILANZ: 6 PASS; 2 FEHLGESCHLAGEN (unverwartet); 0 dokumentierte Errata; 0 OFFEN
+ERRATA (P4-Klassifikation):
+  - sp11_t3a_expansionfrei: E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien Zustandsfaktor an. Sie ist die Akkumulations-Währung t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer Kontostand, turing_machine.py:234/:197/:250; GAP_EPS machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen (Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4.
+  - sp11_t3b_turing_echo: E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 (Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414).
+
+BILANZ: 8 PASS; 0 FEHLGESCHLAGEN (unverwartet); 2 dokumentierte Errata; 0 OFFEN
 JSON: scratches/paradigm_ursprung_experiment.json
-FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
+GRUEN — Loesungskette geschlossen (OFFEN: keine).

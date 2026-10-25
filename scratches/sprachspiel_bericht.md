@@ -836,3 +836,72 @@ entfernt — reine Dublette des vollständig vorhandenen
 SP10-Append hatte das Fragment als Rest-Zeile hinterlassen.
 
 Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §15.
+
+### 13.1 P4-Runde — das Akkumulationsgesetz (2026-10-26, Vorschlag A)
+
+Das externe Audit fand die Erzeugungsformel, die die T3a/T3b-Falsifikationen
+erklärt; die Runde schließt damit als P4-Einstufung (Mandat „A vor C" am
+2026-10-25/26; Plan-Änderungsnotiz 2026-10-26; alle Bänder fixiert VOR dem
+Rerun — P2 innerhalb der P4-Runde; Skript-Extension mit P4-REGISTER im
+Docstring). Canon-Verifikation vor dem Rerun: `turing_machine.py:197` (Inkrement
+ist das EINZIGE im Code), `:234` (kumulative Prediction im Nicht-Orakel-Zweig),
+`:250` (Gap mit dem Einzelschritt als Ist), `machine_base.py:54/:531`
+(apply_gap/note_gap mit GAP_EPS 1e-6), `:293` (Kontostand exponiert);
+Composite reicht das Oracle an alle drei Submaschinen durch
+(composite.py:45-48) — in SP11 ist es None, also steht die Turing-Submaschine
+sicher im kumulativen Zweig. Die Rolling-Präzedenz liegt — anders als das
+Prereg-Zitat es ansetzte — nicht an :408-409, sondern an
+`wittgenstein_machine.py:413-414` (np.mean(history[-10:]) im
+Nicht-Orakel-Zweig; Mechanik identisch).
+
+**Das Gesetz:** die Turing-Sub-Gap-Serie ist die Akkumulations-Währung
+
+```
+t_n = |C_{n-1} - s_n| / (1 + s_n + 1e-6),    C_{n-1} = sum_{k<n} s_k
+```
+
+die Prediction liest den kumulierten Verlaufs-Kontostand (Lebenszeit der
+Maschine), das Ist zählt nur den Einzelschritt — eine Einheiten-Inkom-
+mensurabilität. Das Konto schlägt bei jedem Leerlauf-Blatt (s_n = 0, z. B.
+„x"-/„1.00"-Regeln) ungedämpft auf: seed12 28.0/31.0/33.0/39.0 an den
+Schritten 14/17/19/23. Hand-Verifikation an der committeten seed12-Serie
+(2026-10-25) über alle 24 Schritte — die s-Serie [0, 5, 0, 1, 2, 0, 2, 2, 5,
+3, 2, 3, 3, 0, 1, 2, 0, 2, 0, 2, 2, 2, 0, 1] reproduziert die ganze t-Serie
+mit max Restgröße 0.0.
+
+**ERRATA E1 (2 Einträge):** `sp11_t3a_expansionfrei` und
+`sp11_t3b_turing_echo` — die Ein-Faktor-Echo-Annahme (Turing-Gap als frei
+wählbarer Faktor; Freeze auf das Vor-Expansions-Mittel) ist widerlegt. Die
+Ursprungs-Zeilen bleiben FAIL im Register (P4: Einstufung statt Re-Decide);
+die korrigierten Lesungen stehen als `_p4`-Verdicte.
+
+**Verdikt-Rerun — 10 Verdicte, exit 0 (8 PASS + 2 klassifizierte Errata,
+0 unverwartete FAIL):**
+
+| Verdict | Einstufung | Zahlenlage |
+| :--- | :--- | :--- |
+| sp11_t3a_expansionfrei | **FAIL** | unverändert — jetzt ERRATA E1 (Akkumulations-Echos der Leerlauf-Blätter, kein Echo der Expansion) |
+| sp11_t3b_turing_echo | **FAIL** | unverändert — jetzt ERRATA E1 (Misch-Serie der Währung; die Überlebenden seed13 [12-21], zw_twin, zw_forced 11-14 folgen der Mischung) |
+| sp11_t3_accumulation_law_p4 | **PASS** | t̂-Rekonstruktion aus der transitions-Spalte: **max Residuum 0.0** (Band 1e-12) über ALLE Läufe und Schritte; zweiter Strang: je-Zeiler-Kontostand (:293) == kumulierte Summe in jedem Schritt. Prereg-Umfang „9 Läufe", verwirklicht über ALLE 10 (l0 × 2, Sweep × 6, Zwangs-Paar) — mehr Umfang, kein Band-Wechsel; auch die §13-Kopfzeile „9 Läufe" liest sich als „10" |
+| sp11_t3_dedrifted_echo_p4 | **PASS** | gleitende Prediction ū_{n-1} = mean(s_{max(1,n-10)..n-1}) statt der kumulierten Summe: Detect-Menge == ∅ in den expansion-freien Läufen {seed12, seed14, seed15, seed16} — Band eingehalten |
+
+**Der erweiterte Kern (Daten über die Prereg-Bands hinaus):** nach der
+Dedrift-Serie ist die Detect-Menge in ALLEN 10 Läufen leer — nicht nur in den
+vier expansion-freien. Auch die Zwangs-Paar-Detectionen (zw_twin 17-19,
+zw_forced 17-20 inkl. des vom T4 induzierten 20) und die l0-Detectionen
+(11/12/15) sind Akkumulations-Echos der jeweiligen Transitionen-Serie, nicht
+Verdikt-Signale per se. Die Doppel-Herkunft von §13 (expansions-getragen vs.
+drift-getragen) reduziert sich damit auf EINE Quelle in zwei Formen: die
+Währung als Kontostand-Serie gegen die Gleitfenster-Serie — die Basis-
+Expansion wirkt, indem sie die Transitionen-Serie umwälzt (LOOP-Schleifen →
+Kontostand-Peak), nicht als Separatsignal. T1/T2 bleiben stich: Urheber
+weiterhin das Composite-Signal, Formel exakt.
+
+**Artefakte:** `paradigm_ursprung_experiment.log/.json` REGENERIERT (P4-
+Payload: transitions/t_count je Lauf, accumulation max_resid/c_series,
+dedrift-Serien + Flags + Detections, ERRATA-Texte, expansion_freie_laeufe);
+log 37 Zeilen (ERRATA-Klassifikation gedruckt), json 4203 Zeilen. Run
+(2. Runde): `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python
+-u -m scratches.smoke_paradigm_ursprung` → exit 0.
+
+Laufschrift-Protokoll (P4): `laufprotokolle_befund_report.md` §15.1.

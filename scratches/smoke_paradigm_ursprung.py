@@ -101,7 +101,7 @@ Ursprungs-Zeilen bleiben FAIL im Register):
   sp11_t3c_goedel_vergleich — GOEDEL-gefrorene Counterfaktur: Detect-Menge
                           unverändert. Falsifikator: jede Änderung.
   sp11_t4_forced        — Zwangs-Lauf (seed 21, Zwang {13}, 24 Schritte):
-                          mindestens ein Paradicm in [14, 22], das im
+                          mindestens ein Paradigma in [14, 22], das im
                           unverzwungenen Zwilling fehlt. Falsifikator: keine
                           induzierte Detection.
 
@@ -110,8 +110,37 @@ Run:  /run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
 JSON: scratches/paradigm_ursprung_experiment.json
 CPU-only, keine Maschinen-Code-Änderung; Determinismus über Doppel-Läufe.
 
-P4-REGISTER (wird nach dem Erstrun eingetragen):
-  (leer)
+P4-REGISTER (Erstrun 2026-10-25: 6 PASS + 2 FAIL, 0 Errata, exit 1; P4-Runde
+2026-10-26 — Vorschlag A "Akkumulationsgesetz" des externen Audits):
+  Kern: die Turing-Sub-Gap-Serie ist keine freie Zustandsgröße, sondern die
+  Akkumulations-Währung (prediction = float(self._transition_count) ist der
+  KUMULATIVE Verlaustransitionen-Kontostand, turing_machine.py:234; das Ist
+  ist der Einzelschritt s_n, :239; Inkrement einzig in :197):
+      t_n = |C_{n-1} - s_n| / (1 + s_n + 1e-6),   C_{n-1} = sum_{k<n} s_k
+  (Gap = apply_gap mit GAP_EPS 1e-6, machine_base.py:54/:531; Kontostand
+  exponiert in state() :293). Leerlauf-Blätter (s_n = 0, z. B.
+  "x"/"1.00"-Regeln) schlagen das Konto C_{n-1} ungedämpft auf (seed12:
+  28.0/31.0/33.0/39.0 an den Schritten 14/17/19/23); Hand-Verifikation an
+  der committeten seed12-Serie 2026-10-25 über alle 24 Schritte bestätigt.
+  ERRATA E1 (P4-Klassifikation; Ursprungs-Zeilen bleiben FAIL im Register):
+    sp11_t3a_expansionfrei + sp11_t3b_turing_echo — die Ein-Faktor-Echo-
+    Annahme (Turing-Gap als frei gefrorener Faktor) ist widerlegt.
+  sp11_t3_accumulation_law_p4 — t̂-Serie rekonstruiert aus der
+    transitions-Spalte; ZWEI Stränge: (a) max |t_n - t̂_n| <= 1e-12
+    (RATIO_TOL) über alle Läufe und Schritte (Prereg-Schätzung 9 Läufe,
+    verwirklicht über ALLE 10: l0 × 2, Sweep × 6, Zwangs-Paar — mehr
+    Umfang, kein Band-Wechsel); (b) je-Zeiler-Kontostand
+    (turing_machine.py:293) == kumulierte Summe der transitions je Schritt.
+    Falsifikator: Restgröße > 1e-12 oder Kontostand-Differenz.
+  sp11_t3_dedrifted_echo_p4 — gleitende Prediction ῡ_{n-1} =
+    mean(s_{max(1, n-10) .. n-1}) (Präzedenz: wittgenstein_machine.py:413-414,
+    np.mean(history[-10:]) im Nicht-Orakel-Zweig) statt der kumulierten
+    Summe; dedrifted Composite-Serie cf_d = (w + t_dedrift + g)/3;
+    Band: Detect-Menge == leer in den expansion-freien Läufen (Erstrun-
+    Grundmenge: seed12/seed14/seed15/seed16). Falsifikator: überlebende
+    Detection dort. Rest-Läufe (l0/seed11/seed13/zw_twin/zw_forced) als
+    Daten (isolieren den reinen Verdikt-Anteil).
+  Die Bands sind fixiert VOR dem Rerun (P2 innerhalb der P4-Runde).
 """
 
 from __future__ import annotations
@@ -149,7 +178,28 @@ RATIO_TOL = 1e-12
 
 FINDINGS: List[Tuple[str, str]] = []
 NOTES: List[str] = []
-ERRATA: Dict[str, str] = {}
+# P4-Klassifikation (2026-10-26, Vorschlag A): die Ursprungs-Vorhersagen
+# T3a/T3b nahmen die Turing-Sub-Gap-Serie als FREIEN Faktor an — widerlegt
+# durch das Akkumulationsgesetz (Docstring P4-REGISTER). Ursprungs-Zeilen
+# bleiben FAIL (P4: Einstufung statt Re-Decide); korrigierte Lesung als
+# _p4-Verdicte mit VOR dem Rerun fixierten Bands.
+ERRATA: Dict[str, str] = {
+    "sp11_t3a_expansionfrei":
+        "E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien "
+        "Zustandsfaktor an. Sie ist die Akkumulations-Währung "
+        "t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer "
+        "Kontostand, turing_machine.py:234/:197/:250; GAP_EPS "
+        "machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen "
+        "C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen "
+        "(Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte "
+        "Lesung: sp11_t3_dedrifted_echo_p4.",
+    "sp11_t3b_turing_echo":
+        "E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der "
+        "Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern "
+        "eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen "
+        "dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 "
+        "(Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414).",
+}
 
 
 def mark(name: str, state: str, note: str = "") -> None:
@@ -238,6 +288,7 @@ def run_composite(machine: CompositeMachine, harness: Dict[str, Any],
             "rule_name": inv["rule_name"],
             "verdict": inv["verdict"],
             "transitions": int(inv["transitions"]),
+            "t_count": int(machine.turing.state()["transition_count"]),
             "gap": float(st.gap),
             "w_gap": float(inv["submachines"]["wittgenstein"]["gap"]),
             "t_gap": float(inv["submachines"]["turing"]["gap"]),
@@ -319,6 +370,52 @@ def t2_check(run: Dict[str, Any]) -> Tuple[bool, str]:
                            f"{ratio!r} != {row['c_ratio']!r}")
     # Detect-Menge-Ableitung aus den expansions-Einträgen (Konsistenz):
     return True, "ok"
+
+
+# ---------------------------------------------------------------------------
+# P4-Runde — Akkumulationsgesetz + Dedrift (Vorschlag A); Bands fixiert
+# vor dem Rerun. Canon: turing_machine.py:234/:197/:250/:293,
+# machine_base.py:54/:531, wittgenstein_machine.py:413-414.
+# ---------------------------------------------------------------------------
+
+def accumulation_check(run: Dict[str, Any]) -> Dict[str, Any]:
+    """P4-Vorschlag A: t̂_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) gegen die
+    aufgezeichnete Turing-Gap-Serie; C_{n-1} = kumulierte transitions-Summe;
+    zweiter Strang: je-Zeiler-Kontostand (state()["transition_count"], :293)
+    == kumulierte Summe der transitions je Schritt."""
+    s = [r["transitions"] for r in run["rows"]]
+    residues: List[float] = []
+    c_prior = 0
+    for n, s_n in enumerate(s, 1):
+        t_hat = abs(c_prior - s_n) / (1.0 + abs(s_n) + GAP_EPS)
+        residues.append(abs(t_hat - run["t_series"][n - 1]))
+        c_prior += s_n
+    counts = [r["t_count"] for r in run["rows"]]
+    count_ok = all(c == sum(s[:i]) for i, c in enumerate(counts, 1))
+    return {"max_resid": max(residues) if residues else 0.0,
+            "residues": residues, "count_ok": count_ok,
+            "c_series": [sum(s[:i]) for i in range(len(s))]}
+
+
+def dedrift(run: Dict[str, Any]) -> Dict[str, Any]:
+    """P4-Vorschlag A: gleitende Prediction statt kumulierter Summe —
+    ῡ_{n-1} = mean(s_{max(1, n-10) .. n-1}) (Präzedenz
+    wittgenstein_machine.py:413-414, np.mean(history[-10:]) im
+    Nicht-Orakel-Zweig; leeres Verlauf → 0.0); dedrifted Composite-Serie
+    cf_d = (w + t_dedrift + g)/3, Detect-Menge aus cf_d (Offset 0)."""
+    s = [r["transitions"] for r in run["rows"]]
+    t_dedrift: List[float] = []
+    for n, s_n in enumerate(s, 1):
+        history = s[max(0, n - 10):n - 1]
+        u = float(np.mean(history)) if history else 0.0
+        t_dedrift.append(abs(u - float(s_n)) / (1.0 + abs(s_n) + GAP_EPS))
+    cf_d = [(w + t + g) / 3.0 for w, t, g in
+            zip(run["w_series"], t_dedrift, run["g_series"])]
+    flags = replicate_flags(cf_d, offset=0)
+    return {"t_dedrift_series": t_dedrift, "cf_d_series": cf_d,
+            "dedrift_flags": [det for _, det in flags],
+            "dedrift_detections": [n for n, (_, det) in enumerate(flags, 1)
+                                   if det]}
 
 
 # ---------------------------------------------------------------------------
@@ -447,6 +544,8 @@ def main() -> int:
     print("== SP11 — Der Ursprung der Paradigmen ==")
     print("Canon: composite.py:132-140/:167-182, goedel_machine.py:229-239,")
     print("       turing_machine.py:144-157 (loop_detector-Reset), GAP_EPS 1e-6")
+    print("P4: turing_machine.py:197/:234/:250/:293 (Akkumulationsgesetz),")
+    print("       machine_base.py:54/:531, wittgenstein_machine.py:413-414")
     print()
 
     l0 = lane_l0_anker()
@@ -522,6 +621,39 @@ def main() -> int:
     mark("sp11_t4_forced", "PASS" if in_band else "FAIL",
          f"induzierte Paradigmas {induced}; in Band [14, 22]: {in_band}")
 
+    # P4-Runde (Vorschlag A): Akkumulationsgesetz + Dedrift — Bands fixiert
+    # vor dem Rerun; die Ursprungs-Verdikte t3a/t3b bleiben FAIL (ERRATA).
+    free_names = [n for n, run in all_runs.items()
+                  if not run["verdict_exp_steps"]]
+    acc: Dict[str, Dict[str, Any]] = {}
+    acc_fails: List[str] = []
+    for name, run in all_runs.items():
+        a = accumulation_check(run)
+        acc[name] = {"max_resid": a["max_resid"], "count_ok": a["count_ok"],
+                     "c_series": a["c_series"]}
+        if not a["count_ok"] or a["max_resid"] > RATIO_TOL:
+            acc_fails.append(f"{name}: count_ok={a['count_ok']}, "
+                             f"max_resid={a['max_resid']:.3e}")
+    acc_max = max((v["max_resid"] for v in acc.values()), default=0.0)
+    mark("sp11_t3_accumulation_law_p4", "PASS" if not acc_fails else "FAIL",
+         f"Strang-Verletzung: {acc_fails}" if acc_fails else
+         (f"t_n == |C(n-1) - s_n|/(1+s_n+1e-6) in allen {len(all_runs)} "
+          f"Läufen; max Residuum {acc_max!r}; Kontostand == kumulierte "
+          "Summe in jedem Schritt (turing_machine.py:234/:197/:293)"))
+
+    dd: Dict[str, Dict[str, Any]] = {}
+    drift_fails: List[str] = []
+    for name, run in all_runs.items():
+        d = dedrift(run)
+        dd[name] = d
+        if name in free_names and d["dedrift_detections"]:
+            drift_fails.append(f"{name}: überlebende {d['dedrift_detections']}")
+    mark("sp11_t3_dedrifted_echo_p4", "PASS" if not drift_fails else "FAIL",
+         f"überlebende Dedrift-Detections: {drift_fails}" if drift_fails else
+         ("dedrifted Detect-Menge == leer in den expansion-freien Läufen "
+          f"{free_names} (Gleitfenster-Präzedenz "
+          "wittgenstein_machine.py:413-414); Rest-Läufe als Daten"))
+
     # Befunde
     print("BEFUNDE:")
     for name, state in FINDINGS:
@@ -531,6 +663,12 @@ def main() -> int:
         print("NOTIZEN:")
         for n in NOTES:
             print(f"  - {n}")
+        print()
+
+    if ERRATA:
+        print("ERRATA (P4-Klassifikation):")
+        for name, text in ERRATA.items():
+            print(f"  - {name}: {text}")
         print()
 
     failed = [n for n, s in FINDINGS if s == "FAIL" and n not in ERRATA]
@@ -544,10 +682,18 @@ def main() -> int:
         "l0": {"kripke": {"checks": l0["kripke"]["checks"],
                           "expansions": l0["kripke"]["run"]["expansions"],
                           "para_steps": l0["kripke"]["run"]["para_steps"],
+                          "transitions": [r["transitions"] for r in
+                                          l0["kripke"]["run"]["rows"]],
+                          "t_count": [r["t_count"] for r in
+                                      l0["kripke"]["run"]["rows"]],
                           "final_basis": l0["kripke"]["run"]["final_basis"]},
                "quus": {"checks": l0["quus"]["checks"],
                         "expansions": l0["quus"]["run"]["expansions"],
                         "para_steps": l0["quus"]["run"]["para_steps"],
+                        "transitions": [r["transitions"] for r in
+                                        l0["quus"]["run"]["rows"]],
+                        "t_count": [r["t_count"] for r in
+                                    l0["quus"]["run"]["rows"]],
                         "final_basis": l0["quus"]["run"]["final_basis"]},
                "kripke_attribution": l0["kripke_attribution"],
                "fields_ok": l0["fields_ok"],
@@ -560,6 +706,8 @@ def main() -> int:
             "gap_series": run["gap_series"],
             "w_series": run["w_series"], "t_series": run["t_series"],
             "g_series": run["g_series"],
+            "transitions": [r["transitions"] for r in run["rows"]],
+            "t_count": [r["t_count"] for r in run["rows"]],
             "c_ratio": [r["c_ratio"] for r in run["rows"]],
             "g_ratio": [r["g_ratio"] for r in run["rows"]],
             "c_detected": [r["c_detected"] for r in run["rows"]],
@@ -571,11 +719,24 @@ def main() -> int:
             "expansions": run["expansions"],
             "para_steps": run["para_steps"],
             "gap_series": run["gap_series"],
+            "w_series": run["w_series"], "g_series": run["g_series"],
             "t_series": run["t_series"],
+            "transitions": [r["transitions"] for r in run["rows"]],
+            "t_count": [r["t_count"] for r in run["rows"]],
             "c_detected": [r["c_detected"] for r in run["rows"]],
         } for name, run in
             (("zw_twin", zwang["zw_twin"]), ("zw_forced", zwang["zw_forced"]))},
         "counterfactuals": cfs,
+        "p4": {
+            "errata": ERRATA,
+            "accumulation": acc,
+            "dedrift": {name: {"t_dedrift_series": d["t_dedrift_series"],
+                               "cf_d_series": d["cf_d_series"],
+                               "dedrift_flags": d["dedrift_flags"],
+                               "dedrift_detections": d["dedrift_detections"]}
+                        for name, d in dd.items()},
+            "expansion_freie_laeufe": free_names,
+        },
         "findings": [{"name": n, "state": s} for n, s in FINDINGS],
         "notes": NOTES,
         "errata": ERRATA,

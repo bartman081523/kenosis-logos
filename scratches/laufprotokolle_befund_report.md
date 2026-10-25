@@ -580,3 +580,35 @@ dokumentiert.
 Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
 scratches.smoke_paradigm_ursprung` → `paradigm_ursprung_experiment.log/.json`.
 Hermeneutische Vollfassung: `sprachspiel_bericht.md` §13.
+
+### 15.1 P4-Runde — das Akkumulationsgesetz (2026-10-26, laufschrift)
+
+Rerun nach der Skript-Extension: ERRATA E1 für t3a/t3b (Ein-Faktor-Echo-Annahme
+widerlegt durch das Akkumulationsgesetz) + zwei `_p4`-Verdicte (Bänder fixiert
+VOR dem Rerun); Canon-Verifikation `turing_machine.py:197/:234/:250/:293`,
+`machine_base.py:54/:531`, `wittgenstein_machine.py:413-414`; Plan-
+Änderungsnotiz 2026-10-26.
+
+| Verdict | Einstufung |
+| :--- | :--- |
+| sp11_t3a_expansionfrei | **FAIL** (unverändert; ERRATA E1 — Akkumulations-Echos der Leerlauf-Blätter, kein Echo der Expansion) |
+| sp11_t3b_turing_echo | **FAIL** (unverändert; ERRATA E1 — Misch-Serie der Währung) |
+| sp11_t3_accumulation_law_p4 | **PASS** — max Residuum 0.0 (Band 1e-12) in allen 10 Läufen und Schritten; Kontostand (:293) == Kumsum in jedem Schritt |
+| sp11_t3_dedrifted_echo_p4 | **PASS** — Detect-Menge ∅ in den 4 expansion-freien Läufen {seed12, seed14, seed15, seed16}; Daten: ∅ in ALLEN 10 Läufen |
+
+**Das Gesetz:** `t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6)`, `C_{n-1} = Σ_{k<n} s_k`
+— der Kontostand (kumulierte Verlaustransitionen, `turing_machine.py:234`) liest
+als Prediction gegen das Einzelschritt-Ist (`:250`); Leerlauf-Blätter (s_n = 0)
+machen ungedämpfte Kontostand-Peaks (seed12: 28.0/31.0/33.0/39.0). Die
+Gleitfenster-Form (ū = mean(s[-10:]), Präzedenz :413-414) killt jede Detection —
+auch in den Expansion-tragenden Läufen: die Doppel-Herkunft von §13 ist eine
+Quelle in zwei Formen.
+
+**BILANZ des Reruns:** 8 PASS + 2 klassifizierte Errata; 0 unverwartete FAIL;
+0 OFFEN — **exit 0** (Bands unverändert; die Ursprungs-Zeilen verbleiben FAIL
+im Register). Log/JSON REGENERIERT (P4-Payload +transitions/t_count,
+acc/dedrift-Serien, ERRATA-Texte).
+
+Run (2. Runde): `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python
+-u -m scratches.smoke_paradigm_ursprung` → exit 0.
+Vollfassung: `sprachspiel_bericht.md` §13.1.
