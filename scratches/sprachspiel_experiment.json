@@ -1,0 +1,1478 @@
+{
+  "sp1": {
+    "rows": [
+      {
+        "seed": 0,
+        "digest_noisy": "5e8d3b9d1b82",
+        "digest_structured": "6a92f5e7e5e9",
+        "validity_noisy": 0.9099999999999999,
+        "validity_structured": 1.0,
+        "sample_names": [
+          "square(0.00)",
+          "((log(0.00) min sqrt(2.00)) max exp((x power x)))",
+          "exp(abs((2.00 multiply x)))"
+        ]
+      },
+      {
+        "seed": 1,
+        "digest_noisy": "bc13fbe35f1d",
+        "digest_structured": "a6520761a7ee",
+        "validity_noisy": 0.9099999999999999,
+        "validity_structured": 1.0,
+        "sample_names": [
+          "(negate((x subtract x)) add ((x add x) multiply sq",
+          "(2.00 subtract (3.14 min (0.00 min x)))",
+          "x"
+        ]
+      },
+      {
+        "seed": 2,
+        "digest_noisy": "c122d7a93d9c",
+        "digest_structured": "b4b6971da9e7",
+        "validity_noisy": 0.8800000000000001,
+        "validity_structured": 1.0,
+        "sample_names": [
+          "x",
+          "((sin(x) multiply (2.00 add x)) min ((x divide 2.7",
+          "(((2.00 power x) add square(x)) multiply (x add id"
+        ]
+      }
+    ],
+    "deterministic": true,
+    "validities_finite": true,
+    "diversity": 1.0,
+    "structure_gain": 0.10000000000000002,
+    "digest_repeat": "5e8d3b9d1b82bc13fbe35f1dc122d7a93d9c"
+  },
+  "sp2": {
+    "rows": {
+      "paired": [
+        {
+          "word": "regel",
+          "gematria": 527,
+          "idx": 23,
+          "k": 12,
+          "kind": "cos",
+          "b": {
+            "word": "rule",
+            "gematria": 440,
+            "idx": 8,
+            "k": 9,
+            "kind": "sin"
+          },
+          "resonance": -0.000263,
+          "same_kind": false
+        },
+        {
+          "word": "sprache",
+          "gematria": 742,
+          "idx": 22,
+          "k": 11,
+          "kind": "cos",
+          "b": {
+            "word": "language",
+            "gematria": 836,
+            "idx": 44,
+            "k": 9,
+            "kind": "inv_add"
+          },
+          "resonance": -0.006237,
+          "same_kind": false
+        },
+        {
+          "word": "spiel",
+          "gematria": 541,
+          "idx": 37,
+          "k": 2,
+          "kind": "inv_add",
+          "b": {
+            "word": "game",
+            "gematria": 410,
+            "idx": 50,
+            "k": 3,
+            "kind": "log"
+          },
+          "resonance": 0.843313,
+          "same_kind": false
+        },
+        {
+          "word": "bedeutung",
+          "gematria": 963,
+          "idx": 27,
+          "k": 4,
+          "kind": "exp",
+          "b": {
+            "word": "meaning",
+            "gematria": 735,
+            "idx": 15,
+            "k": 4,
+            "kind": "cos"
+          },
+          "resonance": -0.011648,
+          "same_kind": false
+        },
+        {
+          "word": "gebrauch",
+          "gematria": 833,
+          "idx": 41,
+          "k": 6,
+          "kind": "inv_add",
+          "b": {
+            "word": "use",
+            "gematria": 333,
+            "idx": 45,
+            "k": 10,
+            "kind": "inv_add"
+          },
+          "resonance": 0.997866,
+          "same_kind": true
+        },
+        {
+          "word": "wort",
+          "gematria": 460,
+          "idx": 28,
+          "k": 5,
+          "kind": "exp",
+          "b": {
+            "word": "word",
+            "gematria": 444,
+            "idx": 12,
+            "k": 1,
+            "kind": "cos"
+          },
+          "resonance": 0.037898,
+          "same_kind": false
+        }
+      ],
+      "identity_str": [
+        {
+          "word": "form",
+          "gematria": 436,
+          "idx": 4,
+          "k": 5,
+          "kind": "sin",
+          "b": {
+            "word": "form",
+            "gematria": 436,
+            "idx": 4,
+            "k": 5,
+            "kind": "sin"
+          },
+          "resonance": 1.0,
+          "same_kind": true
+        },
+        {
+          "word": "regel",
+          "gematria": 527,
+          "idx": 23,
+          "k": 12,
+          "kind": "cos",
+          "b": {
+            "word": "regel",
+            "gematria": 527,
+            "idx": 23,
+            "k": 12,
+            "kind": "cos"
+          },
+          "resonance": 1.0,
+          "same_kind": true
+        },
+        {
+          "word": "spiel",
+          "gematria": 541,
+          "idx": 37,
+          "k": 2,
+          "kind": "inv_add",
+          "b": {
+            "word": "spiel",
+            "gematria": 541,
+            "idx": 37,
+            "k": 2,
+            "kind": "inv_add"
+          },
+          "resonance": 1.0,
+          "same_kind": true
+        }
+      ],
+      "unrelated": [
+        {
+          "word": "regel",
+          "gematria": 527,
+          "idx": 23,
+          "k": 12,
+          "kind": "cos",
+          "b": {
+            "word": "tisch",
+            "gematria": 539,
+            "idx": 35,
+            "k": 12,
+            "kind": "exp"
+          },
+          "resonance": -0.006132,
+          "same_kind": false
+        },
+        {
+          "word": "bedeutung",
+          "gematria": 963,
+          "idx": 27,
+          "k": 4,
+          "kind": "exp",
+          "b": {
+            "word": "kaffee",
+            "gematria": 610,
+            "idx": 34,
+            "k": 11,
+            "kind": "exp"
+          },
+          "resonance": 0.967089,
+          "same_kind": true
+        },
+        {
+          "word": "sprache",
+          "gematria": 742,
+          "idx": 22,
+          "k": 11,
+          "kind": "cos",
+          "b": {
+            "word": "stein",
+            "gematria": 547,
+            "idx": 43,
+            "k": 8,
+            "kind": "inv_add"
+          },
+          "resonance": -0.006789,
+          "same_kind": false
+        },
+        {
+          "word": "wort",
+          "gematria": 460,
+          "idx": 28,
+          "k": 5,
+          "kind": "exp",
+          "b": {
+            "word": "baum",
+            "gematria": 421,
+            "idx": 61,
+            "k": 2,
+            "kind": "square"
+          },
+          "resonance": 0.499426,
+          "same_kind": false
+        }
+      ]
+    },
+    "self_resonance": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "self_ok": true,
+    "finite": true,
+    "means": {
+      "paired": 0.3101548333333333,
+      "identity_str": 1.0,
+      "unrelated": 0.36339849999999996
+    },
+    "same_kind_share_unrelated": 0.25
+  },
+  "sp3": {
+    "device": "cuda",
+    "h_probe": 1.7551528215408325,
+    "arm_generic": {
+      "rows": [
+        {
+          "rule_name": "(x power exp((x add x)))",
+          "actual": 1.0,
+          "op_anchors": "power exp add",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+          "actual": 1.0,
+          "op_anchors": "subtract multiply identity log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "(2.72 divide (2.00 subtract x))",
+          "actual": 1.0,
+          "op_anchors": "divide subtract",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "sqrt(1.00)",
+          "actual": 1.0,
+          "op_anchors": "sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "log(square(identity(x)))",
+          "actual": 1.0,
+          "op_anchors": "log square identity",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "((sqrt(x) divide x) add 2.00)",
+          "actual": 1.0,
+          "op_anchors": "add divide sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "log(1.00)",
+          "actual": 0.99,
+          "op_anchors": "log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.01,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.01
+        },
+        {
+          "rule_name": "(sin(0.00) subtract exp((x power x)))",
+          "actual": 1.0,
+          "op_anchors": "subtract sin exp power",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "x",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        }
+      ],
+      "restored": true,
+      "experts": []
+    },
+    "arm_repeat": {
+      "rows": [
+        {
+          "rule_name": "(x power exp((x add x)))",
+          "actual": 1.0,
+          "op_anchors": "power exp add",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+          "actual": 1.0,
+          "op_anchors": "subtract multiply identity log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "(2.72 divide (2.00 subtract x))",
+          "actual": 1.0,
+          "op_anchors": "divide subtract",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "sqrt(1.00)",
+          "actual": 1.0,
+          "op_anchors": "sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "log(square(identity(x)))",
+          "actual": 1.0,
+          "op_anchors": "log square identity",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "((sqrt(x) divide x) add 2.00)",
+          "actual": 1.0,
+          "op_anchors": "add divide sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "log(1.00)",
+          "actual": 0.99,
+          "op_anchors": "log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.01,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.01
+        },
+        {
+          "rule_name": "(sin(0.00) subtract exp((x power x)))",
+          "actual": 1.0,
+          "op_anchors": "subtract sin exp power",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "x",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        }
+      ],
+      "restored": true,
+      "experts": []
+    },
+    "arm_wittgenstein": {
+      "rows": [
+        {
+          "rule_name": "(x power exp((x add x)))",
+          "actual": 1.0,
+          "op_anchors": "power exp add",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+          "actual": 1.0,
+          "op_anchors": "subtract multiply identity log",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(2.72 divide (2.00 subtract x))",
+          "actual": 1.0,
+          "op_anchors": "divide subtract",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "sqrt(1.00)",
+          "actual": 1.0,
+          "op_anchors": "sqrt",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "log(square(identity(x)))",
+          "actual": 1.0,
+          "op_anchors": "log square identity",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "((sqrt(x) divide x) add 2.00)",
+          "actual": 1.0,
+          "op_anchors": "add divide sqrt",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "log(1.00)",
+          "actual": 0.99,
+          "op_anchors": "log",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.01,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.01,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.01
+        },
+        {
+          "rule_name": "(sin(0.00) subtract exp((x power x)))",
+          "actual": 1.0,
+          "op_anchors": "subtract sin exp power",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "x",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        }
+      ],
+      "restored": true,
+      "experts": [
+        1,
+        3
+      ]
+    },
+    "deterministic": true,
+    "unknowns": {
+      "p_generic": 12,
+      "p_ops": 0,
+      "p_name": 0,
+      "p_generic_steer": 0
+    },
+    "name_echo_count": 5,
+    "ops_shifts": 12,
+    "steer_shift": true,
+    "restored": true,
+    "experts": [
+      1,
+      3
+    ],
+    "mean_gap_generic": null,
+    "mean_gap_ops": 0.0008333333333333334,
+    "mean_gap_name": 0.5258333333333334,
+    "mean_gap_steer": 0.0008333333333333334
+  },
+  "sp4": {
+    "groups": {
+      "sigma_0.1": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 1.0,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 1.0,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 1.0,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 1.0,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 1.0,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 1.0,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 1.0,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 1.0,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 1.0,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": null
+      },
+      "sigma_0.5": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.91,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.91,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.88,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.84,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.89,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.88,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.91,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.91,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.88,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.84,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.89,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.88,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 0.885,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": 0.0448
+      },
+      "sigma_1.5": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.57,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.53,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.4,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.43,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.59,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.43,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.57,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.53,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.4,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.43,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.59,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.43,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 0.4917,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": -0.1912
+      },
+      "sigma_4.0": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.38,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.29,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.21,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.25,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.41,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.16,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.38,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.29,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.21,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.25,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.41,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.16,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 0.2833,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": 0.116
+      }
+    },
+    "total_reads": 24,
+    "raw_unknown_total": 0,
+    "steer_unknown_total": 0,
+    "actual_means": {
+      "sigma_0.1": 1.0,
+      "sigma_0.5": 0.885,
+      "sigma_1.5": 0.4917,
+      "sigma_4.0": 0.2833
+    },
+    "scaled_means": {
+      "sigma_0.1": 0.1046,
+      "sigma_0.5": 0.1046,
+      "sigma_1.5": 0.1046,
+      "sigma_4.0": 0.1046
+    },
+    "scaled_var": 1.8e-05,
+    "noclip_violations": 0,
+    "rho_per_sigma": {
+      "sigma_0.1": null,
+      "sigma_0.5": 0.0448,
+      "sigma_1.5": -0.1912,
+      "sigma_4.0": 0.116
+    },
+    "mean_rho": -0.0101,
+    "any_rho_positive": true,
+    "wired_rows": [
+      {
+        "prediction": 0.05689948134952121,
+        "channel": "predict_scale_0_9",
+        "readable": true
+      },
+      {
+        "prediction": 0.05689948134952121,
+        "channel": "predict_scale_0_9",
+        "readable": true
+      },
+      {
+        "prediction": 0.05689948134952121,
+        "channel": "predict_scale_0_9",
+        "readable": true
+      }
+    ],
+    "wired_ok": true
+  },
+  "sp5": {
+    "batch0_digest": "7ddafdeaa0e0",
+    "arms": {
+      "raw": {
+        "unknown": 0,
+        "mean_scaled": 0.1163,
+        "mean_gap": 0.8829,
+        "restored": true,
+        "experts": [],
+        "name_seq": [
+          1,
+          10,
+          1,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      },
+      "goedel": {
+        "unknown": 0,
+        "mean_scaled": 0.1161,
+        "mean_gap": 0.8831,
+        "restored": true,
+        "experts": [
+          2,
+          7
+        ],
+        "name_seq": [
+          1,
+          1,
+          100,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      },
+      "turing": {
+        "unknown": 0,
+        "mean_scaled": 0.1149,
+        "mean_gap": 0.8842,
+        "restored": true,
+        "experts": [
+          0,
+          6
+        ],
+        "name_seq": [
+          1,
+          10,
+          1,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1
+        ]
+      },
+      "wittgenstein": {
+        "unknown": 0,
+        "mean_scaled": 0.113,
+        "mean_gap": 0.8862,
+        "restored": true,
+        "experts": [
+          1,
+          3
+        ],
+        "name_seq": [
+          1,
+          1,
+          1,
+          100,
+          100000,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      },
+      "combined": {
+        "unknown": 0,
+        "mean_scaled": 0.1142,
+        "mean_gap": 0.8849,
+        "restored": true,
+        "experts": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        "name_seq": [
+          1,
+          1,
+          100,
+          100,
+          10,
+          100000,
+          0,
+          0,
+          100,
+          1,
+          0,
+          1
+        ]
+      },
+      "anti": {
+        "unknown": 0,
+        "mean_scaled": 0.1148,
+        "mean_gap": 0.8843,
+        "restored": true,
+        "experts": [
+          4,
+          5
+        ],
+        "name_seq": [
+          1,
+          1,
+          1,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  },
+  "sp6": {
+    "before_paired": [
+      -0.000263,
+      0.843313,
+      0.997866
+    ],
+    "after_paired": [
+      0.99979,
+      0.999982,
+      1.0
+    ],
+    "before_unrelated": [
+      -0.006132,
+      0.967089,
+      0.499426
+    ],
+    "after_unrelated": [
+      0.003954,
+      0.967089,
+      0.499426
+    ],
+    "mean_before": 0.6136,
+    "mean_after": 0.9999,
+    "mean_unrelated_after": 0.4902,
+    "learned_all": true,
+    "learned_rounds": 15,
+    "protocol_rows": 15,
+    "protocol_tail": [
+      {
+        "round": 12,
+        "pair": [
+          "regel",
+          "rule"
+        ],
+        "rule_name": "x",
+        "success_rate": 0.9,
+        "learned": true,
+        "resonance_after": 0.99979
+      },
+      {
+        "round": 13,
+        "pair": [
+          "spiel",
+          "game"
+        ],
+        "rule_name": "((x max (3.14 max x)) max x)",
+        "success_rate": 0.8,
+        "learned": true,
+        "resonance_after": 0.999982
+      },
+      {
+        "round": 14,
+        "pair": [
+          "gebrauch",
+          "use"
+        ],
+        "rule_name": "((x power (x add x)) add abs((3.14 min x)))",
+        "success_rate": 1.0,
+        "learned": true,
+        "resonance_after": 1.0
+      }
+    ]
+  }
+}

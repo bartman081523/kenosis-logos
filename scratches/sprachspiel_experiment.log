@@ -1,0 +1,102 @@
+[SP1] Regel-Generierung (CPU) …
+[SP2] SH-72-Wort-Resonanz (CPU) …
+[Load] Argon-1B + machines-Checkpoint …
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[SP3] Argon als Sprachpartner (GPU) …
+[SP4] Spread-Kalibrierung & Anti-Clip (GPU, S1-Kanal) …
+[SP5] Cross-Preset-Kontrast (GPU, S1-Kanal) …
+[SP6] Lexikon-Emergenz (CPU, S3) …
+========================================================================================
+SPRACHSPIEL-GENERIERUNG — REGEL, WORT, MITSPIELER
+========================================================================================
+  seed=0 digest=5e8d3b9d1b82 validity(noisy)=0.9100 validity(structured)=1.0000
+      square(0.00)
+      ((log(0.00) min sqrt(2.00)) max exp((x power x)))
+      exp(abs((2.00 multiply x)))
+  seed=1 digest=bc13fbe35f1d validity(noisy)=0.9100 validity(structured)=1.0000
+      (negate((x subtract x)) add ((x add x) multiply sq
+      (2.00 subtract (3.14 min (0.00 min x)))
+      x
+  seed=2 digest=c122d7a93d9c validity(noisy)=0.8800 validity(structured)=1.0000
+      x
+      ((sin(x) multiply (2.00 add x)) min ((x divide 2.7
+      (((2.00 power x) add square(x)) multiply (x add id
+  diversity(10 AST-Regeln)=1.0000 structure_gain=+0.1000 deterministisch=True
+  -- paired --
+    regel(cos,k=12) <-> rule(sin,k=9) resonance=-0.0003 same_kind=False
+    sprache(cos,k=11) <-> language(inv_add,k=9) resonance=-0.0062 same_kind=False
+    spiel(inv_add,k=2) <-> game(log,k=3) resonance=+0.8433 same_kind=False
+    bedeutung(exp,k=4) <-> meaning(cos,k=4) resonance=-0.0116 same_kind=False
+    gebrauch(inv_add,k=6) <-> use(inv_add,k=10) resonance=+0.9979 same_kind=True
+    wort(exp,k=5) <-> word(cos,k=1) resonance=+0.0379 same_kind=False
+  -- identity_str --
+    form(sin,k=5) <-> form(sin,k=5) resonance=+1.0000 same_kind=True
+    regel(cos,k=12) <-> regel(cos,k=12) resonance=+1.0000 same_kind=True
+    spiel(inv_add,k=2) <-> spiel(inv_add,k=2) resonance=+1.0000 same_kind=True
+  -- unrelated --
+    regel(cos,k=12) <-> tisch(exp,k=12) resonance=-0.0061 same_kind=False
+    bedeutung(exp,k=4) <-> kaffee(exp,k=11) resonance=+0.9671 same_kind=True
+    sprache(cos,k=11) <-> stein(inv_add,k=8) resonance=-0.0068 same_kind=False
+    wort(exp,k=5) <-> baum(square,k=2) resonance=+0.4994 same_kind=False
+  self_resonance=[1.0, 1.0, 1.0] means={'paired': 0.3102, 'identity_str': 1.0, 'unrelated': 0.3634} same_kind_share_unrelated=0.2500
+  device=cuda h_probe=1.7552 experts=[1, 3]
+    [ 0] (x power exp((x add x)))                 actual=1.00 ops=[power exp add     ] gen=None ops_pred=100000 name=1 steer=10
+    [ 1] (((x subtract x) subtract (x multiply x) actual=1.00 ops=[subtract multiply ] gen=None ops_pred=100000 name=10 steer=10
+    [ 2] (2.72 divide (2.00 subtract x))          actual=1.00 ops=[divide subtract   ] gen=None ops_pred=100000 name=1 steer=10
+    [ 3] sqrt(1.00)                               actual=1.00 ops=[sqrt              ] gen=None ops_pred=100000 name=100 steer=10
+    [ 4] log(square(identity(x)))                 actual=1.00 ops=[log square identit] gen=None ops_pred=100000 name=10 steer=10
+    [ 5] ((sqrt(x) divide x) add 2.00)            actual=1.00 ops=[add divide sqrt   ] gen=None ops_pred=100000 name=100000 steer=10
+    [ 6] 1.00                                     actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+    [ 7] 1.00                                     actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+    [ 8] log(1.00)                                actual=0.99 ops=[log               ] gen=None ops_pred=100000 name=100000 steer=10
+    [ 9] (sin(0.00) subtract exp((x power x)))    actual=1.00 ops=[subtract sin exp p] gen=None ops_pred=100000 name=1 steer=10
+    [10] 1.00                                     actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+    [11] x                                        actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+  unknown(gen/ops/name; steer+gen)={'p_generic': 12, 'p_ops': 0, 'p_name': 0, 'p_generic_steer': 0} name_echo(multi-digit)=5 ops_shifts=12 steer_shift=True restored=True det=True
+  mean_gap: gen=None ops=0.0008333333333333334 name=0.5258333333333334 steered+gen=0.0008333333333333334
+    sigma=0.1 actual_mean=1.0000 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=None
+    sigma=0.5 actual_mean=0.8850 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=0.0448
+    sigma=1.5 actual_mean=0.4917 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=-0.1912
+    sigma=4.0 actual_mean=0.2833 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=0.116
+  raw_unknown=0/24 steer_unknown=0/24 scaled_var=1.8e-05 noclip_violations=0 mean_rho=-0.0101
+    wired: prediction=0.0569 channel=predict_scale_0_9 readable=True
+    wired: prediction=0.0569 channel=predict_scale_0_9 readable=True
+    wired: prediction=0.0569 channel=predict_scale_0_9 readable=True
+    raw           unknown= 0/12 mean_scaled=0.1163 mean_gap=0.8829 restored=True experts=[] name_seq=[1, 10, 1, 100, 10, 100000, 1, 1, 100000, 1, 1, 1]
+    goedel        unknown= 0/12 mean_scaled=0.1161 mean_gap=0.8831 restored=True experts=[2, 7] name_seq=[1, 1, 100, 100, 10, 100000, 1, 1, 100000, 1, 1, 1]
+    turing        unknown= 0/12 mean_scaled=0.1149 mean_gap=0.8842 restored=True experts=[0, 6] name_seq=[1, 10, 1, 100, 10, 100000, 1, 1, 1000, 1, 1, 1]
+    wittgenstein  unknown= 0/12 mean_scaled=0.113 mean_gap=0.8862 restored=True experts=[1, 3] name_seq=[1, 1, 1, 100, 100000, 100000, 1, 1, 100000, 1, 1, 1]
+    combined      unknown= 0/12 mean_scaled=0.1142 mean_gap=0.8849 restored=True experts=[0, 1, 2, 3, 6, 7] name_seq=[1, 1, 100, 100, 10, 100000, 0, 0, 100, 1, 0, 1]
+    anti          unknown= 0/12 mean_scaled=0.1148 mean_gap=0.8843 restored=True experts=[4, 5] name_seq=[1, 1, 1, 100, 10, 100000, 1, 1, 100000, 1, 1, 1]
+  mean_before=0.6136 mean_after=0.9999 mean_unrelated_after=0.4902 learned_all=True learned_rounds=15/15
+    regel<->rule       -0.0003 -> +0.9998
+    spiel<->game       +0.8433 -> +1.0000
+    gebrauch<->use        +0.9979 -> +1.0000
+----------------------------------------------------------------------------------------
+BEFUNDE
+  sp1_det          PASS
+  sp1_finite       PASS
+  sp1_structure    PASS
+  sp2_identity     PASS
+  sp2_finite       PASS
+  sp3_det          PASS
+  sp3_awaken       PASS
+  sp3_ops_channel  PASS
+  sp3_name_echo    PASS
+  sp3_steer        PASS
+  sp3_calib        PASS
+  sp4_spread       PASS
+  sp4_scale_open_flat PASS
+  sp4_open         PASS
+  sp4_noclip       PASS
+  sp4_var_rho      PASS
+  sp4_step_wired   PASS
+  sp5_scale_flat   PASS
+  sp5_witt_open    PASS
+  sp5_combined_open PASS
+  sp5_echo_discrimination PASS
+  sp5_restored     PASS
+  sp6_lexicon      PASS
+[Save] scratches/sprachspiel_experiment.json
+GRÜN — alle Sprachspiel-Befunde bestanden.

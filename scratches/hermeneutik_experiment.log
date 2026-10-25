@@ -1,0 +1,38 @@
+[SP8.1] Paritaet Python (lisp_parity) vs Lisp (SBCL simplify_ast) …
+[SP8.2] Der Zirkel: entlarvte Tautologie -> Programm -> LOOP …
+[SP8.3] Kontrast: sin(x)+0 (nicht entlarvt) -> HALT-Garantie …
+[SP7] Kripke Plus/Quus: erzwungene Tautologie an Schritt 9 (seed 7) …
+[SP7.2] Kontrast (Quus): sin(x)+0 an Schritt 9 — keine Bruchstelle …
+========================================================================================
+SP8 — HERMENEUTISCHER ZIRKEL (PYTHON <-> LISP)
+========================================================================================
+  add0x          simp="x"                    parity=True  reveal=True  (erwartet True ) sizes=(3,2)
+  mul1x          simp="x"                    parity=True  reveal=True  (erwartet True ) sizes=(3,2)
+  id_add0x       simp="x"                    parity=True  reveal=True  (erwartet True ) sizes=(4,2)
+  sini_add0      simp=["sin", "x"]           parity=True  reveal=False (erwartet False) sizes=(4,3)
+  add_xx         simp=["add", "x", "x"]      parity=True  reveal=False (erwartet False) sizes=(3,5)
+  leaf_x         simp="x"                    parity=True  reveal=False (erwartet False) sizes=(1,2)
+  mulx1          simp="x"                    parity=True  reveal=True  (erwartet True ) sizes=(3,2)
+  sub_nofold     simp=["subtract", 2.0, 1.0] parity=True  reveal=False (erwartet False) sizes=(3,5)
+  add_fold       simp=5.0                    parity=True  reveal=False (erwartet False) sizes=(3,2)
+  mul0annih      simp=0.0                    parity=True  reveal=False (erwartet False) sizes=(4,2)
+  nested_mix     simp=["add", ["sin", "x"], "x"] parity=True  reveal=False (erwartet False) sizes=(8,6)
+  pure_id        simp="x"                    parity=True  reveal=True  (erwartet True ) sizes=(2,2)
+  machine_seed11 simp="x"                    parity=True  reveal=False (erwartet —    ) sizes=(1,2)
+  Zirkel: verdicts=['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED'] … basis_end=9 expansions=['step1:LOOP', 'step10:LOOP', 'step12:LOOP', 'step12:paradigm', 'step13:paradigm', 'step14:paradigm', 'step15:paradigm', 'step16:paradigm']
+  Kontrast: verdicts=['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED'] basis=[3, 3, 3, 3, 3, 3]
+  Kripke: verdicts(9..13)=['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED'] expansions=['step5:LOOP', 'step9:LOOP', 'step11:paradigm', 'step12:paradigm', 'step15:paradigm'] basis_end=7
+  paradigm_detected=[False, False, False, False, False, False, False, False, False, False, True, True, False, False, True, False] first_detect=11
+  Quus-Kontrast: verdicts(9..13)=['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED'] expansions=['step5:LOOP', 'step11:paradigm', 'step12:paradigm', 'step15:paradigm'] basis_end=5
+----------------------------------------------------------------------------------------
+BEFUNDE
+  sp8_parity     PASS
+  sp8_reveal     PASS
+  sp8_zirkel     PASS
+  sp8_contrast   PASS
+  sp8_finite     PASS
+  sp7_break      PASS
+  sp7_paradigm   PASS
+  sp7_quus       PASS
+[Save] scratches/hermeneutik_experiment.json
+GRUEN — alle SP8-Befunde bestanden.

@@ -91,6 +91,17 @@ FILES: List[str] = [
     "scratches/composite_oracle_experiment.log",
     "scratches/composite_oracle_experiment.json",
     "scratches/laufprotokolle_befund_report.md",
+    # -- Sprachspiel-Zyklus (SP1-SP6, S1-S3; Bericht §0-§10 inkl. §7-Widerlegung) --
+    "scratches/smoke_sprachspiel.py",
+    "scratches/sprachspiel_experiment.log",
+    "scratches/sprachspiel_experiment.json",
+    "scratches/sprachspiel_bericht.md",
+    "scratches/verify_s123_regress_sprachspiel2.log",
+    # -- Hermeneutik-Zyklus (SP7 Kripkenstein + SP8 Zirkel Python<->Lisp) ----------
+    "scratches/smoke_hermeneutik.py",
+    "scratches/hermeneutik_experiment.log",
+    "scratches/hermeneutik_experiment.json",
+    "scratches/verify_s123_regress_sp7.log",
 ]
 
 SEPARATOR = "=" * 78

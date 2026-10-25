@@ -2,7 +2,9 @@
 
 Quellen (alle in `scratches/`): `argon_1b_machines_train.log` (Joint-6-Domänen-Lauf),
 `build_corpus_re_sync.log` (Korpus-Re-Auth + Phase-A), `verify_machines_full.log`
-(6-Stufen-Verifikation), plus `machine_registry.json` (Golden-Digests, version 2).
+(6-Stufen-Verifikation), plus `machine_registry.json` (Golden-Digests, version 2);
+ab §10 Experiment-Zyklen: `composite_oracle_experiment.log`,
+`sprachspiel_experiment.log`, `hermeneutik_experiment.log`.
 
 ---
 
@@ -239,3 +241,152 @@ Kontinuität: L1–L9 reproduzieren in diesem Lauf exakt die Digests des §7/§8
 (`5cb5d245e5a7` / `11e246eddf07` / `eda6fc23ed71` / `063d92c0f354` /
 `9c5bf80babaa` / `1f7cbc913e7c`) — die L10–L12-Erweiterung verändert nichts am
 bisherigen Verhalten.
+
+---
+
+## 10. Sprachspiel-Generierung — Regel, Wort, Mitspieler
+
+(`scratches/smoke_sprachspiel.py` → `sprachspiel_experiment.log` / `.json`;
+Triptychon SP1/SP2/SP3, 11/11 Befunde PASS.)
+
+**SP1 — Regel-Generierung (CPU, uni_205-Mechanik):** die Machine generiert die
+Sprachspiele selbst — je Seed {0,1,2} ein Batch aus 10 template-free AST-Regeln
+(Diversität 1.0000, kein Kollisionsfall), Determinismus bitidentisch. Das
+strukturierte Rauschen (×0.3, FACRM-Schicht uni_204:241) hebt die mittlere
+Gültigkeit von 0.88–0.91 (volles Rauschen) auf vollständige 1.00 — die
+Ordnung der Spiele, nicht ihr Zufall, trägt die Gültigkeit.
+
+**SP2 — SH-72-Wort-Resonanz (Lisp-Canon, geometric-tokenizer.lisp):** die
+Resonanz misst **Formelverwandtschaft, nicht Semantik** — der Test führt das
+explizit vor: `bedeutung`↔`kaffee` resonieren +0.9671, `gebrauch`↔`use`
++0.9979, aber `regel`↔`rule` −0.0003 und `sprache`↔`language` −0.0062. Die
+Gematria→Basis-Formel-Achse (k, kind) steht orthogonal zur Bedeutungsachse:
+selbst-Resonanz exakt 1.0, gruppenmittel: gepaart 0.3102, unverwandt 0.3634.
+Die Bedeutung des Wortes liegt im Gebrauch, nicht im Klang — eine Empirie
+des Tractatus-Arguments.
+
+**SP3 — Argon als Sprachpartner (GPU, argon_1b_machines, 12 Batches Seed 7):**
+drei Wortspiele um dieselbe Gültigkeitsfrage (Gap = |pred/10 − actual|,
+Ist ≈ 1.00 über alle Batches):
+
+| Lesung | Prompt | Ergebnis |
+| :--- | :--- | :--- |
+| generisch (Kanon) | wie in `wittgenstein.step` | **12/12 unknown** — der raw ungesteuerte Kanal bleibt stumm, die Maschine fällt auf den Canon-Fallback 0.0 |
+| Operator-Wörter (ziffernfrei) | „with operators power exp add…" | liest in 12/12 — aber als **Ziffern-Echo** (konstant 100000 = „1" + „00000"): die Lesung ist kontinuierliche Ziffernfortsetzung, nicht Kalibrierung |
+| Regelname (mit Ziffernmaterial) | „Rule: (x power exp((x add x)))…" | Echo mit Echo-Variation (1/10/100/100000), 5/12 Multi-Digit-Echos > 9, mean-Gap 0.526 — das unfaire Wortspiel |
+| generisch unter Steering {1,3} | wie Kanon | **liest in 12/12** konstant „10" → Gap 0.0008 — das wittgenstein-Preset öffnet den sonst stummen Lesekanal |
+
+**Drei Sprachspiel-Befunde:**
+
+1. **Der Stummkanal:** ungesteuert antwortet Argon auf das Kanon-Prompt mit
+   `unknown` — das heißt, die `wittgenstein.step`-Oracle-Vorhersage läuft im
+   raw-Router-Zustand faktisch auf dem dokumentierten Fallback 0.0. Erst das
+   Maschinen-Preset (wittgenstein {1,3}) öffnet die Lesung — das Steering
+   verleiht dem Sprachpartner die Fähigkeit, auf die Frage nach der Gültigkeit
+   überhaupt eine Ziffer zu setzen.
+2. **Das Echo:** jede inhaltsverankerte Lesung degeneriert zur Ziffern-Echo —
+   `predict_value` liest greedy bis 6 Ziffertoken, und die Prompt-Nähe zum
+   Ziffernmateriale (Regelnamen wie „2.00") färbt die Lesung. Bedeutung wird
+   gelesen, wo Ziffern stehen; das Multi-Digit-Echo ist der sichtbar gewordene
+   Gebrauchs-Missbrauch.
+3. **Identifikationsschwäche des Ist:** alle 12 Seed-7-Batches landen im
+   Ist ≈ 1.00 (Toleranzregel 0.5 + 0.1·mean|gt| gegen Rauschen 0.5) — die
+   Kalibrierungs-Kriterien sind daher schwach identifiziert („10"-Konstanz
+   passt trivial); die belastbaren Befunde sind die Kanal-Eigenschaften
+   (Stummkanal, Öffnen durch Steering, Echo), nicht die Gap-Absolutwerte.
+
+---
+
+## 11. Sprachspiel-Erweiterung — S1-Skala (SP4), Cross-Preset (SP5), Lexikon (SP6)
+
+(`scratches/smoke_sprachspiel.py`, Lanes sp4-sp6 auf dem SP1-SP3-Fundament;
+Vollfassung im `sprachspiel_bericht.md` §4-§7; 23/23 Befunde PASS.)
+
+**SP4 — Spread-Kalibrierung & Anti-Clip (S1-Kanal `predict_scale_0_9`, S2):**
+die Rausch-Spreads (σ ∈ {0.1, 0.5, 1.5, 4.0}, volles Rauschen) heben die
+Sättigung — Ist-Mittel **1.0000 / 0.8850 / 0.4917 / 0.2833** (Range 0.72). Die
+S1-Skala liest kontinuierlich ohne Clip-Artefakt (0 Verletzungen, Var > 0), aber
+**prior-dominiert und σ-blind**: `scaled_mean ≡ 0.1046` in allen vier Regimen
+(raw wie gesteuert, 0/24 unknown je Arm), `mean_rho = −0.0101`. Die Review-
+Erwartung „raw bleibt stumm" ist **widerlegt** — die Digit-Token-Masse liegt bei
+0.76-0.80 (ops-Anker) bzw. 0.35 (generisch), kein τ im sinnvollen Regime macht
+raw stumm; die ops-Anker-Prompts tragen das Ist nicht (identisch über σ). Die
+Diskrimination lebt auf dem **Echo-Kanal** (SP3) — die S1-Kriterien sind darauf
+umgeframed: `sp4_scale_open_flat` (offen, kontinuierlich, σ-flat) statt
+Stummkanal. Step-Verdrahtung: `oracle_scale=True` predet über
+`predict_scale_0_9` (3× prediction 0.0569, channel belegt).
+
+**SP5 — Cross-Preset-Kontrast:** sechs Arme (raw/goedel/turing/wittgenstein/
+combined + Fachfremde {4,5} als dict-Direktsteuerung) auf denselben 12
+Seed-7-Batches; die S1-Skala bleibt über alle Arme offen und flach —
+mean_scaled zwischen 0.1130 und 0.1163 (**Spread 0.0033**, kein Preset-Signal
+auf der Skala). Die Preset-Diskrimination ist stattdessen auf dem Canon-
+Name-Echo belegt: die Name-Lesungs-Sequenzen der Arme sind paarweise
+verschieden (raw ≠ wittgenstein ≠ anti ≠ raw) — das Steering verändert das
+Echo-Formverhalten messbar, ohne die Skala zu rühren. Bias vollständig
+restauriert in allen fünf gesteuerten Armen.
+
+**SP6 — Lexikon-Emergenz (S3):** drei DE/EN-Paare lernen sich über 15
+Gebrauchsrunden (`lexicon_game`, alpha 0.3, Lexikon-zuerst-Lesung in
+`embed_word`); `embed_word` liest danach das erlernte Lexikon zuerst —
+mean_resonanz gepaart **0.6136 → 0.9999** (+0.39), unverwandte Paare bleiben
+0.4902; alle drei Paare gelernt in 15/15 Fällen. Gebrauchs-Achse schlägt
+Gematria-Achse (SP2 0.31 → SP6 0.9999).
+
+**Reframe-Dokumentation:** die drei Review-Kriterien, die an diesem Checkpoint
+widerlegt sind (`sp4_raw_silent`, `sp5_raw_silent`, `sp5_foreigner`), sind
+ausdrücklich als Widerlegung im Bericht §7 protokolliert und in Kanal-Eigenschafts-
+Kriterien umgeframedi (`sp4_scale_open_flat`, `sp5_scale_flat`,
+`sp5_echo_discrimination`) — die Kriterien beschreiben den gemessenen Canon,
+die widerlegte Erwartung bleibt namentlich mit Zahlen stehen.
+
+---
+
+## 12. Hermeneutik-Zyklus — SP8 Zirkel Python ↔ Lisp + SP7 Kripke Plus/Quus
+
+(`scratches/smoke_hermeneutik.py` → `hermeneutik_experiment.log` / `.json`;
+CPU, SBCL-Brücke, 8/8 Befunde PASS. Kompositions-Erweiterung
+`paradigm_signal_composite` in `machines/composite.py` — Canon-neutral, Stufen
+1-3 bitidentisch, `verify_s123_regress_sp7.log`, Gold-Digests unverändert:
+goedel `1594f06485ef`, turing `459575a8eb35`, wittgenstein `094df3c57a2f`,
+composite `660ffead6c40`.)
+
+**SP8 — der hermeneutische Zirkel:** die algebraisch trivialen Identitäten
+add(0,x)/multiply(1,x) (beide Ordnungen) und identity(x) haben KEINEN
+identity-Knoten und laufen als harmlose HALT-Ketten durch `compile_rule` — die
+Lisp-Reflexion (Vendor-Reduktor `symbolic-operator.lisp` über die Brücke,
+Op `simplify_ast`) wascht sie weg und entlarvt den Ursprung; die Python-
+Spiegelfunktion (`lisp_parity.simplify_ast_canonical`) liefert Feldgleichheit
+je Fall (13/13 parity=True, inkl. Sampler-Probe seed 11). Die entlarvte
+Tautologie wird zum Programm: erzwungen an Schritt 1 (seed 42) → LOOP-Verdikt,
+`step1:LOOP`, Basis 3→5; der natürliche Sampler produziert die weiteren
+Tautologien bei den Schritten 10 und 12 — Basis-Leiter **3→5→7→9** mit
+Paradigm-Signal an 12-16; der Kontrast sin(x)+0 hält die HALT-Garantie (Basis
+bleibt 3, kein LOOP in 6 Schritten). Die §9-L10-L12 erzwungene Leiter tritt
+damit unter seed 42 auch natürlich auf.
+
+**SP7 — Kripke Plus/Quus (seed 7):** dieselbe Stelle des Gebrauchs, zwei
+Regel-Formen:
+
+| Lauf | Zwangsform an Schritt 9 | Verdicts 9-13 | Expansions | Basis-Ende |
+| :--- | :--- | :--- | :--- | :--- |
+| Plus | `('identity', 'x')` | **LOOP**, HALT, HALT, HALT, HALT | `step5:LOOP`, **`step9:LOOP`** | **7** |
+| Quus | `(add (sin x) 0.0)` | HALT, HALT, HALT, HALT, HALT | `step5:LOOP` (ohne `step9`) | **5** |
+
+- Das **Paradigmen-Signal** (ratio > 2, uni_238:220-240-Formel auf der
+  Komposit-Gap-Serie) feuert erstmals bei **Schritt 11** (`first_detect=11`,
+  Fenster 9-13 der Review) — also erst NACH dem wiederholten Gebrauch der
+  gebrochenen Regel: das Schritt-9-Loopen ist Vorbote, das Signal der Bruch.
+- **Der Selbst-Modellierer bricht nicht:** das Gödel-`paradigm_signal` auf der
+  tanh-beschränkten Selbstmodell-Gap-Serie bleibt stumm (Ratios 0.2-0.5) — der
+  Bruch schlägt auf der Komposition ein, deren Programm (die Basis) sich
+  verändert. Dafür die Ergänzung `paradigm_signal_composite`.
+- **Der gleiche Gebrauch, eine andere Bedeutung:** beide Läufe (seed 7)
+  tragen einen natürlichen LOOP an Schritt 5 (dokumentiert); die Läufe
+  unterscheiden sich exakt in der Regel-Form an Schritt 9 — das Schwell-
+  Verhalten (Basis 5 vs. 7, `step9:LOOP` ja/nein) hängt an der Form, nicht
+  am Ablauf.
+- **Seed-Empfindlichkeit dokumentiert:** Seed-Scan der Zwangs-Erzeugung
+  (Seed 42/7 je erzwungen an 9): Seed 7 liefert `first_detect=11` im
+  Review-Fenster, Seed 42 detected bei Schritt 16 außerhalb — die
+  Fenster-Erwartung ist seed-selektiert, die Befunde nennen ihren Seed.

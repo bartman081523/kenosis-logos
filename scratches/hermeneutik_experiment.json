@@ -1,0 +1,950 @@
+{
+  "parity_rows": [
+    {
+      "name": "add0x",
+      "ast": [
+        "add",
+        0.0,
+        "x"
+      ],
+      "python": {
+        "ast_in": [
+          "add",
+          0.0,
+          "x"
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "add",
+          0.0,
+          "x"
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": true,
+      "revealed_expected": true,
+      "flagged": true
+    },
+    {
+      "name": "mul1x",
+      "ast": [
+        "multiply",
+        1.0,
+        "x"
+      ],
+      "python": {
+        "ast_in": [
+          "multiply",
+          1.0,
+          "x"
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "multiply",
+          1.0,
+          "x"
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": true,
+      "revealed_expected": true,
+      "flagged": true
+    },
+    {
+      "name": "id_add0x",
+      "ast": [
+        "add",
+        [
+          "identity",
+          "x"
+        ],
+        0.0
+      ],
+      "python": {
+        "ast_in": [
+          "add",
+          [
+            "identity",
+            "x"
+          ],
+          0.0
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 4,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "add",
+          [
+            "identity",
+            "x"
+          ],
+          0.0
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 4,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": true,
+      "revealed_expected": true,
+      "flagged": true
+    },
+    {
+      "name": "sini_add0",
+      "ast": [
+        "add",
+        [
+          "sin",
+          "x"
+        ],
+        0.0
+      ],
+      "python": {
+        "ast_in": [
+          "add",
+          [
+            "sin",
+            "x"
+          ],
+          0.0
+        ],
+        "ast_simplified": [
+          "sin",
+          "x"
+        ],
+        "revealed": false,
+        "contains_trivial_identity": true,
+        "size_in": 4,
+        "size_out": 3
+      },
+      "lisp": {
+        "ast_in": [
+          "add",
+          [
+            "sin",
+            "x"
+          ],
+          0.0
+        ],
+        "ast_simplified": [
+          "sin",
+          "x"
+        ],
+        "revealed": false,
+        "contains_trivial_identity": true,
+        "size_in": 4,
+        "size_out": 3
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": true
+    },
+    {
+      "name": "add_xx",
+      "ast": [
+        "add",
+        "x",
+        "x"
+      ],
+      "python": {
+        "ast_in": [
+          "add",
+          "x",
+          "x"
+        ],
+        "ast_simplified": [
+          "add",
+          "x",
+          "x"
+        ],
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 3,
+        "size_out": 5
+      },
+      "lisp": {
+        "ast_in": [
+          "add",
+          "x",
+          "x"
+        ],
+        "ast_simplified": [
+          "add",
+          "x",
+          "x"
+        ],
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 3,
+        "size_out": 5
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": false
+    },
+    {
+      "name": "leaf_x",
+      "ast": "x",
+      "python": {
+        "ast_in": "x",
+        "ast_simplified": "x",
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 1,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": "x",
+        "ast_simplified": "x",
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 1,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": false
+    },
+    {
+      "name": "mulx1",
+      "ast": [
+        "multiply",
+        "x",
+        1.0
+      ],
+      "python": {
+        "ast_in": [
+          "multiply",
+          "x",
+          1.0
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "multiply",
+          "x",
+          1.0
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": true,
+      "revealed_expected": true,
+      "flagged": true
+    },
+    {
+      "name": "sub_nofold",
+      "ast": [
+        "subtract",
+        2.0,
+        1.0
+      ],
+      "python": {
+        "ast_in": [
+          "subtract",
+          2.0,
+          1.0
+        ],
+        "ast_simplified": [
+          "subtract",
+          2.0,
+          1.0
+        ],
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 3,
+        "size_out": 5
+      },
+      "lisp": {
+        "ast_in": [
+          "subtract",
+          2.0,
+          1.0
+        ],
+        "ast_simplified": [
+          "subtract",
+          2.0,
+          1.0
+        ],
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 3,
+        "size_out": 5
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": false
+    },
+    {
+      "name": "add_fold",
+      "ast": [
+        "add",
+        2.0,
+        3.0
+      ],
+      "python": {
+        "ast_in": [
+          "add",
+          2.0,
+          3.0
+        ],
+        "ast_simplified": 5.0,
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "add",
+          2.0,
+          3.0
+        ],
+        "ast_simplified": 5.0,
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 3,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": false
+    },
+    {
+      "name": "mul0annih",
+      "ast": [
+        "multiply",
+        0.0,
+        [
+          "sin",
+          "x"
+        ]
+      ],
+      "python": {
+        "ast_in": [
+          "multiply",
+          0.0,
+          [
+            "sin",
+            "x"
+          ]
+        ],
+        "ast_simplified": 0.0,
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 4,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "multiply",
+          0.0,
+          [
+            "sin",
+            "x"
+          ]
+        ],
+        "ast_simplified": 0.0,
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 4,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": false
+    },
+    {
+      "name": "nested_mix",
+      "ast": [
+        "add",
+        [
+          "add",
+          [
+            "sin",
+            "x"
+          ],
+          0.0
+        ],
+        [
+          "multiply",
+          "x",
+          1.0
+        ]
+      ],
+      "python": {
+        "ast_in": [
+          "add",
+          [
+            "add",
+            [
+              "sin",
+              "x"
+            ],
+            0.0
+          ],
+          [
+            "multiply",
+            "x",
+            1.0
+          ]
+        ],
+        "ast_simplified": [
+          "add",
+          [
+            "sin",
+            "x"
+          ],
+          "x"
+        ],
+        "revealed": false,
+        "contains_trivial_identity": true,
+        "size_in": 8,
+        "size_out": 6
+      },
+      "lisp": {
+        "ast_in": [
+          "add",
+          [
+            "add",
+            [
+              "sin",
+              "x"
+            ],
+            0.0
+          ],
+          [
+            "multiply",
+            "x",
+            1.0
+          ]
+        ],
+        "ast_simplified": [
+          "add",
+          [
+            "sin",
+            "x"
+          ],
+          "x"
+        ],
+        "revealed": false,
+        "contains_trivial_identity": true,
+        "size_in": 8,
+        "size_out": 6
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": false,
+      "flagged": true
+    },
+    {
+      "name": "pure_id",
+      "ast": [
+        "identity",
+        "x"
+      ],
+      "python": {
+        "ast_in": [
+          "identity",
+          "x"
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 2,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": [
+          "identity",
+          "x"
+        ],
+        "ast_simplified": "x",
+        "revealed": true,
+        "contains_trivial_identity": true,
+        "size_in": 2,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": true,
+      "revealed_expected": true,
+      "flagged": true
+    },
+    {
+      "name": "machine_seed11",
+      "ast": "x",
+      "python": {
+        "ast_in": "x",
+        "ast_simplified": "x",
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 1,
+        "size_out": 2
+      },
+      "lisp": {
+        "ast_in": "x",
+        "ast_simplified": "x",
+        "revealed": false,
+        "contains_trivial_identity": false,
+        "size_in": 1,
+        "size_out": 2
+      },
+      "equal": true,
+      "revealed": false,
+      "revealed_expected": null,
+      "flagged": false
+    }
+  ],
+  "zirkel": {
+    "verdicts": [
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "basis": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      7,
+      7,
+      9,
+      9,
+      9,
+      9,
+      9
+    ],
+    "final_basis": 9,
+    "expansions": [
+      "step1:LOOP",
+      "step10:LOOP",
+      "step12:LOOP",
+      "step12:paradigm",
+      "step13:paradigm",
+      "step14:paradigm",
+      "step15:paradigm",
+      "step16:paradigm"
+    ],
+    "gaps": [
+      0.6799123481565301,
+      1.5721135494758267,
+      0.2676871071139288,
+      2.866776303409504,
+      0.5266571145287746,
+      1.4378478833401687,
+      0.7471902376862123,
+      0.962246486523055,
+      2.6378772055204727,
+      1.1033233967630987,
+      11.02153577844164,
+      1.1990069431000954,
+      3.131118353899636,
+      4.594975454496297,
+      4.81730494864978,
+      15.67000139903719
+    ],
+    "gaps_finite": true,
+    "paradigm_ratio": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0.5496850610274243,
+      0.4142450979822657,
+      0.36763935125602637,
+      0.32068079119454984,
+      0.3054136211383015,
+      0.2594200056862097,
+      0.2629062389424234
+    ],
+    "paradigm_detected": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "forced_ast": [
+      "identity",
+      "x"
+    ]
+  },
+  "contrast": {
+    "verdicts": [
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "basis": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "final_basis": 3,
+    "expansions": [],
+    "gaps": [
+      0.5806749629226835,
+      0.554530697417607,
+      0.46502564217776793,
+      1.889470735395138,
+      0.4207818714045863,
+      1.1362820187065918
+    ],
+    "gaps_finite": true,
+    "paradigm_ratio": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "paradigm_detected": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "forced_ast": [
+      "add",
+      [
+        "sin",
+        "x"
+      ],
+      0.0
+    ]
+  },
+  "kripke": {
+    "verdicts": [
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "basis": [
+      3,
+      3,
+      3,
+      3,
+      5,
+      5,
+      5,
+      5,
+      7,
+      7,
+      7,
+      7,
+      7,
+      7,
+      7,
+      7
+    ],
+    "final_basis": 7,
+    "expansions": [
+      "step5:LOOP",
+      "step9:LOOP",
+      "step11:paradigm",
+      "step12:paradigm",
+      "step15:paradigm"
+    ],
+    "gaps": [
+      0.6763136177876604,
+      0.623401469752498,
+      1.3747230834351065,
+      2.94631634994272,
+      0.5132845003854745,
+      1.3989873331597389,
+      5.099479909887874,
+      5.093269562466789,
+      0.9104755620236457,
+      6.3757432027188505,
+      1.1234537001121592,
+      1.7331836035064798,
+      8.680257427734778,
+      8.686041862289448,
+      2.7491610591997566,
+      4.535926273663018
+    ],
+    "gaps_finite": true,
+    "paradigm_ratio": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0.3375536891768431,
+      0.33452276678733855,
+      0.3482358598577178,
+      0.3201460460611471,
+      0.20842236088700422,
+      0.2617123953450735,
+      0.19507459455362175
+    ],
+    "paradigm_detected": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false
+    ],
+    "forced_ast": [
+      "identity",
+      "x"
+    ]
+  },
+  "contrast_quus": {
+    "verdicts": [
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "basis": [
+      3,
+      3,
+      3,
+      3,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "final_basis": 5,
+    "expansions": [
+      "step5:LOOP",
+      "step11:paradigm",
+      "step12:paradigm",
+      "step15:paradigm"
+    ],
+    "gaps": [
+      0.6763136177876604,
+      0.623401469752498,
+      1.3747230834351065,
+      2.94631634994272,
+      0.5132845003854745,
+      1.3989873331597389,
+      5.099479909887874,
+      5.093269562466789,
+      2.4536696982617765,
+      5.396097965588672,
+      0.9519437318088029,
+      1.4890863988110876,
+      7.683585265618188,
+      7.689502910176235,
+      2.4190854563249564,
+      4.038133943372085
+    ],
+    "gaps_finite": true,
+    "paradigm_ratio": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0.3147518270589336,
+      0.32746558022208344,
+      0.34449584546283984,
+      0.318577412148047,
+      0.2621304278815178,
+      0.30498587167222296,
+      0.21230206166063492
+    ],
+    "paradigm_detected": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false
+    ],
+    "forced_ast": [
+      "add",
+      [
+        "sin",
+        "x"
+      ],
+      0.0
+    ]
+  },
+  "first_detect": 11,
+  "findings": [
+    {
+      "name": "sp8_parity",
+      "status": "PASS"
+    },
+    {
+      "name": "sp8_reveal",
+      "status": "PASS"
+    },
+    {
+      "name": "sp8_zirkel",
+      "status": "PASS"
+    },
+    {
+      "name": "sp8_contrast",
+      "status": "PASS"
+    },
+    {
+      "name": "sp8_finite",
+      "status": "PASS"
+    },
+    {
+      "name": "sp7_break",
+      "status": "PASS"
+    },
+    {
+      "name": "sp7_paradigm",
+      "status": "PASS"
+    },
+    {
+      "name": "sp7_quus",
+      "status": "PASS"
+    }
+  ]
+}
