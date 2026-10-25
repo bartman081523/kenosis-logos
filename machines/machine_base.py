@@ -269,6 +269,52 @@ class ArgonOracle:
         return int(digits)
 
     @torch.no_grad()
+    def predict_scale_0_9(self, prompt: str, tau: float = 0.01,
+                          mode: str = "expected") -> Any:
+        """
+        S1 — Ein-Forward-Ziffern-Skala (SP3-Folge: das 6-Token-Greedy-Echo
+        "100000" = "1" + "00000" ist autoregressives Nachhallen, kein Urteil
+        über Gültigkeit). Die Logits des ERSTEN Tokens werden ausschließlich
+        auf die 10 Ziffern-Token-IDs '0'..'9' projiziert; die Vollvokabular-
+        Softmax-Masse
+
+            M_digit = sum_d P_full(id(d))
+
+        entscheidet ehrlich über den Stummkanal: M_digit < tau -> "unknown"
+        (kein stiller Fallback), sonst eine kontinuierlich abgestufte
+        Bewertung in [0,1] ohne Clip-Trick min(value/10, 1.0):
+
+            mode="expected":  v = sum_d d * p_d / 9     (Erwartungswert)
+            mode="argmax":    v = argmax_d p_d / 9
+        """
+        if self.model.training:
+            self.model.eval()
+        ids = self._encode(prompt)
+        logits = self.model(ids).logits[0, -1].float()
+        probs = torch.softmax(logits, dim=-1)
+        digit_ids: List[int] = []
+        for digit in range(10):
+            token_ids = self.tokenizer.encode(str(digit), add_special_tokens=False)
+            token_id = int(token_ids[0]) if len(token_ids) else -1
+            decoded = (self.tokenizer.decode([token_id], skip_special_tokens=True)
+                       if token_id >= 0 else "?")
+            if decoded.lstrip(" ") != str(digit):
+                raise ValueError(
+                    f"predict_scale_0_9: Ziffer '{digit}' ist kein "
+                    f"einstelliges Token (decode='{decoded}') — Skala nicht "
+                    "definierbar (kein stiller Fallback).")
+            digit_ids.append(token_id)
+        digit_probs = probs.index_select(
+            0, torch.tensor(digit_ids, device=probs.device))
+        if float(digit_probs.sum().item()) < tau:
+            return "unknown"
+        if mode == "argmax":
+            return int(torch.argmax(digit_probs).item()) / 9.0
+        weighted = (digit_probs * torch.arange(
+            10, dtype=digit_probs.dtype, device=digit_probs.device)).sum()
+        return float(weighted.item()) / 9.0
+
+    @torch.no_grad()
     def entropy_scalar(self, text: str, max_length: int = 256) -> float:
         """Mittlere Router-Entropie über alle Schichten (Muster _gate_hooks)."""
         collector: Dict[str, List[torch.Tensor]] = {

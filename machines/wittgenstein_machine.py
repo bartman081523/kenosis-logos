@@ -174,7 +174,14 @@ class GeometricTokenizer:
         return k, idx, kind
 
     def embed_word(self, word: str) -> List[float]:
-        """Formel an 64 Punkten evaluiert und normalisiert (embed-word :98)."""
+        """Formel an 64 Punkten evaluiert und normalisiert (embed-word :98).
+
+        S3 (Sprachspiel-Folge): ein gelerntes Wort geht dem Klang vor —
+        Lisp-Parität geometric-tokenizer.lisp:95-98: (or (gethash word lexicon)
+        …) steht VOR dem SH-72-Fallback. Ein leeres Lexikon (Canon) verändert
+        nichts; Gebrauch, nicht Gematria, entscheidet erst nach dem Lernen."""
+        if word in self.lexicon:
+            return list(self.lexicon[word])
         k, idx, kind = self.word_formula(word)
         values = []
         for x in self.domain:
@@ -208,6 +215,33 @@ class GeometricTokenizer:
         """Dot-Produkt zweier (normalisierter) Embeddings = cosine."""
         return sum(x * y for x, y in zip(a, b))
 
+    def learn_pair(self, w1: str, w2: str, alpha: float = 0.3) -> Dict[str, int]:
+        """S3 — soziales Lexikon-Lernen (Tractatus -> Untersuchungen im Code):
+
+        Zwei Wörter im gemeinsamen Gebrauch drehen ihre Embeddings auf-
+        einander zu: e_new(w) = normalize((1-alpha) e(w) + alpha e(partner)).
+        Die Drehung ist gegenseitig und im Lexikon persistent — ab dem
+        nächsten embed_word gewinnt der Gebrauch gegen die Gematria.
+
+        Canon-neutral: der lexikonfreie Tokenizer (Paritäts-Fixtures, SH-72-
+        Proben) trifft diese Methode nie."""
+        e1 = self.embed_word(w1)
+        e2 = self.embed_word(w2)
+        mixed_1 = [(1.0 - alpha) * a + alpha * b for a, b in zip(e1, e2)]
+        mixed_2 = [(1.0 - alpha) * b + alpha * a for a, b in zip(e1, e2)]
+        self.lexicon[w1] = self._normalize(mixed_1)
+        self.lexicon[w2] = self._normalize(mixed_2)
+        return {w1: self.string_gematria(w1), w2: self.string_gematria(w2)}
+
+    @staticmethod
+    def _normalize(values: List[float]) -> List[float]:
+        """Lisp normalize-vector verbatim (utils.lisp:91-98): norm < 1e-9 →
+        Vektor UNVERÄNDERT (nicht nullgesetzt)."""
+        norm = math.sqrt(sum(v * v for v in values))
+        if norm < 1e-9:
+            return values
+        return [v / norm for v in values]
+
 
 class WittgensteinMachine(BaseMachine):
     """
@@ -221,6 +255,14 @@ class WittgensteinMachine(BaseMachine):
     def __init__(self, config: MachineConfig, oracle=None):
         super().__init__(config, oracle=oracle)
         self.noise_level = float(config.params.get("noise_level", 0.5))
+        # S2 (Ent-Sättigung): noise_schedule rotiert noise_level je Batch aus
+        # einer Streuungsleiter — mit None (Canon) bleibt noise_level konstant.
+        # Der schedule rotiert über generate_experiments-Aufrufe (ein Batch-Feld
+        # = ein Rauschwert), damit das Ist spreet statt bei 1.00 zu kleben.
+        schedule = config.params.get("noise_schedule")
+        self.noise_schedule: Optional[List[float]] = (
+            [float(v) for v in schedule] if schedule else None)
+        self._schedule_index = 0
         self.exp_count = int(config.params.get("experiments", 10))
         self.max_depth = int(config.params.get("max_depth", 3))
         # uni_205:317-322 — use_structure (Rauschen × 0.3) ist EINE eigene
@@ -228,6 +270,10 @@ class WittgensteinMachine(BaseMachine):
         self.use_structure = bool(config.params.get("use_structure",
                                                     self.mode == "in_loop"))
         self.tokenizer = GeometricTokenizer()
+        # S1 (SP3-Folge): opt-in Lesekanal predict_scale_0_9 — das 6-Token-
+        # Greedy-Echo ("100000" = "1" + "00000") ist autoregressives Nach-
+        # hallen, kein Urteil. Default off: Canon-Pfad predict_value unverändert.
+        self.oracle_scale = bool(config.params.get("oracle_scale", False))
         self.reset(config.seed)
 
     # -- Lifecycle ------------------------------------------------------------
@@ -237,6 +283,7 @@ class WittgensteinMachine(BaseMachine):
         self._step_index = 0
         self._trace = []
         self._gap_history = []
+        self._schedule_index = 0
         self.experiment_history: List[Dict[str, Any]] = []
         self.generated_rules: List[GeneratedSymbolicRule] = []
         return {"seed": seed}
@@ -263,6 +310,10 @@ class WittgensteinMachine(BaseMachine):
     # -- Experimente (uni_205:362-419) --------------------------------------
     def generate_experiments(self, count: Optional[int] = None) -> List[Dict[str, Any]]:
         count = self.exp_count if count is None else count
+        if self.noise_schedule:
+            # S2: ein Aufruf = ein Rauschstufen-Batch; deterministisch rotiert.
+            self.noise_level = float(self.noise_schedule[
+                self._schedule_index % len(self.noise_schedule)])
         experiments: List[Dict[str, Any]] = []
         for i in range(count):
             rule = self.create_rule()
@@ -283,7 +334,50 @@ class WittgensteinMachine(BaseMachine):
                 "success_rate": successes / len(x_values),
             })
         self.experiment_history.extend(experiments)
+        if self.noise_schedule:
+            self._schedule_index += 1
         return experiments
+
+    # -- Sprachspiel (S3/SP6: Gebrauch schlaegt Gematria) ----------------------
+    def lexicon_game(self, pairs: List[Tuple[str, str]], rounds: int = 15,
+                     alpha: float = 0.3, success_threshold: float = 0.5,
+                     noise_level: Optional[float] = None) -> List[Dict[str, Any]]:
+        """SP6 — das Lexikon-Spiel: je Runde ein Sprachschritt. Die Maschine
+        erzeugt eine Regel, evaluiert sie an x ~ U(0.1, 5) mit Gauß-Rauschen
+        (Canon-Toleranz 0.5 + 0.1*mean|gt|); gelingt der Schritt
+        (success_rate >= success_threshold), lernen die beiden Wörter des
+        Runden-Paars voneinander (GeometricTokenizer.learn_pair). Die Resonanz
+        des Paars wandert dadurch von der Gematria-Achse (SP2: gepaart 0.31
+        < unverwandt 0.36) in die Gebrauchs-Achse (> 0.75 > unverwandt).
+
+        Canon-neutral: neue Methode, kein bestehender Pfad berührt."""
+        base_noise = self.noise_level if noise_level is None else float(noise_level)
+        protocol: List[Dict[str, Any]] = []
+        for round_index in range(rounds):
+            w_lang, w_partner = pairs[round_index % len(pairs)]
+            rule = self.create_rule()
+            x_values = self._rng.uniform(0.1, 5.0, size=10)
+            ground_truth = [rule.evaluate(x) for x in x_values.tolist()]
+            noise = self._rng.normal(0, base_noise, size=len(x_values))
+            predictions = [gt + n for gt, n in zip(ground_truth, noise)]
+            tolerance = 0.5 + 0.1 * float(np.mean(np.abs(ground_truth)))
+            successes = sum(1 for gt, pred in zip(ground_truth, predictions)
+                            if abs(gt - pred) < tolerance)
+            success_rate = successes / len(x_values)
+            learned = success_rate >= success_threshold
+            if learned:
+                self.tokenizer.learn_pair(w_lang, w_partner, alpha=alpha)
+            protocol.append({
+                "round": round_index,
+                "pair": [w_lang, w_partner],
+                "rule_name": rule.name,
+                "success_rate": round(success_rate, 4),
+                "learned": learned,
+                "resonance_after": round(float(self.tokenizer.resonance(
+                    self.tokenizer.embed_word(w_lang),
+                    self.tokenizer.embed_word(w_partner))), 6),
+            })
+        return protocol
 
     # -- Protokoll (uni_241-Gap über den Gültigkeits-Anteil) ------------------
     def step(self, obj: Any) -> StepResult:
@@ -291,14 +385,30 @@ class WittgensteinMachine(BaseMachine):
         # 1. Vorhersage VOR der Auswertung: in_loop — Mittel der letzten Batches;
         #    oracle — Argon predet die Gültigkeit in Zehner-Schritten (Ziffer).
         if self.mode == "oracle" and self.oracle is not None:
-            value = self.oracle.predict_value(
-                "Validity of a symbolic experiment batch, single digit per ten percent: ")
-            if value == "unknown":
-                prediction = 0.0
-                oracle_meta.update({"oracle": "predict_value", "note": "unknown"})
+            prompt = ("Validity of a symbolic experiment batch, "
+                      "single digit per ten percent: ")
+            if self.oracle_scale and hasattr(self.oracle, "predict_scale_0_9"):
+                # S1-Kanal: ein Forward, Ziffern-Logits 0..9 vollvokabular
+                # massen-geprüft — unter tau bleibt die Antwort ehrlich
+                # "unknown" (Stummkanal-Befund), sonst kontinuierlich in [0,1]
+                # (kein Multi-Digit-Echo, kein min(value/10)-Clip).
+                value = self.oracle.predict_scale_0_9(prompt)
+                if value == "unknown":
+                    prediction = 0.0
+                    oracle_meta.update({"oracle": "predict_scale_0_9",
+                                        "note": "unknown"})
+                else:
+                    prediction = min(max(float(value), 0.0), 1.0)
+                    oracle_meta.update({"oracle": "predict_scale_0_9",
+                                        "value": value})
             else:
-                prediction = min(max(value / 10.0, 0.0), 1.0)
-                oracle_meta.update({"oracle": "predict_value", "value": value})
+                value = self.oracle.predict_value(prompt)
+                if value == "unknown":
+                    prediction = 0.0
+                    oracle_meta.update({"oracle": "predict_value", "note": "unknown"})
+                else:
+                    prediction = min(max(value / 10.0, 0.0), 1.0)
+                    oracle_meta.update({"oracle": "predict_value", "value": value})
         else:
             history = [e["success_rate"] for e in self.experiment_history]
             prediction = float(np.mean(history[-10:])) if history else 0.0
