@@ -80,12 +80,17 @@ FILES: List[str] = [
     # -- Doku ---------------------------------------------------------------------
     "README.md",
     ".gitignore",
-    # -- Protokolle + Smoke-Skript -------------------------------------------------
+    # -- Protokolle + Smoke-Skripte ------------------------------------------------
     "scratches/smoke_machines_train.py",
     "scratches/argon_1b_machines_train.log",
     "scratches/build_corpus_re_sync.log",
     "scratches/verify_machines_stage5.log",
     "scratches/verify_machines_full.log",
+    # -- Composite-Experiment-Zyklus (§7-§9, Identity-Hebel + Basisleiter) ----------
+    "scratches/smoke_composite_oracle.py",
+    "scratches/composite_oracle_experiment.log",
+    "scratches/composite_oracle_experiment.json",
+    "scratches/laufprotokolle_befund_report.md",
 ]
 
 SEPARATOR = "=" * 78

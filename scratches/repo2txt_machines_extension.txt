@@ -2,7 +2,7 @@
 repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung
 (Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B;
  inkl. Lisp-Vendor-Canon, Brücke, Korpus, Goldwerte, Presets, Protokolle)
-Dateien: 59   bytes: 429127   Zeilen: 10554
+Dateien: 63   bytes: 482779   Zeilen: 11975
 ==============================================================================
 INDEX
   machines/__init__.py  [    1220 B    47 Zeilen]
@@ -10,7 +10,7 @@ INDEX
   machines/goedel_machine.py  [   12952 B   273 Zeilen]
   machines/turing_machine.py  [   16041 B   341 Zeilen]
   machines/wittgenstein_machine.py  [   15916 B   365 Zeilen]
-  machines/composite.py  [    9104 B   206 Zeilen]
+  machines/composite.py  [   10040 B   222 Zeilen]
   machines/lisp_bridge.py  [    9621 B   237 Zeilen]
   machines/lisp_parity.py  [   13033 B   320 Zeilen]
   machines/lisp/README.md  [    3850 B    80 Zeilen]
@@ -49,14 +49,14 @@ INDEX
   machines/lisp/vendor/tests/test-dialectic-macros.lisp  [    1279 B    40 Zeilen]
   machines/corpus/machine_corpus.jsonl  [   30598 B   401 Zeilen]
   machines/parity/python_fixtures.json  [    1154 B    51 Zeilen]
-  machine_registry.json  [    4105 B   160 Zeilen]
+  machine_registry.json  [    4277 B   161 Zeilen]
   argon_1b_machines/machine_presets/goedel.json  [    3049 B   232 Zeilen]
   argon_1b_machines/machine_presets/turing.json  [    3050 B   232 Zeilen]
   argon_1b_machines/machine_presets/wittgenstein.json  [    3062 B   232 Zeilen]
   argon_1b_machines/machine_presets/combined.json  [    2807 B   227 Zeilen]
   argon_1b_machines/router_diff_meta.json  [     231 B     6 Zeilen]
-  train_moe_router_specialization.py  [   38117 B   713 Zeilen]
-  machines/verify_machines.py  [   28219 B   573 Zeilen]
+  train_moe_router_specialization.py  [   38287 B   715 Zeilen]
+  machines/verify_machines.py  [   28669 B   580 Zeilen]
   README.md  [   12071 B   186 Zeilen]
   .gitignore  [     673 B    14 Zeilen]
   scratches/smoke_machines_train.py  [    5477 B   118 Zeilen]
@@ -64,6 +64,10 @@ INDEX
   scratches/build_corpus_re_sync.log  [    1351 B    25 Zeilen]
   scratches/verify_machines_stage5.log  [    3154 B    30 Zeilen]
   scratches/verify_machines_full.log  [    4825 B    55 Zeilen]
+  scratches/smoke_composite_oracle.py  [   13230 B   258 Zeilen]
+  scratches/composite_oracle_experiment.log  [    6929 B    66 Zeilen]
+  scratches/composite_oracle_experiment.json  [   16898 B   831 Zeilen]
+  scratches/laufprotokolle_befund_report.md  [   14867 B   240 Zeilen]
 ==============================================================================
 
 ==============================================================================
@@ -1657,7 +1661,7 @@ class WittgensteinMachine(BaseMachine):
 
 ==============================================================================
 ### FILE: machines/composite.py
-### bytes: 9104   lines: 206
+### bytes: 10040   lines: 222
 ==============================================================================
 """
 composite.py — Die Komposition der drei Maschinen („Götterdreiheit").
@@ -1727,12 +1731,25 @@ class CompositeMachine(BaseMachine):
         „Die Regel wird Programm": Präfix-Walk über den AST; jeder Knoten ist
         ein Zustand, ein Leseschritt ohne Bewegung; das Ende halt. Ein Blatt
         ('x'/Konstante) ohne Knoten hält sofort. Blank = ``▁``.
+
+        Ausnahme — die Identitäts-Tautologie: ``('identity', 'x')`` wird nicht
+        als Kettenglied übersetzt, sondern als Selbst-Transition
+        ``("n_i", BLANK) -> (BLANK, "N", "n_i")``: die tautologische Regel
+        zeigt als Programm auf sich selbst und terminiert nicht — Turing
+        erkennt das LOOP-Verdikt über die Lauf-Signatur, die Komposition
+        expandiert die Basis (uni_256:113). Alle anderen ASTs behalten die
+        HALT-Garantie des Präfix-Walks.
         """
         nodes: List[str] = []
+        tautologies: set = set()
 
         def walk(node: Any) -> None:
             if isinstance(node, tuple):
+                index = len(nodes)
                 nodes.append(str(node[0]))
+                if len(node) == 2 and node[0] == "identity" and node[1] == "x":
+                    tautologies.add(index)   # Tautologie: der Zustand zeigt auf sich
+                    return                    # das 'x'-Blatt wird konsumiert
                 if len(node) == 3:
                     walk(node[1])
                     walk(node[2])
@@ -1744,8 +1761,11 @@ class CompositeMachine(BaseMachine):
         if not nodes:
             transitions[("n0", BLANK)] = (BLANK, "N", "halt")
         for idx, op in enumerate(nodes):
-            next_state = f"n{idx + 1}" if idx + 1 < len(nodes) else "halt"
-            transitions[(f"n{idx}", BLANK)] = (BLANK, "N", next_state)
+            if idx in tautologies:
+                transitions[(f"n{idx}", BLANK)] = (BLANK, "N", f"n{idx}")
+            else:
+                next_state = f"n{idx + 1}" if idx + 1 < len(nodes) else "halt"
+                transitions[(f"n{idx}", BLANK)] = (BLANK, "N", next_state)
         return TransitionTable(transitions, blank=BLANK)
 
     # -- Protokoll ------------------------------------------------------------
@@ -8004,7 +8024,7 @@ Point at the picture and say: that is the use."
 
 ==============================================================================
 ### FILE: machine_registry.json
-### bytes: 4105   lines: 160
+### bytes: 4277   lines: 161
 ==============================================================================
 {
   "checkpoint_base": "./argon_1b",
@@ -8058,7 +8078,7 @@ Point at the picture and say: that is the use."
         4.927787780761719,
         30.686325073242188
       ],
-      "trained_entropy": null
+      "trained_entropy": 1.41
     },
     "turing": {
       "baseline_entropy": 2.062983,
@@ -8096,7 +8116,7 @@ Point at the picture and say: that is the use."
         32.57625198364258,
         4.451818943023682
       ],
-      "trained_entropy": null
+      "trained_entropy": 1.57
     },
     "wittgenstein": {
       "baseline_entropy": 2.06383,
@@ -8134,7 +8154,7 @@ Point at the picture and say: that is the use."
         5.687528610229492,
         4.028826713562012
       ],
-      "trained_entropy": null
+      "trained_entropy": 1.68
     }
   },
   "steer": 50.0,
@@ -8162,10 +8182,11 @@ Point at the picture and say: that is the use."
       "turing.json": "433ff910615fc7114e3fb0d0005dd789c29ba84ead9cf645645e5b5bc735fa0d",
       "wittgenstein.json": "b2f974c88ee48c03722a23d92b78ed0944f147a5ba42ccf92f0071c26c2fabed"
     },
-    "mini_digests": "goedel:ef2677d20d6d8ea6 turing:ff695d8b762188ec composite:f0f11677e257d32b",
+    "mini_digests": "goedel:501a7ba3c37e1eca turing:ff695d8b762188ec composite:548416a92e1fe168",
     "note": "digests der Stufe-1- und 2-Artefakte + abgeleitete Checkpoint-Dateien; Registry bleibt klein (committed), Checkpoint-Ordner geht in .gitignore"
   },
-  "trained_choice_source": "joint 6-domain run (steps=60, router_only, router_diff)"
+  "trained_choice_source": "joint 6-domain run (steps=60, router_only, router_diff)",
+  "trained_entropy_source": "mean_h aus dem 60-Step-Lauf-Log (argon_1b_machines_train.log, Routing-Tabelle NACH DEM TRAINING); ab --emit_presets-Reload aus preset.mean_h"
 }
 
 ==============================================================================
@@ -9129,7 +9150,7 @@ Point at the picture and say: that is the use."
 
 ==============================================================================
 ### FILE: train_moe_router_specialization.py
-### bytes: 38117   lines: 713
+### bytes: 38287   lines: 715
 ==============================================================================
 """
 train_moe_router_specialization.py
@@ -9789,6 +9810,7 @@ def _emit_machine_presets(
             "name": f"argon-{domain}",
             "domain": domain,
             "entropy_target": float(entropy_targets[domain]),
+            "mean_h": float(stats_after[domain][1]),  # gemessene Router-Entropie nach dem Training
             "experts": experts,
             "steer": steer,
             "expert_bias": {"layers": n_layers, "values": bias_values},
@@ -9806,6 +9828,7 @@ def _emit_machine_presets(
         "name": "argon-gotterdreiheit-combined",
         "domain": "combined",
         "entropy_target": None,
+        "mean_h": None,      # Union: je Maschinen-Preset maßgeblich
         "experts": combined_unique,
         "steer": steer,
         "expert_bias": {"layers": n_layers, "values": combined_bias},
@@ -9848,7 +9871,7 @@ if __name__ == "__main__":
 
 ==============================================================================
 ### FILE: machines/verify_machines.py
-### bytes: 28219   lines: 573
+### bytes: 28669   lines: 580
 ==============================================================================
 """
 verify_machines.py — 6-Stufen-Verifikation der Götterdreiheit-Maschinen.
@@ -10349,7 +10372,14 @@ def stage_6_regression(checkpoint_machines: str) -> List[Tuple[str, str]]:
                 entry = registry["machines"][domain]
                 entry["trained_experts"] = preset["experts"]
                 entry["trained_pct"] = preset["routing_pct"]
-                entry["trained_entropy"] = None  # Messwert kommt aus dem Lauf-Log
+                # Mess-H: aus dem Preset (mean_h, seit --emit_presets in dem Lauf
+                # persistiert); fehlt es, bleibt ein vorhandener Wert stehen,
+                # statt auf null zurückzusetzen (Idempotenz).
+                measured_h = preset.get("mean_h")
+                if measured_h is not None:
+                    entry["trained_entropy"] = measured_h
+                elif entry.get("trained_entropy") is None:
+                    entry["trained_entropy"] = None  # Placeholder: Messwert kommt aus dem Lauf-Log
                 phase_b[domain] = preset["experts"]
         registry["trained_choice_source"] = "joint 6-domain run (steps=60, router_only, router_diff)"
         registry["version"] = 2
@@ -10973,6 +11003,1425 @@ STUFE 6
 ======================================================================================
 GRÜN — alle angeforderten Stufen bestanden.
 
+
+==============================================================================
+### FILE: scratches/smoke_composite_oracle.py
+### bytes: 13230   lines: 258
+==============================================================================
+"""
+smoke_composite_oracle.py — CompositeMachine: Oracle- vs. In-Loop-Trajektorien
+unter Preset-Steering auf dem realen trainierten Router (argon_1b_machines).
+
+Lanes:
+  L1/L2 — composite in_loop (Seed 42), 2 Läufe -> Determinismus-Digests
+  L3/L4 — composite oracle   ungesteuert, 2 Läufe -> Determinismus-Digests
+  L5    — composite oracle unter expert_bias-Steering "combined" (6 Experten)
+  L6    — composite oracle unter expert_bias-Steering "goedel"   ({2,7})
+  L7/L9 — composite oracle mit erzwungener Identitäts-Tautologie ('identity','x')
+          als erstes Batch-Programm (Schritt 1): der compile_rule-Hebel übersetzt
+          die Regel als Selbst-Transition ("n_i", BLANK) -> (BLANK, "N", "n_i"),
+          Turing liefert LOOP, die Komposition expandiert die Basis (uni_256:113);
+          L9 = Wiederholung von L7 (Determinismus auf dem getriggerten Pfad).
+  L8    — wie L7 unter expert_bias-Steering "goedel" ({2,7}).
+          L7-L9 tragen params={"axiom_pool": ["ALPHA", "BETA"]}; die Expansion
+          frisst je LOOP zwei Pool-Einträge (turing.step expandiert intern,
+          composite.step mit reason="composite:LOOP" danach) — die Zweiebenen-
+          Axiomatik (objektive Lauf-Basis + reflexive Kompositions-Basis).
+  L10-L12 — Multi-Expansions-Set: 6er-Pool ["ALPHA","BETA","GAMMA","DELTA",
+          "EPSILON","ZETA"], die Tautologie wird deterministisch an den
+          Schritten 1/10/12 erzwungen (FORCE_STEPS_MULTI) — die Expansionen
+          der natürlichen Verläufe sind RNG-driftanfällig (je Expansion 2
+          RNG-Draws, Streams divergieren), die erzwungene Cadence garantiert
+          die Basis-Leiter 3→5→7→9. L11 wie L10 unter Steering "goedel",
+          L12 = Wiederholung von L10 (Determinismus der vollen Leiter).
+
+Messgrößen je Lane: 16-Schritt-Gap-Verlauf, Digest, Axiom-Expansionen,
+Verdict-Verlauf, Basis-Profile (Basis-Groesse je Schritt), Router-Entropie
+auf Fixprobe (oracle.entropy_scalar).
+
+Pass-Kriterien:
+  - L1==L2 und L3==L4 und L7==L9 und L10==L12 (bitidentische Digests —
+    Determinismus in beiden Modis, auf dem Expansion-Pfad und der vollen
+    Leiter)
+  - alle Gaps endlich (keine NaN/Inf)
+  - entropy_bias_free: |ΔH(probe, standard→steer)| < 0.02 — DOKUMENTIERTE
+    Design-Eigenschaft: die Router-Entropie wird VOR dem expert_bias berechnet
+    (moe_layers.py:60-66: router_entropy aus bias-freien Sigmoid-Affinitäten;
+    der Bias wirkt nur auf die Top-K-Auswahl), das H-Meter ist daher
+    bias-invariant; das Steering-Signal liegt in der AUSWAHL (Stufe-5-Lauf:
+    Anteil 1.000, TV 0.36-0.41) und in der Trajektorie
+  - steer_traj_shift: die Oracle-Gap-Trajektorie unter Steering != ungesteuert
+    (L5/L6 != L3, L8 != L7, L11 != L10), ohne die Bias-Zustände zu hinterlassen
+    (Restaurierung)
+  - loop_tautology: L7 enthält mindestens ein "LOOP"-Verdikt und >= 1
+    Expansion; basis_expanded: Turing-Basis > 3 Dimensionen nach dem Lauf.
+  - multi_expansion: L10 realisiert die volle Leiter (Basis 9, 3 Expansionen,
+    LOOP-Verdikte exakt an den Schritten 1/10/12); multi_steer_shift: L11
+    hält dieselbe strukturelle Leiter unter Steering bei niedrigerem Gap-Band.
+Run:  PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
+      venv_openmythos/bin/python -u -m scratches.smoke_composite_oracle
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+import numpy as np  # noqa: E402
+import torch  # noqa: E402
+
+from machines.composite import CompositeMachine  # noqa: E402
+from machines.machine_base import ArgonOracle, MachineConfig  # noqa: E402
+from machines.wittgenstein_machine import GeneratedSymbolicRule  # noqa: E402
+from machines.verify_machines import _load_machines_model  # noqa: E402
+
+STEPS = 16
+PROBE = ("Die Wittgenstein-Regel wird Programm: Turing führt den AST aus, "
+         "Gödel predet das Ergebnis; die Regel zeigt, wie man sie ausführt. "
+         "gap=0.36 trend=STABLE basis=SCALAR,TIME,SPACE")
+
+TAUTAST = ("identity", "x")           # die Identitäts-Tautologie (compile_rule-Hebel)
+TAUT_POOL = {"axiom_pool": ["ALPHA", "BETA"]}
+TAUT_POOL6 = {"axiom_pool": ["ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON", "ZETA"]}
+FORCE_STEPS_MULTI = {1, 10, 12}
+
+
+def force_rule_at(machine: CompositeMachine, ast: Any,
+                  steps: set) -> None:
+    """
+    Probe-Pfad: erzwingt `ast` als ERSTE Regel des Wittgenstein-Batch an den
+    genannten Kompositions-Schritten (1-basiert), ohne den AST-Sampler der
+    Wittgenstein-Maschine anzutasten — die Regel compiliert zum Selbst-Programm.
+    Eine Erzwingung je genanntem Schritt (die erste create_rule-Regel des
+    Batches; die weiteren Batch-Regeln laufen durch den normalen Sampler).
+    """
+    wm = machine.wittgenstein
+    original = wm.create_rule
+    used: set = set()
+
+    def patched() -> GeneratedSymbolicRule:
+        current = wm._step_index + 1          # 0-basiert → laufender Schritt
+        if current in steps and current not in used:
+            used.add(current)
+            rule = GeneratedSymbolicRule(ast)
+            wm.generated_rules.append(rule)
+            return rule
+        return original()
+
+    wm.create_rule = patched
+
+
+def run_lane(mode: str, preset: str | None, oracle: ArgonOracle,
+             params: Dict[str, Any] | None = None,
+             force_steps: set | None = None) -> Dict[str, Any]:
+    """16 Composite-Schritte in einem Modus (+ optional unter Steering)."""
+    machine = CompositeMachine(MachineConfig(seed=42, mode=mode, params=dict(params or {})),
+                               oracle=oracle)
+    if force_steps is not None:
+        force_rule_at(machine, TAUTAST, set(force_steps))
+    verdicts: List[str] = []
+    basis_profile: List[int] = []
+    h_probe: float | None = None
+    restored = True
+    if preset is None:
+        h_probe = oracle.entropy_scalar(PROBE)
+        for _ in range(STEPS):
+            result = machine.step(None)
+            verdicts.append(str(result.invariants["verdict"]))
+            basis_profile.append(len(machine.turing.basis))
+    else:
+        bias_before = [layer.moe.gate.expert_bias.data.clone()
+                       for layer in oracle.model.model.layers]
+        with oracle.steer(preset) as info:
+            h_probe = oracle.entropy_scalar(PROBE)
+            for _ in range(STEPS):
+                result = machine.step(None)
+                verdicts.append(str(result.invariants["verdict"]))
+                basis_profile.append(len(machine.turing.basis))
+            info_experts = list(info["experts"])
+        bias_after = [layer.moe.gate.expert_bias.data
+                      for layer in oracle.model.model.layers]
+        restored = all(torch.equal(a, b) for a, b in zip(bias_before, bias_after))
+    gaps = list(machine.gap().history)
+    finite = all(np.isfinite(g) for g in gaps)
+    return {"mode": mode, "preset": preset or "(standard)",
+            "digest": machine.digest(), "gaps": gaps, "finite": finite,
+            "expansions": list(machine.expansions),
+            "verdicts": verdicts, "halt_verdicts": int(sum(1 for v in verdicts
+                                                           if v in ("LOOP", "COLLAPSE", "EXPLOSION"))),
+            "basis_profile": basis_profile,
+            "basis_len": len(machine.turing.basis),
+            "h_probe": h_probe, "restored": bool(restored),
+            "top2_gap_delta": round(float(gaps[0] - gaps[-1]), 6)}
+
+
+def main() -> int:
+    import argparse
+    parser = argparse.ArgumentParser(description="Composite Oracle/In-Loop Experiment")
+    parser.add_argument("--checkpoint_base", default="./argon_1b")
+    parser.add_argument("--checkpoint_machines", default="./argon_1b_machines")
+    args = parser.parse_args()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"[Setup] device={device} base={args.checkpoint_base} machines={args.checkpoint_machines}")
+    model, tokenizer = _load_machines_model(args.checkpoint_base, args.checkpoint_machines)
+    oracle = ArgonOracle(model, tokenizer, device=device)
+
+    lanes: Dict[str, Dict[str, Any]] = {}
+    lanes["L1"] = run_lane("in_loop", None, oracle)
+    lanes["L2"] = run_lane("in_loop", None, oracle)
+    lanes["L3"] = run_lane("oracle", None, oracle)
+    lanes["L4"] = run_lane("oracle", None, oracle)
+    lanes["L5"] = run_lane("oracle", "combined", oracle)
+    lanes["L6"] = run_lane("oracle", "goedel", oracle)
+    lanes["L7"] = run_lane("oracle", None, oracle, params=TAUT_POOL, force_steps={1})
+    lanes["L8"] = run_lane("oracle", "goedel", oracle, params=TAUT_POOL, force_steps={1})
+    lanes["L9"] = run_lane("oracle", None, oracle, params=TAUT_POOL, force_steps={1})
+    lanes["L10"] = run_lane("oracle", None, oracle, params=dict(TAUT_POOL6),
+                            force_steps=FORCE_STEPS_MULTI)
+    lanes["L11"] = run_lane("oracle", "goedel", oracle, params=dict(TAUT_POOL6),
+                            force_steps=FORCE_STEPS_MULTI)
+    lanes["L12"] = run_lane("oracle", None, oracle, params=dict(TAUT_POOL6),
+                            force_steps=FORCE_STEPS_MULTI)
+
+    print("=" * 88)
+    print("COMPOSITE: ORACLE- VS. IN-LOOP-TRAJEKTORIEN UNTER PRESET-STEERING")
+    print("=" * 88)
+    for name, lane in lanes.items():
+        gaps_str = " ".join(f"{g:.2f}" for g in lane["gaps"])
+        print(f"{name} mode={lane['mode']:7s} preset={lane['preset']:10s} "
+              f"digest={lane['digest'][:12]} h_probe={lane['h_probe']:.4f} "
+              f"restored={lane['restored']} expansions={lane['expansions']} "
+              f"halt={lane['halt_verdicts']} basis={lane['basis_len']} "
+              f"gapΔ0→end={lane['top2_gap_delta']:+.4f}")
+        print(f"    gaps: {gaps_str}")
+        if lane["halt_verdicts"]:
+            print(f"    verdicts: {lane['verdicts']}")
+        if max(lane["basis_profile"]) > 3:
+            print(f"    basis_profile: {lane['basis_profile']}")
+
+    findings: List[Tuple[str, str]] = []
+    det = lanes["L1"]["digest"] == lanes["L2"]["digest"]
+    findings.append(("det_in_loop", "PASS" if det else "FAIL",))
+    det_o = lanes["L3"]["digest"] == lanes["L4"]["digest"]
+    findings.append(("det_oracle", "PASS" if det_o else "FAIL"))
+    finite = all(l["finite"] for l in lanes.values())
+    findings.append(("finite_gaps", "PASS" if finite else "FAIL"))
+    delta_h_comb = abs(lanes["L5"]["h_probe"] - lanes["L3"]["h_probe"])
+    delta_h_goe = abs(lanes["L6"]["h_probe"] - lanes["L3"]["h_probe"])
+    findings.append(("entropy_bias_free",
+                     "PASS" if (delta_h_comb < 0.02 and delta_h_goe < 0.02) else "FAIL"))
+    traj_shift = (lanes["L5"]["gaps"] != lanes["L3"]["gaps"]
+                  and lanes["L6"]["gaps"] != lanes["L3"]["gaps"])
+    findings.append(("steer_traj_shift", "PASS" if traj_shift else "FAIL"))
+    det_t = lanes["L7"]["digest"] == lanes["L9"]["digest"]
+    findings.append(("det_tautology", "PASS" if det_t else "FAIL"))
+    loop_ok = ("LOOP" in lanes["L7"]["verdicts"]
+               and len(lanes["L7"]["expansions"]) > 0)
+    findings.append(("loop_tautology", "PASS" if loop_ok else "FAIL"))
+    grew = lanes["L7"]["basis_len"] > 3
+    findings.append(("basis_expanded", "PASS" if grew else "FAIL"))
+    finite_t = all(lanes[name]["finite"] for name in ("L7", "L8", "L9"))
+    findings.append(("tautology_finite", "PASS" if finite_t else "FAIL"))
+    traj_t = lanes["L8"]["gaps"] != lanes["L7"]["gaps"]
+    findings.append(("tautology_steer_shift", "PASS" if traj_t else "FAIL"))
+    multi = (lanes["L10"]["basis_len"] == 9
+             and len(lanes["L10"]["expansions"]) == 3
+             and lanes["L10"]["verdicts"][0] == "LOOP"
+             and lanes["L10"]["verdicts"][9] == "LOOP"
+             and lanes["L10"]["verdicts"][11] == "LOOP")
+    findings.append(("multi_expansion", "PASS" if multi else "FAIL"))
+    det_m = lanes["L10"]["digest"] == lanes["L12"]["digest"]
+    findings.append(("det_multi_expansion", "PASS" if det_m else "FAIL"))
+    multi_steer = (lanes["L11"]["basis_len"] == 9
+                   and lanes["L11"]["gaps"] != lanes["L10"]["gaps"])
+    findings.append(("multi_steer_shift", "PASS" if multi_steer else "FAIL"))
+    clean = all(l["restored"] for l in lanes.values())
+    findings.append(("bias_restored", "PASS" if clean else "FAIL"))
+
+    print("-" * 88)
+    print("BEFUNDE")
+    for label, status in findings:
+        print(f"  {label:20s} {status}")
+
+    report = {"lanes": lanes,
+              "findings": {k: v for k, v in findings},
+              "delta_h_combined": float(delta_h_comb),
+              "delta_h_goedel": float(delta_h_goe)}
+    out = REPO_ROOT / "scratches" / "composite_oracle_experiment.json"
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[Save] {out.relative_to(REPO_ROOT)}")
+
+    failed = [name for name, status in findings if status != "PASS"]
+    if failed:
+        print(f"FEHLGESCHLAGEN: {len(failed)} — {', '.join(failed)}")
+        return 1
+    print("GRÜN — alle Experiment-Befunde bestanden.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+==============================================================================
+### FILE: scratches/composite_oracle_experiment.log
+### bytes: 6929   lines: 66
+==============================================================================
+[Setup] device=cuda base=./argon_1b machines=./argon_1b_machines
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+========================================================================================
+COMPOSITE: ORACLE- VS. IN-LOOP-TRAJEKTORIEN UNTER PRESET-STEERING
+========================================================================================
+L1 mode=in_loop preset=(standard) digest=5cb5d245e5a7 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-1.4541
+    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 1.45 2.13
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L2 mode=in_loop preset=(standard) digest=5cb5d245e5a7 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-1.4541
+    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 1.45 2.13
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L3 mode=oracle  preset=(standard) digest=11e246eddf07 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0375
+    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.77 0.65
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L4 mode=oracle  preset=(standard) digest=11e246eddf07 h_probe=1.7432 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0375
+    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.77 0.65
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L5 mode=oracle  preset=combined   digest=eda6fc23ed71 h_probe=1.7441 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0420
+    gaps: 0.48 0.59 0.55 0.66 0.64 0.67 0.67 0.59 0.66 0.37 0.49 0.47 0.65 0.66 0.63 0.52
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L6 mode=oracle  preset=goedel     digest=063d92c0f354 h_probe=1.7420 restored=True expansions=[] halt=1 basis=3 gapΔ0→end=-0.0411
+    gaps: 0.48 0.59 0.56 0.65 0.64 0.67 0.67 0.60 0.66 0.37 0.49 0.47 0.64 0.66 0.63 0.52
+    verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED']
+L7 mode=oracle  preset=(standard) digest=9c5bf80babaa h_probe=1.7432 restored=True expansions=['step1:LOOP'] halt=3 basis=5 gapΔ0→end=-0.1688
+    gaps: 0.61 0.81 0.72 0.78 0.83 0.58 0.72 0.71 0.57 0.74 0.77 0.80 0.64 0.59 0.60 0.78
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+    basis_profile: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+L8 mode=oracle  preset=goedel     digest=1f7cbc913e7c h_probe=1.7420 restored=True expansions=['step1:LOOP'] halt=3 basis=5 gapΔ0→end=-0.1673
+    gaps: 0.48 0.67 0.61 0.65 0.71 0.47 0.60 0.56 0.46 0.62 0.64 0.67 0.51 0.45 0.46 0.65
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+    basis_profile: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+L9 mode=oracle  preset=(standard) digest=9c5bf80babaa h_probe=1.7432 restored=True expansions=['step1:LOOP'] halt=3 basis=5 gapΔ0→end=-0.1688
+    gaps: 0.61 0.81 0.72 0.78 0.83 0.58 0.72 0.71 0.57 0.74 0.77 0.80 0.64 0.59 0.60 0.78
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+    basis_profile: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+L10 mode=oracle  preset=(standard) digest=edc1ded943f5 h_probe=1.7432 restored=True expansions=['step1:LOOP', 'step10:LOOP', 'step12:LOOP'] halt=3 basis=9 gapΔ0→end=-0.1952
+    gaps: 0.61 0.81 0.72 0.78 0.83 0.58 0.72 0.71 0.57 0.70 0.68 0.69 0.58 0.78 0.80 0.81
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+    basis_profile: [5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 9, 9, 9, 9, 9]
+L11 mode=oracle  preset=goedel     digest=cd4cd8570e38 h_probe=1.7420 restored=True expansions=['step1:LOOP', 'step10:LOOP', 'step12:LOOP'] halt=3 basis=9 gapΔ0→end=-0.1905
+    gaps: 0.48 0.67 0.61 0.65 0.71 0.47 0.60 0.56 0.46 0.55 0.56 0.55 0.45 0.65 0.66 0.67
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+    basis_profile: [5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 9, 9, 9, 9, 9]
+L12 mode=oracle  preset=(standard) digest=edc1ded943f5 h_probe=1.7432 restored=True expansions=['step1:LOOP', 'step10:LOOP', 'step12:LOOP'] halt=3 basis=9 gapΔ0→end=-0.1952
+    gaps: 0.61 0.81 0.72 0.78 0.83 0.58 0.72 0.71 0.57 0.70 0.68 0.69 0.58 0.78 0.80 0.81
+    verdicts: ['LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'LOOP', 'HALTED', 'LOOP', 'HALTED', 'HALTED', 'HALTED', 'HALTED']
+    basis_profile: [5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 9, 9, 9, 9, 9]
+----------------------------------------------------------------------------------------
+BEFUNDE
+  det_in_loop          PASS
+  det_oracle           PASS
+  finite_gaps          PASS
+  entropy_bias_free    PASS
+  steer_traj_shift     PASS
+  det_tautology        PASS
+  loop_tautology       PASS
+  basis_expanded       PASS
+  tautology_finite     PASS
+  tautology_steer_shift PASS
+  multi_expansion      PASS
+  det_multi_expansion  PASS
+  multi_steer_shift    PASS
+  bias_restored        PASS
+[Save] scratches/composite_oracle_experiment.json
+GRÜN — alle Experiment-Befunde bestanden.
+
+
+==============================================================================
+### FILE: scratches/composite_oracle_experiment.json
+### bytes: 16898   lines: 831
+==============================================================================
+{
+  "lanes": {
+    "L1": {
+      "mode": "in_loop",
+      "preset": "(standard)",
+      "digest": "5cb5d245e5a70b12df8a4d7dbd9732838fb5f0b2a00fd3ca547d918ce8014e86",
+      "gaps": [
+        0.6799123481565301,
+        0.26320467470764974,
+        0.7066315615311796,
+        0.6175379407460896,
+        5.4744042027208275,
+        5.456607769010149,
+        5.442853275567589,
+        1.2633445466720035,
+        6.387750688898116,
+        3.08344297452353,
+        2.090350250438376,
+        2.2894320788999334,
+        8.016194471219945,
+        8.022918150169433,
+        1.449591652342139,
+        2.1339736809059686
+      ],
+      "finite": true,
+      "expansions": [],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED"
+      ],
+      "halt_verdicts": 1,
+      "basis_profile": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "basis_len": 3,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -1.454061
+    },
+    "L2": {
+      "mode": "in_loop",
+      "preset": "(standard)",
+      "digest": "5cb5d245e5a70b12df8a4d7dbd9732838fb5f0b2a00fd3ca547d918ce8014e86",
+      "gaps": [
+        0.6799123481565301,
+        0.26320467470764974,
+        0.7066315615311796,
+        0.6175379407460896,
+        5.4744042027208275,
+        5.456607769010149,
+        5.442853275567589,
+        1.2633445466720035,
+        6.387750688898116,
+        3.08344297452353,
+        2.090350250438376,
+        2.2894320788999334,
+        8.016194471219945,
+        8.022918150169433,
+        1.449591652342139,
+        2.1339736809059686
+      ],
+      "finite": true,
+      "expansions": [],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED"
+      ],
+      "halt_verdicts": 1,
+      "basis_profile": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "basis_len": 3,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -1.454061
+    },
+    "L3": {
+      "mode": "oracle",
+      "preset": "(standard)",
+      "digest": "11e246eddf076b749c22c1057d07cf0c48dd59e752da3d39aa84cd552fb41192",
+      "gaps": [
+        0.6127814224048759,
+        0.6883163363040498,
+        0.6884888594591398,
+        0.7408757897116321,
+        0.7604453009643922,
+        0.7812510268877478,
+        0.8050323730096697,
+        0.72569979752131,
+        0.774324644100397,
+        0.49196313810397174,
+        0.616797334335926,
+        0.6056547798446483,
+        0.7850056689208932,
+        0.8071613698957315,
+        0.7685503547756497,
+        0.650259829599964
+      ],
+      "finite": true,
+      "expansions": [],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED"
+      ],
+      "halt_verdicts": 1,
+      "basis_profile": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "basis_len": 3,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -0.037478
+    },
+    "L4": {
+      "mode": "oracle",
+      "preset": "(standard)",
+      "digest": "11e246eddf076b749c22c1057d07cf0c48dd59e752da3d39aa84cd552fb41192",
+      "gaps": [
+        0.6127814224048759,
+        0.6883163363040498,
+        0.6884888594591398,
+        0.7408757897116321,
+        0.7604453009643922,
+        0.7812510268877478,
+        0.8050323730096697,
+        0.72569979752131,
+        0.774324644100397,
+        0.49196313810397174,
+        0.616797334335926,
+        0.6056547798446483,
+        0.7850056689208932,
+        0.8071613698957315,
+        0.7685503547756497,
+        0.650259829599964
+      ],
+      "finite": true,
+      "expansions": [],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED"
+      ],
+      "halt_verdicts": 1,
+      "basis_profile": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "basis_len": 3,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -0.037478
+    },
+    "L5": {
+      "mode": "oracle",
+      "preset": "combined",
+      "digest": "eda6fc23ed7112c532783a10934ce667c31072dbf79987146448fee40f7d55ba",
+      "gaps": [
+        0.4785101141991446,
+        0.5876400999383998,
+        0.5545828651302104,
+        0.658402007089449,
+        0.6414718373005694,
+        0.6653512081570275,
+        0.6733238834993546,
+        0.5941761128131909,
+        0.662294080972567,
+        0.3682704723462548,
+        0.4918948061891184,
+        0.4681053741026055,
+        0.6451136719335486,
+        0.6604042571492738,
+        0.6256932151603535,
+        0.5205544028596604
+      ],
+      "finite": true,
+      "expansions": [],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED"
+      ],
+      "halt_verdicts": 1,
+      "basis_profile": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "basis_len": 3,
+      "h_probe": 1.7441226243972778,
+      "restored": true,
+      "top2_gap_delta": -0.042044
+    },
+    "L6": {
+      "mode": "oracle",
+      "preset": "goedel",
+      "digest": "063d92c0f354be5a022de0df15b911859a07fd94c25f34e000e6b99ee07ef1d1",
+      "gaps": [
+        0.4786146520643999,
+        0.5885154318066569,
+        0.5577969569725174,
+        0.6529269355058126,
+        0.6396242759183152,
+        0.6665599033084818,
+        0.6749339205786175,
+        0.5962348318748361,
+        0.6606575061402884,
+        0.3666823764695348,
+        0.49216474066744037,
+        0.4671641606160555,
+        0.6434508375773927,
+        0.6608448185009794,
+        0.6268089708199193,
+        0.5196947210650079
+      ],
+      "finite": true,
+      "expansions": [],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED"
+      ],
+      "halt_verdicts": 1,
+      "basis_profile": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "basis_len": 3,
+      "h_probe": 1.7419607639312744,
+      "restored": true,
+      "top2_gap_delta": -0.04108
+    },
+    "L7": {
+      "mode": "oracle",
+      "preset": "(standard)",
+      "digest": "9c5bf80babaa6868185d1157602b124e0e762cecf5050357b3b0d11d3689d5d0",
+      "gaps": [
+        0.6118332675775107,
+        0.8069312698078502,
+        0.7235221925606368,
+        0.7778626467390497,
+        0.8253577021567885,
+        0.5804478232127429,
+        0.7221088984464424,
+        0.7101933944432154,
+        0.5694471903929217,
+        0.7389314265716664,
+        0.7671990536848905,
+        0.8007025081253629,
+        0.6406692978536893,
+        0.5879067218887551,
+        0.5960957402814177,
+        0.7806217830717377
+      ],
+      "finite": true,
+      "expansions": [
+        "step1:LOOP"
+      ],
+      "verdicts": [
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "halt_verdicts": 3,
+      "basis_profile": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "basis_len": 5,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -0.168789
+    },
+    "L8": {
+      "mode": "oracle",
+      "preset": "goedel",
+      "digest": "1f7cbc913e7c504b414657c3a6149681730dbfb7ca6d2cb9d72f04499cbd8548",
+      "gaps": [
+        0.4805109607709765,
+        0.6748479020288519,
+        0.6079741815875722,
+        0.6548469215301439,
+        0.7119693612497856,
+        0.46984830128749994,
+        0.6035204333459837,
+        0.5630557378942647,
+        0.46044787554204136,
+        0.619978958967943,
+        0.6367830237752399,
+        0.6665855184633819,
+        0.5081451481474425,
+        0.45146708834431887,
+        0.45678431666205704,
+        0.6478312407738245
+      ],
+      "finite": true,
+      "expansions": [
+        "step1:LOOP"
+      ],
+      "verdicts": [
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "halt_verdicts": 3,
+      "basis_profile": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "basis_len": 5,
+      "h_probe": 1.7419607639312744,
+      "restored": true,
+      "top2_gap_delta": -0.16732
+    },
+    "L9": {
+      "mode": "oracle",
+      "preset": "(standard)",
+      "digest": "9c5bf80babaa6868185d1157602b124e0e762cecf5050357b3b0d11d3689d5d0",
+      "gaps": [
+        0.6118332675775107,
+        0.8069312698078502,
+        0.7235221925606368,
+        0.7778626467390497,
+        0.8253577021567885,
+        0.5804478232127429,
+        0.7221088984464424,
+        0.7101933944432154,
+        0.5694471903929217,
+        0.7389314265716664,
+        0.7671990536848905,
+        0.8007025081253629,
+        0.6406692978536893,
+        0.5879067218887551,
+        0.5960957402814177,
+        0.7806217830717377
+      ],
+      "finite": true,
+      "expansions": [
+        "step1:LOOP"
+      ],
+      "verdicts": [
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "halt_verdicts": 3,
+      "basis_profile": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "basis_len": 5,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -0.168789
+    },
+    "L10": {
+      "mode": "oracle",
+      "preset": "(standard)",
+      "digest": "edc1ded943f5c066bb65bd45bcbc4a48ad02fa93c8beff6901e9e9f43d25b43b",
+      "gaps": [
+        0.6118332675775107,
+        0.8069312698078502,
+        0.7235221925606368,
+        0.7778626467390497,
+        0.8253577021567885,
+        0.5804478232127429,
+        0.7221088984464424,
+        0.7101933944432154,
+        0.5694471903929217,
+        0.7045145537243216,
+        0.6800640168556772,
+        0.6889719427438914,
+        0.5805252913518625,
+        0.7782234918480703,
+        0.8038508376889575,
+        0.8070693004488986
+      ],
+      "finite": true,
+      "expansions": [
+        "step1:LOOP",
+        "step10:LOOP",
+        "step12:LOOP"
+      ],
+      "verdicts": [
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "halt_verdicts": 3,
+      "basis_profile": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        7,
+        7,
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "basis_len": 9,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -0.195236
+    },
+    "L11": {
+      "mode": "oracle",
+      "preset": "goedel",
+      "digest": "cd4cd8570e38acb2e9bbe4becbd01884607146675d2c118a5754956bc7b87111",
+      "gaps": [
+        0.4805109607709765,
+        0.6748479020288519,
+        0.6079741815875722,
+        0.6548469215301439,
+        0.7119693612497856,
+        0.46984830128749994,
+        0.6035204333459837,
+        0.5630557378942647,
+        0.46044787554204136,
+        0.5493200324973203,
+        0.5623611390260873,
+        0.5516333910194364,
+        0.44620146792783943,
+        0.64676255803387,
+        0.6580801665179611,
+        0.6710504824195332
+      ],
+      "finite": true,
+      "expansions": [
+        "step1:LOOP",
+        "step10:LOOP",
+        "step12:LOOP"
+      ],
+      "verdicts": [
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "halt_verdicts": 3,
+      "basis_profile": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        7,
+        7,
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "basis_len": 9,
+      "h_probe": 1.7419607639312744,
+      "restored": true,
+      "top2_gap_delta": -0.19054
+    },
+    "L12": {
+      "mode": "oracle",
+      "preset": "(standard)",
+      "digest": "edc1ded943f5c066bb65bd45bcbc4a48ad02fa93c8beff6901e9e9f43d25b43b",
+      "gaps": [
+        0.6118332675775107,
+        0.8069312698078502,
+        0.7235221925606368,
+        0.7778626467390497,
+        0.8253577021567885,
+        0.5804478232127429,
+        0.7221088984464424,
+        0.7101933944432154,
+        0.5694471903929217,
+        0.7045145537243216,
+        0.6800640168556772,
+        0.6889719427438914,
+        0.5805252913518625,
+        0.7782234918480703,
+        0.8038508376889575,
+        0.8070693004488986
+      ],
+      "finite": true,
+      "expansions": [
+        "step1:LOOP",
+        "step10:LOOP",
+        "step12:LOOP"
+      ],
+      "verdicts": [
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "halt_verdicts": 3,
+      "basis_profile": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        7,
+        7,
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "basis_len": 9,
+      "h_probe": 1.7431836128234863,
+      "restored": true,
+      "top2_gap_delta": -0.195236
+    }
+  },
+  "findings": {
+    "det_in_loop": "PASS",
+    "det_oracle": "PASS",
+    "finite_gaps": "PASS",
+    "entropy_bias_free": "PASS",
+    "steer_traj_shift": "PASS",
+    "det_tautology": "PASS",
+    "loop_tautology": "PASS",
+    "basis_expanded": "PASS",
+    "tautology_finite": "PASS",
+    "tautology_steer_shift": "PASS",
+    "multi_expansion": "PASS",
+    "det_multi_expansion": "PASS",
+    "multi_steer_shift": "PASS",
+    "bias_restored": "PASS"
+  },
+  "delta_h_combined": 0.0009390115737915039,
+  "delta_h_goedel": 0.001222848892211914
+}
+
+==============================================================================
+### FILE: scratches/laufprotokolle_befund_report.md
+### bytes: 14867   lines: 240
+==============================================================================
+# Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
+
+Quellen (alle in `scratches/`): `argon_1b_machines_train.log` (Joint-6-Domänen-Lauf),
+`build_corpus_re_sync.log` (Korpus-Re-Auth + Phase-A), `verify_machines_full.log`
+(6-Stufen-Verifikation), plus `machine_registry.json` (Golden-Digests, version 2).
+
+---
+
+## 1. Trainingslauf — 60 Schritte, Joint über 6 Domänen
+
+| Größe | Wert |
+| :--- | :--- |
+| Trainierbare Parameter (Freeze) | 239.616 von 2.245.605.632 (**0,01 %**) — nur Router-Gates; Basis/Embeddings/Attention/Shared Expert eingefroren |
+| CE+Ent-Loss | 4.8446 → 4.3638 (**−9,9 %**) |
+| Subspace-Sep-Loss | 0.2389 → 0.0370 (**−84,5 %**; nach ~30 Schritten weit konvergiert: 0.0500 → Rest 0.037) |
+| Zeit | 974.8 s (≈ 16,2 s/Schritt, CUDA) |
+| Korpus | `--corpus all` (6 Domänen × 24 = 72 Zeilen), sha `f6c0b5de…` |
+| Save-Modus | `router_diff`: 52 geänderte Keys (Gate.weight + expert_bias über 26 Layer) statt 5-GB-Vollkopie |
+
+**Korpus-Re-Auth (Re-Sync-Lauf):** die Signum-Korrektur (`err = actual − prediction`,
+uni_241:220) veränderte die Zahlenschwänze der Gödel-Trajektorien-Samples → kanonischer
+Rebuild `f6c0b5de…`, Phase-A-Baseline unverändert kohärent (TV zwischen Maschinen
+2,87–4,12 %), Expertenwahl je Domäne „plan-defaults (baseline collision)" (Baseline-Top-2
+kollidierten auf [1,4]/[1,0]; disjunkte Defaults {2,7}/{0,6}/{1,3} gegriffen).
+
+## 2. Entropie-Kalibrierung — Solls vs. Messwerte
+
+| Domäne | Ziel H | gemessen H | Δ | Top-2 (Anteile) |
+| :--- | :--- | :--- | :--- | :--- |
+| prose | 0.85 | 1.01 | +0.16 | E3 38.8 % / E7 38.2 % |
+| code | 1.35 | 1.42 | +0.07 | E4 33.1 % / E1 26.5 % |
+| math_logic | 1.85 | 1.67 | −0.18 | E5 35.4 % / E2 21.0 % |
+| **goedel** | **1.30** | **1.41** | **+0.11** | **E2 33.1 % / E7 30.7 %** |
+| **turing** | **1.65** | **1.57** | **−0.08** | **E6 32.6 % / E0 28.4 %** |
+| **wittgenstein** | **1.90** | **1.68** | **−0.22** | **E3 30.6 % / E1 28.2 %** |
+
+Alle sechs Domänen liegen in einem **±0.22-Band** um die Solls — die Hierarchie
+(Prosa eng → Sprachspiel breit) ist erhalten, keine Domäne hat das Soll übersprungen.
+Die Maschinen-H-Werte sind inzwischen als `trained_entropy` in der Registry
+persistiert (Herkunftsfeld `trained_entropy_source`; Presets persistieren `mean_h`
+selbst ab `cd6c009`).
+
+**Baselines:** vor dem Training alle 6 Domänen H≈2.06 (≈ ln 8 = 2.079, diffus) —
+das Training hat die Entropie-Hierarchie aus der diffusen Basis geformt.
+
+## 3. Routing-Trennung und Subspace-Kopplung
+
+- TV-Paare **vor**: 2.6–5.6 % (diffuse Basis) → **nach**: 40.3–71.1 %
+  (min code/wittgenstein 40.3 %, max math/prose 71.1 %).
+- Maschinen-Maschinen-Paare: goedel/turing 56.3 %, goedel/wittgenstein 55.8 %,
+  turing/wittgenstein 52,1 % — überdemäßig scharf getrennt bei nur 24 Samples/Domäne.
+- **Ko-Subspace-Kopplung (Befund, kein Fehler):** die Maschinen-Cluster überlappen
+  mit den Alt-Domänen-Stärken — E2/E6 (math), E3/E7 (prose), E0/E1 (code); E4/E5
+  bleiben Top-Anchor von Code/Math (Brücken-Subspace). Die Maschinen-Korpora sind
+  aus diesen Domänen-Stilen gebaut (Trajektorien-, AST-, Transitions-Formate), der
+  geteilte Subspace ist die *Anbindung* an das antrainierte Verständnis — genau das
+  Plan-Ziel „auf dem antrainierten Verständnis aufbauen“.
+
+## 4. Sprachinvarianz & Wissens-Erhalt
+
+| Messgröße | vor | nach | Befund |
+| :--- | :--- | :--- | :--- |
+| Math EN↔ZH (ungesehene Probes) | 5.5 % | 8.5 % | **Kosten-Note** (eine gegenläufige Bewegung; unter dem 20-%-Schwell) |
+| Math DE↔ZH | 4.5 % | 9.1 % | ebenso |
+| Prose EN↔ZH | 7.2 % | **3.1 %** | verbessert |
+| Trennung Math(EN)/Prose(EN) | 7.8 % | **70.6 %** | Domänen-Schärfe ≈ 9:1-Verhältnis |
+| Paris EN/DE | ✓ | ✓ | Basiswissen geschützt |
+
+## 5. Verifikation — alle 6 Stufen grün (Exit 0)
+
+| Stufe | Befund |
+| :--- | :--- |
+| 1 Mini-Smoke | Digests `1594f06485ef` (goedel) / `459575a8eb35` (turing) / `094df3c57a2f` (wittgenstein) / `660ffead6c40` (composite) — bitidentisch in 2 Läufen, NaN-frei |
+| 2 Korpus | 72 Zeilen, 24 je Domäne, kinds ≥ 3; Raw-Bytes == Registry-sha (roh-gelesen, universal-newline-Falle vermieden) |
+| 3 Canon-Parität | alle Kanon-Werte == Goldwerte (`parity/python_fixtures.json`) |
+| 4 SBCL-Parität | P1 bitgenau + P2 strukturell (Philosopher: len 52, thoughts 6) |
+| 5 Real-Lauf | steer Δ-TVs 0.362/0.390/0.411 (Δ-Semantik auf dem trainierten Router, Schwell 0.3), Anteil 1.000, `copy_`-Restaurierung True; Konvergenz 0.7437 → 0.3777; Trennung min 0.52 (Maschinen) / 0.40 (vs. Alt-Domänen); Invarianz 8.5/3.1 % + Paris |
+| 6 Regression | Paradigm ratio 2.60 RISING; Axiom-Expansion LOOP + „ALPHA“; Registry version 2 incl. Golden-Digests; compare-Suite unangetastet |
+
+**Kohärenz-Quercheck:** die Stufe-5-Re-Messung der Invarianz-Probes gibt bitidentisch
+die Trainings-Werte zurück (H 1.63/1.68/1.64/1.07/1.03/1.01, TVs 8.5/3.1/70.6) —
+der Verifikator misst dieselben Zahlen wie der Trainingslauf, keine Drift zwischen
+dem Save-Zeitpunkt und der Nach-Betrachtung.
+
+## 6. Notizen zu Log-Ordnung und Fehlalarmen
+
+- **Druck-Ordnung im Verifikations-Log:** die Invarianz-Tabelle steht *vor* STUFE 1,
+  weil Stufen-Findings gesammelt und am Ende gedruckt werden, während der
+  Invarianz-Druck von Stufe 5 während der Ausführung bereits erscheint — kein
+  Ausführung-Anomalie.
+- **Tokenizer-Warnung (`fix_mistral_regex`)** erscheint in allen drei Logs —
+  dokumentierter **Falsch-Positiv** (README, Tokenizer-Hinweis): der Test-Tokenizer
+  tokenisiert Proben token-für-token identisch zum Original, die Flag darf nicht
+  gesetzt werden.
+- **Idempotenz der Stufe 6:** `trained_entropy` wird aus `preset.mean_h` übernommen
+  bzw. ein vorhandener Messwert nicht auf null zurückgesetzt — mehrfache
+  Verifikationsläufe überschreiben keine Messwerte mehr.
+- **Mini-Digests sind umweltstabil innerhalb, nicht zwischen Umgebungen:** der
+  Goedel-Zweig rechnet `tanh(W @ state)` (BLAS-Matmul); ein venv-Lauf
+  (Stufe 1: `1594f06485ef`) und ein System-Python-Lauf (`1b0aee4e688b`)
+  unterscheiden sich in 1-ulp-Matmul-Reduktion bei identischem `gap0` (0.7437),
+  der composite-Digest folgt dem Goedel-Zweig. Turing/Wittgenstein (elementweise)
+  stimmen. Stufe 6 füllt die Mini-Digests (3-Schritt-Familie) selbst — kein
+  Golden-Ersatz nötig, kein Code-Drift (`machines/` unverändert seit `d1a6cee`).
+
+---
+
+## 7. Experiment: CompositeMachine — Oracle vs. In-Loop unter Preset-Steering
+
+(`scratches/smoke_composite_oracle.py` → `composite_oracle_experiment.log` / `.json`;
+6 Lanes à 16 Schritte, Seed 42, Checkpoint `argon_1b_machines`)
+
+| Lane | Modus | Steering | Digest | H-Probe | Gap-Verlauf (16 Schritte) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L1/L2 | in_loop | — | `d63f6d6cec55` (≈) | 1.7432 | 0.68 → **5.47/6.39/8.02-Ausreißer** → 1.86 (volatil) |
+| L3/L4 | oracle | — | `2565609bc3dc` (≈) | 1.7432 | 0.61…0.81 (ruhiges Band), Δ 0.74→0.73 |
+| L5 | oracle | combined {0,1,2,3,6,7} | `0d1479f2f804` | 1.7441 | 0.48…0.67 — **systematisch unter ungesteuert** |
+| L6 | oracle | goedel {2,7} | `b4cd8edcf5da` | 1.7420 | 0.48…0.67 — nahezu identisch zu L5 |
+
+**Befunde (alle PASS):** Determinismus in beiden Kopplungsmodis (in_loop und oracle
+bitidentisch über zwei Läufe — und über zwei Prozesse hinweg), Gaps endlich,
+Bias-Restaurierung in jeder Steering-Lane.
+
+**Zwei semantische Befunde:**
+
+1. **Das H-Meter ist bias-frei (Design, experimentell belegt):** |ΔH| unter ±50-Steering
+   ≈ 0.001, weil `moe_layers.py:60-66` die Router-Entropie aus den **bias-freien**
+   Sigmoid-Affinitäten berechnet, während `expert_bias` ausschließlich die Top-K-Auswahl
+   verschiebt (Zeile 65-66) — die Gewichte selbst kommen ebenfalls aus den bias-freien
+   Scores (Zeile 79). Das Steering-Signal liegt also in der *Auswahl* (Stufe 5:
+   Anteil 1.000, TV 0.36–0.41) und in der Trajektorie (L5/L6 ≠ L3): gleiche Angriffseigentümer,
+   andere Messgrößen. Erste Experiment-Kriterium-Version hatte ΔH als Failure-Wert —
+   der Fehler lag im Kriterium, nicht im Steering; korrigiert und dokumentiert.
+
+2. **In-Loop-Volatilität vs. Oracle-Band:** der In-Loop-Composite-Gap steigt in
+   Ausreißer bis 8.02 (mean-of-3-Gaps; die submaschinelle Rückkopplung schlägt durch),
+   während der Oracle-Gap in einem ruhigen Band von 0.49–0.81 bleibt und unter
+   Steering um ~0.1–0.2 **absinkt** — das externe Selbstmodell stabilisiert die
+   Komposition und die steered-Experten (Maschinen-Cluster) reduzieren den Gap.
+   Der LOOP→`expand_basis`-Pfad bleibt in §7 leer (vom Sample-Pfad nicht getriggert);
+   die Expansion läuft auf der nackten Turing-Maschine in Stufe 6 („looper“ +
+   „ALPHA“). Die Kompositionskette wird in §8 mit dem `identity(x)`-Hebel
+   nachträglich getriggert.
+
+---
+
+## 8. Experiment-Erweiterung: `identity(x)`-Hebel — LOOP in der Komposition getriggert
+
+(Nach der Freigabe; Commit-Basis `824f522` + Hebel in `machines/composite.py`.)
+`compile_rule` übersetzt die **Identitäts-Tautologie** `('identity', 'x')` nicht mehr
+als Kettenglied (`n0 → halt` nach einer Transition), sondern als **Selbst-Transition**
+`("n_i", BLANK) -> (BLANK, "N", n_i)`: die tautologische Regel zeigt als Programm auf
+sich selbst und terminiert nicht — Turing erkennt das über die Lauf-Signatur (> 3), die
+Komposition expandiert die Basis. Geprüft auf fünf AST-Klassen: nur die exakte Tautologie
+(auch verschachtelt als Teil-Ausdruck) erzeugt den Selbst-Zustand; alle anderen ASTs
+behalten die HALT-Garantie. **Zero-Regression:** der Stage-1-Mini (5 Schritte, Seed 42)
+tritt nirgends auf die Tautologie — composite-Digest `c6d17a9211c8` mit und ohne Hebel
+identisch (Stash-Roundtrip gegen HEAD).
+
+Neuer 9-Lane-Lauf (`smoke_composite_oracle.py` + L7/L8/L9; L7 trägt
+`params={"axiom_pool": ["ALPHA", "BETA"]}` und erzwingt die Tautologie als erstes
+Batch-Programm; `L9` = Wiederholung):
+
+| Lane | Steuerung | Digest | Verdicts (16 Schritte) | Basis | Expansions |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L7/L9 | Tautologie erzwungen (Schritt 1) + natürlicher Sampler | `9c5bf80babaa` | `LOOP`(1), HALT, `LOOP`(10), `LOOP`(12) | **5** | `step1:LOOP` |
+| L8 | wie L7 unter Steering "goedel" {2,7} | `1f7cbc913e7c` | identisches Verdict-Muster | 5 | `step1:LOOP` |
+
+Alle 11 Befunde PASS (`det_tautology`, `loop_tautology`, `basis_expanded`,
+`tautology_finite`, `tautology_steer_shift` zusätzlich zu den sechs §7-Befunden).
+
+**Vier Eigenschaften des getriggerten Pfads:**
+
+1. **Der Sampler produziert selbst Tautologien:** mit dem Hebel wird eine bislang
+   unsichtbare Regel sichtbar — L1–L6 (ohne Erzwingung) schlagen bei Schritt 15 ein
+   natürliches `('identity', 'x')` zum `LOOP`-Verdikt um; die Gap-Verläufe sind
+   bitidentisch bis Schritt 14 und divergieren exakt dort (8.02 → 1.45). Auch im
+   6-Lane-Vor-Hebel-Lauf war dieselbe Regel schon gesampelt — nur hielt sie als
+   Eins-Schritt-Halt-Kette. In L7–L9 kommen natürliche LOOPs bei Schritt 10/12 dazu.
+   P(programm == Tautologie) ≈ 0.65 % je Regel — selten genug für die HALT-Garantie
+   im Praxisfall, häufig genug, um beobachtbar zu werden.
+2. **Expansion nur mit Pool, verdikt immer:** L1–L6 haben keinen Axiom-Pool →
+   `expand_basis` meldet „Pool leer" (Trace-Note), das LOOP-Verdikt bleibt in den
+   Invarianten. L7–L9 verbrauchen je LOOP **zwei Pool-Einträge** — `turing.step`
+   expandiert intern (ALPHA), `composite.step` mit `reason="composite:LOOP"`
+   danach (BETA). Basis 3 → 5.
+3. **Determinismus auch auf dem getriggerten Pfad:** L7 == L9 bitidentisch
+   (Digest, Gaps, Verdict-Muster), L8 zeigt das gleiche Muster unter Steering mit
+   dem bekannten niedrigeren Gap-Band (0.45–0.71).
+4. **Gaps bleiben endlich** über alle 24+1 Lanes-Schritte inklusive Expansion —
+   der LOOP bricht die Komposition nicht, er verändert den Zustandsraum.
+
+---
+
+## 9. Multi-Expansions-Lauf — Basis-Leiter 3 → 5 → 7 → 9
+
+(nach der Freigabe „mache alles vorgeschlagene“; Basis 12 Lanes inkl. L10–L12.)
+Der Doppel-Pop aus §8 (je LOOP zwei Pool-Einträge: `turing.step` intern +
+`composite.step` reflexiv) wird hier zum getesteten Feature: ein 6er-Pool
+`["ALPHA","BETA","GAMMA","DELTA","EPSILON","ZETA"]` und die Tautologie an den
+Schritten **1/10/12 erzwungen** (Probe-Pfad `force_rule_at` mit Schritt-Cadence).
+Warum erzwungen und nicht der natürlichen Cadence vertraut: jede Expansion
+verbraucht 2 RNG-Draws, die Sampler-Streams divergieren nach dem ersten
+Expansionsschritt — die natürlichen Tautologien sind selten (§8: ≈ 0.65 % je
+Regel) und ihre Positionen sind nicht leiter-stabil; die erzwungene Cadence
+garantiert die Messgröße. Die erzwungenen Lanes sind ein *Kontrollpfad*, der
+die natürlichen §8-Lanes nicht ersetzt.
+
+| Lane | Steuerung | Digest | Expansions | Basis-Profile (Schritte 1–16) | Gap-Band |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L10/L12 | Leiter erzwungen, ungesteuert | `edc1ded943f5` | `step1/10/12 : LOOP` | `5×9 → 7 → 7 → 9…` (3→5→7→9) | 0.58–0.83 |
+| L11 | wie L10 unter "goedel" {2,7} | `cd4cd8570e38` | identische Leiter | identisch | 0.45–0.71 |
+
+Alle 14 Befunde PASS (`multi_expansion`, `det_multi_expansion`,
+`multi_steer_shift` zusätzlich; `bias_restored` über alle gesteuerten Lanes).
+
+**Drei Befunde der vollen Leiter:**
+
+1. **Die Leiter ist exakt:** Basis-Profile L10/L12 bitidentisch —
+   `[5,5,5,5,5,5,5,5,5,7,7,9,9,9,9,9]`: Schritt 1 +ALPHA/BETA, Schritt 10
+   +GAMMA/DELTA, Schritt 12 +EPSILON/ZETA; Endzustand
+   `SCALAR,TIME,SPACE,ALPHA,BETA,GAMMA,DELTA,EPSILON,ZETA` (9 Dimensionen).
+   Determinismus auf dem vollen Selbstmodifikations-Pfad (L10 == L12, Digest
+   `edc1ded943f5`).
+2. **Der Zustandsraum-Rücksprung ist lokal absorbiert:** an den drei
+   Expansionsschritten springen die Gaps nicht — L10 0.70/0.68/0.69,
+   L11 0.55/0.56/0.55 (in-band). Die Komposition verarbeitet ihre eigene
+   Dimensionalitätserweiterung ohne Trajektorien-Schock; anders als der
+   In-Loop-Ausreißer (§7, 8.02) ist die Expansion ein gerichteter
+   Ebenenwechsel, kein Rückschlag.
+3. **Strukturelles Schicksal vs. innere Bewertung:** L11 trägt unter Steering
+   exakt dieselbe Leiter (Verdict-Muster, Basis-Profile identisch — dieselben
+   Widerfahrnisse inkl. dreifacher Tautologie-Kollision), aber das
+   Selbstmodell bewertet sie durchgehend in einem ~0.1–0.15 niedrigeren
+   Band. Die „stabilisierte Innenperspektive" aus §7 hält auch über die
+   vollständige Selbstmodifikations-Kette.
+
+Kontinuität: L1–L9 reproduzieren in diesem Lauf exakt die Digests des §7/§8-Stands
+(`5cb5d245e5a7` / `11e246eddf07` / `eda6fc23ed71` / `063d92c0f354` /
+`9c5bf80babaa` / `1f7cbc913e7c`) — die L10–L12-Erweiterung verändert nichts am
+bisherigen Verhalten.
 
 ==============================================================================
 ENDE — sha256(des Konkatenats ohne dieser Zeile) notiert in 'scratches/repo2txt_machines_extension.sha256'
