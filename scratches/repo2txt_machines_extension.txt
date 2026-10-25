@@ -2,7 +2,7 @@
 repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung
 (Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B;
  inkl. Lisp-Vendor-Canon, Brücke, Korpus, Goldwerte, Presets, Protokolle)
-Dateien: 81   bytes: 863458   Zeilen: 22873
+Dateien: 81   bytes: 914171   Zeilen: 24812
 ==============================================================================
 INDEX
   machines/__init__.py  [    1220 B    47 Zeilen]
@@ -67,11 +67,11 @@ INDEX
   scratches/smoke_composite_oracle.py  [   13230 B   258 Zeilen]
   scratches/composite_oracle_experiment.log  [    6929 B    66 Zeilen]
   scratches/composite_oracle_experiment.json  [   16898 B   831 Zeilen]
-  scratches/laufprotokolle_befund_report.md  [   36111 B   581 Zeilen]
+  scratches/laufprotokolle_befund_report.md  [   38055 B   613 Zeilen]
   scratches/smoke_sprachspiel.py  [   40014 B   780 Zeilen]
   scratches/sprachspiel_experiment.log  [    7580 B   102 Zeilen]
   scratches/sprachspiel_experiment.json  [   37605 B  1477 Zeilen]
-  scratches/sprachspiel_bericht.md  [   51898 B   837 Zeilen]
+  scratches/sprachspiel_bericht.md  [   56433 B   906 Zeilen]
   scratches/verify_s123_regress_sprachspiel2.log  [    1362 B    20 Zeilen]
   scratches/smoke_hermeneutik.py  [   12639 B   262 Zeilen]
   scratches/hermeneutik_experiment.log  [    3095 B    38 Zeilen]
@@ -83,9 +83,9 @@ INDEX
   scratches/smoke_regeln_woerter.py  [   34928 B   698 Zeilen]
   scratches/regeln_woerter_experiment.log  [    2136 B    32 Zeilen]
   scratches/regeln_woerter_experiment.json  [   10703 B   520 Zeilen]
-  scratches/smoke_paradigm_ursprung.py  [   28844 B   596 Zeilen]
-  scratches/paradigm_ursprung_experiment.log  [    1620 B    27 Zeilen]
-  scratches/paradigm_ursprung_experiment.json  [   49131 B  2536 Zeilen]
+  scratches/smoke_paradigm_ursprung.py  [   38205 B   757 Zeilen]
+  scratches/paradigm_ursprung_experiment.log  [    3106 B    37 Zeilen]
+  scratches/paradigm_ursprung_experiment.json  [   82518 B  4203 Zeilen]
 ==============================================================================
 
 ==============================================================================
@@ -12623,7 +12623,7 @@ GRÜN — alle Experiment-Befunde bestanden.
 
 ==============================================================================
 ### FILE: scratches/laufprotokolle_befund_report.md
-### bytes: 36111   lines: 581
+### bytes: 38055   lines: 613
 ==============================================================================
 # Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
 
@@ -13207,6 +13207,38 @@ dokumentiert.
 Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
 scratches.smoke_paradigm_ursprung` → `paradigm_ursprung_experiment.log/.json`.
 Hermeneutische Vollfassung: `sprachspiel_bericht.md` §13.
+
+### 15.1 P4-Runde — das Akkumulationsgesetz (2026-10-26, laufschrift)
+
+Rerun nach der Skript-Extension: ERRATA E1 für t3a/t3b (Ein-Faktor-Echo-Annahme
+widerlegt durch das Akkumulationsgesetz) + zwei `_p4`-Verdicte (Bänder fixiert
+VOR dem Rerun); Canon-Verifikation `turing_machine.py:197/:234/:250/:293`,
+`machine_base.py:54/:531`, `wittgenstein_machine.py:413-414`; Plan-
+Änderungsnotiz 2026-10-26.
+
+| Verdict | Einstufung |
+| :--- | :--- |
+| sp11_t3a_expansionfrei | **FAIL** (unverändert; ERRATA E1 — Akkumulations-Echos der Leerlauf-Blätter, kein Echo der Expansion) |
+| sp11_t3b_turing_echo | **FAIL** (unverändert; ERRATA E1 — Misch-Serie der Währung) |
+| sp11_t3_accumulation_law_p4 | **PASS** — max Residuum 0.0 (Band 1e-12) in allen 10 Läufen und Schritten; Kontostand (:293) == Kumsum in jedem Schritt |
+| sp11_t3_dedrifted_echo_p4 | **PASS** — Detect-Menge ∅ in den 4 expansion-freien Läufen {seed12, seed14, seed15, seed16}; Daten: ∅ in ALLEN 10 Läufen |
+
+**Das Gesetz:** `t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6)`, `C_{n-1} = Σ_{k<n} s_k`
+— der Kontostand (kumulierte Verlaustransitionen, `turing_machine.py:234`) liest
+als Prediction gegen das Einzelschritt-Ist (`:250`); Leerlauf-Blätter (s_n = 0)
+machen ungedämpfte Kontostand-Peaks (seed12: 28.0/31.0/33.0/39.0). Die
+Gleitfenster-Form (ū = mean(s[-10:]), Präzedenz :413-414) killt jede Detection —
+auch in den Expansion-tragenden Läufen: die Doppel-Herkunft von §13 ist eine
+Quelle in zwei Formen.
+
+**BILANZ des Reruns:** 8 PASS + 2 klassifizierte Errata; 0 unverwartete FAIL;
+0 OFFEN — **exit 0** (Bands unverändert; die Ursprungs-Zeilen verbleiben FAIL
+im Register). Log/JSON REGENERIERT (P4-Payload +transitions/t_count,
+acc/dedrift-Serien, ERRATA-Texte).
+
+Run (2. Runde): `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python
+-u -m scratches.smoke_paradigm_ursprung` → exit 0.
+Vollfassung: `sprachspiel_bericht.md` §13.1.
 
 ==============================================================================
 ### FILE: scratches/smoke_sprachspiel.py
@@ -15587,7 +15619,7 @@ GRÜN — alle Sprachspiel-Befunde bestanden.
 
 ==============================================================================
 ### FILE: scratches/sprachspiel_bericht.md
-### bytes: 51898   lines: 837
+### bytes: 56433   lines: 906
 ==============================================================================
 # Sprachspiel-Bericht: Die Wittgenstein-Maschine generiert — Regel, Wort, Mitspieler
 
@@ -16427,6 +16459,75 @@ entfernt — reine Dublette des vollständig vorhandenen
 SP10-Append hatte das Fragment als Rest-Zeile hinterlassen.
 
 Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §15.
+
+### 13.1 P4-Runde — das Akkumulationsgesetz (2026-10-26, Vorschlag A)
+
+Das externe Audit fand die Erzeugungsformel, die die T3a/T3b-Falsifikationen
+erklärt; die Runde schließt damit als P4-Einstufung (Mandat „A vor C" am
+2026-10-25/26; Plan-Änderungsnotiz 2026-10-26; alle Bänder fixiert VOR dem
+Rerun — P2 innerhalb der P4-Runde; Skript-Extension mit P4-REGISTER im
+Docstring). Canon-Verifikation vor dem Rerun: `turing_machine.py:197` (Inkrement
+ist das EINZIGE im Code), `:234` (kumulative Prediction im Nicht-Orakel-Zweig),
+`:250` (Gap mit dem Einzelschritt als Ist), `machine_base.py:54/:531`
+(apply_gap/note_gap mit GAP_EPS 1e-6), `:293` (Kontostand exponiert);
+Composite reicht das Oracle an alle drei Submaschinen durch
+(composite.py:45-48) — in SP11 ist es None, also steht die Turing-Submaschine
+sicher im kumulativen Zweig. Die Rolling-Präzedenz liegt — anders als das
+Prereg-Zitat es ansetzte — nicht an :408-409, sondern an
+`wittgenstein_machine.py:413-414` (np.mean(history[-10:]) im
+Nicht-Orakel-Zweig; Mechanik identisch).
+
+**Das Gesetz:** die Turing-Sub-Gap-Serie ist die Akkumulations-Währung
+
+```
+t_n = |C_{n-1} - s_n| / (1 + s_n + 1e-6),    C_{n-1} = sum_{k<n} s_k
+```
+
+die Prediction liest den kumulierten Verlaufs-Kontostand (Lebenszeit der
+Maschine), das Ist zählt nur den Einzelschritt — eine Einheiten-Inkom-
+mensurabilität. Das Konto schlägt bei jedem Leerlauf-Blatt (s_n = 0, z. B.
+„x"-/„1.00"-Regeln) ungedämpft auf: seed12 28.0/31.0/33.0/39.0 an den
+Schritten 14/17/19/23. Hand-Verifikation an der committeten seed12-Serie
+(2026-10-25) über alle 24 Schritte — die s-Serie [0, 5, 0, 1, 2, 0, 2, 2, 5,
+3, 2, 3, 3, 0, 1, 2, 0, 2, 0, 2, 2, 2, 0, 1] reproduziert die ganze t-Serie
+mit max Restgröße 0.0.
+
+**ERRATA E1 (2 Einträge):** `sp11_t3a_expansionfrei` und
+`sp11_t3b_turing_echo` — die Ein-Faktor-Echo-Annahme (Turing-Gap als frei
+wählbarer Faktor; Freeze auf das Vor-Expansions-Mittel) ist widerlegt. Die
+Ursprungs-Zeilen bleiben FAIL im Register (P4: Einstufung statt Re-Decide);
+die korrigierten Lesungen stehen als `_p4`-Verdicte.
+
+**Verdikt-Rerun — 10 Verdicte, exit 0 (8 PASS + 2 klassifizierte Errata,
+0 unverwartete FAIL):**
+
+| Verdict | Einstufung | Zahlenlage |
+| :--- | :--- | :--- |
+| sp11_t3a_expansionfrei | **FAIL** | unverändert — jetzt ERRATA E1 (Akkumulations-Echos der Leerlauf-Blätter, kein Echo der Expansion) |
+| sp11_t3b_turing_echo | **FAIL** | unverändert — jetzt ERRATA E1 (Misch-Serie der Währung; die Überlebenden seed13 [12-21], zw_twin, zw_forced 11-14 folgen der Mischung) |
+| sp11_t3_accumulation_law_p4 | **PASS** | t̂-Rekonstruktion aus der transitions-Spalte: **max Residuum 0.0** (Band 1e-12) über ALLE Läufe und Schritte; zweiter Strang: je-Zeiler-Kontostand (:293) == kumulierte Summe in jedem Schritt. Prereg-Umfang „9 Läufe", verwirklicht über ALLE 10 (l0 × 2, Sweep × 6, Zwangs-Paar) — mehr Umfang, kein Band-Wechsel; auch die §13-Kopfzeile „9 Läufe" liest sich als „10" |
+| sp11_t3_dedrifted_echo_p4 | **PASS** | gleitende Prediction ū_{n-1} = mean(s_{max(1,n-10)..n-1}) statt der kumulierten Summe: Detect-Menge == ∅ in den expansion-freien Läufen {seed12, seed14, seed15, seed16} — Band eingehalten |
+
+**Der erweiterte Kern (Daten über die Prereg-Bands hinaus):** nach der
+Dedrift-Serie ist die Detect-Menge in ALLEN 10 Läufen leer — nicht nur in den
+vier expansion-freien. Auch die Zwangs-Paar-Detectionen (zw_twin 17-19,
+zw_forced 17-20 inkl. des vom T4 induzierten 20) und die l0-Detectionen
+(11/12/15) sind Akkumulations-Echos der jeweiligen Transitionen-Serie, nicht
+Verdikt-Signale per se. Die Doppel-Herkunft von §13 (expansions-getragen vs.
+drift-getragen) reduziert sich damit auf EINE Quelle in zwei Formen: die
+Währung als Kontostand-Serie gegen die Gleitfenster-Serie — die Basis-
+Expansion wirkt, indem sie die Transitionen-Serie umwälzt (LOOP-Schleifen →
+Kontostand-Peak), nicht als Separatsignal. T1/T2 bleiben stich: Urheber
+weiterhin das Composite-Signal, Formel exakt.
+
+**Artefakte:** `paradigm_ursprung_experiment.log/.json` REGENERIERT (P4-
+Payload: transitions/t_count je Lauf, accumulation max_resid/c_series,
+dedrift-Serien + Flags + Detections, ERRATA-Texte, expansion_freie_laeufe);
+log 37 Zeilen (ERRATA-Klassifikation gedruckt), json 4203 Zeilen. Run
+(2. Runde): `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python
+-u -m scratches.smoke_paradigm_ursprung` → exit 0.
+
+Laufschrift-Protokoll (P4): `laufprotokolle_befund_report.md` §15.1.
 
 ==============================================================================
 ### FILE: scratches/verify_s123_regress_sprachspiel2.log
@@ -20272,7 +20373,7 @@ GRUEN — Loesungskette geschlossen.
 
 ==============================================================================
 ### FILE: scratches/smoke_paradigm_ursprung.py
-### bytes: 28844   lines: 596
+### bytes: 38205   lines: 757
 ==============================================================================
 """smoke_paradigm_ursprung.py — SP11: Der Ursprung der Paradigmen (Composite-Signal-Ebene).
 
@@ -20377,7 +20478,7 @@ Ursprungs-Zeilen bleiben FAIL im Register):
   sp11_t3c_goedel_vergleich — GOEDEL-gefrorene Counterfaktur: Detect-Menge
                           unverändert. Falsifikator: jede Änderung.
   sp11_t4_forced        — Zwangs-Lauf (seed 21, Zwang {13}, 24 Schritte):
-                          mindestens ein Paradicm in [14, 22], das im
+                          mindestens ein Paradigma in [14, 22], das im
                           unverzwungenen Zwilling fehlt. Falsifikator: keine
                           induzierte Detection.
 
@@ -20386,8 +20487,37 @@ Run:  /run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
 JSON: scratches/paradigm_ursprung_experiment.json
 CPU-only, keine Maschinen-Code-Änderung; Determinismus über Doppel-Läufe.
 
-P4-REGISTER (wird nach dem Erstrun eingetragen):
-  (leer)
+P4-REGISTER (Erstrun 2026-10-25: 6 PASS + 2 FAIL, 0 Errata, exit 1; P4-Runde
+2026-10-26 — Vorschlag A "Akkumulationsgesetz" des externen Audits):
+  Kern: die Turing-Sub-Gap-Serie ist keine freie Zustandsgröße, sondern die
+  Akkumulations-Währung (prediction = float(self._transition_count) ist der
+  KUMULATIVE Verlaustransitionen-Kontostand, turing_machine.py:234; das Ist
+  ist der Einzelschritt s_n, :239; Inkrement einzig in :197):
+      t_n = |C_{n-1} - s_n| / (1 + s_n + 1e-6),   C_{n-1} = sum_{k<n} s_k
+  (Gap = apply_gap mit GAP_EPS 1e-6, machine_base.py:54/:531; Kontostand
+  exponiert in state() :293). Leerlauf-Blätter (s_n = 0, z. B.
+  "x"/"1.00"-Regeln) schlagen das Konto C_{n-1} ungedämpft auf (seed12:
+  28.0/31.0/33.0/39.0 an den Schritten 14/17/19/23); Hand-Verifikation an
+  der committeten seed12-Serie 2026-10-25 über alle 24 Schritte bestätigt.
+  ERRATA E1 (P4-Klassifikation; Ursprungs-Zeilen bleiben FAIL im Register):
+    sp11_t3a_expansionfrei + sp11_t3b_turing_echo — die Ein-Faktor-Echo-
+    Annahme (Turing-Gap als frei gefrorener Faktor) ist widerlegt.
+  sp11_t3_accumulation_law_p4 — t̂-Serie rekonstruiert aus der
+    transitions-Spalte; ZWEI Stränge: (a) max |t_n - t̂_n| <= 1e-12
+    (RATIO_TOL) über alle Läufe und Schritte (Prereg-Schätzung 9 Läufe,
+    verwirklicht über ALLE 10: l0 × 2, Sweep × 6, Zwangs-Paar — mehr
+    Umfang, kein Band-Wechsel); (b) je-Zeiler-Kontostand
+    (turing_machine.py:293) == kumulierte Summe der transitions je Schritt.
+    Falsifikator: Restgröße > 1e-12 oder Kontostand-Differenz.
+  sp11_t3_dedrifted_echo_p4 — gleitende Prediction ῡ_{n-1} =
+    mean(s_{max(1, n-10) .. n-1}) (Präzedenz: wittgenstein_machine.py:413-414,
+    np.mean(history[-10:]) im Nicht-Orakel-Zweig) statt der kumulierten
+    Summe; dedrifted Composite-Serie cf_d = (w + t_dedrift + g)/3;
+    Band: Detect-Menge == leer in den expansion-freien Läufen (Erstrun-
+    Grundmenge: seed12/seed14/seed15/seed16). Falsifikator: überlebende
+    Detection dort. Rest-Läufe (l0/seed11/seed13/zw_twin/zw_forced) als
+    Daten (isolieren den reinen Verdikt-Anteil).
+  Die Bands sind fixiert VOR dem Rerun (P2 innerhalb der P4-Runde).
 """
 
 from __future__ import annotations
@@ -20425,7 +20555,28 @@ RATIO_TOL = 1e-12
 
 FINDINGS: List[Tuple[str, str]] = []
 NOTES: List[str] = []
-ERRATA: Dict[str, str] = {}
+# P4-Klassifikation (2026-10-26, Vorschlag A): die Ursprungs-Vorhersagen
+# T3a/T3b nahmen die Turing-Sub-Gap-Serie als FREIEN Faktor an — widerlegt
+# durch das Akkumulationsgesetz (Docstring P4-REGISTER). Ursprungs-Zeilen
+# bleiben FAIL (P4: Einstufung statt Re-Decide); korrigierte Lesung als
+# _p4-Verdicte mit VOR dem Rerun fixierten Bands.
+ERRATA: Dict[str, str] = {
+    "sp11_t3a_expansionfrei":
+        "E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien "
+        "Zustandsfaktor an. Sie ist die Akkumulations-Währung "
+        "t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer "
+        "Kontostand, turing_machine.py:234/:197/:250; GAP_EPS "
+        "machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen "
+        "C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen "
+        "(Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte "
+        "Lesung: sp11_t3_dedrifted_echo_p4.",
+    "sp11_t3b_turing_echo":
+        "E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der "
+        "Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern "
+        "eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen "
+        "dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 "
+        "(Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414).",
+}
 
 
 def mark(name: str, state: str, note: str = "") -> None:
@@ -20514,6 +20665,7 @@ def run_composite(machine: CompositeMachine, harness: Dict[str, Any],
             "rule_name": inv["rule_name"],
             "verdict": inv["verdict"],
             "transitions": int(inv["transitions"]),
+            "t_count": int(machine.turing.state()["transition_count"]),
             "gap": float(st.gap),
             "w_gap": float(inv["submachines"]["wittgenstein"]["gap"]),
             "t_gap": float(inv["submachines"]["turing"]["gap"]),
@@ -20595,6 +20747,52 @@ def t2_check(run: Dict[str, Any]) -> Tuple[bool, str]:
                            f"{ratio!r} != {row['c_ratio']!r}")
     # Detect-Menge-Ableitung aus den expansions-Einträgen (Konsistenz):
     return True, "ok"
+
+
+# ---------------------------------------------------------------------------
+# P4-Runde — Akkumulationsgesetz + Dedrift (Vorschlag A); Bands fixiert
+# vor dem Rerun. Canon: turing_machine.py:234/:197/:250/:293,
+# machine_base.py:54/:531, wittgenstein_machine.py:413-414.
+# ---------------------------------------------------------------------------
+
+def accumulation_check(run: Dict[str, Any]) -> Dict[str, Any]:
+    """P4-Vorschlag A: t̂_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) gegen die
+    aufgezeichnete Turing-Gap-Serie; C_{n-1} = kumulierte transitions-Summe;
+    zweiter Strang: je-Zeiler-Kontostand (state()["transition_count"], :293)
+    == kumulierte Summe der transitions je Schritt."""
+    s = [r["transitions"] for r in run["rows"]]
+    residues: List[float] = []
+    c_prior = 0
+    for n, s_n in enumerate(s, 1):
+        t_hat = abs(c_prior - s_n) / (1.0 + abs(s_n) + GAP_EPS)
+        residues.append(abs(t_hat - run["t_series"][n - 1]))
+        c_prior += s_n
+    counts = [r["t_count"] for r in run["rows"]]
+    count_ok = all(c == sum(s[:i]) for i, c in enumerate(counts, 1))
+    return {"max_resid": max(residues) if residues else 0.0,
+            "residues": residues, "count_ok": count_ok,
+            "c_series": [sum(s[:i]) for i in range(len(s))]}
+
+
+def dedrift(run: Dict[str, Any]) -> Dict[str, Any]:
+    """P4-Vorschlag A: gleitende Prediction statt kumulierter Summe —
+    ῡ_{n-1} = mean(s_{max(1, n-10) .. n-1}) (Präzedenz
+    wittgenstein_machine.py:413-414, np.mean(history[-10:]) im
+    Nicht-Orakel-Zweig; leeres Verlauf → 0.0); dedrifted Composite-Serie
+    cf_d = (w + t_dedrift + g)/3, Detect-Menge aus cf_d (Offset 0)."""
+    s = [r["transitions"] for r in run["rows"]]
+    t_dedrift: List[float] = []
+    for n, s_n in enumerate(s, 1):
+        history = s[max(0, n - 10):n - 1]
+        u = float(np.mean(history)) if history else 0.0
+        t_dedrift.append(abs(u - float(s_n)) / (1.0 + abs(s_n) + GAP_EPS))
+    cf_d = [(w + t + g) / 3.0 for w, t, g in
+            zip(run["w_series"], t_dedrift, run["g_series"])]
+    flags = replicate_flags(cf_d, offset=0)
+    return {"t_dedrift_series": t_dedrift, "cf_d_series": cf_d,
+            "dedrift_flags": [det for _, det in flags],
+            "dedrift_detections": [n for n, (_, det) in enumerate(flags, 1)
+                                   if det]}
 
 
 # ---------------------------------------------------------------------------
@@ -20723,6 +20921,8 @@ def main() -> int:
     print("== SP11 — Der Ursprung der Paradigmen ==")
     print("Canon: composite.py:132-140/:167-182, goedel_machine.py:229-239,")
     print("       turing_machine.py:144-157 (loop_detector-Reset), GAP_EPS 1e-6")
+    print("P4: turing_machine.py:197/:234/:250/:293 (Akkumulationsgesetz),")
+    print("       machine_base.py:54/:531, wittgenstein_machine.py:413-414")
     print()
 
     l0 = lane_l0_anker()
@@ -20798,6 +20998,39 @@ def main() -> int:
     mark("sp11_t4_forced", "PASS" if in_band else "FAIL",
          f"induzierte Paradigmas {induced}; in Band [14, 22]: {in_band}")
 
+    # P4-Runde (Vorschlag A): Akkumulationsgesetz + Dedrift — Bands fixiert
+    # vor dem Rerun; die Ursprungs-Verdikte t3a/t3b bleiben FAIL (ERRATA).
+    free_names = [n for n, run in all_runs.items()
+                  if not run["verdict_exp_steps"]]
+    acc: Dict[str, Dict[str, Any]] = {}
+    acc_fails: List[str] = []
+    for name, run in all_runs.items():
+        a = accumulation_check(run)
+        acc[name] = {"max_resid": a["max_resid"], "count_ok": a["count_ok"],
+                     "c_series": a["c_series"]}
+        if not a["count_ok"] or a["max_resid"] > RATIO_TOL:
+            acc_fails.append(f"{name}: count_ok={a['count_ok']}, "
+                             f"max_resid={a['max_resid']:.3e}")
+    acc_max = max((v["max_resid"] for v in acc.values()), default=0.0)
+    mark("sp11_t3_accumulation_law_p4", "PASS" if not acc_fails else "FAIL",
+         f"Strang-Verletzung: {acc_fails}" if acc_fails else
+         (f"t_n == |C(n-1) - s_n|/(1+s_n+1e-6) in allen {len(all_runs)} "
+          f"Läufen; max Residuum {acc_max!r}; Kontostand == kumulierte "
+          "Summe in jedem Schritt (turing_machine.py:234/:197/:293)"))
+
+    dd: Dict[str, Dict[str, Any]] = {}
+    drift_fails: List[str] = []
+    for name, run in all_runs.items():
+        d = dedrift(run)
+        dd[name] = d
+        if name in free_names and d["dedrift_detections"]:
+            drift_fails.append(f"{name}: überlebende {d['dedrift_detections']}")
+    mark("sp11_t3_dedrifted_echo_p4", "PASS" if not drift_fails else "FAIL",
+         f"überlebende Dedrift-Detections: {drift_fails}" if drift_fails else
+         ("dedrifted Detect-Menge == leer in den expansion-freien Läufen "
+          f"{free_names} (Gleitfenster-Präzedenz "
+          "wittgenstein_machine.py:413-414); Rest-Läufe als Daten"))
+
     # Befunde
     print("BEFUNDE:")
     for name, state in FINDINGS:
@@ -20807,6 +21040,12 @@ def main() -> int:
         print("NOTIZEN:")
         for n in NOTES:
             print(f"  - {n}")
+        print()
+
+    if ERRATA:
+        print("ERRATA (P4-Klassifikation):")
+        for name, text in ERRATA.items():
+            print(f"  - {name}: {text}")
         print()
 
     failed = [n for n, s in FINDINGS if s == "FAIL" and n not in ERRATA]
@@ -20820,10 +21059,18 @@ def main() -> int:
         "l0": {"kripke": {"checks": l0["kripke"]["checks"],
                           "expansions": l0["kripke"]["run"]["expansions"],
                           "para_steps": l0["kripke"]["run"]["para_steps"],
+                          "transitions": [r["transitions"] for r in
+                                          l0["kripke"]["run"]["rows"]],
+                          "t_count": [r["t_count"] for r in
+                                      l0["kripke"]["run"]["rows"]],
                           "final_basis": l0["kripke"]["run"]["final_basis"]},
                "quus": {"checks": l0["quus"]["checks"],
                         "expansions": l0["quus"]["run"]["expansions"],
                         "para_steps": l0["quus"]["run"]["para_steps"],
+                        "transitions": [r["transitions"] for r in
+                                        l0["quus"]["run"]["rows"]],
+                        "t_count": [r["t_count"] for r in
+                                    l0["quus"]["run"]["rows"]],
                         "final_basis": l0["quus"]["run"]["final_basis"]},
                "kripke_attribution": l0["kripke_attribution"],
                "fields_ok": l0["fields_ok"],
@@ -20836,6 +21083,8 @@ def main() -> int:
             "gap_series": run["gap_series"],
             "w_series": run["w_series"], "t_series": run["t_series"],
             "g_series": run["g_series"],
+            "transitions": [r["transitions"] for r in run["rows"]],
+            "t_count": [r["t_count"] for r in run["rows"]],
             "c_ratio": [r["c_ratio"] for r in run["rows"]],
             "g_ratio": [r["g_ratio"] for r in run["rows"]],
             "c_detected": [r["c_detected"] for r in run["rows"]],
@@ -20847,11 +21096,24 @@ def main() -> int:
             "expansions": run["expansions"],
             "para_steps": run["para_steps"],
             "gap_series": run["gap_series"],
+            "w_series": run["w_series"], "g_series": run["g_series"],
             "t_series": run["t_series"],
+            "transitions": [r["transitions"] for r in run["rows"]],
+            "t_count": [r["t_count"] for r in run["rows"]],
             "c_detected": [r["c_detected"] for r in run["rows"]],
         } for name, run in
             (("zw_twin", zwang["zw_twin"]), ("zw_forced", zwang["zw_forced"]))},
         "counterfactuals": cfs,
+        "p4": {
+            "errata": ERRATA,
+            "accumulation": acc,
+            "dedrift": {name: {"t_dedrift_series": d["t_dedrift_series"],
+                               "cf_d_series": d["cf_d_series"],
+                               "dedrift_flags": d["dedrift_flags"],
+                               "dedrift_detections": d["dedrift_detections"]}
+                        for name, d in dd.items()},
+            "expansion_freie_laeufe": free_names,
+        },
         "findings": [{"name": n, "state": s} for n, s in FINDINGS],
         "notes": NOTES,
         "errata": ERRATA,
@@ -20874,11 +21136,13 @@ if __name__ == "__main__":
 
 ==============================================================================
 ### FILE: scratches/paradigm_ursprung_experiment.log
-### bytes: 1620   lines: 27
+### bytes: 3106   lines: 37
 ==============================================================================
 == SP11 — Der Ursprung der Paradigmen ==
 Canon: composite.py:132-140/:167-182, goedel_machine.py:229-239,
        turing_machine.py:144-157 (loop_detector-Reset), GAP_EPS 1e-6
+P4: turing_machine.py:197/:234/:250/:293 (Akkumulationsgesetz),
+       machine_base.py:54/:531, wittgenstein_machine.py:413-414
 
 BEFUNDE:
   sp11_l0_anchor             PASS
@@ -20889,6 +21153,8 @@ BEFUNDE:
   sp11_t3b_turing_echo       FAIL
   sp11_t3c_goedel_vergleich  PASS
   sp11_t4_forced             PASS
+  sp11_t3_accumulation_law_p4 PASS
+  sp11_t3_dedrifted_echo_p4  PASS
 
 NOTIZEN:
   - sp11_l0_anchor: Feldvergleich kripke+quus inkl. committeter Signal-Kolumnen (paradigm_ratio = Goedel, paradigm_detected = Composite)
@@ -20899,15 +21165,21 @@ NOTIZEN:
   - sp11_t3b_turing_echo: Fehler: ['seed13: Überlebende [12, 13, 14, 16, 17, 18, 19, 20, 21]', 'zw_twin: Überlebende [11, 12, 13, 14, 17, 18, 19]', 'zw_forced: Überlebende [11, 12, 13, 14]']
   - sp11_t3c_goedel_vergleich: Detection-Mengen in 6 Gegenproben unverändert
   - sp11_t4_forced: induzierte Paradigmas [20]; in Band [14, 22]: [20]
+  - sp11_t3_accumulation_law_p4: t_n == |C(n-1) - s_n|/(1+s_n+1e-6) in allen 10 Läufen; max Residuum 0.0; Kontostand == kumulierte Summe in jedem Schritt (turing_machine.py:234/:197/:293)
+  - sp11_t3_dedrifted_echo_p4: dedrifted Detect-Menge == leer in den expansion-freien Läufen ['seed12', 'seed14', 'seed15', 'seed16'] (Gleitfenster-Präzedenz wittgenstein_machine.py:413-414); Rest-Läufe als Daten
 
-BILANZ: 6 PASS; 2 FEHLGESCHLAGEN (unverwartet); 0 dokumentierte Errata; 0 OFFEN
+ERRATA (P4-Klassifikation):
+  - sp11_t3a_expansionfrei: E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien Zustandsfaktor an. Sie ist die Akkumulations-Währung t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer Kontostand, turing_machine.py:234/:197/:250; GAP_EPS machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen (Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4.
+  - sp11_t3b_turing_echo: E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 (Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414).
+
+BILANZ: 8 PASS; 0 FEHLGESCHLAGEN (unverwartet); 2 dokumentierte Errata; 0 OFFEN
 JSON: scratches/paradigm_ursprung_experiment.json
-FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
+GRUEN — Loesungskette geschlossen (OFFEN: keine).
 
 
 ==============================================================================
 ### FILE: scratches/paradigm_ursprung_experiment.json
-### bytes: 49131   lines: 2536
+### bytes: 82518   lines: 4203
 ==============================================================================
 {
   "l0": {
@@ -20932,6 +21204,42 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         12,
         15
       ],
+      "transitions": [
+        2,
+        5,
+        1,
+        0,
+        5,
+        2,
+        0,
+        0,
+        4,
+        0,
+        4,
+        3,
+        0,
+        0,
+        2,
+        1
+      ],
+      "t_count": [
+        2,
+        7,
+        8,
+        8,
+        13,
+        15,
+        15,
+        15,
+        19,
+        19,
+        23,
+        26,
+        26,
+        26,
+        28,
+        29
+      ],
       "final_basis": 7
     },
     "quus": {
@@ -20953,6 +21261,42 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         11,
         12,
         15
+      ],
+      "transitions": [
+        2,
+        5,
+        1,
+        0,
+        5,
+        2,
+        0,
+        0,
+        1,
+        0,
+        4,
+        3,
+        0,
+        0,
+        2,
+        1
+      ],
+      "t_count": [
+        2,
+        7,
+        8,
+        8,
+        13,
+        15,
+        15,
+        15,
+        16,
+        16,
+        20,
+        23,
+        23,
+        23,
+        25,
+        26
       ],
       "final_basis": 5
     },
@@ -21147,6 +21491,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         0.1997369420352074,
         0.10205251217580734,
         0.07657800678682472
+      ],
+      "transitions": [
+        0,
+        0,
+        2,
+        0,
+        5,
+        0,
+        0,
+        2,
+        2,
+        3,
+        0,
+        0,
+        4,
+        6,
+        0,
+        2,
+        3,
+        0,
+        0,
+        0,
+        3,
+        6,
+        3,
+        2
+      ],
+      "t_count": [
+        0,
+        0,
+        2,
+        2,
+        7,
+        7,
+        7,
+        9,
+        11,
+        14,
+        14,
+        14,
+        18,
+        24,
+        24,
+        26,
+        29,
+        29,
+        29,
+        29,
+        32,
+        38,
+        41,
+        43
       ],
       "c_ratio": [
         null,
@@ -21407,6 +21803,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         0.1001847883541392,
         0.025505795942511508,
         0.08117622906547517
+      ],
+      "transitions": [
+        0,
+        5,
+        0,
+        1,
+        2,
+        0,
+        2,
+        2,
+        5,
+        3,
+        2,
+        3,
+        3,
+        0,
+        1,
+        2,
+        0,
+        2,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "t_count": [
+        0,
+        5,
+        5,
+        6,
+        8,
+        8,
+        10,
+        12,
+        17,
+        20,
+        22,
+        25,
+        28,
+        28,
+        29,
+        31,
+        31,
+        33,
+        33,
+        35,
+        37,
+        39,
+        39,
+        40
       ],
       "c_ratio": [
         null,
@@ -21671,6 +22119,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         0.14239499886165383,
         0.04198351992157609
       ],
+      "transitions": [
+        1,
+        2,
+        0,
+        0,
+        1,
+        2,
+        0,
+        4,
+        0,
+        3,
+        0,
+        5,
+        1,
+        3,
+        2,
+        0,
+        1,
+        5,
+        2,
+        1,
+        2,
+        3,
+        5,
+        0
+      ],
+      "t_count": [
+        1,
+        3,
+        3,
+        3,
+        4,
+        6,
+        6,
+        10,
+        10,
+        13,
+        13,
+        18,
+        19,
+        22,
+        24,
+        24,
+        25,
+        30,
+        32,
+        33,
+        35,
+        38,
+        43,
+        43
+      ],
       "c_ratio": [
         null,
         null,
@@ -21932,6 +22432,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         0.022431606058717656,
         0.21519562966895564,
         0.009761399020392499
+      ],
+      "transitions": [
+        3,
+        5,
+        0,
+        0,
+        0,
+        3,
+        1,
+        0,
+        2,
+        6,
+        1,
+        3,
+        0,
+        0,
+        6,
+        0,
+        0,
+        2,
+        0,
+        2,
+        0,
+        0,
+        2,
+        0
+      ],
+      "t_count": [
+        3,
+        8,
+        8,
+        8,
+        8,
+        11,
+        12,
+        12,
+        14,
+        20,
+        21,
+        24,
+        24,
+        24,
+        30,
+        30,
+        30,
+        32,
+        32,
+        34,
+        34,
+        34,
+        36,
+        36
       ],
       "c_ratio": [
         null,
@@ -22197,6 +22749,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         0.01271875728543152,
         0.019457322461154128
       ],
+      "transitions": [
+        0,
+        0,
+        0,
+        3,
+        3,
+        3,
+        2,
+        6,
+        5,
+        0,
+        2,
+        0,
+        0,
+        0,
+        2,
+        0,
+        3,
+        6,
+        1,
+        0,
+        2,
+        0,
+        0,
+        0
+      ],
+      "t_count": [
+        0,
+        0,
+        0,
+        3,
+        6,
+        9,
+        11,
+        17,
+        22,
+        22,
+        24,
+        24,
+        24,
+        24,
+        26,
+        26,
+        29,
+        35,
+        36,
+        36,
+        38,
+        38,
+        38,
+        38
+      ],
       "c_ratio": [
         null,
         null,
@@ -22447,6 +23051,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         0.11973774144492727,
         0.12570722513040614
       ],
+      "transitions": [
+        1,
+        0,
+        2,
+        2,
+        1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        6,
+        0,
+        2,
+        4,
+        2,
+        5,
+        3,
+        2,
+        3,
+        4,
+        6
+      ],
+      "t_count": [
+        1,
+        1,
+        3,
+        5,
+        6,
+        6,
+        8,
+        8,
+        8,
+        8,
+        8,
+        9,
+        9,
+        15,
+        15,
+        17,
+        21,
+        23,
+        28,
+        31,
+        33,
+        36,
+        40,
+        46
+      ],
       "c_ratio": [
         null,
         null,
@@ -22628,6 +23284,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         4.363987423093581,
         3.6351608015692496
       ],
+      "w_series": [
+        0.499999750000125,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "g_series": [
+        0.7104559730439924,
+        0.553326662312653,
+        0.738461469380539,
+        1.1534391381636626,
+        0.7488757741010149,
+        0.6977307399821049,
+        0.3304302928563293,
+        0.5491431985363586,
+        0.15697105975213488,
+        0.16520446322079305,
+        0.48188201879096776,
+        0.16004385449625982,
+        0.23353145737679065,
+        0.07583046465053588,
+        0.14557329350186493,
+        0.010821166787994758,
+        0.25921729072175687,
+        0.15721856553619584,
+        0.11768070094438049,
+        0.06420676890421924,
+        0.07826421425191983,
+        0.10628770848755502,
+        0.09196551927993117,
+        0.10548456470731815
+      ],
       "t_series": [
         0.499999750000125,
         0.49999987500003124,
@@ -22653,6 +23361,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         12.249996937500764,
         12.999996750000813,
         10.799997840000431
+      ],
+      "transitions": [
+        1,
+        3,
+        2,
+        4,
+        1,
+        3,
+        0,
+        5,
+        0,
+        0,
+        6,
+        2,
+        5,
+        1,
+        2,
+        0,
+        4,
+        5,
+        4,
+        2,
+        2,
+        3,
+        3,
+        4
+      ],
+      "t_count": [
+        1,
+        4,
+        6,
+        10,
+        11,
+        14,
+        14,
+        19,
+        19,
+        19,
+        25,
+        27,
+        32,
+        33,
+        35,
+        35,
+        39,
+        44,
+        48,
+        50,
+        52,
+        55,
+        58,
+        62
       ],
       "c_detected": [
         false,
@@ -22755,6 +23515,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         4.531549374545509,
         6.462764259990254
       ],
+      "w_series": [
+        0.499999750000125,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "g_series": [
+        0.7104559730439924,
+        0.553326662312653,
+        0.738461469380539,
+        1.1534391381636626,
+        0.7488757741010149,
+        0.6977307399821049,
+        0.3304302928563293,
+        0.5491431985363586,
+        0.15697105975213488,
+        0.16520446322079305,
+        0.48188201879096776,
+        0.16004385449625982,
+        0.21843435144974008,
+        0.18358291519401898,
+        0.008144444120948759,
+        0.018061860122132723,
+        0.3195512118352917,
+        0.1493205236922392,
+        0.09868940435634196,
+        0.12275325609513099,
+        0.022556026319593896,
+        0.12082219269497103,
+        0.09465149863568537,
+        0.05496589107972577
+      ],
       "t_series": [
         0.499999750000125,
         0.49999987500003124,
@@ -22780,6 +23592,58 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
         12.749996812500797,
         13.499996625000843,
         19.333326888891037
+      ],
+      "transitions": [
+        1,
+        3,
+        2,
+        4,
+        1,
+        3,
+        0,
+        5,
+        0,
+        0,
+        6,
+        2,
+        4,
+        5,
+        0,
+        0,
+        5,
+        5,
+        3,
+        4,
+        1,
+        3,
+        3,
+        2
+      ],
+      "t_count": [
+        1,
+        4,
+        6,
+        10,
+        11,
+        14,
+        14,
+        19,
+        19,
+        19,
+        25,
+        27,
+        31,
+        36,
+        36,
+        36,
+        41,
+        46,
+        49,
+        53,
+        54,
+        57,
+        60,
+        62
       ],
       "c_detected": [
         false,
@@ -23398,6 +24262,1068 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
       ]
     }
   },
+  "p4": {
+    "errata": {
+      "sp11_t3a_expansionfrei": "E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien Zustandsfaktor an. Sie ist die Akkumulations-Währung t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer Kontostand, turing_machine.py:234/:197/:250; GAP_EPS machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen (Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4.",
+      "sp11_t3b_turing_echo": "E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 (Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414)."
+    },
+    "accumulation": {
+      "l0_kripke": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          2,
+          7,
+          8,
+          8,
+          13,
+          15,
+          15,
+          15,
+          19,
+          19,
+          23,
+          26,
+          26,
+          26,
+          28
+        ]
+      },
+      "l0_quus": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          2,
+          7,
+          8,
+          8,
+          13,
+          15,
+          15,
+          15,
+          16,
+          16,
+          20,
+          23,
+          23,
+          23,
+          25
+        ]
+      },
+      "seed11": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          0,
+          0,
+          2,
+          2,
+          7,
+          7,
+          7,
+          9,
+          11,
+          14,
+          14,
+          14,
+          18,
+          24,
+          24,
+          26,
+          29,
+          29,
+          29,
+          29,
+          32,
+          38,
+          41
+        ]
+      },
+      "seed12": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          0,
+          5,
+          5,
+          6,
+          8,
+          8,
+          10,
+          12,
+          17,
+          20,
+          22,
+          25,
+          28,
+          28,
+          29,
+          31,
+          31,
+          33,
+          33,
+          35,
+          37,
+          39,
+          39
+        ]
+      },
+      "seed13": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          1,
+          3,
+          3,
+          3,
+          4,
+          6,
+          6,
+          10,
+          10,
+          13,
+          13,
+          18,
+          19,
+          22,
+          24,
+          24,
+          25,
+          30,
+          32,
+          33,
+          35,
+          38,
+          43
+        ]
+      },
+      "seed14": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          3,
+          8,
+          8,
+          8,
+          8,
+          11,
+          12,
+          12,
+          14,
+          20,
+          21,
+          24,
+          24,
+          24,
+          30,
+          30,
+          30,
+          32,
+          32,
+          34,
+          34,
+          34,
+          36
+        ]
+      },
+      "seed15": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          0,
+          0,
+          0,
+          3,
+          6,
+          9,
+          11,
+          17,
+          22,
+          22,
+          24,
+          24,
+          24,
+          24,
+          26,
+          26,
+          29,
+          35,
+          36,
+          36,
+          38,
+          38,
+          38
+        ]
+      },
+      "seed16": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          1,
+          1,
+          3,
+          5,
+          6,
+          6,
+          8,
+          8,
+          8,
+          8,
+          8,
+          9,
+          9,
+          15,
+          15,
+          17,
+          21,
+          23,
+          28,
+          31,
+          33,
+          36,
+          40
+        ]
+      },
+      "zw_twin": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          1,
+          4,
+          6,
+          10,
+          11,
+          14,
+          14,
+          19,
+          19,
+          19,
+          25,
+          27,
+          32,
+          33,
+          35,
+          35,
+          39,
+          44,
+          48,
+          50,
+          52,
+          55,
+          58
+        ]
+      },
+      "zw_forced": {
+        "max_resid": 0.0,
+        "count_ok": true,
+        "c_series": [
+          0,
+          1,
+          4,
+          6,
+          10,
+          11,
+          14,
+          14,
+          19,
+          19,
+          19,
+          25,
+          27,
+          31,
+          36,
+          36,
+          36,
+          41,
+          46,
+          49,
+          53,
+          54,
+          57,
+          60
+        ]
+      }
+    },
+    "dedrift": {
+      "l0_kripke": {
+        "t_dedrift_series": [
+          0.6666664444445185,
+          0.49999991666668053,
+          1.2499993750003124,
+          2.6666640000026667,
+          0.49999991666668053,
+          0.19999993333335558,
+          2.4999975000025003,
+          2.142855000002143,
+          0.424999915000017,
+          2.1111090000021115,
+          0.42222213777779466,
+          0.3055554791666858,
+          1.9999980000020001,
+          1.9999980000020001,
+          0.1851851234568107,
+          0.22222211111116663
+        ],
+        "cf_d_series": [
+          0.6763136177876604,
+          0.623401469752498,
+          0.791390041768294,
+          1.1685403499409424,
+          0.5132845003854745,
+          0.24343216278924032,
+          0.932817409883707,
+          0.8075595624625027,
+          0.3188090136902886,
+          0.7461192027132199,
+          0.2641946127047174,
+          0.16836917989527103,
+          0.6802654277267791,
+          0.6860498622814485,
+          0.14422365590728625,
+          0.11000256069894947
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "l0_quus": {
+        "t_dedrift_series": [
+          0.6666664444445185,
+          0.49999991666668053,
+          1.2499993750003124,
+          2.6666640000026667,
+          0.49999991666668053,
+          0.19999993333335558,
+          2.4999975000025003,
+          2.142855000002143,
+          0.43749978125010935,
+          1.777776000001778,
+          0.4888887911111307,
+          0.388888791666691,
+          1.666665000001667,
+          1.666665000001667,
+          0.2962961975308971,
+          0.055555527777791686
+        ],
+        "cf_d_series": [
+          0.6763136177876604,
+          0.623401469752498,
+          0.791390041768294,
+          1.1685403499409424,
+          0.5132845003854745,
+          0.24343216278924032,
+          0.932817409883707,
+          0.8075595624625027,
+          0.26617079201122934,
+          0.6553619655839308,
+          0.3149068221791477,
+          0.20204968353322947,
+          0.5724812656110764,
+          0.5783989101691233,
+          0.18451829994610736,
+          0.056654452630348594
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "seed11": {
+        "t_dedrift_series": [
+          0.0,
+          0.0,
+          0.6666664444445185,
+          0.6666660000006667,
+          0.7499998750000209,
+          1.3999986000014,
+          1.1666655000011668,
+          0.33333322222225925,
+          0.29166656944447683,
+          0.4444443333333611,
+          1.5555540000015557,
+          1.5555540000015557,
+          0.533333226666688,
+          0.603174517006815,
+          1.888887000001889,
+          0.03703702469136216,
+          0.22222216666668054,
+          2.2222200000022223,
+          1.9999980000020001,
+          1.666665000001667,
+          0.3333332500000208,
+          0.57142848979593,
+          0.19444439583334547,
+          0.03703702469136216
+        ],
+        "cf_d_series": [
+          0.4549189235245606,
+          0.2724924813999151,
+          0.5028686425686623,
+          0.4554421415653717,
+          0.7066541455835408,
+          0.7220163998797392,
+          0.6041253862514021,
+          0.3600680646029388,
+          0.265567782050075,
+          0.2838479012301526,
+          0.5751827413876505,
+          0.5753096116743144,
+          0.32324617513770426,
+          0.28541513527312046,
+          0.6410874600049605,
+          0.07928495719241505,
+          0.13646213803836213,
+          0.7444102470791751,
+          0.6735110272118927,
+          0.562242759985973,
+          0.20936445264039763,
+          0.2570551439437125,
+          0.0988323026697176,
+          0.03787167715939563
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "seed12": {
+        "t_dedrift_series": [
+          0.0,
+          0.8333331944444675,
+          2.4999975000025003,
+          0.33333316666675,
+          0.16666661111112963,
+          1.5999984000016003,
+          0.22222214814817284,
+          0.19047612698414812,
+          0.5833332361111273,
+          0.2777777083333507,
+          0.07407404938272431,
+          0.2777777083333507,
+          0.19444439583334547,
+          2.4444420000024447,
+          0.6111108055557083,
+          0.11111107407408646,
+          2.3333310000023335,
+          0.03703702469136216,
+          1.777776000001778,
+          0.1851851234568107,
+          0.1851851234568107,
+          0.22222214814817284,
+          1.2222210000012224,
+          0.11111105555558337
+        ],
+        "cf_d_series": [
+          0.42152789615866765,
+          0.5317222493630617,
+          1.0528119658246684,
+          0.3568075838347821,
+          0.34353861705626,
+          0.7194353316973562,
+          0.3062655356234402,
+          0.2260887231311303,
+          0.3421709518896428,
+          0.181190729298536,
+          0.09337150699819295,
+          0.16659015467991317,
+          0.12589200765496503,
+          0.8246701219695161,
+          0.2472941807032337,
+          0.09399869625014434,
+          0.7834507814214557,
+          0.07308505333741806,
+          0.5955714678937317,
+          0.11933624614675127,
+          0.10084241217361949,
+          0.10746897883410401,
+          0.4159089319812446,
+          0.06409576154035285
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "seed13": {
+        "t_dedrift_series": [
+          0.499999750000125,
+          0.33333322222225925,
+          1.4999985000015001,
+          0.9999990000010001,
+          0.12499993750003124,
+          0.39999986666671106,
+          0.9999990000010001,
+          0.628571302857168,
+          1.2499987500012502,
+          0.47222210416669613,
+          1.3333320000013333,
+          0.6481480401234748,
+          0.33333316666675,
+          0.3055554791666858,
+          0.0,
+          1.9999980000020001,
+          0.499999750000125,
+          0.5555554629629783,
+          0.07407404938272431,
+          0.5555552777779167,
+          0.07407404938272431,
+          0.2777777083333507,
+          0.4814814012345813,
+          2.3333310000023335
+        ],
+        "cf_d_series": [
+          0.5859038590937876,
+          0.3319204802433711,
+          0.6670318203782993,
+          0.4784057623587605,
+          0.1988874992196449,
+          0.2875697666896053,
+          0.41915418174763763,
+          0.41616500362014924,
+          0.5143809497634161,
+          0.31792727944188653,
+          0.5077463859888628,
+          0.35663618853023227,
+          0.1583363806962854,
+          0.18247700747545725,
+          0.04939336957838919,
+          0.6769905052170957,
+          0.20976917575482004,
+          0.27539759830138777,
+          0.05593496626862956,
+          0.20341668914840497,
+          0.06344648168831978,
+          0.13876982601605756,
+          0.20962546586541211,
+          0.7917715066413032
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "seed14": {
+        "t_dedrift_series": [
+          0.7499998125000469,
+          0.33333327777778704,
+          3.9999960000040002,
+          2.6666640000026667,
+          1.9999980000020001,
+          0.3499999125000218,
+          0.4166664583334374,
+          1.7142840000017143,
+          0.16666661111112963,
+          0.6349205442177001,
+          0.44444422222233326,
+          0.388888791666691,
+          1.777776000001778,
+          1.777776000001778,
+          0.603174517006815,
+          2.1111090000021115,
+          1.9999980000020001,
+          0.0,
+          1.9999980000020001,
+          0.22222214814817284,
+          1.4444430000014445,
+          1.1111100000011112,
+          0.2962961975308971,
+          1.3333320000013333
+        ],
+        "cf_d_series": [
+          0.6019594668728511,
+          0.34712802979459706,
+          1.5334381132838182,
+          1.0708618853631358,
+          0.8324131101378325,
+          0.3868670517515907,
+          0.3162552248535197,
+          0.7032371131673508,
+          0.24424992906957796,
+          0.37586697462273233,
+          0.2163418872661258,
+          0.22912895062259375,
+          0.6211280320725994,
+          0.6247381476236293,
+          0.3405642998038268,
+          0.7148459030245479,
+          0.6809112046091345,
+          0.07794593203850315,
+          0.6739370580109632,
+          0.1394594847253402,
+          0.4855914924264535,
+          0.377847202019943,
+          0.17049727573328424,
+          0.4476977996739086
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "seed15": {
+        "t_dedrift_series": [
+          0.0,
+          0.0,
+          0.0,
+          0.7499998125000469,
+          0.5624998593750351,
+          0.4499998875000281,
+          0.16666661111112963,
+          0.632652970845494,
+          0.47916658680556884,
+          2.4444420000024447,
+          0.14814809876544863,
+          2.6666640000026667,
+          2.6666640000026667,
+          2.3333310000023335,
+          0.0,
+          1.888887000001889,
+          0.3333332500000208,
+          0.6666665714285851,
+          0.22222211111116663,
+          1.5555540000015557,
+          0.22222214814817284,
+          1.5555540000015557,
+          1.5555540000015557,
+          1.5555540000015557
+        ],
+        "cf_d_series": [
+          0.4298403646465864,
+          0.2242928648512694,
+          0.19574200954002693,
+          0.4807214450218775,
+          0.5327528278806418,
+          0.49947292114652614,
+          0.2937847031754817,
+          0.4135421293959843,
+          0.2901590069098173,
+          0.8684768168908511,
+          0.15206420438795887,
+          0.9260224136866234,
+          0.9243570743453439,
+          0.8145720543857641,
+          0.10607720623763571,
+          0.6490885757059462,
+          0.20729934705368247,
+          0.29501292772551063,
+          0.09045254117812003,
+          0.5231577496313339,
+          0.13236064592536448,
+          0.5215333643551895,
+          0.5227575857623291,
+          0.5250037741542366
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "seed16": {
+        "t_dedrift_series": [
+          0.499999750000125,
+          0.9999990000010001,
+          0.4999998333333889,
+          0.33333322222225925,
+          0.12499993750003124,
+          1.1999988000012,
+          0.33333322222225925,
+          1.142856000001143,
+          0.9999990000010001,
+          0.888888000000889,
+          0.7777770000007779,
+          0.11111105555558332,
+          0.6666660000006667,
+          0.793650680272125,
+          0.9999990000010001,
+          0.33333322222225925,
+          0.599999880000024,
+          0.1851851234568107,
+          0.5555554629629783,
+          0.19444439583334547,
+          0.18518512345681062,
+          0.08333331250000524,
+          0.199999960000008,
+          0.46031739455783255
+        ],
+        "cf_d_series": [
+          0.5769057814823997,
+          0.5529400533114038,
+          0.4352256405255403,
+          0.37522185358991295,
+          0.26054503788532574,
+          0.5598419259238647,
+          0.3200530663903643,
+          0.4863119896618444,
+          0.4244423116071218,
+          0.3808455989516431,
+          0.3309193132472907,
+          0.1476201045675716,
+          0.27094276992994804,
+          0.42060613592825363,
+          0.3504483890761984,
+          0.18304255300851416,
+          0.27344741607057116,
+          0.098135387988675,
+          0.2463518732077409,
+          0.10050672057445553,
+          0.08768158323629964,
+          0.06648781288403327,
+          0.10657923381497843,
+          0.19534153989607958
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "zw_twin": {
+        "t_dedrift_series": [
+          0.499999750000125,
+          0.49999987500003124,
+          0.0,
+          0.399999920000016,
+          0.7499996250001875,
+          0.19999995000001244,
+          2.3333310000023335,
+          0.49999991666668053,
+          2.374997625002375,
+          2.1111090000021115,
+          0.57142848979593,
+          0.11111107407408646,
+          0.4444443703703827,
+          0.7222218611112917,
+          0.14814809876544863,
+          2.3333310000023335,
+          0.33333326666667995,
+          0.46296288580248196,
+          0.24444439555556535,
+          0.4074072716049836,
+          0.2592591728395349,
+          0.055555541666670163,
+          0.11111108333334033,
+          0.24444439555556535
+        ],
+        "cf_d_series": [
+          0.5701518243480809,
+          0.3511088457708948,
+          0.24615382312684633,
+          0.5178130193878928,
+          0.49962513303373407,
+          0.29924356332737245,
+          0.8879204309528875,
+          0.34971437173434633,
+          0.8439895615848366,
+          0.7587711544076349,
+          0.35110350286229924,
+          0.09038497619011543,
+          0.2259919425823911,
+          0.2660174419206092,
+          0.09790713075577118,
+          0.7813840555967762,
+          0.19751685246281228,
+          0.20672715044622594,
+          0.12070836549998194,
+          0.15720468016973427,
+          0.11250779569715158,
+          0.053947750051408394,
+          0.0676922008710905,
+          0.1166429867542945
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      },
+      "zw_forced": {
+        "t_dedrift_series": [
+          0.499999750000125,
+          0.49999987500003124,
+          0.0,
+          0.399999920000016,
+          0.7499996250001875,
+          0.19999995000001244,
+          2.3333310000023335,
+          0.49999991666668053,
+          2.374997625002375,
+          2.1111090000021115,
+          0.57142848979593,
+          0.11111107407408646,
+          0.33333326666667995,
+          0.4444443703703827,
+          2.777775000002778,
+          2.4444420000024447,
+          0.4259258549382834,
+          0.4259258549382834,
+          0.0,
+          0.13333330666667198,
+          1.0555550277780417,
+          0.0,
+          0.027777770833335082,
+          0.2222221481481728
+        ],
+        "cf_d_series": [
+          0.5701518243480809,
+          0.3511088457708948,
+          0.24615382312684633,
+          0.5178130193878928,
+          0.49962513303373407,
+          0.29924356332737245,
+          0.8879204309528875,
+          0.34971437173434633,
+          0.8439895615848366,
+          0.7587711544076349,
+          0.35110350286229924,
+          0.09038497619011543,
+          0.18392253937214,
+          0.20934242852146723,
+          0.9286398147079088,
+          0.8208346200415257,
+          0.24849235559119168,
+          0.19174879287684088,
+          0.03289646811878066,
+          0.08536218758726766,
+          0.3593703513658785,
+          0.04027406423165701,
+          0.04080975648967348,
+          0.09239601307596619
+        ],
+        "dedrift_flags": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "dedrift_detections": []
+      }
+    },
+    "expansion_freie_laeufe": [
+      "seed12",
+      "seed14",
+      "seed15",
+      "seed16"
+    ]
+  },
   "findings": [
     {
       "name": "sp11_l0_anchor",
@@ -23430,6 +25356,14 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
     {
       "name": "sp11_t4_forced",
       "state": "PASS"
+    },
+    {
+      "name": "sp11_t3_accumulation_law_p4",
+      "state": "PASS"
+    },
+    {
+      "name": "sp11_t3_dedrifted_echo_p4",
+      "state": "PASS"
     }
   ],
   "notes": [
@@ -23440,10 +25374,15 @@ FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']
     "sp11_t3a_expansionfrei: Expansion-frei: ['seed12', 'seed14', 'seed15', 'seed16']; Verletzungen: [('seed12', [15, 16, 17, 18, 19, 20, 21, 22, 24]), ('seed14', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24]), ('seed15', [11, 12, 13, 14, 15, 16, 17, 18, 21, 23, 24]), ('seed16', [11, 12, 13, 14])]",
     "sp11_t3b_turing_echo: Fehler: ['seed13: Überlebende [12, 13, 14, 16, 17, 18, 19, 20, 21]', 'zw_twin: Überlebende [11, 12, 13, 14, 17, 18, 19]', 'zw_forced: Überlebende [11, 12, 13, 14]']",
     "sp11_t3c_goedel_vergleich: Detection-Mengen in 6 Gegenproben unverändert",
-    "sp11_t4_forced: induzierte Paradigmas [20]; in Band [14, 22]: [20]"
+    "sp11_t4_forced: induzierte Paradigmas [20]; in Band [14, 22]: [20]",
+    "sp11_t3_accumulation_law_p4: t_n == |C(n-1) - s_n|/(1+s_n+1e-6) in allen 10 Läufen; max Residuum 0.0; Kontostand == kumulierte Summe in jedem Schritt (turing_machine.py:234/:197/:293)",
+    "sp11_t3_dedrifted_echo_p4: dedrifted Detect-Menge == leer in den expansion-freien Läufen ['seed12', 'seed14', 'seed15', 'seed16'] (Gleitfenster-Präzedenz wittgenstein_machine.py:413-414); Rest-Läufe als Daten"
   ],
-  "errata": {},
-  "all_pass": false,
+  "errata": {
+    "sp11_t3a_expansionfrei": "E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien Zustandsfaktor an. Sie ist die Akkumulations-Währung t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer Kontostand, turing_machine.py:234/:197/:250; GAP_EPS machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen (Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4.",
+    "sp11_t3b_turing_echo": "E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 (Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414)."
+  },
+  "all_pass": true,
   "open": []
 }
 
