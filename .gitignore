@@ -3,3 +3,7 @@ __pycache__/
 scratches/
 # 4,8 GB Checkpoint-Gewichte: regenerierbar via convert_gemma3_to_argon.py
 argon_1b/model.safetensors
+# abgeleitete Checkpoints (nur Router-Gates + expert_bias vs. argon_1b):
+# vollständig regenerierbar via train_moe_router_specialization.py
+argon_1b_specialized/
+argon_1b_specialized_ml/

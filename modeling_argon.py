@@ -280,7 +280,16 @@ class ArgonHybridAttention(nn.Module):
                 k = torch.cat([past_key_value[0], k], dim=2)
                 v = torch.cat([past_key_value[1], v], dim=2)
 
-            present_key_value = (k, v) if use_cache else None
+            # O(1)-Ringpuffer-Eviction: im Cache bleiben nur die letzten
+            # sliding_window Token. Die Sliding-Maske blendet alles Ältere
+            # ohnehin aus; die gecachten k sind bereits vorrotiert, die
+            # relativen Phasen zwischen Query und Cache bleiben also korrekt.
+            if use_cache and self.sliding_window is not None and k.shape[2] > self.sliding_window:
+                present_key_value = (k[..., -self.sliding_window:, :], v[..., -self.sliding_window:, :])
+            elif use_cache:
+                present_key_value = (k, v)
+            else:
+                present_key_value = None
 
             if self.num_kv_heads < self.num_heads:
                 k = k.repeat_interleave(self.num_heads // self.num_kv_heads, dim=1)
@@ -471,7 +480,11 @@ class ArgonModel(nn.Module):
         attention_mask: Optional[torch.Tensor] = None,
         past_key_values: Optional[List[Tuple[torch.Tensor, torch.Tensor]]] = None,
         use_cache: bool = False,
+        kv_modality_mask: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, List[torch.Tensor], Optional[List[Tuple[torch.Tensor, torch.Tensor]]]]:
+        """kv_modality_mask: Modalitätsmaske der GESAMTEN Sequenz im Cache
+        (Prefill-Länge + Generate-Suffix) — wird im Decode-State benötigt, um
+        die 2D-Vision-Koordinaten der gecachten Patch-RoPE-Kanäle zu rekonstruieren."""
         bsz, q_len = input_ids.shape
 
         # transformers 5.x Cache-Objekt (DynamicCache aus generate()) entpacken:
@@ -489,11 +502,43 @@ class ArgonModel(nn.Module):
         if past_key_values is not None and len(past_key_values) > 0 and past_key_values[0] is not None:
             # In Schicht 0 (lokales MQA) liegt k auf [bsz, kv_heads, past_len, head_dim]
             past_len = past_key_values[0][0].shape[2] if past_key_values[0][0].dim() == 4 else past_key_values[0][0].shape[1]
-        kv_len = past_len + q_len
+        kv_len_local = past_len + q_len
+
+        # Absolute Länge: globale MLA-Schichten wachsen mit jedem Token unbegrenzt,
+        # lokale MQA-Schichten sind ab sliding_window durch Ringpuffer-Eviction
+        # konstant. Daraus folgen zwei Masken-/RoPE-Koordinatenräume.
+        kv_len_abs = kv_len_local
+        first_global = getattr(self.config, "sliding_window_pattern", 6) - 1
+        if first_global > 0 and past_key_values is not None and first_global < len(past_key_values) \
+                and past_key_values[first_global] is not None:
+            kv_len_abs = past_key_values[first_global][0].shape[1] + q_len
+        kv_len = kv_len_abs
+
+        # Modalitätsmaske auseinandernehmen: fürs Embedding zählt nur der
+        # Eingabe-Slice (letzte q_len — torch.where verlangt elementweise Deckung),
+        # für die RoPE-Koordinaten die vollständige Cache-Sequenz. Ein
+        # Vollmasken-Decode (modality_mask == Cache-Länge) ist damit auch ohne
+        # separates kv_modality_mask korrekt, statt stillschweigend ignoriert.
+        modality_mask_in = modality_mask
+        modality_mask_kv = None
+        if modality_mask is not None and modality_mask.dim() == 2:
+            m = modality_mask
+            if m.shape[1] > q_len:
+                modality_mask_in = m[:, -q_len:]
+                if m.shape[1] >= kv_len:
+                    modality_mask_kv = m[:, -kv_len:]
+                else:
+                    # Zu kurze Maske deckt nur die letzten l Token (end-aligniert):
+                    # fehlender Anfang = Text, hinten anwachsen lassen.
+                    pad = m.new_zeros((m.shape[0], kv_len - m.shape[1]))
+                    modality_mask_kv = torch.cat([pad, m], dim=1)
+
+            elif q_len == kv_len:
+                modality_mask_kv = m
 
         h = self.embed_tokens(
             input_ids=input_ids,
-            modality_mask=modality_mask,
+            modality_mask=modality_mask_in,
             vision_patches=vision_patches,
             audio_frames=audio_frames,
         )
@@ -501,11 +546,24 @@ class ArgonModel(nn.Module):
         device = h.device
         dtype = h.dtype
 
-        modality_mask_2d = modality_mask if (modality_mask is not None and modality_mask.dim() == 2 and q_len == kv_len) else None
+        # 2D-Gitter-Koordinaten: im Prefill (q_len == kv_len) aus der Modalitätsmaske
+        # der Eingabe; im Decode (q_len < kv_len) aus der vollständigen
+        # kv_modality_mask, damit die im Cache roh liegenden k_rope-Vektoren der
+        # Vision-Patches bei jeder Neuberechnung mit ihren Grid-Winkeln statt mit
+        # einer 1D-Positionsnummer rotiert werden (Fix: RoPE-Winkel einfrieren).
+        if modality_mask_kv is None and kv_modality_mask is not None and kv_modality_mask.dim() == 2:
+            mask_kv = kv_modality_mask
+            if mask_kv.shape[1] > kv_len:
+                mask_kv = mask_kv[:, -kv_len:]
+            elif mask_kv.shape[1] < kv_len:
+                pad = mask_kv.new_zeros((mask_kv.shape[0], kv_len - mask_kv.shape[1]))
+                mask_kv = torch.cat([mask_kv, pad], dim=1)
+            modality_mask_kv = mask_kv
+
         coords_x = coords_y = None
         has_vision = False
-        if modality_mask_2d is not None and getattr(self.config, "vision_2d_rope", True):
-            coords_x, coords_y, has_vision = self._build_2d_coords(modality_mask_2d, device)
+        if modality_mask_kv is not None and getattr(self.config, "vision_2d_rope", True):
+            coords_x, coords_y, has_vision = self._build_2d_coords(modality_mask_kv, device)
         has_vision = has_vision and coords_x is not None
 
         if has_vision:
@@ -524,9 +582,18 @@ class ArgonModel(nn.Module):
         cos_local, sin_local = cos_local.to(dtype), sin_local.to(dtype)
         cos_global, sin_global = cos_global.to(dtype), sin_global.to(dtype)
 
-        global_mask, sliding_mask = self._prepare_masks(
-            attention_mask, q_len, kv_len, device, dtype, modality_mask=modality_mask_2d
+        # Zwei Maskenräume: globale Schichten über die absolute Länge, lokale
+        # Schichten über die evicted Cache-Länge (bei kurzen Sequenzen identisch).
+        global_mask, sliding_mask_abs = self._prepare_masks(
+            attention_mask, q_len, kv_len, device, dtype, modality_mask=modality_mask_kv
         )
+        if kv_len_local == kv_len:
+            sliding_mask = sliding_mask_abs
+        else:
+            local_attn_mask = attention_mask
+            if attention_mask is not None and attention_mask.dim() == 2 and attention_mask.shape[-1] == kv_len:
+                local_attn_mask = attention_mask[:, -kv_len_local:]
+            _, sliding_mask = self._prepare_masks(local_attn_mask, q_len, kv_len_local, device, dtype, modality_mask=None)
 
         all_entropies = []
         next_decoder_cache = [] if use_cache else None
@@ -602,12 +669,39 @@ class ArgonForConditionalGeneration(PreTrainedModel, GenerationMixin):
             )
             if cache_len > 0:
                 input_ids = input_ids[:, -1:]
-        return {
+        model_inputs = {
             "input_ids": input_ids,
             "past_key_values": past_key_values,
             "attention_mask": attention_mask,
             "use_cache": use_cache,
         }
+        # Multimodale Eingaben durchreichen: im Decode-State nur der letzte
+        # Token mit Modalitätsmarkierung (dort im Regelfall rein Text →
+        # Vision-/Audio-Tensoren weglassen); die volle kv_modality_mask bleibt
+        # ungeschnitten, damit die 2D-Vision-RoPE-Koordinaten der gecachten
+        # Patches rekonstruiert werden können.
+        modality_mask = kwargs.get("modality_mask")
+        if modality_mask is not None:
+            if cache_len > 0:
+                n = input_ids.shape[1]
+                if modality_mask.shape[1] >= n:
+                    step_mask = modality_mask[:, -n:]
+                else:
+                    step_mask = torch.zeros((input_ids.shape[0], 1), dtype=modality_mask.dtype, device=modality_mask.device)
+                model_inputs["modality_mask"] = step_mask
+                if bool(step_mask.eq(1).any()) and kwargs.get("vision_patches") is not None:
+                    model_inputs["vision_patches"] = kwargs["vision_patches"][..., -n:, :]
+                if bool(step_mask.eq(2).any()) and kwargs.get("audio_frames") is not None:
+                    model_inputs["audio_frames"] = kwargs["audio_frames"][..., -n:, :]
+            else:
+                model_inputs["modality_mask"] = modality_mask
+                if kwargs.get("vision_patches") is not None:
+                    model_inputs["vision_patches"] = kwargs["vision_patches"]
+                if kwargs.get("audio_frames") is not None:
+                    model_inputs["audio_frames"] = kwargs["audio_frames"]
+        if kwargs.get("kv_modality_mask") is not None:
+            model_inputs["kv_modality_mask"] = kwargs["kv_modality_mask"]
+        return model_inputs
 
     def forward(
         self,
@@ -621,6 +715,7 @@ class ArgonForConditionalGeneration(PreTrainedModel, GenerationMixin):
         labels: Optional[torch.Tensor] = None,
         router_entropy_weight: float = 0.0,
         router_target_entropy: Optional[float] = None,
+        kv_modality_mask: Optional[torch.Tensor] = None,
         **kwargs,
     ) -> CausalLMOutputWithPast:
         use_cache = use_cache if use_cache is not None else False
@@ -632,6 +727,7 @@ class ArgonForConditionalGeneration(PreTrainedModel, GenerationMixin):
             attention_mask=attention_mask,
             past_key_values=past_key_values,
             use_cache=use_cache,
+            kv_modality_mask=kv_modality_mask,
         )
 
         logits = self.lm_head(hidden_states)

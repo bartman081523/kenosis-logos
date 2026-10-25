@@ -6,14 +6,14 @@ Starte Verifikation der Argon-Architektur...
   Unexpected Keys: 0
 [Test 2/6] Führe Forward-Pass & Depth-weighted Entropie-Loss aus...
   Logits Shape: torch.Size([2, 32, 262144])
-  Loss mit Entropie-Regularisierung: 16.6688
+  Loss mit Entropie-Regularisierung: 14.4948
   ✅ Forward-Pass & Entropie-Kopplung verifiziert.
 [Test 3/6] Prüfe MoE-Balancing & Entropie-Amplituden-Gate...
   Routed-Amplitude: niedrige Entropie 0.2500 | maximale Entropie 1.0000
   ✅ MoE-Balancing & Amplituden-Gate verifiziert.
 [Test 4/6] Teste Latent-KV-Cache (`use_cache=True`)...
-  Maximaler Logit-Unterschied (Cache vs. Voller Forward): 9.083748e-05
-  Maximaler Logit-Unterschied (5-Schritt-Decode vs. 21-Tok-Forward): 1.322031e-04
+  Maximaler Logit-Unterschied (Cache vs. Voller Forward): 8.821487e-05
+  Maximaler Logit-Unterschied (5-Schritt-Decode vs. 21-Tok-Forward): 7.009506e-05
   MLA-Cache-Dim: 320 (= kv_lora_rank + qk_rope_head_dim = 320)
   ✅ Latent-KV-Cache (Prefill & Decode) bitgenau verifiziert.
 [Test 5/6] Teste GRPO-Reward-Funktion...
