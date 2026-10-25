@@ -1,41 +1,38 @@
-[transformers] You are using a model of type `kenosis_logos` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './kenosis_logos_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
 ======================================================================
-Starte Verifikation von Kenosis-Logos (Kondensations- & GRPO-Reife)...
+Starte Verifikation der Argon-Architektur...
 ======================================================================
 [Test 1/6] Lade Modell (hidden_size=1152, layers=26)...
   Missing Keys: 0
   Unexpected Keys: 0
-[Test 2/6] Führe Forward-Pass auf Testeingabe durch...
+[Test 2/6] Führe Forward-Pass & Depth-weighted Entropie-Loss aus...
   Logits Shape: torch.Size([2, 32, 262144])
-  Maximaler Absolutwert der Logits: 37.3642
-  Χώρα-Maske: Bild-Patches bidirektional, Text kausal; 2D-RoPE = 1D für Text.
-  Τάσις-Kopplung Delta im Loss: 0.282545
-  ✅ Forward-Pass & router_entropies Weiterleitung verifiziert.
-[Test 3/6] Prüfe aux-loss-freies Balancing im Trainingsmodus...
-  Summe der Bias-Anpassung im Trainings-Schritt: 0.008000
-  Routed-Amplitude: Πεζός 0.2500 | flache Τάσις 1.0000
-  ✅ Aux-loss-freies Balancing + Τάσις-Amplituden-Gate aktiv.
-[Test 4/6] Teste KenosisKrisisLogitsProcessor mit zustandslosem Anker-Forcing...
-  ✅ Zustandsloses Anker-Forcing (Multi-Batch & lange GRPO-Prompts) verifiziert.
-  ✅ Schließ-Garantie + Phasentrennung (Πύλη-Σκίζω) verifiziert.
+  Loss mit Entropie-Regularisierung: 16.6688
+  ✅ Forward-Pass & Entropie-Kopplung verifiziert.
+[Test 3/6] Prüfe MoE-Balancing & Entropie-Amplituden-Gate...
+  Routed-Amplitude: niedrige Entropie 0.2500 | maximale Entropie 1.0000
+  ✅ MoE-Balancing & Amplituden-Gate verifiziert.
+[Test 4/6] Teste Latent-KV-Cache (`use_cache=True`)...
+  Maximaler Logit-Unterschied (Cache vs. Voller Forward): 9.083748e-05
+  Maximaler Logit-Unterschied (5-Schritt-Decode vs. 21-Tok-Forward): 1.322031e-04
+  MLA-Cache-Dim: 320 (= kv_lora_rank + qk_rope_head_dim = 320)
+  ✅ Latent-KV-Cache (Prefill & Decode) bitgenau verifiziert.
 [Test 5/6] Teste GRPO-Reward-Funktion...
-  Reward (Πεζός): -4.80 | Reward (Λόγος): 4.10
-  ✅ GRPO-Reward-Funktion erfolgreich verifiziert.
+  Reward (Boilerplate): -1.60 | Reward (Argon): 1.50
+  ✅ GRPO-Reward-Funktion verifiziert.
 [Test 6/6] Teste autoregressive Textgenerierung über 35 Tokens...
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
   Prompt: 'The capital of France is'
   Generiert (35 Tokens):
   "The capital of France is Paris.
 
-The city of Rome is also known as the Eternal City.
+The city of Rome is known for the Colosseum.
 
-The capital of Canada is Ottawa.
+The state of California is known for the Golden Gate.
 
-The capital of Australia is Canberra.
-
-The capital of"
-  ✅ Autoregressive Generierung & RoPE-Orthogonalität über längere Sequenzen stabil.
+The mountain of Switzerland is known for the"
+  ✅ Autoregressive Generierung über Latent-KV-Cache stabil.
 
 ======================================================================
-🎉 Alle 6 Verifikationsstufen erfolgreich bestanden!
+🎉 Alle 6 Argon-Verifikationsstufen erfolgreich bestanden!
 ======================================================================
