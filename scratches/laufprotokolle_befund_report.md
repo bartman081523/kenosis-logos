@@ -189,3 +189,53 @@ Alle 11 Befunde PASS (`det_tautology`, `loop_tautology`, `basis_expanded`,
    dem bekannten niedrigeren Gap-Band (0.45–0.71).
 4. **Gaps bleiben endlich** über alle 24+1 Lanes-Schritte inklusive Expansion —
    der LOOP bricht die Komposition nicht, er verändert den Zustandsraum.
+
+---
+
+## 9. Multi-Expansions-Lauf — Basis-Leiter 3 → 5 → 7 → 9
+
+(nach der Freigabe „mache alles vorgeschlagene“; Basis 12 Lanes inkl. L10–L12.)
+Der Doppel-Pop aus §8 (je LOOP zwei Pool-Einträge: `turing.step` intern +
+`composite.step` reflexiv) wird hier zum getesteten Feature: ein 6er-Pool
+`["ALPHA","BETA","GAMMA","DELTA","EPSILON","ZETA"]` und die Tautologie an den
+Schritten **1/10/12 erzwungen** (Probe-Pfad `force_rule_at` mit Schritt-Cadence).
+Warum erzwungen und nicht der natürlichen Cadence vertraut: jede Expansion
+verbraucht 2 RNG-Draws, die Sampler-Streams divergieren nach dem ersten
+Expansionsschritt — die natürlichen Tautologien sind selten (§8: ≈ 0.65 % je
+Regel) und ihre Positionen sind nicht leiter-stabil; die erzwungene Cadence
+garantiert die Messgröße. Die erzwungenen Lanes sind ein *Kontrollpfad*, der
+die natürlichen §8-Lanes nicht ersetzt.
+
+| Lane | Steuerung | Digest | Expansions | Basis-Profile (Schritte 1–16) | Gap-Band |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L10/L12 | Leiter erzwungen, ungesteuert | `edc1ded943f5` | `step1/10/12 : LOOP` | `5×9 → 7 → 7 → 9…` (3→5→7→9) | 0.58–0.83 |
+| L11 | wie L10 unter "goedel" {2,7} | `cd4cd8570e38` | identische Leiter | identisch | 0.45–0.71 |
+
+Alle 14 Befunde PASS (`multi_expansion`, `det_multi_expansion`,
+`multi_steer_shift` zusätzlich; `bias_restored` über alle gesteuerten Lanes).
+
+**Drei Befunde der vollen Leiter:**
+
+1. **Die Leiter ist exakt:** Basis-Profile L10/L12 bitidentisch —
+   `[5,5,5,5,5,5,5,5,5,7,7,9,9,9,9,9]`: Schritt 1 +ALPHA/BETA, Schritt 10
+   +GAMMA/DELTA, Schritt 12 +EPSILON/ZETA; Endzustand
+   `SCALAR,TIME,SPACE,ALPHA,BETA,GAMMA,DELTA,EPSILON,ZETA` (9 Dimensionen).
+   Determinismus auf dem vollen Selbstmodifikations-Pfad (L10 == L12, Digest
+   `edc1ded943f5`).
+2. **Der Zustandsraum-Rücksprung ist lokal absorbiert:** an den drei
+   Expansionsschritten springen die Gaps nicht — L10 0.70/0.68/0.69,
+   L11 0.55/0.56/0.55 (in-band). Die Komposition verarbeitet ihre eigene
+   Dimensionalitätserweiterung ohne Trajektorien-Schock; anders als der
+   In-Loop-Ausreißer (§7, 8.02) ist die Expansion ein gerichteter
+   Ebenenwechsel, kein Rückschlag.
+3. **Strukturelles Schicksal vs. innere Bewertung:** L11 trägt unter Steering
+   exakt dieselbe Leiter (Verdict-Muster, Basis-Profile identisch — dieselben
+   Widerfahrnisse inkl. dreifacher Tautologie-Kollision), aber das
+   Selbstmodell bewertet sie durchgehend in einem ~0.1–0.15 niedrigeren
+   Band. Die „stabilisierte Innenperspektive" aus §7 hält auch über die
+   vollständige Selbstmodifikations-Kette.
+
+Kontinuität: L1–L9 reproduzieren in diesem Lauf exakt die Digests des §7/§8-Stands
+(`5cb5d245e5a7` / `11e246eddf07` / `eda6fc23ed71` / `063d92c0f354` /
+`9c5bf80babaa` / `1f7cbc913e7c`) — die L10–L12-Erweiterung verändert nichts am
+bisherigen Verhalten.
