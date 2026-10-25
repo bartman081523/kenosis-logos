@@ -1,0 +1,32 @@
+==============================================================================
+SP10 — DIE REGELN UND DIE WOERTER (Composite × Lexikon)
+==============================================================================
+[SP10.L0] SP7-Anker-Feldvergleich (seed 7, Zwang {9}) …
+[SP10.L1] Seitenband (These 1) …
+[SP10.L2] Gezaehlter Zufalls-Vorschub (These 2) …
+[SP10.L3] Analytik (These 3: L2 live) …
+[SP10.L3a] SP9-Rueckdiction + geschlossene Form …
+------------------------------------------------------------------------------
+BEFUNDE
+  sp10_l0_anchor         PASS
+  sp10_t1_spur           FAIL
+  sp10_t1_lexikon        FAIL
+  sp10_t1_spur_p4        PASS
+  sp10_t1_lexikon_p4     PASS
+  sp10_t2_divergenz      PASS
+  sp10_t2_kripke         PASS
+  sp10_t2_lexikon_lebt   PASS
+  sp10_t3_paar           PASS
+  sp10_t3_obs            PASS
+  sp10_t3_rueck          FAIL
+  sp10_t3_rueck_p4       PASS
+  sp10_det               PASS
+  sp10_t3_asymptot       PASS
+------------------------------------------------------------------------------
+ERRATA (P4-Einstufung; Ursprungs-Verdicte unveraendert)
+  sp10_t1_spur           Erstrun: die Seitenband-Arme liefen ohne Forced-Haken (Zwang {9} fehlte) — Implementations-Erratum, kein Wort-Befund. p4-Lesung fährt die Arme am SP7-Schema (run_forced).
+  sp10_t1_lexikon        Erstrun: after_paired wurde gegen das Per-Runden-Protokoll (15 Einträge) geprüft statt gegen das Per-Paar-Spielende (SP6-Anker mit 3 Einträgen). Die letzten 3 Protokoll-Einträge waren schon bitidentisch zum Anker. p4-Lesung prüft per Paar (SP6-Schreibweise).
+  sp10_t3_rueck          Erstrun: delta_count wurde über eine Rohspur mit UNGERUNDEM Punkt 0 gezählt (14) statt über die committete SP9-Konstruktion (Punkt 0 = unrelated15[0], gerundet). Der 15. Unterschied ist das Rundungs-Anschluss-Residuum am Spurstoss (|Roh − gerundet| ~ 1e-7), kein Sozialisierungs-Ereignis. SP9-Verdicte nutzen dieses Feld nicht als Band; dokumentiert, nicht getilgt. p4-Lesung zählt SP9-exakt.
+BILANZ: 11 PASS / 3 dokumentierte Errata
+[Save] scratches/regeln_woerter_experiment.json
+GRUEN — Loesungskette geschlossen.

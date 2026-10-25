@@ -1,0 +1,521 @@
+{
+  "anchor": {
+    "fields": {
+      "verdicts": true,
+      "basis": true,
+      "final_basis": true,
+      "expansions": true,
+      "gaps": true,
+      "first_detect": true,
+      "quus_verdicts": true,
+      "quus_final_basis": true,
+      "quus_expansions": true
+    },
+    "first_detect": 11,
+    "final_basis": 7,
+    "verdicts": [
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "LOOP",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "expansions": [
+      "step5:LOOP",
+      "step9:LOOP",
+      "step11:paradigm",
+      "step12:paradigm",
+      "step15:paradigm"
+    ],
+    "quus_final_basis": 5,
+    "det0": true,
+    "trace": [
+      "step=1 rule=(x power exp((x add x))) verdict=HALTED transitions=2 gap_mean=0.676314 trend=UNKNOWN",
+      "step=2 rule=(((x subtract x) subtract (x multiply x)) subtract verdict=HALTED transitions=5 gap_mean=0.623401 trend=UNKNOWN",
+      "step=3 rule=(2.72 divide (2.00 subtract x)) verdict=HALTED transitions=1 gap_mean=1.374723 trend=UNKNOWN",
+      "step=4 rule=sqrt(1.00) verdict=HALTED transitions=0 gap_mean=2.946316 trend=UNKNOWN",
+      "step=5 rule=log(square(identity(x))) verdict=LOOP transitions=5 gap_mean=0.513285 trend=RISING",
+      "step=6 rule=((sqrt(x) divide x) add 2.00) verdict=HALTED transitions=2 gap_mean=1.398987 trend=RISING",
+      "step=7 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.099480 trend=RISING",
+      "step=8 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.093270 trend=RISING",
+      "step=9 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.910476 trend=RISING",
+      "step=10 rule=x verdict=HALTED transitions=0 gap_mean=6.375743 trend=RISING",
+      "step=11 rule=(((x divide x) add x) min (x multiply (x max x))) verdict=HALTED transitions=4 gap_mean=1.123454 trend=RISING",
+      "step=12 rule=(sqrt(1.00) subtract ((0.00 max x) divide 0.00)) verdict=HALTED transitions=3 gap_mean=1.733184 trend=RISING",
+      "step=13 rule=x verdict=HALTED transitions=0 gap_mean=8.680257 trend=STABLE",
+      "step=14 rule=exp(x) verdict=HALTED transitions=0 gap_mean=8.686042 trend=RISING",
+      "step=15 rule=(log(negate(x)) add x) verdict=HALTED transitions=2 gap_mean=2.749161 trend=STABLE",
+      "step=16 rule=(2.72 subtract log(x)) verdict=HALTED transitions=1 gap_mean=4.535926 trend=RISING"
+    ],
+    "gaps": [
+      0.6763136177876604,
+      0.623401469752498,
+      1.3747230834351065,
+      2.94631634994272,
+      0.5132845003854745,
+      1.3989873331597389,
+      5.099479909887874,
+      5.093269562466789,
+      0.9104755620236457,
+      6.3757432027188505,
+      1.1234537001121592,
+      1.7331836035064798,
+      8.680257427734778,
+      8.686041862289448,
+      2.7491610591997566,
+      4.535926273663018
+    ]
+  },
+  "seitenband": {
+    "after_paired": [
+      0.99979,
+      0.999982,
+      1.0
+    ],
+    "protocol_res": [
+      0.724013,
+      0.973164,
+      0.999658,
+      0.950052,
+      0.995657,
+      0.999945,
+      0.991837,
+      0.999304,
+      0.999991,
+      0.998689,
+      0.999889,
+      0.999999,
+      0.99979,
+      0.999982,
+      1.0
+    ],
+    "learned_side": 15,
+    "unrelated_side": [
+      0.003954,
+      0.967089,
+      0.499426
+    ],
+    "trace_invariant": true,
+    "trace_len": 16,
+    "unforced_trace_matches": false,
+    "final_b": [
+      0.99979,
+      0.999982,
+      1.0
+    ],
+    "learned_b": 15
+  },
+  "gezaehlt": {
+    "kripke": {
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "LOOP",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "expansions": [
+        "step9:LOOP",
+        "step12:paradigm",
+        "step13:paradigm",
+        "step15:paradigm",
+        "step16:paradigm"
+      ],
+      "final_basis": 5,
+      "first_diff": 2,
+      "diff_note": "Schritt 2: Spur-Differenz",
+      "rng_shifted_after_lexikon": true,
+      "episodes": [
+        16,
+        16,
+        15
+      ],
+      "pair_final": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rows_pre": [
+        -0.006132,
+        0.967089,
+        0.499426
+      ],
+      "rows_post": [
+        0.004085,
+        0.967089,
+        0.499426
+      ],
+      "lex_rounds": 48,
+      "gap_finite": true
+    },
+    "quus": {
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "expansions": [
+        "step12:paradigm",
+        "step13:paradigm",
+        "step16:paradigm"
+      ],
+      "final_basis": 3,
+      "episodes": [
+        16,
+        16,
+        15
+      ],
+      "pair_final": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "det2": true,
+    "kripke_ok": true,
+    "quus_ok": true
+  },
+  "analytik": {
+    "max_pair_dev": 5.551115123125783e-16,
+    "max_obs_dev": 4.0766001685454967e-17,
+    "frozen_ok": true,
+    "t3_paar": true,
+    "t3_obs": true,
+    "asym": 5.479706073445445e-09,
+    "asym_reference": 0.0040848796314114045,
+    "tisch_series": [
+      -0.006132,
+      -0.000946,
+      -0.000946,
+      -0.000946,
+      0.002018,
+      0.002018,
+      0.002018,
+      0.003262,
+      0.003262,
+      0.003262,
+      0.003757,
+      0.003757,
+      0.003757,
+      0.003954,
+      0.003954,
+      0.003954,
+      0.004033,
+      0.004033,
+      0.004033,
+      0.004064,
+      0.004064,
+      0.004064,
+      0.004077,
+      0.004077,
+      0.004077,
+      0.004082,
+      0.004082,
+      0.004082,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085
+    ],
+    "k0_series": [
+      0,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      8,
+      8,
+      8,
+      9,
+      9,
+      9,
+      10,
+      10,
+      10,
+      11,
+      11,
+      11,
+      12,
+      12,
+      12,
+      13,
+      13,
+      13,
+      14,
+      14,
+      14,
+      15,
+      15,
+      15,
+      16,
+      16,
+      16
+    ]
+  },
+  "rueckdiction": {
+    "committed_size": [
+      46
+    ],
+    "unrelated15": [
+      0.003954,
+      0.967089,
+      0.499426
+    ],
+    "unrelated60": [
+      0.004085,
+      0.967089,
+      0.499426
+    ],
+    "tisch15": 0.003954,
+    "tisch60": 0.004085,
+    "delta_count": 15,
+    "delta_count_raw": 14,
+    "delta_01": 2.5857218339565835e-08,
+    "anchors": {
+      "tisch_traj": true,
+      "tisch15": true,
+      "tisch60": true,
+      "drift": true,
+      "delta_count": true,
+      "unrelated15": true,
+      "unrelated60": true
+    },
+    "max_traj_dev": 6.158268339717665e-17,
+    "max_pair_dev": 5.551115123125783e-16,
+    "asym": 3.5070111224777545e-10,
+    "traj": [
+      0.003954,
+      0.003954,
+      0.003954,
+      0.003954,
+      0.004033,
+      0.004033,
+      0.004033,
+      0.004064,
+      0.004064,
+      0.004064,
+      0.004077,
+      0.004077,
+      0.004077,
+      0.004082,
+      0.004082,
+      0.004082,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004084,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085,
+      0.004085
+    ],
+    "k_list": [
+      5,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      8,
+      8,
+      8,
+      9,
+      9,
+      9,
+      10,
+      10,
+      10,
+      11,
+      11,
+      11,
+      12,
+      12,
+      12,
+      13,
+      13,
+      13,
+      14,
+      14,
+      14,
+      15,
+      15,
+      15,
+      16,
+      16,
+      16,
+      17,
+      17,
+      17,
+      18,
+      18,
+      18,
+      19,
+      19,
+      19
+    ],
+    "learned_leg1": 15,
+    "learned_leg2": 44,
+    "analytic": true,
+    "anchor_ok": true
+  },
+  "findings": [
+    {
+      "name": "sp10_l0_anchor",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t1_spur",
+      "status": "FAIL"
+    },
+    {
+      "name": "sp10_t1_lexikon",
+      "status": "FAIL"
+    },
+    {
+      "name": "sp10_t1_spur_p4",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t1_lexikon_p4",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t2_divergenz",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t2_kripke",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t2_lexikon_lebt",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t3_paar",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t3_obs",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t3_rueck",
+      "status": "FAIL"
+    },
+    {
+      "name": "sp10_t3_rueck_p4",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_det",
+      "status": "PASS"
+    },
+    {
+      "name": "sp10_t3_asymptot",
+      "status": "PASS"
+    }
+  ],
+  "errata": {
+    "sp10_t1_spur": "Erstrun: die Seitenband-Arme liefen ohne Forced-Haken (Zwang {9} fehlte) — Implementations-Erratum, kein Wort-Befund. p4-Lesung fährt die Arme am SP7-Schema (run_forced).",
+    "sp10_t1_lexikon": "Erstrun: after_paired wurde gegen das Per-Runden-Protokoll (15 Einträge) geprüft statt gegen das Per-Paar-Spielende (SP6-Anker mit 3 Einträgen). Die letzten 3 Protokoll-Einträge waren schon bitidentisch zum Anker. p4-Lesung prüft per Paar (SP6-Schreibweise).",
+    "sp10_t3_rueck": "Erstrun: delta_count wurde über eine Rohspur mit UNGERUNDEM Punkt 0 gezählt (14) statt über die committete SP9-Konstruktion (Punkt 0 = unrelated15[0], gerundet). Der 15. Unterschied ist das Rundungs-Anschluss-Residuum am Spurstoss (|Roh − gerundet| ~ 1e-7), kein Sozialisierungs-Ereignis. SP9-Verdicte nutzen dieses Feld nicht als Band; dokumentiert, nicht getilgt. p4-Lesung zählt SP9-exakt."
+  },
+  "all_pass": true,
+  "summary": "11 PASS / 3 dokumentierte Errata"
+}

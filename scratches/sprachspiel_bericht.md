@@ -21,6 +21,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP5 | **Kontrast** — Cross-Preset-Kontrast: sechs Arme (raw/goedel/turing/wittgenstein/combined/anti) | GPU | S1-Skala + Canon-Name-Echo (`name_seq` je Arm) |
 | SP6 | **Lexikon** — Lexikon-Emergenz im Gebrauch (S3) | CPU | `lexicon_game`/`learn_pair`/`embed_word` (Lexikon-zuerst) |
 | SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
+| SP10 | **Kopplung** — Composite-Zyklus × Lexikon-Dynamik (die Regeln und die Wörter) | CPU | `composite.py:45-51` (exponierte Submaschinen), `wittgenstein_machine.py:244-256` (`_generate_ast` — wort-blind), `lexicon_game` (:342-380) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -381,6 +382,17 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   Verdicte, exit 0) + `scratches/..._experiment.json` (Volldaten inklusive
   Trajektorien); Skript `scratches/smoke_lexikon_dynamik.py` (Prereg-Docstring
   mit c′-Rekursion, Bands, Falsifikatoren, Errata-Register).
+- SP10: `machines/composite.py:45-51` (exponierte Submaschinen — die
+  Verschachtelung greift ohne Code-Schnitt), `:108-165` (`step`: Batch →
+  Programm → Verdikt → Basis), `machines/wittgenstein_machine.py:244-256`
+  (`_generate_ast` — nur RNG aus fixen Pools, kein Lexikon), `:100-137`
+  (Name/Auswertung nur AST), `:342-380` (`lexicon_game` mit derselben
+  `_rng`); Lauf
+  `scratches/regeln_woerter_experiment.log` (11 PASS + 3 Errata = 14
+  Verdicte, exit 0) + `scratches/regeln_woerter_experiment.json`
+  (Volldaten inklusive Roh-Spuren); Skript
+  `scratches/smoke_regeln_woerter.py` (Prereg-Docstring mit drei Thesen,
+  geschlossenen Formen, Errata-Register).
 
 ---
 
@@ -572,4 +584,120 @@ auf den tatsächlichen Ständen. exit 0 (Lösungskette geschlossen).
    als Fixpunkt) — in beiden Fällen trifft die Messung der Formel exakt,
    sobald die tatsächlichen Stände (regel_p2; Asymptote) einsetzen.
    Messen im Lexikon ist Mitspielen; Messwerte im Lexikon sind
+   verlaufsinduziert, nicht zustandsstatisch. (Satzvervollständigung: das
+   abf237a-Commit trug diesen Schluss-Absatz abgeschnitten; s. SP10-Commit-
+   Notiz.)
+
+---
+
+## 12. SP10 — Die Regeln und die Wörter: die Kopplung ist der Zufall
+
+**Framing (User-Delegation 2026-10-25, „entschieide du" → Wahl der Kopplung):**
+SP7/SP8 bewiesen die Bruchstelle IM Programm (Zwang, nicht Zufall); SP9
+bewies die Bewegung der WÖRTER (Gebrauch, nicht Gematria). SP10 stellt die
+beiden Zyklen nebeneinander und fragt nach ihrem Verhältnis — mit drei
+falsifizierbaren Thesen (Prereg-Docstring vor dem Erstrun; Artefakte
+`regeln_woerter_experiment.log/.json`; Bands fixiert):
+
+- **These 1 (wort-blind):** das Programm ist nicht aus den Wörtern gemacht —
+  Code-Fundament: `_generate_ast` (`:244-256`), `_generate_name`/`evaluate`
+  (`:100-137`) lesen nur RNG und AST, NIE das Lexikon.
+- **These 2 (zufalls-gekoppelt):** das Programm IST aus dem Zufall gemacht —
+  `lexicon_game` entnimmt dieselbe `_rng`; die Verschachtelung (3 Lexikon-
+  Runden zwischen Composite-Schritten, 48 gesamt bei 16 Schritten) verschiebt
+  allein durch den Zugverbrauch den Verlauf; die Bruchstelle (erzwungene
+  Tautologie an Schritt 9, LOOP-Verdikt, Basis-Expansion) bleibt stichfest,
+  weil sie am Zwang hängt, nicht am Zufall.
+- **These 3 (inhalt-invariant):** die Sprachdynamik hat kein Thema — bei
+  gegebenem Lern-Schedule (welches Paar lernt wann) bleiben nur Geometrie
+  und Halbwinkel: M = n(regel0+rule0), N = n(regel0−rule0),
+  β0 = θ0/2, **β_j = atan(0.4^j·tan β0)** (α = 0.3 → 1−2α = 0.4), Paar
+  **c_j = cos(2β_j)**, Zuschauer **R_j = cos β_j·(M·v) + sin β_j·(N·v)**,
+  Grenzwert **R_∞ = M·v**.
+
+**Verdict-Register — 14 Zeilen (11 PASS-Verdicte, 3 dokumentierte Errata,
+exit 0; Bands unverändert; die Erstrun-Zeilen bleiben FAIL in den Artefakten):**
+
+| Verdict | Einstufung | Zahlenlage |
+| :--- | :--- | :--- |
+| sp10_l0_anchor | PASS | alle 9 L0-Felder == committet (LOOP an 5+9; Basisleiter 3→5→7; first_detect 11; Quus final_basis 5, kein step9:LOOP) |
+| sp10_det | PASS | Doppel-Läufe L0 (Kripke+Quus) und L2 (Kripke+Quus) bitidentisch (trace, gaps, Roh-Lexikonwerte) |
+| sp10_t1_spur | FAIL → _p4 PASS | Erstrun: Arme ohne Forced-Haken (Erratum); p4-Lesung: Spur bitinvariant gegen Seitenband-Lexikon UND Nacheinander-Lexikon auf derselben Maschine (Spur + Gap-Historie) |
+| sp10_t1_lexikon | FAIL → _p4 PASS | Erstrun: Per-Runden-Protokoll-Säule geprüft (Erratum); p4-Lesung: after_paired == SP6-Anker bitgenau [0.999790, 0.999982, 1.000000], learned 15/15; L1b final ≥ 0.99 |
+| sp10_t2_divergenz | PASS | erste Spur-Differenz zur L0-Natur-Lage bei Schritt **2**; rng-Zustand gemessen verschoben |
+| sp10_t2_kripke | PASS | verdicts[8] == LOOP, step9:LOOP in expansions, final_basis 5; Quus-Kontrast (dieselbe Verschachtelung): final_basis 3, kein LOOP an 9 |
+| sp10_t2_lexikon_lebt | PASS | alle drei Paare 1.0 (gerundet), Episoden [16, 16, 15], 47/48 gelernt (ein Gate-Skip) |
+| sp10_t3_paar | PASS | c_j über 48 Spielrunden vs. Rohwerte: max Δ **5.6e-16** (Band 1e-9) |
+| sp10_t3_obs | PASS | tisch-Zuschauer-Spur, 49 Punkte (k = 0 vor dem Vorschub + je Runde): max Δ **4.1e-17**; kaffee/baum bitkonstant über alle Runden |
+| sp10_t3_rueck | FAIL → _p4 PASS | Erstrun: delta_count über Rohspur (14 statt 15) — Erratum; p4-Lesung: 15 == committet (SP9-Schreibweise mit gerundetem Punkt 0), gerundete Spur == committet bitidentisch, tisch15/tisch60/Drift == committet, Spur vs. Formel Δ **6.2e-17** / Paar Δ **5.6e-16** |
+| sp10_t3_asymptot | PASS | \|letzter tisch-Wert − M·v\|: L2 **5.5e-9**, SP9-Replay **3.5e-10** (Band 1e-4) — der SP9-E2-Drift (+1.31e-4) ist ex ante das log-Asymptoten-Glied sin β_j·(N·v) |
+
+**Errata-Register (drei Implementations-, KEINE Mechanik-Befunde):** [1] die
+T1-Arme liefen ohne Forced-Haken (Zwang {9} fehlte → Spur-Divergenz erwartbar);
+[2] t1_lexikon prüfte die per-Runden-Protocol-Säule statt der per-Paar-SP6-
+Säule; [3] t3_rueck zählte Deltas auf einer Rohspur mit ungerundetem Punkt 0.
+Alle drei im Skript (ERRATA-Dict + Erstrun-Konstruktionen) dokumentiert.
+
+**Mechanik (Code-nah):** die Verschachtelung braucht keinen Code-Schnitt —
+`CompositeMachine.wittgenstein` (composite.py:45-51) ist exponiert. Der
+Zwangs-Haken hängt am COMPOSITE-step-Zähler (pending-Flag), weil die zwischen
+den Schritten liegenden Lexikon-Runden einen einfachen `wm._step_index`-Haken
+schlucken würden.
+
+**Zahlenlage (L2, die hermeneutische Mitte):**
+
+1. **Die Verschiebung startet sofort:** erste Spur-Differenz bei Schritt
+   **2** — der Lexikon-Vorschub (Rule-Generation + Rausch-Züge je Runde)
+   verbraucht den geteilten Strom, bevor der Composite-Sampler wieder am
+   Zug ist.
+2. **Der natürliche LOOP fällt, der erzwungene bleibt:** L0 zeigte LOOP an
+   Schritt 5 UND 9 (Basis 3→5→7); L2 zeigt den natürlichen an 5 NICHT mehr
+   (verdicts[4] == HALTED), den Erzwungenen an 9 stichfest; final_basis 5
+   statt 7; Paradigm-Zeiten wandern (L0: 11/12/15 → L2: 12/13/15/16).
+   **Natürliche Bruchstellen sind zufallsabhängig — die erzwungene ist es
+   nicht.** Das ist die scharfste Form von These 2.
+3. **Der Sozial-Bogen ist schedule-unabhängig:** die (regel, tisch)-Zeile
+   reist in 49 Punkten von −0.006132 (SP2-pre) nach 0.004085 (SP9-post) —
+   DIESELBE Anfangs- und Endlage über einem ganz anderen Verlaufsschema;
+   kaffee (0.967089) und baum (0.499426) frieren bitkonstant.
+4. **Die Formel ist die exakte Dynamik, kein Modell:** max Δ 4.1e-17
+   (Zuschauer-Spur) und 5.6e-16 (Paar-Roh-Resonanzen) — Maschinen-Präzision,
+   8-9 Größenordnungen unter den 1e-9-Bands. β_j = atan(0.4^j·tan β0):
+   der Gebrauch dreht die Wörter auf demselben Großkreis, auf dem sie
+   durch die Gematria starteten.
+5. **Die Mitte als Endpunkt:** M·v = **0.0040849** — der Zuschauer-Grenzwert
+   ist n(regel0+rule0)·v_tisch: was der Beobachter am Ende liest, ist die
+   MITTE der gelernten Übersetzung, nicht mehr ihr Gefälle. Der SP9-Drift
+   (+1.31e-4) ist die log-Annäherung sin β_j·(N·v) an genau diesen Punkt.
+
+**Die SP9-Ziffer 15 neuklassifiziert (ehrliche Nachtrag, kein Widerruf):**
+die committete SP9-lane_social-Spur trägt Punkt 0 GERUNDET (unrelated15[0])
+und die Punkte 1..45 roh — die Zählung „Deltas ≠ 0 an 15 Leg2-Runden"
+besteht aus **14 echten Sozialisierungs-Zügen + 1 Rundungs-Anschluss-
+Residuum** am Punkt-0-Stoss (Δ = res_roh − round6(res_roh) = **2.59e-8**).
+Kein SP9-Verdict nutzt dieses Feld als Band — dokumentiert, nicht getilgt;
+die Roh-Formelspur kennt nur die 14 echten Züge (Δ 6.2e-17).
+
+**Kern des Befund-Bildes:**
+
+- **Die Kopplung der beiden Zyklen ist der Zufall selbst** — kein Wort, keine
+  Regel, keine Semantik verbindet Programm und Lexikon; nur der gemeinsame
+  Zufalls-Vorrat, der bei jedem Zug abnimmt. Mitspielen heißt hier: denselben
+  Zufall konkurrieren.
+- **Wort-blind und programm-blind, beidseits bitgenau:** das Programm ändert
+  sich nicht mit dem Lexikon (T1), das Lexikon nicht mit dem Programm
+  (t1_lexikon: Konvergenz identisch, ob der Composite-Zyklus läuft oder
+  schweigt — die Erstrun-Konstruktion und die p4-Verdicte zeigen beide
+  Richtungen).
+- **Zwei Gesetze, ein Vorrat:** die Bedeutung der Regel lebt im Programm
+  (Zufall × Zwang), die Bedeutung der Wörter im Gebrauch (Halbwinkel ×
+  Schedule) — beide enden in Grenzwerten derselben Geometrie (M·v), aber
+  über drei verschiedenen Schedules (L0, L2, SP9) mit verschiedenen
+  Zufalls-Vorschüben.
+- **SP10 schließt das Triptychon-Dreieck:** Gödel/Turing/Wittgenstein
+  überlappen im Programm (SP7/SP8); das Lexikon teilt mit ihnen nur die
+  Zufalls-Quelle, nicht die Bedeutung. Denken und Sprechen sind zwei
+  Verläufe ÜBER EINE Quelle — nicht EIN Verlauf über zwei Quellen.
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §14.
    verlaufsinduziert, nicht zustandsstatisch.
