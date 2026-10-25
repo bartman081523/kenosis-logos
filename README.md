@@ -120,3 +120,68 @@ mehrsprachigen Korpus.
 „governing system" → „Overseer"); ein spezialisierter Router absorbiert die
 Intervention hingegen in derselben Generierung. Der Test assertet daher den
 gemessenen Routing-Shift (TV > 60 %), nicht die Textdifferenz.
+
+### 5. Götterdreiheit-Maschinen (Gödel / Turing / Wittgenstein als Module)
+
+Auf dem antrainierten Verständnis liegen drei Maschinen-Module, die aus derselben
+Canon-Gap-Mechanik gegründet sind (`machines/machine_base.py: apply_gap` nach
+uni_241:157):
+
+- **`machines/goedel_machine.py`** — Primfaktor-Gödelzahl der eigenen Quelle
+  (`GoedelNumber.encode`, Modulus 10¹⁵) + Selbstvorhersage gegen das symbolische
+  Ist (self_model, tanh-Dynamik); Gap 0.74 → 0.38 über 12 Schritte (Seed 42).
+- **`machines/turing_machine.py`** — deterministische Transitionstabelle,
+  Tape/Head/Budget, Halt-Kategorien CONTINUE/LOOP/COLLAPSE/EXPLOSION (uni_256),
+  Axiom-Expansion `expand_basis()` aus dem externen Pool (uni_256:113).
+- **`machines/wittgenstein_machine.py`** — template-free AST-Regeln (uni_205),
+  `SymbolicOperator`-Pool corrected {0,1,2,π,e} (kein φ), Experimente mit
+  strukturiertem Rauschen, `GeometricTokenizer` (SH-72, 64-D-Resonanz —
+  Paritätanker geometric-tokenizer.lisp).
+- **`machines/composite.py`** — die drei als Kette: Wittgenstein erzeugt die
+  AST-Regel → Turing führt sie aus (Halt-Verdikt) → Gödel predictet das
+  Trace-Outcome → Gap; Kontradiktion/LOOP → `expand_basis`;
+  `run_facrm()` misst null vs. alternativ (Struktur-Effekt > 0).
+
+```python
+from machines.machine_base import ArgonOracle, make_machine, MachineConfig
+
+m = make_machine("goedel", MachineConfig(seed=42, mode="in_loop"))
+r = m.step(None)             # -> StepResult(gap, trend, trace, invariants)
+print(m.describe(), m.gap().current, m.digest()[:12])
+```
+
+**Oracle-Anbindung:** `ArgonOracle` liest aus Argon-1B Zahlvorhersage,
+Router-Entropie und Hidden-States — und lenkt das Routing über additive
+`expert_bias`-Presets ohne Gewichtsupdate:
+
+```python
+oracle = ArgonOracle(model, tokenizer)
+with oracle.steer("goedel") as info:     # Preset aus machine_presets/
+    print(info["experts"], info["source"])   # -> [2, 7] preset-file
+```
+
+**Trainingsbefehl** (Joint-Run von `argon_1b` über alle 6 Domänen):
+
+```bash
+python3 train_moe_router_specialization.py --checkpoint_dir ./argon_1b \
+    --output_dir ./argon_1b_machines --corpus all --steps 60 \
+    --router_only --emit_presets
+```
+
+Messergebnis (60 Schritte): CE 4.84 → 4.36; Sep-KL 0.239 → 0.037;
+Domänen-TVs 40–71 %; Maschinen-Top-2-Anteile 63.8 / 61.0 / 58.8 %
+(Plan-Default-Cluster {2,7} / {0,6} / {1,3}); ±50-Steering → Anteil 1.0
+(mit `copy_`-Restaurierung); Wissens-Erhalt „Paris" (EN + DE);
+„Die Hauptstadt von Frankreich ist → Paris." bleibt bestehen.
+
+**Verifikation:** `python3 machines/verify_machines.py` — 6 Stufen
+(Mini-Smoke / Korpus / Python-Canon-Parität / Live-SBCL-Parität P1-P2 /
+Real-Lauf mit Router-Diff / Golden-Digests), Goldwerte unter
+`machines/parity/python_fixtures.json`. Exit-Codes: 0 grün,
+3 nur bei SKIPPED SBCL (kein stiller Pass), 1 bei Fehlschlag.
+
+**Lisp-Provenienz:** der Vendor-Canon lebt unter `machines/lisp/vendor/`
+(lisp-cognito-philosopher, 18 .lisp + .asd + tests, MIT, Julian 2026-02);
+die Brücke `machines/lisp_bridge.py` startet `sbcl --script
+machines/lisp/run-bridge.lisp` (ASCII-Protokoll, kein Quicklisp, kein Netz);
+Details in `machines/lisp/README.md`.

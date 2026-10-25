@@ -1,0 +1,52 @@
+{
+  "lcg": {
+    "first_float": 0.2142903469502926,
+    "first_int": 87,
+    "seed_123457_float": 0.08212796878069639
+  },
+  "goedel_encode": {
+    "hi": 23328,
+    "": 1,
+    "(sin x)": 797434168781250
+  },
+  "goedel_encode_lisp": {
+    "hi": 886064037888,
+    "": 1,
+    "(sin x)": 0
+  },
+  "gap": {
+    "uni_241_vector": 0.05656853118121755,
+    "zero_guard": 0.0
+  },
+  "trend": {
+    "rising": "RISING",
+    "falling": "FALLING",
+    "stable": "STABLE",
+    "short_unknown": "UNKNOWN",
+    "avg": 0.2
+  },
+  "halt_oracle": {
+    "empty_binary_increment": {
+      "verdict": "HALTED",
+      "transitions": 1
+    },
+    "looper": {
+      "verdict": "LOOP",
+      "transitions": 4
+    }
+  },
+  "wittgenstein_batch_digest": "e74a026754ca0d05586d529d97ec33e9562508e4f32fdf7cf3d4cdfa1c6ca3a1",
+  "facrm_null_vs_alt": {
+    "null": 0.7133333333333334,
+    "alternative": 0.9933333333333333
+  },
+  "in_loop_convergence": {
+    "first": 0.7437252522630752,
+    "last": 0.3777041041558685
+  },
+  "_provenance": {
+    "generated": "2026-10-25",
+    "ports": "machines.*",
+    "note": "Erstersperrung der Kanon-Werte (Seed 42, repo-unabhängige Eingaben)"
+  }
+}
