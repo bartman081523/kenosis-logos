@@ -1,0 +1,42 @@
+======================================================================================
+ARGON-1B SUBSPACE-MoE & ROUTER SPEZIALISIERUNGS-TRAINING
+======================================================================================
+[Setup] Device: cuda | Lade Modell aus ./argon_1b...
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+
+--------------------------------------------------------------------------------------
+VOR DEM TRAINING (Breite Initialisierung)
+--------------------------------------------------------------------------------------
+  code        (H=2.06) -> [E0:16.0% | E1:17.4% | E2: 9.4% | E3:12.0% | E4:15.6% | E5:11.5% | E6:10.0% | E7: 8.1%]
+  math_logic  (H=2.06) -> [E0:12.3% | E1:19.5% | E2:11.9% | E3:13.0% | E4:14.4% | E5:10.3% | E6: 9.6% | E7: 9.1%]
+  prose       (H=2.06) -> [E0:13.0% | E1:18.0% | E2:12.9% | E3:13.1% | E4:11.4% | E5:13.0% | E6: 8.7% | E7:10.0%]
+  Spezialisierungs-Trennschärfe (TV 0..100%): Code/Prosa=8.5% | Math/Prosa=5.5% | Code/Math=6.6%
+--------------------------------------------------------------------------------------
+[Freeze] Gesamt-Parameter   : 2,245,605,632
+[Freeze] Trainierbar (MoE)  : 239,616 (0.01%)
+         -> Router-Gates    : 239,616
+         -> Routed Experts  : 0
+         -> Shared/Attn/Emb : EINGEFROREN (Basiswissen geschützt)
+
+[Train] Starte 50 Spezialisierungs-Schritte (jeweils über alle 3 Domänen)...
+  Step 001/050 | CE+Ent-Loss: 3.8678 | Subspace-Sep-Loss: 0.1827 | Zeit: 2.7s
+  Step 010/050 | CE+Ent-Loss: 3.4908 | Subspace-Sep-Loss: 0.0622 | Zeit: 25.3s
+  Step 020/050 | CE+Ent-Loss: 3.3862 | Subspace-Sep-Loss: 0.0238 | Zeit: 50.5s
+  Step 030/050 | CE+Ent-Loss: 3.3480 | Subspace-Sep-Loss: 0.0209 | Zeit: 76.0s
+  Step 040/050 | CE+Ent-Loss: 3.3092 | Subspace-Sep-Loss: 0.0219 | Zeit: 101.8s
+  Step 050/050 | CE+Ent-Loss: 3.2770 | Subspace-Sep-Loss: 0.0223 | Zeit: 127.7s
+
+--------------------------------------------------------------------------------------
+NACH DEM TRAINING (Spezialisierte Domänen-Cluster)
+--------------------------------------------------------------------------------------
+  code        (H=1.45) -> [E0:29.1% | E1:28.7% | E2: 4.3% | E3: 3.1% | E4:24.6% | E5: 3.6% | E6: 4.1% | E7: 2.6%]
+  math_logic  (H=1.71) -> [E0: 4.3% | E1: 3.6% | E2:26.0% | E3: 4.4% | E4: 3.4% | E5:26.8% | E6:25.7% | E7: 5.9%]
+  prose       (H=1.02) -> [E0: 3.8% | E1: 2.6% | E2: 3.6% | E3:39.4% | E4: 4.2% | E5: 3.6% | E6: 3.7% | E7:39.2%]
+  Spezialisierungs-Trennschärfe (TV 0..100%): Code/Prosa=72.9% | Math/Prosa=69.0% | Code/Math=71.1%
+--------------------------------------------------------------------------------------
+
+[Sanity-Check] Prompt: 'The capital of France is' -> 'The capital of France is Paris.\n\nThe city of Rome is also known as the city of love'
+
+[Save] Speichere spezialisierten Checkpoint nach ./argon_1b_specialized...
+Fertig. Du kannst jetzt `compare_gemma3_vs_argon.py` auf ./argon_1b_specialized ausführen.

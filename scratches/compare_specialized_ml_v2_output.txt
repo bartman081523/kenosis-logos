@@ -1,0 +1,65 @@
+==============================================================================
+HEAD-TO-HEAD: google/gemma-3-1b-it vs. Argon-1B (Hybrid MLA-MoE)
+==============================================================================
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[Setup] Lade gemma-3-1b-it und Argon-1B (beide CPU/bf16)...
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights: 100%|██████████| 340/340 [00:00<00:00, 9372.13it/s]
+
+------------------------------------------------------------------------------
+[1/6] Wissens-Erhalt & Logit-Geometrie (gemma-3 vs. Argon)
+------------------------------------------------------------------------------
+  'The capital of France is'                                cosine=0.9890 | gemma=' Paris' == argon=' Paris'
+  'In quantum mechanics, the Schrödinger equation describes' cosine=0.9950 | gemma=' the' == argon=' the'
+  'def fibonacci(n):\n    if n <= 1:\n        return'       cosine=0.9402 | gemma=' n' == argon=' n'
+  => mittlere Cosine-Similarity: 0.9747 | Top-1-Übereinstimmung 3/3
+  OK: Basiswissen der SVD- & MoE-Faltung erhalten (kalibrierte Schwelle: 0.95).
+
+------------------------------------------------------------------------------
+[2/6] Globaler KV-Cache-Footprint (MQA 512 Floats vs. MLA 320 Floats pro Token)
+------------------------------------------------------------------------------
+  gemma-3 global KV/Token : 512 (256 K + 256 V)     ->   128.00 MB @ 32k
+  Argon global MLA/Token  : 320 (256 c_kv + 64 k_rope) ->    80.00 MB @ 32k
+  Ersparnis globale Schichten: 37.5%
+  Ringpuffer-Eviction @ 600-Token-Sequenz: lokal MQA-Cache = 512 (sliding_window=512), MLA = 600 (unbegrenzt)
+  Lokaler Cache begrenzt: 14.7% weniger Speicher pro lokaler Schicht (jede Folgeschritt-Konstante O(1))
+  OK: Physische MLA-Kompression (37,5%) + O(1)- lokale Cache-Begrenzung verifiziert.
+
+------------------------------------------------------------------------------
+[3/6] Exklusiv Argon: Early-Fusion (Vision 2D-RoPE + Audio) im 1B-Modell
+------------------------------------------------------------------------------
+  gemma-3-1b-it Vision/Audio nativ?  False (reines Textmodell -> False)
+  Argon multimodal: Logits (1, 20, 262144) (NaN-frei: True)
+  2D-Gitter Patch[3] (oben links): (x=3, y=3) | Patch[6] (darunter): (x=3, y=4) -> gleiche Spalte
+  [3b] Vision-RoPE im Decode-State (kv_modality_mask) vs. Vollforward:
+    T=25: mit Fix 0.00e+00 | 1D-Rekalkulation (alt) 2.27e+00
+    T=26: mit Fix 0.00e+00 | 1D-Rekalkulation (alt) 9.06e-01
+  OK: Early-Fusion + räumlich stabiles 2D-RoPE (Patch-Gitter bleibt im Decode erhalten).
+
+------------------------------------------------------------------------------
+[4/6] Exklusiv Argon: Subspace-MoE-Routing & Domänen-Histogramme
+------------------------------------------------------------------------------
+  Python-Code    -> E0:13.0% | E1:17.0% | E2: 8.7% | E3:14.0% | E4:15.5% | E5:13.5% | E6:10.0% | E7: 8.4%
+  Formale Logik  -> E0:11.6% | E1:19.3% | E2:11.6% | E3:14.2% | E4:12.7% | E5: 9.4% | E6:10.2% | E7:10.9%
+  Alltags-Prosa  -> E0:12.6% | E1:17.6% | E2:13.2% | E3:11.1% | E4:12.1% | E5:14.4% | E6: 8.8% | E7:10.1%
+  Experten-Verteilungsdelta (Python-Code vs. Prosa): 520.0 Token-Zählungen
+  OK: Während gemma-3 fest 100% desselben Blocks nutzt, wählt Argon domänenabhängig.
+
+------------------------------------------------------------------------------
+[5/6] Exklusiv Argon: Zero-Shot Subspace-Intervention (expert_bias-Steering)
+------------------------------------------------------------------------------
+  Routing-TV Standard -> E0/E1-Steering: 74.8%  (E0/E1-Anteil nachher: 100.0%)
+  Standard-Routing : 'In a futuristic city, artificial intelligence and humans coexist, but a glitch has emerged – the AI, designated as the governing system, has begun to'
+  Subspace E0/E1   : 'In a futuristic city, artificial intelligence and humans coexist, but a glitch has emerged – the AI, known as the Overseer, has begun to'
+  OK: Additiver expert_bias lenkt Argon ohne Gewichtsupdate in verschiedene Subspaces.
+
+------------------------------------------------------------------------------
+[6/6] Anti-Mode-Collapse (ArgonEntropyFloorLogitsProcessor)
+------------------------------------------------------------------------------
+  Entropie vor Regulator: H = 0.003018 (P(top2) = 0.000335 -> Kollapsgefahr)
+  Entropie nach Regulator: H = 0.030442 (P(top2) = 0.004805 -> aufgeweitet)
+  OK: Dynamische Entropie-Spreizung verhindert starre Mode-Kollapse.
+
+==============================================================================
+ALLE 6 VERGLEICHS-BENCHMARKS (gemma-3-1B vs. Argon-1B) ERFOLGREICH BESTANDEN
+==============================================================================

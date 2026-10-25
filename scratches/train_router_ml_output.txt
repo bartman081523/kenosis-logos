@@ -1,0 +1,71 @@
+======================================================================================
+ARGON-1B MULTILINGUALES SUBSPACE-MoE & ROUTER SPEZIALISIERUNGS-TRAINING
+======================================================================================
+[Setup] Device: cuda | Lade Modell aus ./argon_1b...
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+
+--------------------------------------------------------------------------------------
+VOR DEM TRAINING (Breite Initialisierung über 8 Sprachen)
+--------------------------------------------------------------------------------------
+  code        (H=2.06) -> [E0:15.6% | E1:17.2% | E2: 9.8% | E3:12.0% | E4:15.9% | E5:11.1% | E6: 9.8% | E7: 8.6%]
+  math_logic  (H=2.06) -> [E0:12.8% | E1:18.2% | E2:11.8% | E3:13.2% | E4:14.5% | E5:10.9% | E6:10.1% | E7: 8.6%]
+  prose       (H=2.06) -> [E0:14.1% | E1:17.1% | E2:11.2% | E3:13.2% | E4:12.1% | E5:13.5% | E6: 9.6% | E7: 9.2%]
+  Spezialisierungs-Trennschärfe (TV 0..100%): Code/Prosa=5.6% | Math/Prosa=4.5% | Code/Math=4.4%
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+CROSS-LINGUAL INVARIANZ VOR DEM TRAINING (Baseline)
+--------------------------------------------------------------------------------------
+  Math (EN)   (H=2.06) -> [E0:10.8% | E1:18.6% | E2:13.0% | E3:14.7% | E4:13.7% | E5:10.0% | E6:10.3% | E7: 8.9%]
+  Math (DE)   (H=2.06) -> [E0:10.8% | E1:20.9% | E2:11.1% | E3:13.9% | E4:12.1% | E5:11.3% | E6: 9.5% | E7:10.4%]
+  Math (ZH)   (H=2.06) -> [E0:12.7% | E1:18.5% | E2: 9.7% | E3:13.7% | E4:13.9% | E5:12.1% | E6: 9.2% | E7:10.2%]
+  Prose (EN)  (H=2.06) -> [E0:16.0% | E1:15.6% | E2:13.2% | E3:13.0% | E4:12.7% | E5:12.4% | E6: 8.8% | E7: 8.4%]
+  Prose (DE)  (H=2.06) -> [E0:13.5% | E1:18.2% | E2:12.0% | E3:13.3% | E4:10.5% | E5:14.0% | E6: 8.3% | E7:10.1%]
+  Prose (ZH)  (H=2.07) -> [E0:19.5% | E1:17.6% | E2:10.7% | E3:11.2% | E4:12.8% | E5:14.0% | E6: 6.5% | E7: 7.8%]
+  -> innerhalb Math  (EN vs. ZH):   5.5%  (DE vs. ZH):   4.5%   (niedrig = sprachinvariant)
+  -> innerhalb Prose (EN vs. ZH):   7.2%
+  -> Trennung Math (EN) vs. Prose (EN):   7.8%   (hoch = domänenscharf)
+--------------------------------------------------------------------------------------
+[Freeze] Gesamt-Parameter   : 2,245,605,632
+[Freeze] Trainierbar (MoE)  : 239,616 (0.01%)
+         -> Router-Gates    : 239,616
+         -> Routed Experts  : 0
+         -> Shared/Attn/Emb : EINGEFROREN (Basiswissen geschützt)
+
+[Train] Starte 60 multilinguale Spezialisierungs-Schritte (DE, EN, FR, ES, ZH, JA, RU, AR)...
+  Step 001/060 | CE+Ent-Loss: 3.8367 | Subspace-Sep-Loss: 0.2190 | Zeit: 3.5s
+  Step 010/060 | CE+Ent-Loss: 3.4757 | Subspace-Sep-Loss: 0.0740 | Zeit: 34.2s
+  Step 020/060 | CE+Ent-Loss: 3.3635 | Subspace-Sep-Loss: 0.0283 | Zeit: 68.7s
+  Step 030/060 | CE+Ent-Loss: 3.3326 | Subspace-Sep-Loss: 0.0236 | Zeit: 103.6s
+  Step 040/060 | CE+Ent-Loss: 3.2814 | Subspace-Sep-Loss: 0.0238 | Zeit: 138.7s
+  Step 050/060 | CE+Ent-Loss: 3.2596 | Subspace-Sep-Loss: 0.0252 | Zeit: 174.1s
+  Step 060/060 | CE+Ent-Loss: 3.2412 | Subspace-Sep-Loss: 0.0252 | Zeit: 209.5s
+
+--------------------------------------------------------------------------------------
+NACH DEM TRAINING (Multilinguale Domänen-Cluster & kalibrierte Entropie)
+--------------------------------------------------------------------------------------
+  code        (H=1.44) -> [E0:27.8% | E1:27.0% | E2: 4.0% | E3: 4.0% | E4:25.9% | E5: 4.2% | E6: 4.1% | E7: 3.0%]
+  math_logic  (H=1.69) -> [E0: 3.4% | E1: 3.6% | E2:26.6% | E3: 5.2% | E4: 4.2% | E5:26.7% | E6:25.2% | E7: 5.1%]
+  prose       (H=1.01) -> [E0: 4.3% | E1: 3.3% | E2: 3.2% | E3:40.1% | E4: 3.2% | E5: 3.8% | E6: 3.1% | E7:38.9%]
+  Spezialisierungs-Trennschärfe (TV 0..100%): Code/Prosa=72.0% | Math/Prosa=69.7% | Code/Math=69.5%
+--------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------
+CROSS-LINGUAL INVARIANZ NACH DEM TRAINING (Ungesehene Sätze)
+--------------------------------------------------------------------------------------
+  Math (EN)   (H=1.71) -> [E0: 4.4% | E1: 5.3% | E2:26.4% | E3: 3.8% | E4: 6.6% | E5:27.8% | E6:23.4% | E7: 2.4%]
+  Math (DE)   (H=1.74) -> [E0: 3.6% | E1: 4.0% | E2:23.7% | E3: 9.4% | E4: 4.1% | E5:26.2% | E6:22.0% | E7: 7.1%]
+  Math (ZH)   (H=1.69) -> [E0: 4.6% | E1: 4.2% | E2:26.0% | E3: 4.6% | E4: 4.3% | E5:27.7% | E6:24.4% | E7: 4.2%]
+  Prose (EN)  (H=1.07) -> [E0: 4.3% | E1: 3.1% | E2: 4.0% | E3:39.4% | E4: 5.0% | E5: 3.9% | E6: 3.3% | E7:36.9%]
+  Prose (DE)  (H=1.04) -> [E0: 4.0% | E1: 4.5% | E2: 3.3% | E3:38.9% | E4: 3.0% | E5: 4.1% | E6: 3.7% | E7:38.5%]
+  Prose (ZH)  (H=1.02) -> [E0: 4.4% | E1: 3.4% | E2: 3.8% | E3:39.3% | E4: 2.7% | E5: 4.9% | E6: 3.4% | E7:38.2%]
+  -> innerhalb Math  (EN vs. ZH):   3.9%  (DE vs. ZH):   7.7%   (niedrig = sprachinvariant)
+  -> innerhalb Prose (EN vs. ZH):   2.6%
+  -> Trennung Math (EN) vs. Prose (EN):  70.2%   (hoch = domänenscharf)
+--------------------------------------------------------------------------------------
+[Sanity-Check] 'The capital of France is' -> 'The capital of France is Paris.\n\nThe city of Rome is known for the Col'
+[Sanity-Check] 'Die Hauptstadt von Frankreich ist' -> 'Die Hauptstadt von Frankreich ist Paris.\n\nDie Hauptstadt von Deutschland ist Berlin.\n\nDie'
+
+[Save] Speichere multilingual spezialisierten Checkpoint nach ./argon_1b_specialized_ml...
+Fertig. Du kannst jetzt `compare_gemma3_vs_argon.py` auf ./argon_1b_specialized_ml ausführen.
