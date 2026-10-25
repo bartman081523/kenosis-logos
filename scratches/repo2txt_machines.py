@@ -110,6 +110,10 @@ FILES: List[str] = [
     "scratches/smoke_regeln_woerter.py",
     "scratches/regeln_woerter_experiment.log",
     "scratches/regeln_woerter_experiment.json",
+    # -- SP11 Der Ursprung der Paradigmen (Composite-Signal-Ebene) ----------------
+    "scratches/smoke_paradigm_ursprung.py",
+    "scratches/paradigm_ursprung_experiment.log",
+    "scratches/paradigm_ursprung_experiment.json",
 ]
 
 SEPARATOR = "=" * 78
