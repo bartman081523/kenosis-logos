@@ -195,13 +195,27 @@ class LISPBridge:
                          seed=int(seed), queries=list(queries),
                          self_modify_threshold=float(self_modify_threshold))
 
+    def simplify_ast(self, ast: Sequence[Any]) -> Dict[str, Any]:
+        """SP8 — hermeneutischer Zirkel: den Python-AST (verschachtelte Listen,
+        Op-Strings, 'x', bare floats) ueber SBCL reflektieren lassen
+        (Vendor-Reduktor symbolic-operator.lisp:118-182 + Entlarvungs-Schicht
+        des Bridge-Ops). Antwort: ast_in, ast_simplified, revealed,
+        contains_trivial_identity, size_in/out. Ein bares Blatt (String
+        "x" oder Zahl) ist eine legale Eingabe."""
+        payload = list(ast) if isinstance(ast, (list, tuple)) else ast
+        return self.call("simplify_ast", ast=payload)
+
 
 def _cli() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="SBCL-Brücke (ASCII-Protokoll)")
     parser.add_argument("op", choices=["ping", "goedel", "gap", "sh72",
-                                       "ast_eval", "philosopher"])
+                                       "ast_eval", "philosopher",
+                                       "simplify_ast"])
+    parser.add_argument("--ast", default=None,
+                        help="JSON-Listauftrag fuer simplify_ast, z.B. "
+                             "'[\"add\", 0.0, \"x\"]'")
     parser.add_argument("--expr", default="hi")
     parser.add_argument("--pred", nargs="*", type=float, default=None)
     parser.add_argument("--actual", nargs="*", type=float, default=None)
@@ -228,6 +242,10 @@ def _cli() -> None:
         data = bridge.sh72(args.words or ["turing"])
     elif args.op == "ast_eval":
         data = bridge.ast_eval(seed=args.seed, count=args.count, xs=args.xs)
+    elif args.op == "simplify_ast":
+        if not args.ast:
+            parser.error("simplify_ast braucht --ast (JSON-Liste)")
+        data = bridge.simplify_ast(json.loads(args.ast))
     else:
         data = bridge.philosopher(problem=args.problem, cycles=args.cycles,
                                   seed=args.seed)

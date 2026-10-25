@@ -35,6 +35,7 @@ Verlauf) bleiben P2 strukturell.
 
 from __future__ import annotations
 
+import json
 import math
 from typing import Any, Dict, List, Sequence, Tuple, Union
 
@@ -311,11 +312,147 @@ def resonance(word1: str, word2: str, domain: Sequence[float] = None) -> float:
     return sum(x * y for x, y in zip(a, b))
 
 
+# -- simplify_ast (SP8 hermeneutischer Zirkel) --------------------------------
+# Python-Spiegel des Vendor-Reduktors symbolic-operator.lisp:118-182 — exakt
+# dieselbe Regelordnung wie simplify-ast/apply-simplification-rules, plus
+# Entlarvungs-Schicht identisch zum Bridge-Op handle-simplify-ast. Das Taut-
+# ologie-Flagging (reveal) ist KEINE Verhaltensänderung des Reduktors, sondern
+# eine Markierung über der Reduktion: der Vendor wascht ('identity','x') weg,
+# compile_rule sieht nur ('identity','x') — die Lücke zwischen beiden wird
+# hier transparent.
+
+_VAR = ("var", "x")
+_CONST = "const"          # (_CONST, value)
+
+
+def simplify_ast_canonical(ast: Any) -> Dict[str, Any]:
+    """
+    SP8-Paritätspartner zu handle-simplify-ast (bridge-protocol.lisp):
+      1. Python-AST -> Vendor-Form ('x' -> VAR, Zahl -> CONST, 'op' -> Symbol).
+      2. Vendor-Simplifikation: identity-Wrapper (gewaschen!), add 0+x/x+0,
+         multiply 0/1, Konstanten-Folding, Default konservierend.
+      3. Entlarvung: Reduktion auf das nackte Var-Blatt UND triviale Identität
+         (add(0,x), add(x,0), multiply(1,x), multiply(x,1)) oder expliziter
+         identity-Wrapper im Ursprung -> "revealed = ('identity','x')".
+    """
+    vendor = _to_vendor(ast)
+    flagged = _contains_trivial_identity(vendor) or _contains_identity_wrapper(vendor)
+    simplified = _simplify_vendor(vendor)
+    revealed = flagged and simplified == _VAR
+    return {
+        "ast_in": json.loads(json.dumps(ast)),
+        "ast_simplified": _dewrap(simplified),
+        "revealed": revealed,
+        "contains_trivial_identity": flagged,
+        "size_in": _ast_nodes(ast),
+        "size_out": _ast_nodes(simplified),
+    }
+
+
+def _to_vendor(ast: Any) -> Any:
+    if isinstance(ast, (int, float)):
+        return (_CONST, float(ast))
+    if isinstance(ast, str):
+        return _VAR if ast == "x" else ast    # Op-Name = Symbol-Spiegel
+    return tuple([_to_vendor(item) for item in ast])
+
+
+def _dewrap(ast: Any) -> Any:
+    """Vendor-Form -> Python-Form (dewrap-python-ast des Bridge-Ops)."""
+    if isinstance(ast, str):
+        return ast                       # Op-String bleibt Op-String
+    if ast == _VAR:
+        return "x"
+    if _is_const(ast):
+        return ast[1]
+    return [_dewrap(item) for item in ast]
+
+
+def _simplify_vendor(ast: Any) -> Any:
+    if not isinstance(ast, tuple):
+        return ast
+    if ast == _VAR or _is_const(ast):
+        return ast
+    op = ast[0]
+    args = [_simplify_vendor(item) for item in ast[1:]]
+    if op == "identity":
+        return args[0]                                     # Wrapper gewaschen
+    if len(args) == 2:
+        a, b = args
+        if op == "add":
+            if _const_is(a, 0.0):
+                return b                                   # 0 + x = x
+            if _const_is(b, 0.0):
+                return a                                   # x + 0 = x
+            if _is_const(a) and _is_const(b):              # beide Konstanten
+                return (_CONST, float(_const_value(a) + _const_value(b)))
+        elif op == "multiply":
+            if _const_is(a, 0.0) or _const_is(b, 0.0):
+                return (_CONST, 0.0)                       # 0 * x = 0 ( Vendor: :const 0.0d0)
+            if _const_is(a, 1.0):
+                return b                                   # 1 * x = x
+            if _const_is(b, 1.0):
+                return a                                   # x * 1 = x
+            if _is_const(a) and _is_const(b):              # beide Konstanten
+                return (_CONST, float(_const_value(a) * _const_value(b)))
+        # subtract/divide/power: Vendor otherwise — konservierend (kein Fold).
+    return (op, *args)
+
+
+def _is_const(x: Any) -> bool:
+    return isinstance(x, tuple) and x[0] == _CONST
+
+
+def _const_is(x: Any, value: float) -> bool:
+    return _is_const(x) and _const_value(x) == value
+
+
+def _const_value(x: Any) -> float:
+    return x[1]
+
+
+def _trivial_identity_at(ast: Any) -> bool:
+    if not isinstance(ast, tuple) or _is_const(ast):
+        return False
+    if len(ast) == 3 and ast[0] in ("add", "multiply") and \
+            all(isinstance(item, tuple) for item in ast[1:]):
+        a, b = ast[1], ast[2]
+        if ast[0] == "add" and (_const_is(a, 0.0) or _const_is(b, 0.0)):
+            return True
+        if ast[0] == "multiply" and (_const_is(a, 1.0) or _const_is(b, 1.0)):
+            return True
+    return False
+
+
+def _contains_trivial_identity(ast: Any) -> bool:
+    if not isinstance(ast, tuple) or _is_const(ast):
+        return False
+    if _trivial_identity_at(ast):
+        return True
+    return any(_contains_trivial_identity(item) for item in ast[1:])
+
+
+def _contains_identity_wrapper(ast: Any) -> bool:
+    if not isinstance(ast, tuple) or _is_const(ast):
+        return False
+    if ast[0] == "identity" and len(ast) == 2:
+        return True
+    return any(_contains_identity_wrapper(item) for item in ast[1:])
+
+
+def _ast_nodes(ast: Any) -> int:
+    """Lisp-Spiegel count-ast-nodes: jede Liste/Tupel = 1 Knoten + Kinder;
+    Atome (Strings, Zahlen) = 1 (:const x)/(:var x) zahlen als 2."""
+    if isinstance(ast, (list, tuple)):
+        return 1 + sum(_ast_nodes(item) for item in ast[1:])
+    return 1
+
+
 __all__ = [
     "LispOperatorError", "LISP_PRIMES", "LISP_UNARY", "LISP_BINARY",
     "LISP_CONSTANTS", "MOD_LISP", "PHI", "apply_operator", "ast_depth",
     "ast_size", "domain_vector", "evaluate_ast", "embed_word", "goedel_encode",
     "goedel_encode_string", "interpret_gap", "lisp_gap", "prin1_string",
     "generate_random_ast", "resonance", "safe_divide", "safe_log", "safe_sqrt",
-    "sh_formula", "sexpr_string", "string_gematria",
+    "sh_formula", "sexpr_string", "simplify_ast_canonical", "string_gematria",
 ]

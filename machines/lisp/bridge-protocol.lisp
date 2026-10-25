@@ -22,6 +22,9 @@
 ;;;;   ast_eval   — :seed N, :count N, :xs LIST → LCG-ASTs + Auswertungen (P1)
 ;;;;   philosopher— :seed N, :cycles N, :queries LIST (:problem STRING) →
 ;;;;                Gap-History + Zähler (P2 strukturell: sxhash-Kanäle)
+;;;;   simplify_ast— :ast NESTED-LIST → Vendor-Reduktion + Entlarvung
+;;;;                (revealed = ('identity','x') bei triviale Identität →
+;;;;                nacktes Var-Blatt); SP8 hermeneutischer Zirkel
 
 (in-package #:lisp-cognito-philosopher)
 
@@ -70,7 +73,11 @@
   (typecase value
     (null (write-string "null" stream))
     ((eql t) (write-string "true" stream))
-    (keyword (format stream "\"~A\"" (jescape (string-downcase (symbol-name value)))))
+    (keyword
+     (cond ((eq value :true) (write-string "true" stream))
+           ((eq value :false) (write-string "false" stream))
+           (t (format stream "\"~A\""
+                      (jescape (string-downcase (symbol-name value)))))))
     (string (format stream "\"~A\"" (jescape value)))
     (number (write-string (jnumber-string value) stream))
     (symbol
@@ -255,13 +262,99 @@
           (cons "state" (cognito-construct-state cognito))
           (cons "self_model" (cognito-construct-self-model cognito)))))
 
+;;; ============================================================================
+;;; SIMPLIFY_AST — SP8 hermeneutischer Zirkel (Python -> Lisp -> Python)
+;;; ============================================================================
+
+(defun normalize-python-ast (ast)
+  "Python-Form (verschachtelte Listen, Op-Strings, 'x', bare floats) in die
+   Vendor-Form spiegeln (symbolic-operator.lisp:118-182): 'x' -> (:var X),
+   Zahl -> (:const d), Op-String -> interned Symbol; Liste -> rekursiv."
+  (cond
+    ((numberp ast) (list :const (coerce ast 'double-float)))
+    ((and (stringp ast) (string= ast "x")) (list :var 'x))
+    ((stringp ast) (intern (string-upcase ast) :lisp-cognito-philosopher))
+    (t (cons (normalize-python-ast (first ast))
+             (mapcar #'normalize-python-ast (rest ast))))))
+
+(defun dewrap-python-ast (ast)
+  "Vendor-Form zurueck in die Python-Form: :const -> bare Zahl, :var -> \"x\",
+   Op-Symbol -> lowercase String, Liste -> Liste (jwrite: Op-String zuerst,
+   Car niemals Cons -> ohne Alist-Mehrdeutigkeit)."
+  (cond
+    ((numberp ast) ast)
+    ((atom ast) (string-downcase (symbol-name ast)))
+    ((eq (first ast) :const) (second ast))
+    ((eq (first ast) :var) "x")
+    (t (cons (string-downcase (symbol-name (first ast)))
+             (mapcar #'dewrap-python-ast (rest ast))))))
+
+(defun trivial-identity-node-p (ast)
+  "Triviale Identitaet als BINARY-Knoten — add(0,x) / add(x,0) /
+   multiply(1,x) / multiply(x,1): mathematisch x, aber KEIN identity-Knoten,
+   von compile_rule (composite.py:76-88: nur ('identity','x')) unsichtbar."
+  (and (consp ast)
+       (eql (length ast) 3)
+       (member (first ast) '(add multiply))
+       (or (and (eq (first ast) 'add)
+                (or (const-zerop (second ast)) (const-zerop (third ast))))
+           (and (eq (first ast) 'multiply)
+                (or (const-onep (second ast)) (const-onep (third ast)))))))
+
+(defun const-zerop (x)
+  (and (consp x) (eq (first x) :const) (zerop (second x))))
+
+(defun const-onep (x)
+  (and (consp x) (eq (first x) :const) (= 1.0d0 (second x))))
+
+(defun contains-trivial-identity-p (ast)
+  (cond ((not (consp ast)) nil)
+        ((member (first ast) '(:const :var)) nil)
+        (t (or (trivial-identity-node-p ast)
+               (some #'contains-trivial-identity-p (rest ast))))))
+
+(defun contains-identity-wrapper-p (ast)
+  (cond ((not (consp ast)) nil)
+        ((member (first ast) '(:const :var)) nil)
+        (t (or (and (eq (first ast) 'identity) (eql (length ast) 2))
+               (some #'contains-identity-wrapper-p (rest ast))))))
+
+(defun count-ast-nodes (ast)
+  (cond ((atom ast) 1)
+        (t (1+ (reduce #'+ (mapcar #'count-ast-nodes (rest ast)))))))
+
+(defun handle-simplify-ast (&key ast &allow-other-keys)
+  "SP8 — Reflexionsphase des Zirkels: den Python-AST durch den Vendor-Reduktor
+   schicken und DANACH entlarven. Der Vendor wascht den identity-Wrapper weg
+   (apply-simplification-rules: (identity (first args)) -> (first args)); die
+   Entlarvungs-Schicht entscheidet darueber, ob die Reduktion zur Tautologie
+   ruehrte: landet der AST auf dem nackten Var-Blatt x UND enthielt die
+   Ursprungsform eine triviale Identitaet oder einen identity-Wrapper, wird
+   das Resultat als ('identity','x') ausgewiesen — der Knoten, den
+   compile_rule als Selbst-Transition uebersetzt (LOOP + expand_basis)."
+  (unless (or (listp ast) (stringp ast) (numberp ast))
+    (error "simplify_ast: :ast fehlt (Liste, String-Blatt oder Zahl erwartet)"))
+  (let* ((norm (normalize-python-ast ast))
+         (flagged (or (contains-trivial-identity-p norm)
+                      (contains-identity-wrapper-p norm)))
+         (simp (simplify-ast norm))
+         (leaf-var (and (consp simp) (eq (first simp) :var)))
+         (revealed (and flagged leaf-var)))
+    (list (cons "ast_in" ast)          ; Raw-Form ist bereits Python-Form
+          (cons "ast_simplified" (dewrap-python-ast simp))
+          (cons "revealed" (if revealed :true :false))
+          (cons "contains_trivial_identity" (if flagged :true :false))
+          (cons "size_in" (count-ast-nodes ast))
+          (cons "size_out" (count-ast-nodes simp)))))
+
 (defparameter *bridge-ops*
   (list (cons "ping" #'handle-ping)
         (cons "goedel" #'handle-goedel)
         (cons "gap" #'handle-gap)
         (cons "sh72" #'handle-sh72)
         (cons "ast_eval" #'handle-ast-eval)
-        (cons "philosopher" #'handle-philosopher)))
+        (cons "philosopher" #'handle-philosopher)
+        (cons "simplify_ast" #'handle-simplify-ast)))
 
 (defparameter *bridge-aliases*
   '(("embed" . "sh72") ("resonance" . "sh72") ("ast" . "ast_eval")))

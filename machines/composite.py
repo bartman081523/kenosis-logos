@@ -30,6 +30,7 @@ from machines.turing_machine import TransitionTable, TuringMachine
 from machines.wittgenstein_machine import WittgensteinMachine
 
 BLANK = "▁"
+GAP_EPS = 1e-6          # Gap-Guard — identisch zu goedel_machine/machine_base.
 
 
 class CompositeMachine(BaseMachine):
@@ -134,6 +135,9 @@ class CompositeMachine(BaseMachine):
         signal = self.goedel.paradigm_signal()
         if signal.get("detected"):
             self.expansions.append(f"step{self._step_index + 1}:paradigm")
+        signal_c = self.paradigm_signal()
+        if signal_c.get("detected"):
+            self.expansions.append(f"step{self._step_index + 1}:paradigm")
 
         gap = (result_w.gap + result_t.gap + result_g.gap) / 3.0
         self._gap_history.append(gap)
@@ -154,10 +158,28 @@ class CompositeMachine(BaseMachine):
                 "wittgenstein": {"gap": result_w.gap, "trend": result_w.trend},
             },
             "paradigm_signal": signal,
+            "paradigm_signal_composite": signal_c,
         }
         return StepResult(machine=self.MACHINE_NAME, step=self._step_index, gap=gap,
                           trend=record.trend, trace=list(self._trace),
                           invariants=invariants, argon_meta=result_g.argon_meta)
+
+    def paradigm_signal(self, threshold: float = 2.0) -> Dict[str, Any]:
+        """uni_238:220-240 auf der KOMPOSIT-Gap-Serie (Mittel der drei
+        Sub-Gaps, siehe _gap_history): der Bruch der Komposition schlägt
+        hier ein — die Basis-Expansion verändert das Programm und damit den
+        Verlauf, während die Goedel-Dynamik selbst (tanh-beschränkt, lernt
+        über self_model) stabil bleibt. Sp7-Kripkenstein: das Paradigmen-
+        Signal markiert den Punkt, an dem „plus" in „quus" umschlägt."""
+        history = self._gap_history
+        if len(history) < 10:
+            return {"detected": False, "ratio": None, "threshold": threshold}
+        recent = float(np.mean(history[-5:]))
+        baseline = (float(np.mean(history[-20:-5])) if len(history) >= 20
+                    else float(np.mean(history[:-5])))
+        ratio = recent / (baseline + GAP_EPS)
+        return {"detected": bool(ratio > threshold), "ratio": ratio,
+                "threshold": threshold}
 
     def state(self) -> Dict[str, Any]:
         gap = self.gap()
