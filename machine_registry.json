@@ -50,7 +50,7 @@
         4.927787780761719,
         30.686325073242188
       ],
-      "trained_entropy": null
+      "trained_entropy": 1.41
     },
     "turing": {
       "baseline_entropy": 2.062983,
@@ -88,7 +88,7 @@
         32.57625198364258,
         4.451818943023682
       ],
-      "trained_entropy": null
+      "trained_entropy": 1.57
     },
     "wittgenstein": {
       "baseline_entropy": 2.06383,
@@ -126,7 +126,7 @@
         5.687528610229492,
         4.028826713562012
       ],
-      "trained_entropy": null
+      "trained_entropy": 1.68
     }
   },
   "steer": 50.0,
@@ -154,8 +154,9 @@
       "turing.json": "433ff910615fc7114e3fb0d0005dd789c29ba84ead9cf645645e5b5bc735fa0d",
       "wittgenstein.json": "b2f974c88ee48c03722a23d92b78ed0944f147a5ba42ccf92f0071c26c2fabed"
     },
-    "mini_digests": "goedel:ef2677d20d6d8ea6 turing:ff695d8b762188ec composite:f0f11677e257d32b",
+    "mini_digests": "goedel:501a7ba3c37e1eca turing:ff695d8b762188ec composite:548416a92e1fe168",
     "note": "digests der Stufe-1- und 2-Artefakte + abgeleitete Checkpoint-Dateien; Registry bleibt klein (committed), Checkpoint-Ordner geht in .gitignore"
   },
-  "trained_choice_source": "joint 6-domain run (steps=60, router_only, router_diff)"
+  "trained_choice_source": "joint 6-domain run (steps=60, router_only, router_diff)",
+  "trained_entropy_source": "mean_h aus dem 60-Step-Lauf-Log (argon_1b_machines_train.log, Routing-Tabelle NACH DEM TRAINING); ab --emit_presets-Reload aus preset.mean_h"
 }

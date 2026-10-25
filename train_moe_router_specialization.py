@@ -656,6 +656,7 @@ def _emit_machine_presets(
             "name": f"argon-{domain}",
             "domain": domain,
             "entropy_target": float(entropy_targets[domain]),
+            "mean_h": float(stats_after[domain][1]),  # gemessene Router-Entropie nach dem Training
             "experts": experts,
             "steer": steer,
             "expert_bias": {"layers": n_layers, "values": bias_values},
@@ -673,6 +674,7 @@ def _emit_machine_presets(
         "name": "argon-gotterdreiheit-combined",
         "domain": "combined",
         "entropy_target": None,
+        "mean_h": None,      # Union: je Maschinen-Preset maßgeblich
         "experts": combined_unique,
         "steer": steer,
         "expert_bias": {"layers": n_layers, "values": combined_bias},

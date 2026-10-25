@@ -497,7 +497,14 @@ def stage_6_regression(checkpoint_machines: str) -> List[Tuple[str, str]]:
                 entry = registry["machines"][domain]
                 entry["trained_experts"] = preset["experts"]
                 entry["trained_pct"] = preset["routing_pct"]
-                entry["trained_entropy"] = None  # Messwert kommt aus dem Lauf-Log
+                # Mess-H: aus dem Preset (mean_h, seit --emit_presets in dem Lauf
+                # persistiert); fehlt es, bleibt ein vorhandener Wert stehen,
+                # statt auf null zurückzusetzen (Idempotenz).
+                measured_h = preset.get("mean_h")
+                if measured_h is not None:
+                    entry["trained_entropy"] = measured_h
+                elif entry.get("trained_entropy") is None:
+                    entry["trained_entropy"] = None  # Placeholder: Messwert kommt aus dem Lauf-Log
                 phase_b[domain] = preset["experts"]
         registry["trained_choice_source"] = "joint 6-domain run (steps=60, router_only, router_diff)"
         registry["version"] = 2
