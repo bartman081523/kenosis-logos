@@ -22,11 +22,18 @@ Ausführung:
     PYTHONPATH=. /...venv.../python -u train_moe_router_specialization.py \
         --checkpoint_dir ./argon_1b --output_dir ./argon_1b_specialized \
         --router_only --steps 60
+
+    Götterdreiheit (Schritt 5, 2026-10-25): Joint-Run über alle 6 Domänen mit
+    Maschinen-Korpus, Router-Diff-Save und Bias-Presets:
+    PYTHONPATH=. /...venv.../python -u train_moe_router_specialization.py \
+        --checkpoint_dir ./argon_1b --output_dir ./argon_1b_machines \
+        --corpus all --router_only --steps 60 --emit_presets
 """
 
 import argparse
 import json
 import math
+import csv
 import os
 import time
 from typing import Dict, List, Optional, Tuple
@@ -111,6 +118,43 @@ CALIBRATION_CORPUS: Dict[str, Dict] = {
     },
 }
 
+# Domänen der Götterdreiheit (train via machine_registry.json + Maschinen-Korpus)
+MACHINE_DOMAINS = ("goedel", "turing", "wittgenstein")
+
+
+def resolve_corpus(choice: str = "builtin") -> Dict[str, Dict]:
+    """
+    Korpuswahl für das Spezialisierungs-Training (Schritt-Extension 2026-10-25):
+      * ``builtin``  — der multilinguale Kalibrierungs-Korpus oben (3 Domänen)
+      * ``machines`` — die drei Maschinen-Domänen aus machine_registry.json +
+        machines/corpus/machine_corpus.jsonl (Seed 42, Trace-gegründet)
+      * ``all``      — Union: builtin zuerst, dann die Maschinen (6 Domänen)
+    """
+    if choice == "builtin":
+        return {name: CALIBRATION_CORPUS[name] for name in CALIBRATION_CORPUS}
+    if choice not in ("machines", "all"):
+        raise ValueError(f"resolve_corpus: unbekannte Wahl {choice!r}")
+
+    with open("machine_registry.json", "r", encoding="utf-8") as handle:
+        registry = json.load(handle)
+    by_domain: Dict[str, List[str]] = {}
+    with open(registry["corpus"]["path"], "r", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            by_domain.setdefault(row["domain"], []).append(row["text"])
+    entries: Dict[str, Dict] = {}
+    for domain, samples in by_domain.items():
+        entry = registry["machines"][domain]
+        entries[domain] = {
+            "target_entropy": float(entry["entropy_target"]),
+            "preferred_experts": [int(e) for e in entry["experts"]],
+            "samples": samples,
+        }
+    if choice == "all":
+        merged = {name: CALIBRATION_CORPUS[name] for name in CALIBRATION_CORPUS}
+        merged.update(entries)
+        return merged
+    return entries
+
 
 # ---------------------------------------------------------------------------
 # 2. Parameter-Freezing & multilinguale Evaluation
@@ -169,17 +213,19 @@ def measure_domain_routing(
     tokenizer,
     device: torch.device,
     max_length: int = 128,
+    corpus: Optional[Dict[str, Dict]] = None,
 ) -> Dict[str, Tuple[torch.Tensor, float]]:
     """
     Misst für jede Domäne über ALLE Sprachen hinweg das prozentuale Experten-Histogramm
-    sowie die mittlere Router-Entropie H.
+    sowie die mittlere Router-Entropie H. ``corpus`` überschreibt CALIBRATION_CORPUS
+    (Schritt-Extension 2026-10-25: Maschinen-Korpus via resolve_corpus()).
     """
     was_training = model.training
     model.eval()
     n_experts = model.config.n_routed_experts
     results: Dict[str, Tuple[torch.Tensor, float]] = {}
 
-    for domain_name, info in CALIBRATION_CORPUS.items():
+    for domain_name, info in (corpus or CALIBRATION_CORPUS).items():
         collector = {"counts": torch.zeros(n_experts, device=device), "entropies": []}
         handles = _gate_hooks(model, n_experts, collector)
 
@@ -265,13 +311,15 @@ def print_routing_table(title: str, stats: Dict[str, Tuple[torch.Tensor, float]]
         bars = " | ".join(f"E{i}:{val:4.1f}%" for i, val in enumerate(pct.tolist()))
         print(f"  {dom:11s} (H={mean_h:.2f}) -> [{bars}]")
 
-    # Total Variation (L1/2) zwischen den Verteilungen: 0 = identisch, 100% = disjunkt
-    p_code, p_math, p_prose = stats["code"][0], stats["math_logic"][0], stats["prose"][0]
+    # Total Variation (L1/2): 0 = identisch, disjunkt = 100 — generisch über alle
+    # Domänen des Stats-Dicts (Schritt-Extension: Maschinen-Korpus hat eigene Keys).
     tv = lambda a, b: 0.5 * (a - b).abs().sum().item()
-    print(
-        f"  Spezialisierungs-Trennschärfe (TV 0..100%): "
-        f"Code/Prosa={tv(p_code, p_prose):.1f}% | Math/Prosa={tv(p_math, p_prose):.1f}% | Code/Math={tv(p_code, p_math):.1f}%"
+    dom_names = [d for d in stats if d]
+    pair_str = " | ".join(
+        f"{a}/{b}={tv(stats[a][0], stats[b][0]):.1f}%"
+        for i, a in enumerate(dom_names) for b in dom_names[i + 1 :]
     )
+    print(f"  Spezialisierungs-Trennschärfe (TV 0..100%): {pair_str}")
     print("-" * 86)
 
 
@@ -326,29 +374,44 @@ def train_moe_specialization(
     bias_update_interval: int = 1,
     train_experts: bool = False,
     max_length: int = 128,
+    corpus_choice: str = "builtin",
+    save_mode: str = "router_diff",
+    emit_presets: bool = False,
+    prebuilt_model: Optional[ArgonForConditionalGeneration] = None,
+    tokenizer=None,
+    sanity_check: bool = True,
+    steer: float = 50.0,
 ):
     print("=" * 86)
     print("ARGON-1B MULTILINGUALES SUBSPACE-MoE & ROUTER SPEZIALISIERUNGS-TRAINING")
     print("=" * 86)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"[Setup] Device: {device} | Lade Modell aus {checkpoint_dir}...")
+    calib = resolve_corpus(corpus_choice)
+    print(f"[Setup] Device: {device} | Korpus: {corpus_choice} ({len(calib)} Domänen)")
 
-    with open(os.path.join(checkpoint_dir, "config.json"), "r") as f:
-        cfg_dict = json.load(f)
-    config = ArgonConfig(**cfg_dict)
+    cfg_dict = None
+    if prebuilt_model is not None:
+        model = prebuilt_model.to(dtype=torch.bfloat16, device=device)
+        config = model.config
+    else:
+        print(f"[Setup] | Lade Modell aus {checkpoint_dir}...")
+        with open(os.path.join(checkpoint_dir, "config.json"), "r") as f:
+            cfg_dict = json.load(f)
+        config = ArgonConfig(**cfg_dict)
 
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint_dir)
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
+        if tokenizer is None:
+            tokenizer = AutoTokenizer.from_pretrained(checkpoint_dir)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
 
-    model = ArgonForConditionalGeneration(config).to(dtype=torch.bfloat16, device=device)
-    state_dict = load_file(os.path.join(checkpoint_dir, "model.safetensors"))
-    model.load_state_dict(state_dict, strict=False)
+        model = ArgonForConditionalGeneration(config).to(dtype=torch.bfloat16, device=device)
+        state_dict = load_file(os.path.join(checkpoint_dir, "model.safetensors"))
+        model.load_state_dict(state_dict, strict=False)
     n_experts = config.n_routed_experts
 
     # 1. Baseline-Messung + Cross-Lingual Invarianz VOR dem Training
-    stats_before = measure_domain_routing(model, tokenizer, device, max_length)
+    stats_before = measure_domain_routing(model, tokenizer, device, max_length, corpus=calib)
     print_routing_table("VOR DEM TRAINING (Breite Initialisierung über 8 Sprachen)", stats_before)
     verify_cross_lingual_invariance(
         model, tokenizer, device, title="CROSS-LINGUAL INVARIANZ VOR DEM TRAINING (Baseline)"
@@ -363,21 +426,31 @@ def train_moe_specialization(
     optimizer = torch.optim.AdamW(param_groups)
 
     # 3. Tokenisiere die multilingualen Domänen-Batches vorab
-    domain_names = list(CALIBRATION_CORPUS.keys())
+    domain_names = list(calib.keys())
     tokenized_batches: Dict[str, Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, float]] = {}
 
-    for d_name, info in CALIBRATION_CORPUS.items():
-        enc = tokenizer(
-            info["samples"],
-            padding=True,
-            truncation=True,
-            max_length=max_length,
-            return_tensors="pt",
-        )
-        input_ids = enc["input_ids"].to(device)
-        attn_mask = enc["attention_mask"].to(device)
-        labels = input_ids.clone()
-        labels[attn_mask == 0] = -100
+    for d_name, info in calib.items():
+        # Mikro-Batch-Chunking (Schritt 5): Maschinen-Korpora tragen 24 Samples
+        # statt 8 — ein einziger Padded-Batch verdreifacht die Backward-Aktivierungen
+        # (OOM der ersten Real-Lauf-Fassung, GPU 12 GiB). Chunk = bewährte 8er-Lane;
+        # bei Domänen ≤ 8 Samples bytegleiche Semantik (ein Chunk).
+        max_chunk = 8
+        sample_groups = [info["samples"][i : i + max_chunk]
+                         for i in range(0, len(info["samples"]), max_chunk)]
+        chunk_tensors = []
+        for chunk_samples in sample_groups:
+            enc = tokenizer(
+                chunk_samples,
+                padding=True,
+                truncation=True,
+                max_length=max_length,
+                return_tensors="pt",
+            )
+            input_ids = enc["input_ids"].to(device)
+            attn_mask = enc["attention_mask"].to(device)
+            labels = input_ids.clone()
+            labels[attn_mask == 0] = -100
+            chunk_tensors.append((input_ids, attn_mask, labels))
 
         # Ziel-Verteilungsvektor für sanfte Symmetriebrechung der Subspaces
         pref_mask = torch.full((n_experts,), 0.05, device=device, dtype=torch.float32)
@@ -385,11 +458,11 @@ def train_moe_specialization(
             pref_mask[e_idx] = 1.0
         pref_dist = pref_mask / pref_mask.sum()
 
-        tokenized_batches[d_name] = (input_ids, attn_mask, labels, pref_dist, info["target_entropy"])
+        tokenized_batches[d_name] = (chunk_tensors, pref_dist, info["target_entropy"])
 
     router_hook = DifferentiableRouterHook(model)
 
-    print(f"\n[Train] Starte {steps} multilinguale Spezialisierungs-Schritte (DE, EN, FR, ES, ZH, JA, RU, AR)...")
+    print(f"\n[Train] Starte {steps} Spezialisierungs-Schritte über {len(domain_names)} Domänen: {', '.join(domain_names)}...")
     t0 = time.time()
 
     for step in range(1, steps + 1):
@@ -404,38 +477,42 @@ def train_moe_specialization(
         # Jeder Optimizer-Schritt iteriert über alle Domänen, damit das globales
         # Load-Balancing fair bleibt, während jede Domäne ihre Nische sucht.
         for d_name in domain_names:
-            input_ids, attn_mask, labels, pref_dist, target_h = tokenized_batches[d_name]
-            router_hook.clear()
+            chunk_tensors, pref_dist, target_h = tokenized_batches[d_name]
+            n_chunks = len(chunk_tensors)
+            for input_ids, attn_mask, labels in chunk_tensors:
+                router_hook.clear()
 
-            outputs = model(
-                input_ids=input_ids,
-                attention_mask=attn_mask,
-                labels=labels,
-                router_entropy_weight=entropy_reg_weight,
-                router_target_entropy=target_h,
-            )
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=attn_mask,
+                    labels=labels,
+                    router_entropy_weight=entropy_reg_weight,
+                    router_target_entropy=target_h,
+                )
 
-            # Kontrastiver Subspace-Separations-Loss (KL(Präferenz || gelernt)).
-            # reduction="sum": batchmean würde hier durch V=n_experts teilen, weil wir
-            # einen EINZIGEN Verteilungsvektor (nicht einen Batch) haben.
-            mean_domain_probs = torch.stack(router_hook.layer_probs, dim=0).mean(dim=0)  # [n_experts]
-            sep_loss = domain_sep_weight * F.kl_div(
-                (mean_domain_probs + 1e-8).log(),
-                pref_dist,
-                reduction="sum",
-            )
+                # Kontrastiver Subspace-Separations-Loss (KL(Präferenz || gelernt)),
+                # pro Chunk auf dem Chunk-Mittel (Approximation an die Domänen-Mittel;
+                # nur der 1-Chunk-Fall = das alte bytegleiche Verhalten). reduction="sum":
+                # batchmean würde hier durch V=n_experts teilen, weil wir einen EINZIGEN
+                # Verteilungsvektor (nicht einen Batch) haben.
+                mean_domain_probs = torch.stack(router_hook.layer_probs, dim=0).mean(dim=0)  # [n_experts]
+                sep_loss = domain_sep_weight * F.kl_div(
+                    (mean_domain_probs + 1e-8).log(),
+                    pref_dist,
+                    reduction="sum",
+                )
 
-            domain_loss = (outputs.loss + sep_loss) / len(domain_names)
-            domain_loss.backward()
+                domain_loss = (outputs.loss + sep_loss) / (len(domain_names) * n_chunks)
+                domain_loss.backward()
 
-            # Reale Top-K-Counts aus allen Schichten für das Post-Step-Balancing
-            with torch.no_grad():
-                for l_idx, layer in enumerate(model.model.layers):
-                    if hasattr(layer.moe.gate, "last_counts"):
-                        step_expert_counts[l_idx].add_(layer.moe.gate.last_counts)
+                # Reale Top-K-Counts aus allen Schichten für das Post-Step-Balancing
+                with torch.no_grad():
+                    for l_idx, layer in enumerate(model.model.layers):
+                        if hasattr(layer.moe.gate, "last_counts"):
+                            step_expert_counts[l_idx].add_(layer.moe.gate.last_counts)
 
-            total_ce_loss += outputs.loss.item() / len(domain_names)
-            total_sep_loss += sep_loss.item() / len(domain_names)
+                total_ce_loss += outputs.loss.item() / (len(domain_names) * n_chunks)
+                total_sep_loss += sep_loss.item() / (len(domain_names) * n_chunks)
 
         torch.nn.utils.clip_grad_norm_(router_params + expert_params, max_norm=1.0)
         optimizer.step()
@@ -466,43 +543,143 @@ def train_moe_specialization(
         layer.moe.gate.inline_balancing_enabled = True
 
     # 4. Messung nach dem Training + Cross-Lingual Invarianz-Prüfung
-    stats_after = measure_domain_routing(model, tokenizer, device, max_length)
+    stats_after = measure_domain_routing(model, tokenizer, device, max_length, corpus=calib)
     print_routing_table("NACH DEM TRAINING (Multilinguale Domänen-Cluster & kalibrierte Entropie)", stats_after)
     verify_cross_lingual_invariance(
         model, tokenizer, device, title="CROSS-LINGUAL INVARIANZ NACH DEM TRAINING (Ungesehene Sätze)"
     )
 
-    # 5. Wissens-Erhalt-Check in mehreren Sprachen
-    model.eval()
-    for test_p, expected in [
-        ("The capital of France is", "Paris"),
-        ("Die Hauptstadt von Frankreich ist", "Paris"),
-    ]:
-        enc_p = tokenizer(test_p, return_tensors="pt").to(device)
-        with torch.no_grad():
-            gen_ids = model.generate(
-                input_ids=enc_p["input_ids"],
-                attention_mask=enc_p["attention_mask"],
-                max_new_tokens=12,
-                do_sample=False,
-                use_cache=True,
-            )
-        gen_text = tokenizer.decode(gen_ids[0], skip_special_tokens=True)
-        print(f"[Sanity-Check] {test_p!r} -> {gen_text!r}")
-        assert expected in gen_text, f"Sanity-Check fehlgeschlagen für {test_p}!"
+    # 5. Wissens-Erhalt-Check in mehreren Sprachen (Mini-Smoke: deaktiviert,
+    #    Zufalls-Gewichte scheitern sinnigerweise am Paris-Assert)
+    if sanity_check:
+        model.eval()
+        for test_p, expected in [
+            ("The capital of France is", "Paris"),
+            ("Die Hauptstadt von Frankreich ist", "Paris"),
+        ]:
+            enc_p = tokenizer(test_p, return_tensors="pt").to(device)
+            with torch.no_grad():
+                gen_ids = model.generate(
+                    input_ids=enc_p["input_ids"],
+                    attention_mask=enc_p["attention_mask"],
+                    max_new_tokens=12,
+                    do_sample=False,
+                    use_cache=True,
+                )
+            gen_text = tokenizer.decode(gen_ids[0], skip_special_tokens=True)
+            print(f"[Sanity-Check] {test_p!r} -> {gen_text!r}")
+            assert expected in gen_text, f"Sanity-Check fehlgeschlagen für {test_p}!"
 
-    # 6. Speichere spezialisierten Checkpoint
+    # 6. Speichere spezialisierten Checkpoint — Default router_diff: mit
+    #    Router-Only-Freeze ändern sich exakt gate.weight + expert_bias; das Diff
+    #    gegen die Base-Safetensors ist klein (≈1 MB statt 5.1 GB Full-Save).
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
-        print(f"\n[Save] Speichere multilingual spezialisierten Checkpoint nach {output_dir}...")
-        # .cpu() je Parameter erzeugt unabhängige Kopien (tied weights teilen
-        # keine Speicher-Identität im Export) -> safetensors ohne Shared-Memory-Konflikt
-        save_state = {k: v.cpu().contiguous() for k, v in model.state_dict().items()}
-        save_file(save_state, os.path.join(output_dir, "model.safetensors"))
-        tokenizer.save_pretrained(output_dir)
-        with open(os.path.join(output_dir, "config.json"), "w") as f:
-            json.dump(cfg_dict, f, indent=2)
-        print(f"Fertig. Du kannst jetzt `compare_gemma3_vs_argon.py` auf {output_dir} ausführen.")
+        print(f"\n[Save] Speichere spezialisierten Checkpoint nach {output_dir} (Mode: {save_mode})...")
+        if cfg_dict is None and hasattr(config, "to_dict"):
+            # prebuilt-Lane (Mini-Smoke): Config aus dem lebenden Modell ableiten
+            cfg_dict = json.loads(json.dumps(config.to_dict(), default=str))
+        cur_state = model.state_dict()
+        if save_mode == "router_diff":
+            base_state = load_file(os.path.join(checkpoint_dir, "model.safetensors"))
+            diff_state = {
+                k: v.cpu().contiguous()
+                for k, v in cur_state.items()
+                if k not in base_state or not torch.equal(v.detach().cpu(), base_state[k])
+            }
+            save_file(diff_state, os.path.join(output_dir, "router_diff.safetensors"))
+            meta = {
+                "base_checkpoint": os.path.abspath(checkpoint_dir),
+                "corpus_choice": corpus_choice,
+                "steps": steps,
+                "n_keys": len(diff_state),
+                "apply": "construct base model + load_state_dict(base) + load_state_dict(router_diff, strict=False)",
+            }
+            with open(os.path.join(output_dir, "router_diff_meta.json"), "w") as f:
+                json.dump(meta, f, indent=2)
+            # Config + Tokenizer immer mitspeichern — Verify konstruiert daraus.
+            with open(os.path.join(output_dir, "config.json"), "w") as f:
+                json.dump(cfg_dict, f, indent=2)
+            if tokenizer is not None:
+                tokenizer.save_pretrained(output_dir)
+            print(f"  [Save] router_diff: {len(diff_state)} geänderte Keys nach router_diff.safetensors.")
+        elif save_mode == "full":
+            # .cpu() je Parameter erzeugt unabhängige Kopien (tied weights teilen
+            # keine Speicher-Identität im Export) -> safetensors ohne Shared-Memory-Konflikt
+            save_state = {k: v.cpu().contiguous() for k, v in cur_state.items()}
+            save_file(save_state, os.path.join(output_dir, "model.safetensors"))
+            tokenizer.save_pretrained(output_dir)
+            with open(os.path.join(output_dir, "config.json"), "w") as f:
+                json.dump(cfg_dict, f, indent=2)
+            print(f"Fertig. Du kannst jetzt `compare_gemma3_vs_argon.py` auf {output_dir} ausführen.")
+
+        # 7. Preset-Emission (Schritt-Extension der Götterdreiheit): Bias-Profile
+        #    je Maschine, gemessen aus der NACH-Dem-Training-Verteilung.
+        if emit_presets:
+            _emit_machine_presets(
+                output_dir,
+                stats_after,
+                config,
+                entropy_targets={d: calib[d]["target_entropy"] for d in MACHINE_DOMAINS},
+                steer=steer,
+            )
+            print("  [Save] machine_presets/{goedel,turing,wittgenstein,combined}.json geschrieben.")
+
+
+def _emit_machine_presets(
+    output_dir: str,
+    stats_after: Dict[str, Tuple[torch.Tensor, float]],
+    config,
+    entropy_targets: Dict[str, float],
+    steer: float = 50.0,
+) -> None:
+    """
+    Bias-Profile aus der NACH-Dem-Training-Verteilung: +steer auf die zwei
+    top-gelenkten Experten, -steer auf den Rest (Suite-Muster aus
+    compare_gemma3_vs_argon.py:249-260). Nur Maschinen-Domänen; combined = Union.
+    """
+    presets_dir = os.path.join(output_dir, "machine_presets")
+    os.makedirs(presets_dir, exist_ok=True)
+    n_layers = config.num_hidden_layers
+    n_experts = config.n_routed_experts
+    combined: List[int] = []
+    for domain in MACHINE_DOMAINS:
+        if domain not in stats_after:
+            continue
+        pct = stats_after[domain][0]
+        experts = sorted(range(n_experts), key=lambda e: (-pct[e].item(), e))[:2]
+        bias_values: List[float] = []
+        for _ in range(n_layers):
+            for e in range(n_experts):
+                bias_values.append(steer if e in experts else -steer)
+        preset = {
+            "name": f"argon-{domain}",
+            "domain": domain,
+            "entropy_target": float(entropy_targets[domain]),
+            "experts": experts,
+            "steer": steer,
+            "expert_bias": {"layers": n_layers, "values": bias_values},
+            "routing_pct": [float(v) for v in pct.tolist()],
+        }
+        with open(os.path.join(presets_dir, f"{domain}.json"), "w") as f:
+            json.dump(preset, f, indent=2)
+        combined.extend(experts)
+    combined_unique = sorted(set(combined))
+    combined_bias: List[float] = []
+    for _ in range(n_layers):
+        for e in range(n_experts):
+            combined_bias.append(steer if e in combined_unique else -steer)
+    combined_preset = {
+        "name": "argon-gotterdreiheit-combined",
+        "domain": "combined",
+        "entropy_target": None,
+        "experts": combined_unique,
+        "steer": steer,
+        "expert_bias": {"layers": n_layers, "values": combined_bias},
+        "routing_pct": None,  # Union: je Maschinen-Preset maßgeblich
+    }
+    with open(os.path.join(presets_dir, "combined.json"), "w") as f:
+        json.dump(combined_preset, f, indent=2)
 
 
 if __name__ == "__main__":
@@ -515,6 +692,12 @@ if __name__ == "__main__":
     parser.add_argument("--lr_experts", type=float, default=1e-4)
     parser.add_argument("--router_only", action="store_true",
                         help="Trainiert nur die 26 Router-Matrizen; routed_experts bleiben eingefroren")
+    parser.add_argument("--corpus", type=str, default="builtin", choices=["builtin", "machines", "all"],
+                        help="Kalibrierungs-Korpus: builtin (3 Domänen) | machines (Götterdreiheit) | all (6)")
+    parser.add_argument("--save_mode", type=str, default="router_diff", choices=["router_diff", "full"],
+                        help="router_diff speichert nur geänderte gate.weight/expert_bias-Keys")
+    parser.add_argument("--emit_presets", action="store_true",
+                        help="Schreibt machine_presets/{goedel,turing,wittgenstein,combined}.json")
     args = parser.parse_args()
 
     train_moe_specialization(
@@ -525,4 +708,7 @@ if __name__ == "__main__":
         lr_router=args.lr_router,
         lr_experts=args.lr_experts,
         train_experts=not args.router_only,
+        corpus_choice=args.corpus,
+        save_mode=args.save_mode,
+        emit_presets=args.emit_presets,
     )

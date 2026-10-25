@@ -6,3 +6,10 @@ argon_1b/model.safetensors
 # vollständig regenerierbar via train_moe_router_specialization.py
 argon_1b_specialized/
 argon_1b_specialized_ml/
+# Maschinen-Checkpoint (Router-Diff + Machine-Presets, Joint 6 Domänen):
+# vollständig regenerierbar via train_moe_router_specialization.py --emit_presets
+argon_1b_machines/
+# Smoke-Checkpoints (Mini-Argon + Mini-Training, nur binäre Regenerate):
+# regenerierbar via scratches/smoke_machines_train.py
+scratches/smoke_machines_base/
+scratches/smoke_machines_out/

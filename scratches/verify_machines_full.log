@@ -1,0 +1,55 @@
+======================================================================================
+GÖTTERDREIHEIT-VERIFIKATION
+======================================================================================
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+
+--------------------------------------------------------------------------------------
+CROSS-LINGUAL INVARIANZ NACH DEM TRAINING
+--------------------------------------------------------------------------------------
+  Math (EN)   (H=1.63) -> [E0: 2.8% | E1: 4.7% | E2:32.8% | E3: 2.2% | E4: 8.2% | E5:31.6% | E6:14.3% | E7: 3.5%]
+  Math (DE)   (H=1.68) -> [E0: 3.2% | E1: 5.8% | E2:25.8% | E3: 4.6% | E4: 7.3% | E5:25.4% | E6:22.0% | E7: 5.8%]
+  Math (ZH)   (H=1.64) -> [E0: 2.5% | E1: 4.1% | E2:25.7% | E3: 3.8% | E4: 8.0% | E5:33.8% | E6:19.0% | E7: 3.0%]
+  Prose (EN)  (H=1.07) -> [E0: 6.2% | E1: 3.1% | E2: 3.3% | E3:36.8% | E4: 5.9% | E5: 4.0% | E6: 4.6% | E7:36.0%]
+  Prose (DE)  (H=1.03) -> [E0: 4.8% | E1: 4.8% | E2: 2.6% | E3:37.6% | E4: 5.8% | E5: 3.7% | E6: 3.1% | E7:37.5%]
+  Prose (ZH)  (H=1.01) -> [E0: 4.6% | E1: 3.0% | E2: 3.6% | E3:38.0% | E4: 4.8% | E5: 4.1% | E6: 4.2% | E7:37.6%]
+  -> innerhalb Math  (EN vs. ZH):   8.5%  (DE vs. ZH):   9.1%   (niedrig = sprachinvariant)
+  -> innerhalb Prose (EN vs. ZH):   3.1%
+  -> Trennung Math (EN) vs. Prose (EN):  70.6%   (hoch = domänenscharf)
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+STUFE 1
+--------------------------------------------------------------------------------------
+  goedel                   PASS: digest=1594f06485ef gap0=0.7437
+  turing                   PASS: digest=459575a8eb35 gap0=0.5000
+  wittgenstein             PASS: digest=094df3c57a2f gap0=0.5000
+  composite                PASS: digest=660ffead6c40 gap0=0.6799
+--------------------------------------------------------------------------------------
+STUFE 2
+--------------------------------------------------------------------------------------
+  corpus                   PASS: {'goedel': 24, 'turing': 24, 'wittgenstein': 24} kinds=['ast_eval', 'prose', 'trajectory', 'transitions']
+--------------------------------------------------------------------------------------
+STUFE 3
+--------------------------------------------------------------------------------------
+  canon                    PASS: alle Kanon-Werte == Goldwerte (Erstersperrung)
+--------------------------------------------------------------------------------------
+STUFE 4
+--------------------------------------------------------------------------------------
+  philosopher_p2           PASS: len=52 thoughts=6 (P2: kein Bitanspruch)
+--------------------------------------------------------------------------------------
+STUFE 5
+--------------------------------------------------------------------------------------
+  steer:goedel             PASS: TV=0.362 share=1.000 restored=True (experts=[2, 7], source=preset-file)
+  steer:turing             PASS: TV=0.390 share=1.000 restored=True (experts=[0, 6], source=preset-file)
+  steer:wittgenstein       PASS: TV=0.411 share=1.000 restored=True (experts=[1, 3], source=preset-file)
+  convergence              PASS: 0.7437 -> 0.3777
+  separation               PASS: maschinen-TV-min=0.52 alt-TV-min=0.40 [goedel/code=0.65 goedel/math_logic=0.41 goedel/prose=0.43 turing/code=0.46 turing/math_logic=0.40 turing/prose=0.68 wittgenstein/code=0.40 wittgenstein/math_logic=0.55 wittgenstein/prose=0.43]
+  invariance               PASS: math_EN-ZH=8.5% prose_EN-ZH=3.1% paris=True
+--------------------------------------------------------------------------------------
+STUFE 6
+--------------------------------------------------------------------------------------
+  paradigm                 PASS: ratio=2.60 RISING
+  axiom_expansion          PASS: LOOP basis=['SCALAR', 'TIME', 'SPACE', 'ALPHA']
+  cross_check              PASS: compare_gemma3_vs_argon.py Datei vorhanden
+======================================================================================
+GRÜN — alle angeforderten Stufen bestanden.
