@@ -1,0 +1,28 @@
+[Setup] device=cuda base=./argon_1b machines=./argon_1b_machines
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+========================================================================================
+COMPOSITE: ORACLE- VS. IN-LOOP-TRAJEKTORIEN UNTER PRESET-STEERING
+========================================================================================
+L1 mode=in_loop preset=(standard) digest=d63f6d6cec55 h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-1.1795
+    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 8.02 1.86
+L2 mode=in_loop preset=(standard) digest=d63f6d6cec55 h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-1.1795
+    gaps: 0.68 0.26 0.71 0.62 5.47 5.46 5.44 1.26 6.39 3.08 2.09 2.29 8.02 8.02 8.02 1.86
+L3 mode=oracle  preset=(standard) digest=2565609bc3dc h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-0.1192
+    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.81 0.73
+L4 mode=oracle  preset=(standard) digest=2565609bc3dc h_probe=1.7432 restored=True expansions=[] basis=3 gapΔ0→end=-0.1192
+    gaps: 0.61 0.69 0.69 0.74 0.76 0.78 0.81 0.73 0.77 0.49 0.62 0.61 0.79 0.81 0.81 0.73
+L5 mode=oracle  preset=combined   digest=0d1479f2f804 h_probe=1.7441 restored=True expansions=[] basis=3 gapΔ0→end=-0.1209
+    gaps: 0.48 0.59 0.55 0.66 0.64 0.67 0.67 0.59 0.66 0.37 0.49 0.47 0.65 0.66 0.67 0.60
+L6 mode=oracle  preset=goedel     digest=b4cd8edcf5da h_probe=1.7420 restored=True expansions=[] basis=3 gapΔ0→end=-0.1217
+    gaps: 0.48 0.59 0.56 0.65 0.64 0.67 0.67 0.60 0.66 0.37 0.49 0.47 0.64 0.66 0.67 0.60
+----------------------------------------------------------------------------------------
+BEFUNDE
+  det_in_loop          PASS
+  det_oracle           PASS
+  finite_gaps          PASS
+  entropy_bias_free    PASS
+  steer_traj_shift     PASS
+  bias_restored        PASS
+[Save] scratches/composite_oracle_experiment.json
+GRÜN — alle Experiment-Befunde bestanden.
