@@ -106,6 +106,10 @@ FILES: List[str] = [
     "scratches/smoke_lexikon_dynamik.py",
     "scratches/lexikon_dynamik_experiment.log",
     "scratches/lexikon_dynamik_experiment.json",
+    # -- SP10 Die Regeln und die Wörter (Kopplung Composite × Lexikon) -----------
+    "scratches/smoke_regeln_woerter.py",
+    "scratches/regeln_woerter_experiment.log",
+    "scratches/regeln_woerter_experiment.json",
 ]
 
 SEPARATOR = "=" * 78
