@@ -1,0 +1,27 @@
+== SP11 — Der Ursprung der Paradigmen ==
+Canon: composite.py:132-140/:167-182, goedel_machine.py:229-239,
+       turing_machine.py:144-157 (loop_detector-Reset), GAP_EPS 1e-6
+
+BEFUNDE:
+  sp11_l0_anchor             PASS
+  sp11_det                   PASS
+  sp11_t1_urheber            PASS
+  sp11_t2_mechanik           PASS
+  sp11_t3a_expansionfrei     FAIL
+  sp11_t3b_turing_echo       FAIL
+  sp11_t3c_goedel_vergleich  PASS
+  sp11_t4_forced             PASS
+
+NOTIZEN:
+  - sp11_l0_anchor: Feldvergleich kripke+quus inkl. committeter Signal-Kolumnen (paradigm_ratio = Goedel, paradigm_detected = Composite)
+  - sp11_det: ok
+  - sp11_t1_urheber: kein Schritt mit goedel.detected in allen 9 Läufen
+  - sp11_t2_mechanik: Detect-Menge und Ratio je Lauf exakt aus der Gap-Serie rekomputiert
+  - sp11_t3a_expansionfrei: Expansion-frei: ['seed12', 'seed14', 'seed15', 'seed16']; Verletzungen: [('seed12', [15, 16, 17, 18, 19, 20, 21, 22, 24]), ('seed14', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24]), ('seed15', [11, 12, 13, 14, 15, 16, 17, 18, 21, 23, 24]), ('seed16', [11, 12, 13, 14])]
+  - sp11_t3b_turing_echo: Fehler: ['seed13: Überlebende [12, 13, 14, 16, 17, 18, 19, 20, 21]', 'zw_twin: Überlebende [11, 12, 13, 14, 17, 18, 19]', 'zw_forced: Überlebende [11, 12, 13, 14]']
+  - sp11_t3c_goedel_vergleich: Detection-Mengen in 6 Gegenproben unverändert
+  - sp11_t4_forced: induzierte Paradigmas [20]; in Band [14, 22]: [20]
+
+BILANZ: 6 PASS; 2 FEHLGESCHLAGEN (unverwartet); 0 dokumentierte Errata; 0 OFFEN
+JSON: scratches/paradigm_ursprung_experiment.json
+FEHLGESCHLAGEN: ['sp11_t3a_expansionfrei', 'sp11_t3b_turing_echo']

@@ -522,4 +522,61 @@ Halbwinkel-Rotation auf dem Gematria-Großkreis (1e-16..1e-17), deren
 Zuschauer-Grenzwert M·v die MITTE des gelernten Paares ist: was der
 Zuschauer am Ende liest, ist die Mitte, die der Gebrauch der Mitspieler
 gezogen hat. Hermeneutische Vollfassung: `sprachspiel_bericht.md` §12.
-hinzu; die 3 FAIL-Rows stehen in der JSON (deterministisch reproduzierbar).
+
+---
+
+## 15. SP11 — Der Ursprung der Paradigmen (laufschrift)
+
+**(2026-10-25, „entschieide du";** Prereg `scratches/smoke_paradigm_ursprung.py`,
+Run `paradigm_ursprung_experiment.log/.json`;** CPU-only, keine Maschinen-Code-
+Änderung.** 9 Läufe: L0-Kripke + L0-Quus (seed 7, Zwang {9}, 16 Schritte),
+6 Sweep-Seeds 11-16 (unverzwungen, 24 Schritte), Zwangs-Paar seed 21 (unverzwungener
+Zwilling + Zwang {13}, 24 Schritte) — plus 6 Turing-Gefrier-Gegenproben auf der
+Datenebene, kein Re-Run.) Ex ante gelesen: die committeten hermeneutik-Kolumnen
+tragen die Signale ZWEIER Kanäle — `paradigm_ratio` = Gödel-Serie (ab Schritt
+10, 0.195-0.348, nie >= 2), `paradigm_detected` = Composite-Flag (True an
+11/12/15; Hand-Ratios 3.078/2.962/1.688/1.709/2.580).
+
+**Verdikt-Register (8 Zeilen: 6 PASS, 2 echte Falsifikationen, 0 Errata,
+exit 1, Bands unverändert):**
+
+| Verdict | Einstufung | Kern |
+| :--- | :--- | :--- |
+| sp11_l0_anchor | PASS | alle Felder == committet, inkl. BEIDER Signal-Kolumnen (paradigm_ratio == Gödel-invariants, paradigm_detected == Composite-Flag); first_detect 11 (Kripke + Quus) |
+| sp11_det | PASS | Doppel-Läufe (L0-Kripke, seed11, Zwangs-Paar) bitidentisch |
+| sp11_t1_urheber | PASS | kein Schritt mit goedel.detected in 9 Läufen — Urheber: Composite-Signal, eindeutig |
+| sp11_t2_mechanik | PASS | Fensterformel exakt: Detect-Menge je Lauf rekomputiert, Ratios <= 1e-12, Regime-Leg (len >= 20) exakt |
+| sp11_t3a_expansionfrei | **FAIL** | 4 von 6 unverzwungenen Läufen ohne jede Expansion UND paradigmatisch (seed12: det 15-22/24; seed14: 15-24; seed15: 11-18, 21, 23, 24; seed16: 11-14) |
+| sp11_t3b_turing_echo | **FAIL** | 3 Gegenproben mit überlebenden Detectionen (seed13: vakuum, Expansion erst an 23; zw_twin: Freeze ≈ no-op, Expansion an 18; zw_forced: behält 11-14) |
+| sp11_t3c_goedel_vergleich | PASS | alle 6 Gegenproben unverändert — Gödel-Sub-Niveau trägt ~2-8%, nie entscheidend |
+| sp11_t4_forced | PASS | Zwang {13} → induziertes Paradigma an 20 (Band [14, 22]); unter dem Freeze tot — expansions-getragen |
+
+**Zahlenlage (kompakt):** das Composite-Mittel trägt die Masse aus dem
+TURING-Sub-Gap (0-39) — Wittgenstein ~0.02, Gödel 0.017-0.864 (2-8%). Die
+Expansion-freien Läufe zeigen die Ursache: der Turing-Sub-Gap DRIFTET im
+Zufalls-Strom hoch (seed12: ~3.3 Baseline → ~11.6 recent → 28-39) und bricht
+die Fenster-Schwelle ohne jeden Anlass. Die Turing-Gefrierprobe trennt die
+Detectionen in zwei Herkunftsgruppen: (a) expansions-getragen (l0-Kripke und
+l0-Quus ∅ nach Freeze; seed11 alle 12 ∅; zw_forced verliert 17-20) und
+(b) drift-getragen (seed12/14/15/16 komplett, seed13 komplett, zw_twin,
+zw_forced 11-14).
+
+**Kern:** das Paradigma ist ein KOSTEN-Ereignis, kein Mittel-Ereignis — der
+Auftrieb des Umgangs-Preises (Transitionen pro Schritt), gelesen vom Composite-
+Fenster, nicht der Ankauf neuer Axiome. Die Basis-Expansion ist EIN erzwingbarer
+Träger des Niveau-Sprungs (T4 induziert das Ereignis an 20), nicht seine Quelle
+(T3a/T3b falsifiziert). Kripkes Bruchstelle (SP7) war Expansions-Nähe (L0-Zwang
+an 9; unter der Gegenprobe ∅); die wandernden Zeiten (SP10) sind die Drift-
+Typologie. Dieselbe Fenster-Logik liest beide als denselben Schwellenbruch —
+darum wirkte das Ereignis bisher wie eine Einheit. Urheber (T1) und Mechanik
+(T2) bleiben exakt.
+
+**Reparatur:** die schwebende Fragmentzeile der Vorversion („`hinzu; die 3
+FAIL-Rows stehen in der JSON (deterministisch reproduzierbar).`") entfernt —
+trägerloser Rest des SP10-Appends ohne Satz-Anfang; die 3 SP10-FAIL-Rows sind
+in `sprachspiel_bericht.md` §12 (Errata-Register) und hier §14 vollständig
+dokumentiert.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_paradigm_ursprung` → `paradigm_ursprung_experiment.log/.json`.
+Hermeneutische Vollfassung: `sprachspiel_bericht.md` §13.

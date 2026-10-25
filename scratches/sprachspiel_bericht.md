@@ -22,6 +22,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP6 | **Lexikon** — Lexikon-Emergenz im Gebrauch (S3) | CPU | `lexicon_game`/`learn_pair`/`embed_word` (Lexikon-zuerst) |
 | SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
 | SP10 | **Kopplung** — Composite-Zyklus × Lexikon-Dynamik (die Regeln und die Wörter) | CPU | `composite.py:45-51` (exponierte Submaschinen), `wittgenstein_machine.py:244-256` (`_generate_ast` — wort-blind), `lexicon_game` (:342-380) |
+| SP11 | **Ursprung** — die Quelle der Paradigm-Ereignisse (ratio > 2.0) im Composite-Verlauf | CPU | `composite.py:132-140` (ZWEI Signal-Quellen an EIN Register), `:167-182` (Fensterformel), `goedel_machine.py:229-239`, `turing_machine.py:144-157` (loop_detector-Reset), `machine_base.py:51` (GAP_EPS) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -393,6 +394,23 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   (Volldaten inklusive Roh-Spuren); Skript
   `scratches/smoke_regeln_woerter.py` (Prereg-Docstring mit drei Thesen,
   geschlossenen Formen, Errata-Register).
+- SP11: `machines/composite.py:132-143` (`step`: Expansion- und Signal-
+  Behandlung VOR dem Gap-Append :143 — ZWEI Signal-Quellen `:135` Gödel /
+  `:138` Composite an EIN Register; `:167-182` Fensterformel: len ≥ 10,
+  recent 5, baseline [-20:-5] falls len ≥ 20 sonst [:-5], ratio =
+  recent/(baseline + 1e-6), Flag bei > 2.0),
+  `machines/goedel_machine.py:229-239` (dieselbe Formel auf der Gödel-Serie,
+  threshold 2.0 aus :119), `machines/turing_machine.py:144-157`
+  (`expand_basis`: Pool-Pop, Basis.append, `loop_detector = {}`-Reset :156;
+  GAP_EPS = 1e-6 in machine_base.py:51); Lauf
+  `scratches/paradigm_ursprung_experiment.log` (6 PASS + 2 echte
+  Falsifikationen = 8 Verdicte, exit 1) +
+  `scratches/paradigm_ursprung_experiment.json` (Sub-Serien je Schritt,
+  Counterfaktur-Daten);
+  Skript `scratches/smoke_paradigm_ursprung.py` (Prereg-Docstring mit
+  vier Thesen, 8 Verdikten, OFFEN-Regel); committeter Anker
+  `scratches/hermeneutik_experiment.json` (Signal-Kolumnen ex ante gelesen:
+  paradigm_ratio = Gödel, paradigm_detected = Composite).
 
 ---
 
@@ -700,4 +718,121 @@ die Roh-Formelspur kennt nur die 14 echten Züge (Δ 6.2e-17).
   Verläufe ÜBER EINE Quelle — nicht EIN Verlauf über zwei Quellen.
 
 Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §14.
-   verlaufsinduziert, nicht zustandsstatisch.
+
+---
+
+## 13. SP11 — Der Ursprung der Paradigmen: Niveau-Sprung, nicht Ankauf
+
+**(2026-10-25, Mandat „entschieide du"; Plan `~/.claude/plans/sp11-paradigm-ursprung.md`;**
+Prereg-Docstring `scratches/smoke_paradigm_ursprung.py;` Run `paradigm_ursprung_experiment.log/.json`.**
+CPU-only, keine Maschinen-Code-Änderung, 9 Läufe + 6 Daten-Gegenproben.)
+
+Die Frage der Runde: WOHIN kommt ein Paradigm-Ereignis (ratio > 2.0) her, wenn
+kein Zwang es setzt? SP7 zeigte, DASS das Signal die Kripke-Bruchstelle
+markiert (first_detect 11); SP10 zeigte, DASS die Zeiten mit dem Zufalls-Strom
+wandernd das Lexikon durchlaufen (L0: 11/12/15 — L2: 12/13/15/16). Was fehlte,
+war die Erzeugungsebene des Ereignisses. Code-Grund:
+composite.py:132-140 hängt ZWEI unabhängige Signal-Quellen an EIN und dasselbe
+expansions-Register (goedel.paradigm_signal :135, composite.paradigm_signal
+:138) — die Urheber-Frage ist im Code zwiespältig angelegt und wird von SP11
+empirisch entschieden.
+
+**Ex-Ante-Befund am committeten Anker (2026-10-25, vor dem ersten Lauf):** die
+committeten hermeneutik-Kolumnen sind bereits die Signale zweier Kanäle —
+`paradigm_ratio` (Schritt 10-16, 0.195-0.348, nie >= 2) ist die GOEDEL-Serie
+(das Gödel-Gap sieht am Schritt n bereits die Serie 1..n, weil Goedel.step
+intern appendet), `paradigm_detected` (True an 11/12/15) ist die COMPOSITE-
+Flag (das Composite-Gap sieht am Schritt n nur die Serie 1..n-1, weil der
+Append an :143 NACH der Signal-Prüfung liegt). Hand-Replikation der Composite-
+Ratio aus den committeten Gaps: **3.078 / 2.962 / 1.688 / 1.709 / 2.580** an
+den Schritten 11-15 — exakt der committete Detect-Musterverlauf.
+
+### Drei Thesen, als falsifizierbare Vorhersagen geprüft
+
+1. **Urheber (T1):** das Paradigm-Ereignis kommt aus dem COMPOSITE-Signal
+   (Gap-Mittel der drei Sub-Gaps), nie aus dem Gödel-Signal. Falsifikator:
+   jeder Schritt mit goedel.detected == True.
+2. **Mechanik (T2):** das Signal ist ein exaktes Funktion der aufgezeichneten
+   Serie (Fensterformel: len ≥ 10; recent = mean über 5; baseline = mean über
+   [-20:-5] falls len ≥ 20, sonst [:-5]; ratio = recent/(baseline + 1e-6);
+   erkannt bei ratio > 2.0). Falsifikator: jede Mengen-, Ratio- oder Regime-
+   Abweichung zwischen Replikation und Register.
+3. **Ursprung (T3) in seiner Prereg-Fassung:** das Paradigma ist das ECHO der
+   Basis-Expansion — T3a kein Anlass, kein Echo (Expansion-freie Läufe
+   paradigmfrei); T3b Turing-Gap auf Vor-Niveau gefroren → alle Paradigmen
+   gebrochen; T3c Gödel-Gap gefroren → Menge unverändert. Falsifikatoren wie
+   am Skript fixiert.
+4. **Zwang (T4):** erzwungene Expansion (identity → LOOP, SP7-Mechanik) an
+   Schritt 13 (seed 21) erzeugt mindestens ein Paradigma in [14, 22], das im
+   unverzwungenen Zwilling fehlt.
+
+**Verdikt-Register — 8 Zeilen (6 PASS, 2 echte Falsifikationen, 0 Errata,
+exit 1; Bands unverändert — die FAIL-Zeilen sind die ehrliche Fassung):**
+
+| Verdict | Einstufung | Zahlenlage |
+| :--- | :--- | :--- |
+| sp11_l0_anchor | PASS | alle Felder == committet: verdicts, final_basis 7/5, Gaps, expansions, first_detect == 11 (Kripke + Quus), UND die committeten Signal-Kolumnen: paradigm_ratio == Gödel-invariants (Schritte 10-16), paradigm_detected == Composite-Flag |
+| sp11_det | PASS | Doppel-Läufe L0-Kripke, Sweep-seed11, Zwangs-Paar bitidentisch (trace, Gap-Serie, Sub-Serien, Flags) |
+| sp11_t1_urheber | PASS | kein Schritt mit goedel.detected in allen 9 Läufen; die Urheberschaft des Composite-Signals ist eindeutig |
+| sp11_t2_mechanik | PASS | rekomputierte Detect-Menge == aufgezeichnete Menge je Lauf; jede Ratio innerhalb 1e-12; auch das Regime-Leg (len ≥ 20) exakt reproduziert |
+| sp11_t3a_expansionfrei | **FAIL** | vier der sechs unverzwungenen Läufe (seed12/14/15/16) sind ganz ohne Expansion UND paradigmatisch — kein Anlass, doch Echo |
+| sp11_t3b_turing_echo | **FAIL** | drei Gegenproben mit überlebenden Detectionen: seed13 vollständig (seine einzige Expansion an 23 liegt NACH allen Detectionen 12-21), zw_twin vollständig (einzige LOOP-Expansion an 18; das Vor-Niveau ist bereits Drift-Niveau), zw_forced behält 11-14 (die vor dem Zwang bei 13 liegen) |
+| sp11_t3c_goedel_vergleich | PASS | in allen 6 Gegenproben unverändert — das Gödel-Sub-Niveau (0.017-0.864) trägt ~2-8% der Composite-Masse, ist nie entscheidend |
+| sp11_t4_forced | PASS | erzwungenes LOOP an 13 → induziertes Paradigma an Schritt **20** (Band [14, 22] ✓), fehlt im Zwilling; unter dem Freeze tot — das induzierte Ereignis IST expansions-getragen |
+
+### Mechanik und Zahlenlage
+
+- **Sub-Gap-Struktur des Composite-Mittels** (24-Schritt-Sweeps): Wittgenstein
+  (Regelgüte) ≈ 0.021 im Schnitt, nach dem ersten Schritt 0.000-0.005 — trägt
+  ~nichts; Gödel (Selbstmodell) 0.017-0.864 — trägt 2-8%; Turing (Verlaufskos-
+  ten) 0.0-39.0 — trägt die MASSE. Das Composite-Paradigma ist praktisch ein
+  Ereignis des Turing-Sub-Niveaus.
+- **Die Expansion-freien Paradigmen** (T3a-Falsifikation): seed12 ist ohne
+  jede Expansion und trotzdem paradigmatisch an den Schritten 15-22 und 24 —
+  sein Turing-Sub-Gap steigt von ~3.3 (Mittel der ersten 10 Schritte) auf
+  ~11.6 (Schritte 11-15) und erreicht bis zu 39 (Schritte 14-24). Die
+  Drift selbst bricht die Fenster-Schwelle. seed14 (15-24), seed15
+  (11-18, 21, 23, 24), seed16 (11-14 nach einem 8er-Plateau, danach Rückkehr
+  unter die Grenze).
+- **Die Gegenprobe-Aufstellung** (Turing-Gefrierszene, T3b): l0-Kripke und
+  l0-Quus: ALLE Detectionen gebrochen (∅; t_pre 3.0417) — die committete
+  L0-Lage ist expansions-getragen (Zwang an 9). seed11: alle 12 gebrochen
+  (∅; Expansionen an 5 und 13; t_pre 0.6667 basal). seed13: unverändert
+  (vakuum — die einzige Expansion an 23 liegt NACH allen Detectionen). zw_twin:
+  unverändert (Freeze ≈ no-op — die einzige LOOP-Expansion an 18; das
+  Vor-Fenster enthält bereits das Drift-Niveau, t_pre 8.3700). zw_forced:
+  verliert 17/18/19/20, behält 11-14 — die Drift-Gruppe liegt VOR dem Zwang.
+- **Die Doppel-Herkunft** (statt des ein-Faktor-Echos): (a) Expansion-getragene
+  Detectionen — l0-Kripke/Quus, seed11, zw_forced 17-20 (inkl. des T4-
+  induzierten 20): die Basis-Expansion setzt einen Niveau-Sprung, das Fenster
+  liest ihn. (b) Drift-getragene Detectionen — seed12/14/15/16 komplett,
+  seed13 komplett, zw_twin, zw_forced 11-14: der Verlaufs-Drift setzt
+  denselben Sprung ohne jeden Anlass.
+
+**Kern des Befund-Bildes:**
+
+- **Das Paradigma ist ein Kosten-Ereignis, kein Mittel-Ereignis.** Nicht der
+  Ankauf neuer Axiome (Basis-Expansion) erzeugt die Erkennung, sondern der
+  Auftrieb des Umgangs-Preises — Transitionen pro Schritt im Band, das
+  Composite-Mittel der Verlaufskosten. Die Basis-Expansion ist EIN erzwingbarer
+  Träger des Sprungs (T4), nicht seine Quelle (T3a/T3b FAIL).
+- **T1 und T2 bleiben stichfest und werden geschärft:** das Signal ist
+  urheber-eindeutig Composite-seitig und formel-exakt — es liest nur die
+  Serie. Und die Serie ist in ihrer Masse das Turing-Sub-Niveau: das Composite-
+  Signal liest praktisch die Verlaufskosten.
+- **Die früheren Befunde ordnen sich ein:** Kripkes Bruchstelle (SP7) war
+  Expansions-Nähe (L0-Konfiguration: Zwang an 9, Detectionen 11/12/15 im
+  direkten Nach-Fenster; unter der Gegenprobe ganz gebrochen). Die wandernden
+  Zeiten (SP10) sind die Drift-getragene Typologie unter dem Lexikon-Strom.
+  Dieselbe Fenster-Logik liest beide als denselben Schwellenbruch — deshalb
+  wirkte das Ereignis bisher wie eine Einheit.
+- **Kein Erratum die Runde:** 0 Implementations-Fehler; die 2 FAIL sind echte
+  Falsifikationen der Echo-These und stehen als solche im Register.
+
+**Reparatur: (SP11-Zyklus, 2026-10-25)** die schwebende Fragmentzeile am
+Dateiende der Vorversion („`   verlaufsinduziert, nicht zustandsstatisch.`")
+entfernt — reine Dublette des vollständig vorhandenen
+§11.7-Satzes (der mit seinem Reparatur-Marker an :586-588 steht). Der
+SP10-Append hatte das Fragment als Rest-Zeile hinterlassen.
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §15.
