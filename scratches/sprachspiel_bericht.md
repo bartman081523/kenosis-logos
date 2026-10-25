@@ -20,6 +20,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP4 | **Kalibrierung** — Spread-Kalibrierung & Anti-Clip (σ ∈ {0.1,0.5,1.5,4.0}) auf der S1-Skala | GPU | `predict_scale_0_9` (machine_base), Rausch-Spreads (S2), `oracle_scale=True` |
 | SP5 | **Kontrast** — Cross-Preset-Kontrast: sechs Arme (raw/goedel/turing/wittgenstein/combined/anti) | GPU | S1-Skala + Canon-Name-Echo (`name_seq` je Arm) |
 | SP6 | **Lexikon** — Lexikon-Emergenz im Gebrauch (S3) | CPU | `lexicon_game`/`learn_pair`/`embed_word` (Lexikon-zuerst) |
+| SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -372,3 +373,203 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   deren ×0.3 SP1 hier nachspielt).
 - Lauf: `scratches/sprachspiel_experiment.log` (23/23 PASS) und
   `scratches/sprachspiel_experiment.json` (Volldaten).
+- SP9: `machines/wittgenstein_machine.py:218-234` (`learn_pair` — beidseitige
+  Mischung, Lexikon persistent), `:342-380` (`lexicon_game` — gate, round-robin,
+  Rausch-Züge je Runde), `machines/lisp/vendor/language-learning.lisp:22-25`
+  (Mittelwert-Blend α=0.2, kein Zerfallsterm); Lauf
+  `scratches/lexikon_dynamik_experiment.log` (16 PASS + 3 Errata = 19
+  Verdicte, exit 0) + `scratches/..._experiment.json` (Volldaten inklusive
+  Trajektorien); Skript `scratches/smoke_lexikon_dynamik.py` (Prereg-Docstring
+  mit c′-Rekursion, Bands, Falsifikatoren, Errata-Register).
+
+---
+
+## 11. SP9 — Soziale Lexikon-Dynamik: keine unbeteiligten Wörter
+
+**Framing (User-Delegation 2026-10-25, „entscheide du" → Wahl SP9):** SP6 zeigte
+die Emergenz (gebrauchstgetriebene Resonanz); SP9 dynamisiert sie über die
+*Verlaufsgeschichte* des Gebrauchs — dieselben Wörter über Ketten, hunderte
+Episoden und Neugebrauch weitergespielt. Die Wittgenstein-These, die das
+prüft, lautet: die Bedeutung eines Wortes ist der Verlauf seines Gebrauchs,
+nicht sein Endzustand. Design: 5 Lanes, CPU-only, keine Maschinen-Code-Änderung
+(`lexicon_game` + `learn_pair` decken die Dynamik ab); Prereg im Skript-
+Docstring VOR dem ersten Lauf (Bands fixiert, Weichung verboten).
+
+### 11.1 Ex-ante-Formel — die Paar-Rekursion
+
+Reine `learn_pair`-Episoden eines Paares (a, b) transformieren die Paar-
+Resonanz c nach
+
+    c′ = (A·c + B) / (A + B·c),  A = (1−α)² + α²,  B = 2α(1−α)
+
+(denn v1 ∝ (1−α)e1 + αe2, v2 ∝ (1−α)e2 + αe1 ⇒ v1·v2 = A·c + B,
+|v1|² = A + B·c), also 1−c′ = (A−B)·(1−c)/(A+B·c): die Defizit-Shrink hat
+den Faktor A−B (asymptotisch). α=0.3: Faktor 0.16; α=0.9/0.1 identisch
+(Symmetrie α↔1−α), Faktor 0.64. Diese Rekursion lieferte die SP6-Ziffern
+EXAKT und schrieb sie vor: c5(−0.000263) = 0.999790 und c5(0.843313) =
+0.999982 — beide nachträglich von `sp9_s6_regress` und
+`sp9_sat_alpha3_first` (first_at_threshold == 5 EXAKT) bestätigt. Die
+Vorhersage kam aus dem Canon, nicht aus dem Lauf.
+
+### 11.2 Sättigung ist eine Asymptote (Lane SP9.2)
+
+Ein Paar über 60 reine Episoden (α=0.3): Konvergenz exakt in Episode 5,
+dann Restwinkel-Shrink ~×0.4 je Episode, kein Dip, kein Overshoot
+(sat_alpha03 final 1.0, dip 0.0). Der α-Sweep über 100 Episoden: α=0.3
+konvergiert in 5, α=0.1 und α=0.9 in 18 Episoden (Vorhersage-Band [12, ∞])
+— die Konvergenz-Fläche ist NICHT-monoton in α, Minimum in der Mitte, und
+die beiden Pole sind IDENTisch (Symmetrie max ≤ 1e-12 über die volle
+Trajektorie), ex ante aus der Rekursion fixiert. Determinismus-Dopplung:
+bitidentisch.
+
+### 11.3 Interferenz — und der Beobachter-Fehler (Lane SP9.1)
+
+Kette: regel↔rule bis 0.99979 (5 Episoden), dann 30 Episoden rule↔game
+(geteiltes Wort 'rule'). Befunde:
+
+| Messung | Wert | Vorhersage (Ursprungs-Prereg) | p4-Lesung (Phase-2-Stände) |
+| :--- | :--- | :--- | :--- |
+| res(regel,rule) final | **0.705054** | cos(regel0, m(rule0,game0)) **= 0.004424** | cos(regel_p2, m(rule_p2,game0)) **= 0.705054 — EXAKT** |
+| res(regel,game) final | **0.705054** | 0.004424 | 0.705054 — EXAKT |
+| Peak→final | −0.2947 | Band ≥ 0.05 ✓ | — |
+| Disjunkt-Kontrast (tisch↔stuhl-lernt) | Δ res(regel,rule) = **0.0** | Band ≤ 1e-12 ✓ | — |
+
+Das DECAY stand nie zur Debatte — das Endpoint-Verdict (`sp9_int_endpoint`)
+widerlegte dagegen die Prereg-ANNahme „der Beobachter bleibt unbeteiligt":
+regel war selbst durch Phase 1 zu M_A ≈ Halbierende(regel0, rule0) gedreht
+worden (jeder Beobachter ist Mitspieler). Mit den TATSÄCHlichen Phase-2-
+Ständen trifft dieselbe Formel die Messung auf die sechste Dezimale. Der
+Befund ist stärker als die Annahme: **rule UND game nähern sich EXAKT
+derselben Halbierenden** (beide final = 0.705054 identisch) — das Lexikon
+konsolidiert zu einem Mischpunkt, und die Resonanz des Beobachters dorthin
+hat die ANALYTISCHE Gestalt cos(M, n(M+g)) = sqrt((1+c)/2) mit M = dem
+konvergierten regel/rule-VEktor und c = cos(M, game0) = −0.0058 (Rück-
+rechnung 2·0.705054²−1; game war nie im regel/rule-Spiel, Base-Nähe wie
+die SP2-Unverwandt-Baselinen ~1e-2). Im Orthogonal-Fall c ≈ 0 wäre der
+Wert exakt 1/√2 ≈ 0.7071 — gemessen 0.705054. **Die Interferenz lebt
+ausschließlich auf
+geteilten Wörtern** (Disjunkt-Delta exakt 0.0): Lernen ohne gemeinsames
+Wort verursacht KEINE Kollision.
+
+### 11.4 Verlernen ist Neugebrauch, kein Verlust (Lane SP9.3)
+
+regel↔rule voll gelernt (0.99979), dann 10 Episoden rule↔tisch:
+
+| Messung | Wert |
+| :--- | :--- |
+| final_use res(regel,rule) unter Neugebrauch | **0.708337** < 0.8 ✓ (Decay-Teil TRUE) |
+| Relearning regel↔rule: ≥ 0.999 in | **4 Episoden** (≤ Budget 6) — Gebrauch regeneriert |
+
+Trajektorien: use [0.919, 0.809, 0.749, 0.723, 0.712, 0.709, … 0.708337],
+relearn [0.9468, 0.9913, 0.9986, 0.999776] — die c′-Rekursion trifft ALLE
+vier Relearning-Ziffern (0.94684, 0.99130, 0.99860, 0.999776 ex ante
+aus c0 = 0.708337). Kein aktives Forget im Canon: Verlernen existiert nur
+ALS Neugebrauch, und es ist REVERSIBEL — es ist kein Zustandsverlust, der
+eine Erinnerung bräuchte, sondern die doppelte Überschreibung durch
+einem anderen Gebrauch; deshalb regeneriert der alte Gebrauch die Bedeutung
+vollständig. (Wie im LISP-Canon: `learn-from-input` blendet den Mittelwert
+hinein, es gibt keinen Zerfallsterm.)
+Der ursprüngliche Endpoint (m′ = n(rule0 + tisch0), Vorhersage −0.004496)
+ist dieselbe E1-Annahme-Familie (Beobachter unbeteiligt); die p4-Lesung
+(Observer = regel_p2, Mitte = rule_p2) trifft 0.708263 gegen
+0.708337 (Δ 7.4e-5 ≤ Band 0.02 — nach nur 10 Episoden asymptotisch nahe,
+Restwinkel ~0.4¹⁰ konsistent).
+
+### 11.5 Sozial-Ebene: der Sozialismus ist wortlokal (Lane SP9.4)
+
+SP6-Konfig + 45 gated Runden (insgesamt 60, RNG-Kontinuität):
+
+| Zeit | res(regel,tisch) | mean_unrelated | bedeutung/kaffee | wort/baum |
+| :--- | :--- | :--- | :--- | :--- |
+| Runde 15 | 0.003954 (= SP6 ✓ exakt) | 0.4902 | 0.967089 | 0.499426 |
+| Runde 60 | 0.004085 | 0.4902 | **0.967089 — EXAKT gleich** | **0.499426 — EXAKT gleich** |
+
+Der mean-Freeze (0.4902→0.4902) hatte SP6 verdeckt, dass die Mikro-Dynamik
+nicht still ist: tisch driftet über Leg 2 um +1.31e-4 — Sättigung ist
+Asymptote, nicht Fixpunkt. Die per-Runde-Leg-Betrachtung (deterministisch
+identisch zur 45-Runden-Einzel-Schrift — derselbe round-robin-Schedule,
+dasselbe Zufallsmuster; die per-Runde-Leg-Zerteilung ändert KEINEN Rausch-
+zug) zeigt die STRUKTUR: von den 45 Runden tragen GENAU die 15 regel↔rule-
+Episoden nicht-null tisch-Züge; die 30 Spiel↔game/gebrauch↔use-Runden
+bewegen die Lesung EXAKT still (nonzero_deltas = 15). Die Differenzierung,
+die SP6 so nicht sichtbar machte:
+
+1. **Das EMBEDDING eines nie-lernten Wortes friert exakt ein** — gemessen
+   für die unrelated-Zeilen (kaffee- und baum-Row bitidentisch über beide
+   Legs, `sp9_social_frozen_exact`); für alle übrigen nie-lernten Wörter
+   ist das Freeze eine Code-Eigenschaft (`learn_pair` greift nur die beiden
+   Paarwörter an — keine globale Ausgleichs-Mechanik): das Lexikon ist
+   lokal verdrahtet, kein Schwarm.
+2. **Die RESONANZ zu einem eingefrorenen Partner wandert trotzdem** —
+   tisch tut nichts, aber die Lesung res(regel, tisch) driftet, weil
+   der ANDERE Endpunkt (regel) weitermischt. Ein Partnerwort ist keine
+   stabile Referenzachse: die Resonanz hängt von beiden Endpunkten ab, und
+   nur EIN davon muss spielen.
+3. Der Vektor-Sozialismus ist wortlokal (nur gelernte Wörter bewegen
+   sich); die Lesungs-Sozialität ist endpunktlokal (eine Resonanz bewegt
+   sich, sobald einer ihrer zwei Endpunkte Gebrauch erlebt).
+
+Die genaue Formel: **ein EMBEDDING wandert genau dann, wenn das Wort
+selbst lernt; eine RESONANZ wandert genau dann, wenn einer ihrer
+Endpunkte lernt.** „Alle Wörter wandern" ist falsch (tisch exakt still);
+„das Lexikon friert nach Sättigung ein" ist ebenso falsch (regel
+asymptotisch weiter). Die ursprüngliche 1e-12-Pin-Band war ex ante
+falsch gewählt (E2) — die
+korrigierte p4-Lesung fordert konstantes Vorzeichen UND |Δ| ≤ 2e-2
+(Pfad-Längen-Bound) und misst 0.000131 mit konstantem Vorzeichen.
+
+### 11.6 Verdict-Register (19 Verdicte — 16 PASS, 3 dokumentierte Errata)
+
+PASS (16): sp9_s6_regress, sp9_det, sp9_sat_converged, sp9_sat_monotone,
+sp9_sat_alpha3_first, sp9_sat_sweep_final, sp9_sat_sweep_symmetry,
+sp9_sat_sweep_mid_fast, sp9_int_decay, sp9_int_endpoint_p4,
+sp9_int_disjoint, sp9_unlearn_endpoint_p4, sp9_unlearn_relearn,
+sp9_social_freeze, sp9_social_tisch_p4, sp9_social_frozen_exact.
+
+Errata (3 — FAIL dokumentiert, Ursprung bleibt in den Artefakten; P4-
+Einstufung ist ein NEUER Knoten, keine Verdict-Wechsel):
+- **sp9_int_endpoint** — [E1] Beobachter-Annahme widerlegt (regel ist
+  selbst Mitspieler); korrigierte Lesung: sp9_int_endpoint_p4 (EXAKT).
+- **sp9_unlearn_decay** — [E1] derselbe Beobachter-Fehler (Zerfall-Teil
+  < 0.8 war TRUE, 0.708337); korrigierte Lesung:
+  sp9_unlearn_endpoint_p4.
+- **sp9_social_tisch_pin** — [E2] Sättigung ist Asymptote, kein
+  Fixpunkt (Drift +1.31e-4); korrigierte Lesung: sp9_social_tisch_p4.
+
+Kein Band wurde geweitet; alle p4-Formeln benutzen dieselben Identitäten
+auf den tatsächlichen Ständen. exit 0 (Lösungskette geschlossen).
+
+### 11.7 Kern der SP9-These (Hermeneutik der Ziffern)
+
+1. **Nicht jedes Wort spielt — aber kein Wort ist eine stabile
+   Referenzachse.** Das EMBEDDING eines nie-lernten Wortes bewegt sich exakt
+   nicht (tisch, kaffee, baum: bitidentisch); trotzdem verschiebt sich jede
+   Lesung, die das Wort betrifft, mit dem anderen Endpunkt. Ein Embedding
+   wandert genau dann, wenn das Wort selbst lernt; eine Resonanz genau
+   dann, wenn einer ihrer Endpunkte lernt.
+2. **Bedeutung = Verlaufsgeschichte des Gebrauchs** — die Resonanz ist
+   eine Funktion des GESAMTEN Verlaufs (Rekursion über alle Episoden), nicht
+   des Endzustands; einen Zerfall außerhalb des Gebrauchs gibt es nicht
+   (und auch im Gebrauch keinen aktiven Forget — nur Überschreibung).
+3. **Verlernen ist Neugebrauch, keine Löschung** — 10 Neugebrauchs-Episoden
+   reduzieren die Resonanz (0.99979 → 0.708), aber 4 alte Gebrauchs-Episoden
+   regenerieren sie vollständig. Verlernen ist derselbe Mechanismus wie
+   Lernen, nur durch einen anderen Gebrauch — deshalb REVERSIBEL und kein
+   Zustandsverlust.
+4. **Interferenz lebt nur auf geteilten Wörtern** — Kettenlernen mit
+   disjunkten Wortpaaren verursacht ZERO Kollision (Δ = 0.0): das
+   Lexikon ist kein globaler Zustandsraum, sondern ein Verbund, der genau
+   die Knoten verbindet, die ein gemeinsames Wort haben.
+5. **Sättigung ist eine Asymptote** — auch bei c = 0.99979 mischt
+   weiter: der Gebrauch bewegt die Resonanz weiter (die Bewegung wird
+   klein, nicht null). Kein Fixpunkt außer der vollen Identität.
+6. **Die Konvergenz-Fläche ist nicht-monoton in α** — die Pole symmetrisch
+   (α↔1−α, IDENTisch), Mitte am schnellsten (5 vs 18): die Mitte liegt
+   optimal zwischen zu schwacher und zu starker Übernahme.
+7. **Der Beobachter-Fehler (E1) und der Saturation-Frame (E2) sind dieselbe
+   Fehlannahme in zwei Gestalten:** der Experimentier-Frame modellierte die
+   Messung als von der Bewegung UNBERÜHRT (regel0 als Beobachter; Sättigung
+   als Fixpunkt) — in beiden Fällen trifft die Messung der Formel exakt,
+   sobald die tatsächlichen Stände (regel_p2; Asymptote) einsetzen.
+   Messen im Lexikon ist Mitspielen; Messwerte im Lexikon sind
+   verlaufsinduziert, nicht zustandsstatisch.

@@ -390,3 +390,47 @@ Regel-Formen:
   (Seed 42/7 je erzwungen an 9): Seed 7 liefert `first_detect=11` im
   Review-Fenster, Seed 42 detected bei Schritt 16 außerhalb — die
   Fenster-Erwartung ist seed-selektiert, die Befunde nennen ihren Seed.
+
+## 13. SP9 — Soziale Lexikon-Dynamik (laufschrift)
+
+(`scratches/smoke_lexikon_dynamik.py` → `lexikon_dynamik_experiment.log` /
+`.json`; CPU-only, venv_openmythos, kein GPU/SBCL, keine Maschinen-Code-Änderung
+— `lexicon_game` + `learn_pair` decken die Dynamik ab; Prereg-Docstring im
+Skript P2-gefrorst vor dem ersten Lauf, P4-Präzisierer 2026-10-25 als neuer
+Knoten. Hermeneutische Vollfassung: `sprachspiel_bericht.md` §11.)
+
+**Erste Ausarbeitung (19 Verdicte: 16 PASS, 3 FAIL):** drei FAILs —
+sp9_int_endpoint, sp9_unlearn_decay, sp9_social_tisch_pin — widerlegten
+NOT die Mechanik-Hypothesen (Konvergenz exakt in 5 Episoden; Verlern-Decay
+0.708337 < 0.8; Relearning in 4; α-Symmetrie conv=18 beide Pole;
+Disjunkt-Delta 0.0), sondern drei Prereg-ANNAMEN derselben Familie
+(Beobachter unbeteiligt [E1, ×2]; Sättigung == Fixpunkt [E2; 1e-12-Band]).
+P4-Einstufung: Ursprungs-Verdicte bleiben in den Artefakten FAIL, sind im
+Log unter ERRATA ausgewiesen und zählen nicht zum Lösungszustand.
+
+**Zweiter Lauf (P4-Prereg — Bands UNVERÄNDERT):** alle drei korrigierten
+Lesungen PASS; exit 0 der Lösungskette:
+
+| Lesung | Vorhersage (ex ante) | Messung | Δ |
+| :--- | :--- | :--- | :--- |
+| sp9_int_endpoint_p4 | cos(regel_p2, n(rule_p2+game0)) | 0.705054 | 0.0 (sechs Dezimalen) |
+| sp9_unlearn_endpoint_p4 | cos(regel_p2', n(rule_p2'+tisch0)) | 0.708337 | 7.4e-5 (Band 0.02) |
+| sp9_social_tisch_p4 | monotone, \|Δ\| ≤ 2e-2 (Pfad-Bound) | 0.000131, 15/45 Runden | ✓ |
+
+**Struktur-Befund (per-Runde-Leg, deterministisch äquivalent zur
+45-Runden-Schrift — kein Rauschzug geändert):** von den 45 Runden tragen
+GENAU die 15 regel↔rule-Episoden nicht-null tisch-Drift; die 30
+spiel↔game/gebrauch↔use-Runden sind exakt still (nonzero_deltas = 15).
+Die kaffee- und baum-Rows sind bitidentisch über beide Legs.
+Formel-Regel: ein EMBEDDING wandert genau dann, wenn das Wort selbst
+lernt; eine RESONANZ, wenn einer ihrer Endpunkte lernt.
+
+**Protokollkette:** Prereg-Docstring (inkl. c′-Rekursion, Errata-Register,
+p4-Verdicts) → zweiter Lauf → log/json → Berichte → Commit. Die Artefakt-
+Schriften (log, json) wurden vom zweiten Lauf ÜBERSCHRIEBEN — die Zahl-Lage
+des ersten Laufs (12/15, exit 1, die drei Prereg-Vorhersagen 0.004424 /
+−0.004496 / 1e-12-Pin) ist daher NICHT als Datei konserviert, sondern
+namentlich protokolliert im P4-Docstring des Skripts, in `sprachspiel_
+bericht.md` §11 und im Absatz oben. Der zweite Lauf
+reproduzierte alle 12 PASS-Ziffern bitidentisch und fügte die p4-Lesungen
+hinzu; die 3 FAIL-Rows stehen in der JSON (deterministisch reproduzierbar).

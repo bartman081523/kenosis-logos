@@ -1,0 +1,42 @@
+==============================================================================
+SP9 — SOZIALE LEXIKON-DYNAMIK (Interferenz, Sättigung, Verlernung)
+==============================================================================
+[SP9.0] SP6-Regression (CPU) …
+        after_paired = [0.99979, 0.999982, 1.0] learned_rounds = 15
+[SP9.2] Sättigung + α-Sweep (CPU) …
+        α=0.3: final 1.0 first_at 5 dip 0.0
+[SP9.1] Interferenz-Kette (CPU) …
+        final_rule 0.705054 vs bisector 0.004424
+[SP9.3] Verlernung/Relearning (CPU) …
+        final_use 0.708337 relearn_at 4
+[SP9.4] Sozial-Freeze (CPU) …
+        mean_unrelated 15→60: 0.4902 → 0.4902
+------------------------------------------------------------------------------
+BEFUNDE
+  sp9_s6_regress           PASS
+  sp9_det                  PASS
+  sp9_sat_converged        PASS
+  sp9_sat_monotone         PASS
+  sp9_sat_alpha3_first     PASS
+  sp9_sat_sweep_final      PASS
+  sp9_sat_sweep_symmetry   PASS
+  sp9_sat_sweep_mid_fast   PASS
+  sp9_int_decay            PASS
+  sp9_int_endpoint         FAIL
+  sp9_int_endpoint_p4      PASS
+  sp9_int_disjoint         PASS
+  sp9_unlearn_decay        FAIL
+  sp9_unlearn_endpoint_p4  PASS
+  sp9_unlearn_relearn      PASS
+  sp9_social_freeze        PASS
+  sp9_social_tisch_pin     FAIL
+  sp9_social_tisch_p4      PASS
+  sp9_social_frozen_exact  PASS
+ERRATA — Prereg-Errata (P4-Einstufung 2026-10-25; Ursprungs-Verdicte bleiben FAIL):
+  sp9_int_endpoint         E1: Beobachter-Annahme widerlegt — regel ist selbst Mitspieler; korrigierte Lesung sp9_int_endpoint_p4.
+  sp9_unlearn_decay        E1: derselbe Beobachter-Fehler in der Halbierenden-Formel (Zerfall-anteil < 0.8 wahr, 0.708337); korrigierte Lesung sp9_unlearn_endpoint_p4.
+  sp9_social_tisch_pin     E2: Sättigung ist Asymptote, kein Fixpunkt (Drift +1.31e-4); korrigierte Lesung sp9_social_tisch_p4.
+GRÜN — Lösungskette geschlossen (Ursprungs-FAILs als Errata dokumentiert, korrigierte Lesungen bestanden).
+[Save] scratches/lexikon_dynamik_experiment.json
+BILANZ: 16 PASS / 3 dokumentierte Errata / 3 korrigierte Lesungen
+EXIT = 0
