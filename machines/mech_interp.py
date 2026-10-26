@@ -19,6 +19,15 @@ Canon-Anker (voll gelesen 2026-10-26):
  - modeling_argon.py:735-736 final_softcap — Checkpoint argon_1b_machines:
                          final_logit_softcapping = None  -> Lens-Pfad exakt
                          softmax(lm_head(norm(h))).
+ - modeling_argon.py:188-190  ArgonHybridAttention: pattern=6,
+                         is_global = (layer_idx % 6 == 5) -> globale
+                         MLA-Schichten L5, L11, L17, L23 (auch DecoderLayer
+                         :317, hookbar am Layer-Objekt).
+ - modeling_argon.py:326-351  ArgonDecoderLayer.forward:
+                         h_mid = h_in + post_attention_layernorm(attn_out)
+                         (:345; attn auf input_layernorm(h_in) :336);
+                         h_out = h_mid + post_feedforward_layernorm(moe_out)
+                         (:350; MoE-Eingang pre_feedforward_layernorm :348).
  - train_moe_router_specialization.py:239  Kanon-Pct-Konvention:
                          ungewichtete Assignment-Bincounts über top_indices,
                          normalisiert counts/counts.sum().clamp(min=1.0)*100.
@@ -213,6 +222,117 @@ class MechInterpProbe:
             "n_tokens": int(ids.shape[1]),
         }
 
+    # -- MI-2: Sublayer-Zerlegung (Attention vs MoE) ------------------------
+    @torch.no_grad()
+    def sublayer_logits(self, text: str, answer_target: Dict[str, Any]) -> Dict[str, Any]:
+        """Halbschichten-Lens nach modeling_argon.py:326-351:
+
+        h_mid(l) = h_out(l-1) + post_attention_layernorm(attn_out)   (:345)
+        h_out(l) = h_mid(l) + post_feedforward_layernorm(moe_out)    (:350)
+
+        Capture exakt: forward-hook auf layer.post_attention_layernorm
+        (Output = norm(attn_out), bf16) + Layer-Output-Hook (h_out, MI-1-
+        Muster) + Emb-Hook (h_out(-1)). h_mid ist die ORIGINAL-bf16-Addition
+        :345 — keine Re-Normierung, keine dtype-Neuerfindung (EINHEIT S3).
+        P je sublayer über den offiziellen Kopf-Pfad (_lens: norm -> lm_head,
+        softmax fp32). dp_attn/dp_moe auf der registrierten target-Koordinate;
+        tv_in_mid = canon_tv(P_in, P_mid) als Architektur-Profil-Feld.
+        """
+        L = self.n_layers
+        h_out_all: List[torch.Tensor] = []      # h_out(l) fuer l = -1..L-1
+        normed_attn: List[Optional[torch.Tensor]] = [None] * L
+
+        def _norm_hook(li: int):
+            def hook_fn(_module, _inp, out):
+                normed_attn[li] = out.detach()
+            return hook_fn
+
+        handles = [self.model.model.layers[idx].register_forward_hook(
+            lambda _m, _i, o: _store_layer(h_out_all, _out_layer(o)))
+            for idx in range(L)]
+        emb_handle = self.model.model.embed_tokens.register_forward_hook(
+            lambda _m, _i, o: _store_layer(h_out_all, o.detach(), first=True))
+        handles += [self.model.model.layers[idx].post_attention_layernorm
+                    .register_forward_hook(_norm_hook(idx)) for idx in range(L)]
+        official_logits = None
+        ids = None
+        try:
+            ids = self._encode(text)
+            outputs = self.model(ids)
+            official_logits = outputs.logits[0, -1].detach()
+        finally:
+            for handle in handles:
+                handle.remove()
+            emb_handle.remove()
+
+        if any(v is None for v in normed_attn):
+            raise RuntimeError(
+                "sublayer_logits: post_attention_layernorm-Hook fehlte "
+                f"({sum(v is None for v in normed_attn)} Schichten) — "
+                "Gerät-Bruch, kein stiller Fallback.")
+        if len(h_out_all) != L + 1:
+            raise RuntimeError(
+                f"sublayer_logits: {len(h_out_all)} statt {L + 1} h_out-"
+                "Captures — Gerät-Bruch, kein stiller Fallback.")
+
+        norm_mod = self.model.model.norm   # ArgonModel-Submodul (Canon :362;
+        head = self.model.lm_head          # :626-634 trägt nur lm_head)
+
+        def _lens(h: torch.Tensor) -> torch.Tensor:
+            # Exakt der offizielle Kopf-Pfad (modeling_argon.py:615/:733,
+            # bf16-Kette), Softmax über die fp32-Streuwerte der logits:
+            logits = head(norm_mod(h[0, -1]))
+            return torch.softmax(logits.float(), dim=-1)
+
+        target_id = int(answer_target["id"])
+        official_p = torch.softmax(official_logits.float(), dim=-1)
+        p_final = _lens(h_out_all[-1])
+        p_emb = _lens(h_out_all[0])
+
+        rows: List[Dict[str, Any]] = []
+        for li in range(L):
+            h_mid = h_out_all[li] + normed_attn[li]     # exakt :345 (bf16)
+            p_in = _lens(h_out_all[li])                 # P(h_out(l-1))
+            p_mid = _lens(h_mid)                        # P(h_mid(l))
+            p_out = _lens(h_out_all[li + 1])            # P(h_out(l))
+            top1_out_id = int(torch.argmax(p_out).item())
+            layer = self.model.model.layers[li]
+            rows.append({
+                "layer": li,
+                "is_global": bool(layer.is_global),
+                "p_in": float(p_in[target_id].item()),
+                "p_mid": float(p_mid[target_id].item()),
+                "p_out": float(p_out[target_id].item()),
+                "dp_attn": float(p_mid[target_id].item() - p_in[target_id].item()),
+                "dp_moe": float(p_out[target_id].item() - p_mid[target_id].item()),
+                "tv_in_mid": canon_tv(p_in, p_mid),
+                # Registered gap-Lesart (MI-1-Definition, canon_tv): Lens-TV
+                # der Schicht-p_out-Verteilung gegen die finale Verteilung
+                # p_final (h_out(25)) — Roh-Feld für die Tail-Kontraktion.
+                "gap_out_tv": canon_tv(p_out, p_final),
+                "top1_out_id": top1_out_id,
+                "top1_out_str": self.tokenizer.decode(
+                    [top1_out_id], skip_special_tokens=True),
+                "top1_out_prob": float(p_out[top1_out_id].item()),
+            })
+
+        telescope = sum(r["dp_attn"] + r["dp_moe"] for r in rows)
+        return {
+            "rows": rows,
+            "target_id": target_id,
+            "target_str": answer_target.get("str", ""),
+            "p_emb": float(p_emb[target_id].item()),
+            "p_final": float(p_final[target_id].item()),
+            "p_final_top1_id": int(torch.argmax(p_final).item()),
+            "official_top1_id": int(torch.argmax(official_p).item()),
+            "anchor_tv": canon_tv(p_final, official_p),
+            "telescope_target": telescope,
+            "endpoints_target": float(p_final[target_id].item() - p_emb[target_id].item()),
+            "telescope_broken": bool(abs(telescope - (p_final[target_id].item()
+                                                      - p_emb[target_id].item())) > 1e-6),
+            "n_tokens": int(ids.shape[1]),
+        }
+
     # -- Kristallisations-Finder (EINHEIT T2: Trajektorie statt Mittelwert) --
     def crystallization_start(self, rows: Sequence[Dict[str, Any]]) -> Optional[int]:
         """Kleinsten stabilen Layer-Start lesen (Modulfunktion)."""
@@ -243,3 +363,14 @@ def crystallization_start(rows: Sequence[Dict[str, Any]],
 def _out_layer(o: Any) -> torch.Tensor:
     """Decoder-Layer-Output (h, layer_entropy, present_kv) -> Residual h."""
     return o[0] if isinstance(o, tuple) else o.detach()
+
+
+def _store_layer(store: List[torch.Tensor], h: torch.Tensor,
+                 first: bool = False) -> None:
+    """Geordnete h_out-Capture-Einheit (EINHEIT S2): Emb-Hook schiebt an
+    index 0 (h_out(-1)); Layer-Hooks feuern je Layer in Forward-Reihenfolge
+    und haengen an — die Liste ist dann [-1, 0, 1, ..., L-1]."""
+    if first:
+        store.insert(0, h)
+    else:
+        store.append(h)
