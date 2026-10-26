@@ -453,7 +453,11 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   `scratches/endogene_agency_experiment.json` (candidate_gaps je Schritt,
   Fingerprints, Wahl-Daten); Skript `scratches/smoke_endogene_agency.py`
   (Prereg-Docstring, 6 Verdikte + OFFEN-Regel, P2-Freeze; Konstanten über
-  die kommittete SP12-Quelle importiert).
+  die kommittete SP12-Quelle importiert); Konkatenat
+  `scratches/repo2txt_machines_extension.txt` — seit SP13 im
+  GENERATIONEN-REGIME (nur die Dateien des letzten Laufs — User-Vorgabe
+  2026-10-26): SP13-Set 9 Dateien, 226778 B, sha 6b7846cb...;
+  Vollkorpus über die Git-History (49ecc31 = 88 Dateien, 2f61402 = 84).
 
 ---
 

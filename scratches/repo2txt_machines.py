@@ -1,9 +1,15 @@
 """
-repo2txt_machines.py — baut einen Ein-Datei-Konkatenat aller relevanten Dateien
-der -machines-Erweiterung (Götterdreiheit: Gödel/Turing/Wittgenstein) für den
-Transfer in andere Kontexte (repo2txt-Stil, ein Datei-Header pro Block).
+repo2txt_machines.py — baut einen Ein-Datei-Konkatenat für den Transfer in
+andere Kontexte (repo2txt-Stil, ein Datei-Header pro Block).
 
-Ausgabe: scratches/repo2txt_machines_extension.txt
+Generationen-Regime (User-Vorgabe 2026-10-26): FILES enthält NUR die Dateien,
+die im letzten Spielzug (Lauf) geändert wurden — jedesmal ersetzt, nicht
+kumulativ; sonst wird das Konkatenat zu groß. Das vollständige Korpus liegt
+über die Git-History (frühere Generationen: SP13 davor kumulativ — Commits
+49ecc31 [sha 6ad22d85..., 88 Dateien] und 2f61402 [sha 47ebee46..., 84
+Dateien] usw.).
+
+Ausgabe: scratches/repo2txt_machines_extension.txt (+ .sha256)
 Run:     python3 scratches/repo2txt_machines.py
 """
 
@@ -16,113 +22,22 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# Reihenfolge bewusst: Ports -> Lisp-Schicht (Spiegel + Canon) -> Daten ->
-# Presets/Meta -> Trainings-/Verifikations-Glue -> Doku -> Protokolle.
-FILES: List[str] = [
-    # -- Maschinenports (Python) ------------------------------------------------
-    "machines/__init__.py",
-    "machines/machine_base.py",
-    "machines/goedel_machine.py",
+# GENERATION SP13 — Endogene Agency (die Maschine wählt ihren Subspace selbst):
+# jede Datei, die im SP13-Lauf geändert oder neu entstanden ist.
+# Nach jedem SP-Runde-Lauf: dieses Set durch das neue Runden-Set ersetzen.
+FILES = [
+    # Maschinen-Edits des Laufs
+    "machines/composite.py",
     "machines/turing_machine.py",
     "machines/wittgenstein_machine.py",
-    "machines/composite.py",
-    # -- Lisp-Spiegel + SBCL-Brücke ----------------------------------------------
-    "machines/lisp_bridge.py",
-    "machines/lisp_parity.py",
-    "machines/lisp/README.md",
-    "machines/lisp/bridge-protocol.lisp",
-    "machines/lisp/run-bridge.lisp",
-    "machines/lisp/parity/lisp_fixtures.json",
-    # -- Vendor-Canon (Lisp, unverändert, MIT) -----------------------------------
-    "machines/lisp/vendor/README.md",
-    "machines/lisp/vendor/lisp-cognito-philosopher.asd",
-    "machines/lisp/vendor/package.lisp",
-    "machines/lisp/vendor/utils.lisp",
-    "machines/lisp/vendor/goedel-encoder.lisp",
-    "machines/lisp/vendor/geometric-tokenizer.lisp",
-    "machines/lisp/vendor/symbolic-operator.lisp",
-    "machines/lisp/vendor/cognito-construct.lisp",
-    "machines/lisp/vendor/philosopher.lisp",
-    "machines/lisp/vendor/reflection-engine.lisp",
-    "machines/lisp/vendor/dialectic-macros.lisp",
-    "machines/lisp/vendor/living-logos.lisp",
-    "machines/lisp/vendor/language-learning.lisp",
-    "machines/lisp/vendor/letter-speech.lisp",
-    "machines/lisp/vendor/persistence.lisp",
-    "machines/lisp/vendor/interactive-repl.lisp",
-    "machines/lisp/vendor/run-demo.lisp",
-    "machines/lisp/vendor/demo.lisp",
-    "machines/lisp/vendor/simple-test.lisp",
-    "machines/lisp/vendor/test-harness.lisp",
-    "machines/lisp/vendor/test-load.lisp",
-    "machines/lisp/vendor/TEST_RESULTS.md",
-    "machines/lisp/vendor/determinism_log.txt",
-    "machines/lisp/vendor/stability_signature.txt",
-    "machines/lisp/vendor/tests/run-tests.lisp",
-    "machines/lisp/vendor/tests/test-goedel-encoder.lisp",
-    "machines/lisp/vendor/tests/test-geometric-tokenizer.lisp",
-    "machines/lisp/vendor/tests/test-symbolic-operator.lisp",
-    "machines/lisp/vendor/tests/test-philosopher.lisp",
-    "machines/lisp/vendor/tests/test-dialectic-macros.lisp",
-    # -- Daten (Korpus, Goldwerte, Registry) --------------------------------------
-    "machines/corpus/machine_corpus.jsonl",
-    "machines/parity/python_fixtures.json",
-    "machine_registry.json",
-    # -- Presets + Save-Meta (argon_1b_machines, sonst gitignored) ----------------
-    "argon_1b_machines/machine_presets/goedel.json",
-    "argon_1b_machines/machine_presets/turing.json",
-    "argon_1b_machines/machine_presets/wittgenstein.json",
-    "argon_1b_machines/machine_presets/combined.json",
-    "argon_1b_machines/router_diff_meta.json",
-    # -- Trainings- + Verifikations-Glue ------------------------------------------
-    "train_moe_router_specialization.py",
-    "machines/verify_machines.py",
-    # -- Doku ---------------------------------------------------------------------
-    "README.md",
-    ".gitignore",
-    # -- Protokolle + Smoke-Skripte ------------------------------------------------
-    "scratches/smoke_machines_train.py",
-    "scratches/argon_1b_machines_train.log",
-    "scratches/build_corpus_re_sync.log",
-    "scratches/verify_machines_stage5.log",
-    "scratches/verify_machines_full.log",
-    # -- Composite-Experiment-Zyklus (§7-§9, Identity-Hebel + Basisleiter) ----------
-    "scratches/smoke_composite_oracle.py",
-    "scratches/composite_oracle_experiment.log",
-    "scratches/composite_oracle_experiment.json",
-    "scratches/laufprotokolle_befund_report.md",
-    # -- Sprachspiel-Zyklus (SP1-SP6, S1-S3; Bericht §0-§10 inkl. §7-Widerlegung) --
-    "scratches/smoke_sprachspiel.py",
-    "scratches/sprachspiel_experiment.log",
-    "scratches/sprachspiel_experiment.json",
-    "scratches/sprachspiel_bericht.md",
-    "scratches/verify_s123_regress_sprachspiel2.log",
-    # -- Hermeneutik-Zyklus (SP7 Kripkenstein + SP8 Zirkel Python<->Lisp) ----------
-    "scratches/smoke_hermeneutik.py",
-    "scratches/hermeneutik_experiment.log",
-    "scratches/hermeneutik_experiment.json",
-    "scratches/verify_s123_regress_sp7.log",
-    # -- SP9 Soziale Lexikon-Dynamik (Interferenz, Sättigung, Verlernung) ---------
-    "scratches/smoke_lexikon_dynamik.py",
-    "scratches/lexikon_dynamik_experiment.log",
-    "scratches/lexikon_dynamik_experiment.json",
-    # -- SP10 Die Regeln und die Wörter (Kopplung Composite × Lexikon) -----------
-    "scratches/smoke_regeln_woerter.py",
-    "scratches/regeln_woerter_experiment.log",
-    "scratches/regeln_woerter_experiment.json",
-    # -- SP11 Der Ursprung der Paradigmen (Composite-Signal-Ebene) ----------------
-    "scratches/smoke_paradigm_ursprung.py",
-    "scratches/paradigm_ursprung_experiment.log",
-    "scratches/paradigm_ursprung_experiment.json",
-    # -- SP12 Lexical Grounding (das gelernte Wort wird Programm) ----------------
-    "scratches/smoke_lexical_grounding.py",
-    "scratches/lexical_grounding_experiment.log",
-    "scratches/lexical_grounding_experiment.json",
-    # -- SP13 Endogene Agency (kontrafaktisches Probehandeln, autonome Wahl) -----
+    # Experiment-Artefakte des Laufs (Skript, beide Runs, JSON)
     "scratches/smoke_endogene_agency.py",
     "scratches/endogene_agency_experiment.log",
     "scratches/endogene_agency_gpu.log",
     "scratches/endogene_agency_experiment.json",
+    # Berichte des Laufs (Vollfassung §15, Laufschrift §17)
+    "scratches/sprachspiel_bericht.md",
+    "scratches/laufprotokolle_befund_report.md",
 ]
 
 SEPARATOR = "=" * 78
@@ -161,8 +76,9 @@ def main() -> int:
     header = (
         f"{SEPARATOR}\n"
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
-        "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B;\n"
-        " inkl. Lisp-Vendor-Canon, Brücke, Korpus, Goldwerte, Presets, Protokolle)\n"
+        "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
+        "GENERATIONEN-REGIME: nur die Dateien des letzten Laufs (SP13); das\n"
+        " vollständige Korpus über die Git-History (49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"
