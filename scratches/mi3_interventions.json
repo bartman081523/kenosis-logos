@@ -1,0 +1,336 @@
+{
+  "all_pass": false,
+  "open": [
+    "mi3_core_vs_edge_sufficiency"
+  ],
+  "findings": [
+    {
+      "name": "pilot_band_math",
+      "status": "PILOT",
+      "note": "band-template: ok"
+    },
+    {
+      "name": "pilot_knockout_math",
+      "status": "PILOT",
+      "note": "additiv: ok"
+    },
+    {
+      "name": "pilot_restore_math",
+      "status": "PILOT",
+      "note": "C3-Runde: bitidentisch"
+    },
+    {
+      "name": "pilot_tv_math",
+      "status": "PILOT",
+      "note": "tv(a,a)=0, tv(a,b)>0: True"
+    },
+    {
+      "name": "pilot_select_math",
+      "status": "PILOT",
+      "note": "Baender+Sets registriert ok"
+    },
+    {
+      "name": "mi3_intervention_purity",
+      "status": "PASS",
+      "note": "fingerprint=True control_tv=0.0"
+    },
+    {
+      "name": "mi3_core_vs_edge_sufficiency",
+      "status": "OFFEN",
+      "note": "Premise nicht repliziert: M_raw=0.3542 (≥ tau=0.01) — volle Daten persistent."
+    },
+    {
+      "name": "mi3_domain_knockout_specificity",
+      "status": "FAIL",
+      "note": "prose: ko_prose=0.0431 > ko_code=0.0189; code: ko_code=0.0025 > ko_prose=0.0066"
+    },
+    {
+      "name": "mi3_paris_circuit_resilience",
+      "status": "PASS",
+      "note": "top1-Bedingungen: ko_prose@core=9079, ko_code@core=9079, preset_goedel=9079, preset_turing=9079, preset_wittgenstein=9079 (paris_id=9079)"
+    },
+    {
+      "name": "mi3_layer17_paris_localization",
+      "status": "PASS",
+      "note": "attn_share(17)=0.830 Σ|Δp|(17)=0.0861 vs Σ|Δp|(10)=0.0170"
+    },
+    {
+      "name": "mi3_prose_l11_anomaly_probe",
+      "status": "FAIL",
+      "note": "Mittel ko{4,7}(ℓ11)=0.0177 vs ko{1,2}(ℓ11)=0.0214"
+    }
+  ],
+  "data": {
+    "pilot": [
+      {
+        "name": "pilot_band_math",
+        "status": "PILOT",
+        "note": "band-template: ok"
+      },
+      {
+        "name": "pilot_knockout_math",
+        "status": "PILOT",
+        "note": "additiv: ok"
+      },
+      {
+        "name": "pilot_restore_math",
+        "status": "PILOT",
+        "note": "C3-Runde: bitidentisch"
+      },
+      {
+        "name": "pilot_tv_math",
+        "status": "PILOT",
+        "note": "tv(a,a)=0, tv(a,b)>0: True"
+      },
+      {
+        "name": "pilot_select_math",
+        "status": "PILOT",
+        "note": "Baender+Sets registriert ok"
+      }
+    ],
+    "gpu": {
+      "resolve": {
+        "paris": [
+          9079
+        ]
+      },
+      "purity": {
+        "fingerprint_equal": true,
+        "control_tv": 0.0,
+        "tv_zero": true,
+        "series": [
+          "steer_band(EX_WITT, EDGE)",
+          "steer_band(EX_WITT, CORE)",
+          "steer_band(EX_WITT, GLOBAL)",
+          "knockout(KO_PROSE, CORE)",
+          "knockout(KO_CODE, CORE)"
+        ]
+      },
+      "sufficiency": {
+        "m_raw": {
+          "M_digit": 0.3541586399078369,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.010250135324895382,
+            "1": 0.318872332572937,
+            "2": 0.00584035087376833,
+            "3": 0.0027587860822677612,
+            "4": 0.0010149008594453335,
+            "5": 0.0033277315087616444,
+            "6": 0.0010803563054651022,
+            "7": 0.0009534110431559384,
+            "8": 0.0010149008594453335,
+            "9": 0.009045712649822235
+          },
+          "top_digit": 1
+        },
+        "m_full": {
+          "M_digit": 0.3981333374977112,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.01158132217824459,
+            "1": 0.36028435826301575,
+            "2": 0.005823454353958368,
+            "3": 0.002928216941654682,
+            "4": 0.0011467061704024673,
+            "5": 0.003532103728502989,
+            "6": 0.0010772307869046926,
+            "7": 0.0010119646321982145,
+            "8": 0.0011467061704024673,
+            "9": 0.00960125308483839
+          },
+          "top_digit": 1
+        },
+        "m_core": {
+          "M_digit": 0.38351842761039734,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.011167587712407112,
+            "1": 0.34741345047950745,
+            "2": 0.0059775784611701965,
+            "3": 0.002823608461767435,
+            "4": 0.0010387474903836846,
+            "5": 0.003405921859666705,
+            "6": 0.0010387474903836846,
+            "7": 0.0009166914387606084,
+            "8": 0.0010387474903836846,
+            "9": 0.0086973262950778
+          },
+          "top_digit": 1
+        },
+        "m_edge": {
+          "M_digit": 0.3945757746696472,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.009078812785446644,
+            "1": 0.36265188455581665,
+            "2": 0.0051729511469602585,
+            "3": 0.002601123182103038,
+            "4": 0.0010186145082116127,
+            "5": 0.0027688811533153057,
+            "6": 0.000956899777520448,
+            "7": 0.0008989241905510426,
+            "8": 0.0008989241905510426,
+            "9": 0.00852875504642725
+          },
+          "top_digit": 1
+        },
+        "dm_full": 0.04397469758987427,
+        "dm_core": 0.029359787702560425,
+        "dm_edge": 0.0404171347618103,
+        "premise_raw_dumb": false,
+        "full_opens": true,
+        "core_ratio": 0.6676518387091964,
+        "core_sufficient": false,
+        "edge_smaller": false
+      },
+      "domain_knockout": {
+        "rows_9": [
+          {
+            "text": "Der warme Sommerwind trug in der Abenddämmerung den Duft von Kiefern über den stillen Bergsee.",
+            "domain": "prose",
+            "tv_ko_prose": 0.022092562168836594,
+            "tv_ko_code": 0.014367884024977684,
+            "tv_ko_anom_a": 0.007055392488837242,
+            "tv_ko_anom_b": 0.019435057416558266
+          },
+          {
+            "text": "The warm summer breeze carried the scent of pine trees across the quiet mountain lake at dusk.",
+            "domain": "prose",
+            "tv_ko_prose": 0.028605341911315918,
+            "tv_ko_code": 0.014820069074630737,
+            "tv_ko_anom_a": 0.021150756627321243,
+            "tv_ko_anom_b": 0.04474794864654541
+          },
+          {
+            "text": "Oma erzählt ihre Geschichte vom alten Garten, der jedes Jahr im Mai in Blüten stand.",
+            "domain": "prose",
+            "tv_ko_prose": 0.07849752902984619,
+            "tv_ko_code": 0.027385298162698746,
+            "tv_ko_anom_a": 0.02476227656006813,
+            "tv_ko_anom_b": 0.0
+          },
+          {
+            "text": "def quicksort(items):\n    if len(items) <= 1:\n        return items\n    pivot = items[0]\n    return quicksort([x for x in items[1:] if x < pivot]) + [pivot] + quicksort([x for x in items[1:] if x >= pivot])",
+            "domain": "code",
+            "tv_ko_prose": 0.01600937359035015,
+            "tv_ko_code": 0.002291174605488777,
+            "tv_ko_anom_a": 0.0003526957880239934,
+            "tv_ko_anom_b": 0.012892390601336956
+          },
+          {
+            "text": "for i in range(10):\n    buffer[i] = buffer[i] * 2 % 255\n    print(buffer[i])",
+            "domain": "code",
+            "tv_ko_prose": 5.627153313980671e-06,
+            "tv_ko_code": 0.003081684932112694,
+            "tv_ko_anom_a": 7.023089892754797e-06,
+            "tv_ko_anom_b": 0.0012839620467275381
+          },
+          {
+            "text": "class Node:\n    def __init__(self, value, next=None):\n        self.value = value\n        self.next = next",
+            "domain": "code",
+            "tv_ko_prose": 0.0036619119346141815,
+            "tv_ko_code": 0.002213649684563279,
+            "tv_ko_anom_a": 0.003017505630850792,
+            "tv_ko_anom_b": 0.002716937568038702
+          },
+          {
+            "text": "For all natural numbers n, the sum 1 + 2 + ... + n equals n(n+1)/2.",
+            "domain": "math_logic",
+            "tv_ko_prose": 0.016052229329943657,
+            "tv_ko_code": 0.043115537613630295,
+            "tv_ko_anom_a": 0.011282689869403839,
+            "tv_ko_anom_b": 0.018685299903154373
+          },
+          {
+            "text": "If P implies Q and Q is false, then P is false. Proof: assume P, then Q, contradiction.",
+            "domain": "math_logic",
+            "tv_ko_prose": 0.08051086962223053,
+            "tv_ko_code": 0.026136793196201324,
+            "tv_ko_anom_a": 0.020058976486325264,
+            "tv_ko_anom_b": 0.051614101976156235
+          },
+          {
+            "text": "Jede endliche Gruppe mit Primzahlordnung ist zyklisch.",
+            "domain": "math_logic",
+            "tv_ko_prose": 0.03079836629331112,
+            "tv_ko_code": 0.0004735705442726612,
+            "tv_ko_anom_a": 0.0013457300374284387,
+            "tv_ko_anom_b": 0.0011473591439425945
+          }
+        ],
+        "prose_mean_ko_prose": 0.043065144369999565,
+        "prose_mean_ko_code": 0.018857750420769055,
+        "code_mean_ko_prose": 0.0065589708927594375,
+        "code_mean_ko_code": 0.00252883640738825,
+        "dissociation_prose": true,
+        "dissociation_code": false
+      },
+      "paris_resilience": {
+        "paris_id": 9079,
+        "conditions_top1": {
+          "ko_prose@core": 9079,
+          "ko_code@core": 9079,
+          "preset_goedel": 9079,
+          "preset_turing": 9079,
+          "preset_wittgenstein": 9079
+        },
+        "stable": true
+      },
+      "l17_localization": {
+        "sublayer_17": {
+          "dp_attn": 0.6859115078113973,
+          "dp_moe": 0.1407126784324646,
+          "attn_share": 0.8297743027918699,
+          "anchor_tv": 2.7168940708310885e-11,
+          "telescope_broken": false
+        },
+        "ko_total_17": {
+          "total": 0.08606889843940735,
+          "per_expert": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.008677959442138672,
+            "3": 0.005427002906799316,
+            "4": 0.017202645540237427,
+            "5": 0.0010643601417541504,
+            "6": 0.028955429792404175,
+            "7": 0.02474150061607361
+          },
+          "p_raw": 0.5030781626701355
+        },
+        "ko_total_10": {
+          "total": 0.01699957251548767,
+          "per_expert": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.0,
+            "3": 7.170438766479492e-05,
+            "4": 0.0038742423057556152,
+            "5": 0.0042813122272491455,
+            "6": 0.0008716583251953125,
+            "7": 0.007900655269622803
+          },
+          "p_raw": 0.5030781626701355
+        },
+        "l17_lion": true,
+        "l17_stronger": true
+      },
+      "l11_anomaly": {
+        "tv_k47": [
+          0.007055392488837242,
+          0.021150756627321243,
+          0.02476227656006813
+        ],
+        "tv_k12": [
+          0.019435057416558266,
+          0.04474794864654541,
+          0.0
+        ],
+        "mean_k47": 0.01765614189207554,
+        "mean_k12": 0.021394335354367893,
+        "outlier_causal": false
+      }
+    }
+  }
+}

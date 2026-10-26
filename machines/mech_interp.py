@@ -44,7 +44,8 @@ Fraction-Konvention (Summe 1.0 je Schicht); Prozent = x100.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+import contextlib
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
 
 import torch
 
@@ -338,6 +339,125 @@ class MechInterpProbe:
         """Kleinsten stabilen Layer-Start lesen (Modulfunktion)."""
         return crystallization_start(rows)
 
+    # -- MI-3: Kausale Interventionen (EINHEIT C1–C3) ----------------------
+    def _buffers(self, layers: Optional[Sequence[int]]) -> List[int]:
+        sel = list(range(self.n_layers)) if layers is None \
+            else [int(l) for l in layers]
+        for l in sel:
+            if not (0 <= l < self.n_layers):
+                raise ValueError(
+                    f"Intervention: Schicht {l} außerhalb [0, {self.n_layers})")
+        return sorted(set(sel))
+
+    @contextlib.contextmanager
+    def steer_band(self, experts: Sequence[int],
+                   layers: Optional[Sequence[int]] = None,
+                   steer: float = 50.0) -> Iterator[Dict[str, Any]]:
+        """Hinreichendheits-Lesart (EINHEIT C1): expert_bias NUR in den
+        gegebenen Schichten auf das Template gesetzt (+steer für experts,
+        -steer für den Rest) — SET-Semantik nach machine_base.py:249-256
+        (dict-Arm), band-limitiert. Restaurierung exakt (C3)."""
+        experts = [int(e) for e in experts]
+        if not experts:
+            raise ValueError("steer_band: experts leer — kein Band-Steering.")
+        if not steer > 0:
+            raise ValueError("steer_band: steer muss > 0 sein (Amplitude).")
+        sel = self._buffers(layers)
+        layers_all = self.model.model.layers
+        original = [layers_all[l].moe.gate.expert_bias.data.clone()
+                    for l in sel]
+        try:
+            for l in sel:
+                apply_band_steer(layers_all[l].moe.gate.expert_bias.data,
+                                 experts, steer)
+            yield {"experts": experts, "layers": sel, "steer": float(steer),
+                   "mode": "set"}
+        finally:
+            with torch.no_grad():
+                for l, orig in zip(sel, original):
+                    layers_all[l].moe.gate.expert_bias.data.copy_(orig)
+            bad = [l for l, orig in zip(sel, original)
+                   if not torch.equal(
+                       layers_all[l].moe.gate.expert_bias.data, orig)]
+            if bad:
+                raise RuntimeError(
+                    f"steer_band: Restaurierung nicht bitidentisch in "
+                    f"Schichten {bad} — Gerät-Bruch, kein stiller Fallback "
+                    "(EINHEIT C3).")
+
+    @contextlib.contextmanager
+    def knockout_experts(self, experts: Sequence[int],
+                         layers: Optional[Sequence[int]] = None,
+                         penalty: float = -50.0) -> Iterator[Dict[str, Any]]:
+        """Notwendigkeits-Lesart (EINHEIT C1): die gegebenen Experten in den
+        gegebenen Schichten ADDITIV stummschalten (g[e] += penalty auf dem
+        GELERNTEN Original-Bias), die übrigen Experten tragen lernende
+        Bias weiter (MI-3-Audits). Restaurierung exakt (C3)."""
+        experts = [int(e) for e in experts]
+        if not experts:
+            raise ValueError("knockout_experts: experts leer.")
+        if penalty >= 0:
+            raise ValueError("knockout_experts: penalty muss < 0 sein "
+                             "(Stummschaltung).")
+        sel = self._buffers(layers)
+        layers_all = self.model.model.layers
+        original = [layers_all[l].moe.gate.expert_bias.data.clone()
+                    for l in sel]
+        try:
+            for l in sel:
+                apply_expert_knockout(
+                    layers_all[l].moe.gate.expert_bias.data, experts, penalty)
+            yield {"experts": experts, "layers": sel, "penalty": float(penalty),
+                   "mode": "additive"}
+        finally:
+            with torch.no_grad():
+                for l, orig in zip(sel, original):
+                    layers_all[l].moe.gate.expert_bias.data.copy_(orig)
+            bad = [l for l, orig in zip(sel, original)
+                   if not torch.equal(
+                       layers_all[l].moe.gate.expert_bias.data, orig)]
+            if bad:
+                raise RuntimeError(
+                    f"knockout_experts: Restaurierung nicht bitidentisch in "
+                    f"Schichten {bad} — Gerät-Bruch, kein stiller Fallback "
+                    "(EINHEIT C3).")
+
+    @torch.no_grad()
+    def digit_mass(self, text: str, tau: float = 0.01) -> Dict[str, Any]:
+        """M_digit = Σ_d P_full(id(d)) über die voll-Vokabular-Softmax
+        (SP3-Folge-Canon, machine_base.py:281-322). Resolution wie der
+        Canon: je Ziffer ein einziges Token mit decode.lstrip == str(d);
+        sonst ValueError (kein stiller Fallback). Meldung 'unknown' als
+        Feld, nicht als Rückgabe-Abkürzung (M_raw < tau -> unknown=True)."""
+        p = self.last_probs(text)
+        digit_ids: List[int] = []
+        for d in range(10):
+            ids = self.tokenizer.encode(str(d), add_special_tokens=False)
+            token_id = int(ids[0]) if len(ids) == 1 else -1
+            decoded = (self.tokenizer.decode([token_id], skip_special_tokens=True)
+                       if token_id >= 0 else "?")
+            if token_id < 0 or decoded.lstrip(" ") != str(d):
+                raise ValueError(
+                    f"digit_mass: Ziffer '{d}' löst nicht als ein-Ziffern-"
+                    f"Token auf (decode='{decoded}') — kein stiller Fallback.")
+            digit_ids.append(token_id)
+        probs = p.index_select(
+            0, torch.tensor(digit_ids, device=p.device))
+        mass = float(probs.sum().item())
+        top_d = int(torch.argmax(probs).item()) if mass > 0.0 else None
+        return {"M_digit": mass, "unknown": mass < tau,
+                "digit_probs": {str(d): float(probs[i].item())
+                                for i, d in enumerate(range(10))},
+                "top_digit": top_d}
+
+    @torch.no_grad()
+    def last_probs(self, text: str) -> torch.Tensor:
+        """Offizielle End-Verteilung P(logits[last], softmax) — der Kopf-Pfad
+        des Modells (Canon :615/:733), fp32-Softmax."""
+        ids = self._encode(text)
+        logits = self.model(ids).logits[0, -1].detach()
+        return torch.softmax(logits.float(), dim=-1)
+
 
 CRYSTAL_MIN_TAIL = 2  # Registrierung: stabiler TAIL >= 2 Schichten gilt als Fenster
 
@@ -363,6 +483,38 @@ def crystallization_start(rows: Sequence[Dict[str, Any]],
 def _out_layer(o: Any) -> torch.Tensor:
     """Decoder-Layer-Output (h, layer_entropy, present_kv) -> Residual h."""
     return o[0] if isinstance(o, tuple) else o.detach()
+
+
+def apply_band_steer(buffer: torch.Tensor, experts: Sequence[int],
+                     steer: float) -> None:
+    """Band-Steering auf EINE Bias-Zeile: SET-Semantik nach dem registrierten
+    dict-Arm von machine_base.steer (fill_(-steer) + g[e]=+steer) — das
+    Template ueberschreibt den gelernten Bias fuer die Dauer des Blocks;
+    Restaurierung macht der ContextManager (C3, copy_-Muster)."""
+    with torch.no_grad():
+        buffer.fill_(-float(steer))
+        for e in experts:
+            e = int(e)
+            if not (0 <= e < buffer.numel()):
+                raise ValueError(
+                    f"apply_band_steer: Experte {e} außerhalb [0, {buffer.numel()})")
+            buffer[e] = float(steer)
+
+
+def apply_expert_knockout(buffer: torch.Tensor, experts: Sequence[int],
+                          penalty: float) -> None:
+    """Experten-Knockout auf EINE Bias-Zeile: ADDITIV auf den gelernten
+    Original-Bias (die Spezialisten werden stummgeschaltet, alle übrigen
+    tragen lernende Bias weiter — Notwendigkeits-Lesart des MI-3-Audits).
+    In-place; Restaurierung macht der ContextManager."""
+    with torch.no_grad():
+        for e in experts:
+            e = int(e)
+            if not (0 <= e < buffer.numel()):
+                raise ValueError(
+                    f"apply_expert_knockout: Experte {e} außerhalb "
+                    f"[0, {buffer.numel()})")
+            buffer[e] += float(penalty)
 
 
 def _store_layer(store: List[torch.Tensor], h: torch.Tensor,
