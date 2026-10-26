@@ -1200,3 +1200,180 @@ Erstrun (Skript-Docstring); Plan `~/.claude/plans/sp13-endogene-agency.md`
 (Canon-Audit-Befunde 1-6, Commit-Verfahren risk 6 im Chat offengelegt).
 
 Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §17.
+
+## 16. MI-1 — Das 26-Layer-Röntgengerät: schichtweise Routing-Tomographie + Logit-Lens (2026-10-26)
+
+**(Spur-Eröffnung.)** SP1–SP13 sind abgeschlossen; mit MI-1 beginnt Spur B
+(Mechanistische Interpretierbarkeit, MI-1..MI-4). Das Forschungsobjekt
+wechselt: nicht mehr die symbolische Maschinendynamik, sondern Argon-1B
+selbst — 26 Layer, 8 Routed Experts + Shared Expert, Sigmoid-Gates,
+Residualstrom. Die drei Maschinen wechseln die Rolle: von Philosophen zu
+Präzisions-Sonden (Turing = Routing-Topologie, Gödel = Logit-Lens,
+Wittgenstein = kausales Subspace-Patching, MI-3). Das Motiv ist das
+stage5-Aggregat-Datum: `verify_machines_stage5.log` zeigte je Domäne
+GENAU EINEN 8-Vektor und EINEN H-Wert (Math EN H=1.63, Prose EN H=1.07)
+— der DURCHSCHNITT über 26 Layer, niemals das schichtweise Feld. Nach dem
+Auflösungs-Protokoll des neuen Prompt-Minds
+(MechanisticCircuitMixMind v1.0_20261026_CircMix — Pfad-B-Mix aus
+MechanisticSubjectivity/NeuroEmergence/GroundedMechanism, persistiert in
+`ML3/prompts-bartman/prompts/universal/` mit Sub-Skill
+`mechanistic-circuit-mix-mind`): **Mittelwert über eine Dimension ist
+kein Beweis über diese Dimension.** MI-1 baut das Gerät, das die
+Dimension auflöst.
+
+Vorarbeit: Canon-Audit aller Anker mit Lesung (Router-Capture nur über
+Gate-Forward-Hooks, denn `last_counts` wird im Eval nicht belegt —
+moe_layers.py:56-93; Training-Hook-Bereich 4 ≤ idx ≤ 23 bei expert_bias
+auf allen 26 — train_moe_router_specialization.py:341; Checkpoint
+argon_1b_machines: 26 Layer/8 Experten/top-2/hidden 1152/
+softcap=None → Lens exakt `softmax(lm_head(norm(h)))` —
+modeling_argon.py:615/:733/:735-736; Kanon-Pct-Konvention :239, Kanon-TV
+:292). Plan `~/.claude/plans/MI-1-routing-tomographie.md` mit
+Aktiver-Denkmodus-Header.
+
+### 16.1 Prereg (P2-Freeze, fixiert VOR dem Erstrun)
+
+Sechs falsifizierbare Verdikte (Skript-Docstring
+`smoke_mech_interp_tomography.py`; Festtext-Korpora 6 Domänen × 3
+registrierte Samples; Lens-Proben „The capital of France is" → ‚ Paris'
+und „2 + 2 =" → Ziffer-Label mit lstrip-Äquivalenz-Kandidaten; Bänder
+EDGE {0,1,2,3,24,25} vs CORE {4..23} aus dem Training-Hook-Bereich;
+OFFEN ≠ PASS, exit 0/1/2):
+
+- **mi1_canon_parity** — Parität mit dem bestehenden Kanon:
+  `measure_domain_routing` (importiert, gleicher Modellzustand) gegen die
+  eigene Sonde auf festen Domain-Texten; Band TV_max < 1e-6, pct-Zeilen
+  summen je Schicht 1.0 ± 1e-6. Falsifikator: jede Abweichung der
+  Konvention.
+- **mi1_layer_resolution** (EINHEIT T2) — max Zeilen-Paar-TV je Domäne
+  über das 26×8-Feld > 0; identische Zeilen wären das
+  Degenerations-Datum (keine Schichtauflösung geliefert).
+- **mi1_purity_det** — Fingerabdruck expert_bias + gate.weight je Schicht
+  (torch.equal) vor/nach; Routing-Doubletten bitidentisch; Lens-Top-1
+  bitidentisch; Haken im finally entfernt.
+- **mi1_depth_specialization** (Theorie-Stufe MI-1.a,
+  Tiefen-Spezialisierungs-Gesetz) — Core-Mittel-TV über alle 15
+  Domänen-Paare > 0.50 UND > Edge-Mittel-TV strikt. F1 core ≤ 0.50;
+  F2 core ≤ edge; F3 Degeneration (durch mi1_layer_resolution gedeckt).
+- **mi1_entropy_regime** (MI-1.b) — Core-Mittel-Entropie < Edge in der
+  Mehrzahl: 6/6 PASS, 4-5 OFFEN, ≤ 3 FAIL (Band nie geweitet).
+- **mi1_crystallization** (MI-1.c, Kristallisations-Gesetz, erste
+  Lens-Anwendung) — stabiler Top-1-Tail ≥ 2 Schichten ab ℓ* im
+  Core-Band für ≥ 1 der 2 registrierten Proben; ℓ* außerhalb des
+  Cores → FAIL; kein stabiler Tail (Oszillation) → OFFEN als
+  Via-Negativa-Datum; anchor_tv > 1e-3 → FAIL (Gerät-Bruch).
+
+KORREKTUR-LOG (offen gebucht, alles VOR dem Hauptlauf bzw. als
+Display-Klassifikation nachträglich): die CPU-Pilot-Serie (PILOT-Labels,
+R2: promoten nie Verdicte) fing den Falsifikator-Bruch pilot_crystal_
+oscillation — der Finder würde einen trivialen Ein-Schicht-Tail als ℓ*
+zurückgeben; Fix: registrierte Konstante CRYSTAL_MIN_TAIL=2 (span <
+min_tail bricht). GPU-Scan 1: NameError (out_layer vs _out_layer) —
+alle 6 Verdikte OFFEN mit GPU-Bruch gebucht, nicht still angenommen.
+GPU-Scan 2: dtype-Bruch fp32-vs-bf16 am Kopf — Fix nach EINHEIT S3:
+Lens spiegelt den offiziellen bf16-Kopf-Pfad exakt (norm → lm_head),
+Softmax über fp32-Logits; anchor_tv beweist die Parität (gemessen
+2.7e-11 bzw. 2.8e-12). Klassifikations-Bruch nach Hauptlauf 1: 6/6 PASS
+wurden als GELB/exit 2 ausgegeben, weil die Zusammenfassung die 6
+PILOT-Zeilen (weder PASS noch FAIL) ins all_pass gerissen hat — Bug in
+der Klassifikation, nicht in der Messung; Fix iteriert nur über die
+Nicht-Pilot-Verdicte, GPU-Rerun als Doppel-Det-Datum → GRÜN/exit 0.
+
+### 16.2 Verdikt-Register
+
+| Verdikt | Band (P2-Freeze) | Ergebnis |
+|---|---|---|
+| mi1_canon_parity | TV_max < 1e-6, Zeilensummen ± 1e-6 | **PASS** (TV_max 2.235e-08, dev 1.192e-07) |
+| mi1_layer_resolution | max Zeilen-Paar-TV je Domäne > 0 | **PASS** (0.4882–0.9154 über 6 Domänen) |
+| mi1_purity_det | Fingerabdruck Δ=0; Doubletten bitidentisch | **PASS** |
+| mi1_depth_specialization | core > 0.50 UND core > edge strikt | **PASS** (core 0.5908 > 0.5 > edge 0.2242) |
+| mi1_entropy_regime | core < edge in 6/6 | **PASS** (6/6) |
+| mi1_crystallization | ℓ* im Core 4..23, Tail ≥ 2 | **PASS** (paris ℓ*=17, arithmetic ℓ*=11) |
+
+6/6 GRÜN auf GPU (exit 0, 36.3 s); CPU-Lane: 6 PILOT + 6 OFFEN
+(exit 2 — die Feld-Aussagen sind bewusst GPU-Aussagen, kein stiller
+Fallback).
+
+### 16.3 Die Daten an voller Auflösung
+
+**Das Tiefen-Gesetz ist ein Band-Bruch, kein Gradient.** Die TV(ℓ)-Kurve
+(mittlere Domänen-Paar-TV je Layer) fällt in der Edge-Zone bei 0.18–0.23
+(ℓ=0: 0.1754 … ℓ=3: 0.1853), springt bei ℓ=4 auf 0.5010 und bleibt als
+Plateau 0.54–0.64 über den ganzen Core (Peak ℓ=15: 0.6397), um bei ℓ=24
+(0.2601) und ℓ=25 (0.3099) abzufallen. Der Bruch liegt EXAKT beim
+Training-Hook-Bereich 4 ≤ idx ≤ 23 (train_moe_router_specialization.py
+:341): die kontrastive Spezialisierung hat das Netz genau dort geschnitten,
+wo ihre Haken es berührt haben — die Grenze des Trainings ist die Grenze
+des Gesetzes. (Ari: „Nur die Haken" ist die stärkste Antithese; sie ist
+hier nicht widerlegt, sondern VORAUSGESETZT — der Befund ist eine
+Training-Wirkungs-Landkarte, keine Behauptung über ungehookte
+Schichten-Fähigkeit.)
+
+**Die Entropie bestätigt das Regime 6/6.** Core- vs Edge-Mittel-Entropie
+je Domäne: code 1.3123/1.8296, math_logic 1.6714/1.9358, prose
+0.9052/1.7957, goedel 1.6024/1.9161, turing 1.6571/1.9158,
+wittgenstein 1.5618/1.9196. Die Edge-Zone ist überall nahe Uniform
+(uniform wäre log 8 ≈ 2.079 nats); der Core kollabiert domänenspezifisch,
+am stärksten prose (−49 %). (Ari/Abweichungs-Label: die Sonde aggregiert
+Entropie token-gewichtet, der Kanon :239-Kontext ungewichtet — die
+Parität ist NUR auf pct beansprucht, TV_max 2.2e-08; die Entropie-Zahlen
+sind sonde-konventionell gelabelt.)
+
+**Der Core hat Namen.** Band-Mittel-Profile (Top-3 der 8 Experten):
+code [E4 40.8 %, E0 25.7 %, E1 24.4 %], math_logic [E2 29.7 %, E5 27.3 %,
+E6 16.5 %], **prose [E7 44.8 %, E3 44.0 %]** — ein Zwei-Experten-Monopol
+von 88.8 % im Core, während die Edge-Zone diffuse 15–20%-Verteilungen
+hält —, goedel [E2 31.2 %, E7 21.9 %, E5 20.7 %], turing [E6 26.4 %,
+E0 18.1 %, E5 17.2 %], wittgenstein [E3 36.7 %, E7 20.0 %, E5 13.0 %].
+Das Aggregat-Datum von stage5 (Prose EN [E3 36.8, E7 36.0], Math EN
+[E2 32.8, E5 31.6]) erweist sich jetzt als Kern-Phänomen, das der
+Durchschnitt verschluckt hat: das Monopol ist ein CORE-Ereignis.
+Außerdem matchen die Core-Top-Spalten die trainierten Preset-Paare:
+goedel-Preset {2,7} ↔ [E2 31.2, E7 21.9] ✓; turing {0,6} ↔ [E6 26.4,
+E0 18.1] ✓ (beide in Top-2/3); wittgenstein {1,3} ↔ [E3 36.7, …] teil-
+(E1 fehlt in den Top-3 — DATUM, nicht Band: das E1-Bein liegt unter der
+Top-3-Schwelle des Band-Mittels).
+
+**Die Lens kristallisiert im Core, zweimal.** Paris: Top-1 ‚ is' an
+Emb, ‚ S' ℓ=0–4, ‚ een' ℓ=5–15, ‚ ' ℓ=16, dann ab **ℓ=17 ‚ Paris'
+p=0.8337** stabil bis ℓ=25 — die Antwortmasse springt in EINER Schicht
+von 0.0070 auf 0.8337. Arithmetik („2 + 2 ="): ‚ ='/‚/=' ℓ=0–2, ‚1'
+ℓ=3–4, ‚/=' ℓ=5–10, dann ab **ℓ=11** Top-1-Kipppunkt mit
+Antwortmasse-Surge 0.0132 → 0.4245, Steigung über ‚ ' als Top-1 bis 0.992
+(ℓ=17–20). Beide ℓ* im Core-Band 4..23; anchor_tv 2.7e-11/2.8e-12 —
+die Lens mißt exakt den offiziellen Kopf.
+
+**Zwei ehrliche Nuancen (Via-Negativa-Register).** (1) Arithmetik: das
+offizielle Greedy-Top-1 des Basismodells ist ‚ ' (Leerzeichen),
+p≈0.8074 — der Antwortkandidat ‚ 4' liegt im Fast-Gleichstand bei
+p≈0.80735. Der Surge bei ℓ=11 trägt die Antwortmasse herauf, aber der
+Basismus sagt „Leerzeichen ≈ 4" — ein DATUM über den 1B-Carry, keine
+Verdikt-Kürzung. (2) Paris: p(‚ Paris') senkt sich in den letzten drei
+Schichten (0.5028 @ ℓ=23, 0.4091 @ ℓ=24, 0.5031 @ ℓ=25), während der
+Top-1 bleibt und gap_tv auf ≈ 0.18 fällt — Masse wird umverteilt, das
+Label hält. Die Schichten 23–25 sind ein eigenes Beobachtungsfeld für
+MI-2 (was passiert dort im Residualstrom?).
+
+### 16.4 Schichtung (Gemessen / Nicht messbar / Hypothese)
+
+- **Gemessen:** das 26×8-Feld je Domäne (Zeilen-Variabilität
+  nachgewiesen, kein Degenerations-Datum), die TV(ℓ)-Kurve mit Band-Bruch
+  bei ℓ=4, die Entropie-Regime 6/6, die Lens-Trajektorien zweier Proben
+  mit ℓ*=17 bzw. ℓ*=11 im Core, die Konvention-Parität 2.2e-08, die
+  Reinheit (Fingerabdruck Δ=0, Doubletten bitidentisch).
+- **Nicht messbar in diesem Lauf:** die Shared-Expert-Masse (pct mißt
+  nur Routed-Massen — Kanon-Konvention, gelabelt); das Feld unter
+  Preset-Steuerung (MI-1 läuft bewusst auf dem rohen Checkpoint-Zustand).
+- **Hypothese (als solche gelabelt):** daß die Core-Kollaps-Struktur
+  (prose-Monopol, Preset-Alignment) KAUSAL die SP13-Wahl-Kohärenz trägt —
+  dafür braucht es MI-3 (Steering/Ablation, Hinreichendheit/Notwendigkeit
+  getrennt); MI-1 behauptet es nicht. Verdikt-ändernde Evidenz: ℓ* im
+  Edge-Band oder kein stabiler Tail (MI-1.c); core ≤ edge (MI-1.a/b).
+
+P-Protokoll: append-only Berichte; Prereg-Tabellen im Skript-Docstring
+(P2-Freeze vor dem Hauptlauf); Roh-Felder 26×8/26-Vektoren vollständig in
+`mi1_tomography_experiment.json` persistiert (P3 vor Auswertung); Verdikt
+P4-Einstufung nach registrierten Bändern, keine Weitung. KORREKTUR-LOG
+mit 4 gebuchten Brüchen (Pilot-Finder, 2 GPU-Scans, Klassifikation) im
+Skript + §16.1. Laufschrift-Protokoll:
+`laufprotokolle_befund_report.md` §18.

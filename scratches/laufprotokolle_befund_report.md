@@ -699,3 +699,58 @@ scratches.smoke_endogene_agency` (CPU: exit 2, OFFEN) →
 `scratches/endogene_agency_experiment.log/.json`; `--gpu` → 6 PASS,
 exit 0 (`endogene_agency_gpu.log`).
 Hermeneutische Vollfassung: `sprachspiel_bericht.md` §15.
+
+## 18. MI-1 — Das 26-Layer-Röntgengerät: der Band-Bruch bei Layer 4 (2026-10-26)
+
+(Laufschrift 18 — Hermeneutische Vollfassung in `sprachspiel_bericht.md`
+§16; Spur-Eröffnung: SP1–SP13 abgeschlossen, MI-1 bis MI-4 beginnt; nach
+MechanisticCircuitMixMind v1.0_20261026_CircMix (Pfad-B-Mix, persistiert
+mit Sub-Skill `mechanistic-circuit-mix-mind`). Auflösungs-Protokoll:
+der stage5-Durchschnitt über 26 Layer ist kein Beweis über die Layer.)
+
+### Verdikt-Register
+
+| Verdikt | Band | Ergebnis |
+|---|---|---|
+| mi1_canon_parity | TV_max < 1e-6 vs `measure_domain_routing`; Zeilensummen ± 1e-6 | PASS (2.235e-08) |
+| mi1_layer_resolution | max Zeilen-Paar-TV je Domäne > 0 | PASS (0.49–0.92) |
+| mi1_purity_det | Fingerabdruck expert_bias+gate.weight Δ=0; Doubletten bitidentisch | PASS |
+| mi1_depth_specialization | core > 0.50 UND core > edge strikt | PASS (0.5908 > 0.5 > 0.2242) |
+| mi1_entropy_regime | core < edge in 6/6 (4–5 OFFEN, ≤3 FAIL) | PASS (6/6) |
+| mi1_crystallization | ℓ* im Core 4..23, stabiler Tail ≥ 2 | PASS (paris ℓ*=17, arithmetik ℓ*=11) |
+
+Kern: Das Tiefen-Gesetz ist ein BAND-BRUCH, kein Gradient — die
+Domänen-Trennung (mittlere Paar-TV je Layer) liegt in der Edge-Zone bei
+0.18–0.23, springt bei ℓ=4 auf 0.501 und bleibt als Plateau 0.54–0.64 im
+Core (Peak ℓ=15: 0.6397), Fall bei ℓ=24/25 auf 0.26/0.31. Der Bruch liegt
+EXAKT beim Training-Hook-Bereich 4 ≤ idx ≤ 23 (train:341) — die Grenze
+des Trainings ist die Grenze des Gesetzes. Edge-Entropie nahe Uniform
+(1.80–1.94, uniform ≈ 2.079), Core kollabiert 6/6, am stärksten prose
+(0.905 vs 1.796, −49 %). Core-Profil prose: **E7 44.8 % + E3 44.0 % =
+Zwei-Experten-Monopol 88.8 %** — das stage5-Aggregat [E3 36.8, E7 36.0]
+erweist sich als Kern-Ereignis, das der Durchschnitt verschluckt hat.
+Core-Top-Spalten matchen die Preset-Paare: goedel {2,7} ↔ [E2 31.2,
+E7 21.9] ✓, turing {0,6} ↔ [E6 26.4, E0 18.1] ✓, wittgenstein {1,3} ↦ E3
+in Top-1, E1 unter Top-3-Schwelle (DATUM). Lens (offizieller Kopf,
+softcap=None, anchor_tv 2.7e-11/2.8e-12): paris kippt bei **ℓ=17** auf
+‚ Paris' p=0.8337 (Antwortmasse 0.007 → 0.834 in EINER Schicht); arithmetik
+kippt bei **ℓ=11** (Antwortmasse 0.013 → 0.425, Steigung über ‚ ' bis 0.992).
+Ehrliche Nuancen: Basismus-Greedy von „2 + 2 =" ist ‚ ' (p≈0.8074) im
+Fast-Gleichstand mit ‚ 4' (0.80735) — Datum über den 1B-Carry; paris
+p(‚ Paris') senkt sich 0.9837 → 0.4091 → 0.5031 über ℓ=22–24 bei gehaltenem
+Top-1 (gap_tv ≈ 0.18) — ein Beobachtungsfeld für MI-2. KORREKTUR-LOG: 4
+offengebuchte Brüche (CPU-Pilot fing den trivialen Ein-Schicht-Tail des
+Kristallisations-Finders → CRYSTAL_MIN_TAIL=2 vor dem Hauptlauf;
+GPU-Scan 1 NameError, GPU-Scan 2 dtype-Bruch fp32/bf16 — beide OFFEN
+gebucht statt still angenommen; Klassifikations-Bruch 6/6-PASS-Ausgabe
+als GELB — Display-Bug, Fix iteriert nur über Nicht-Pilot-Verdicte,
+GPU-Rerun als Doppel-Det-Datum). Nicht messbar: Shared-Expert-Masse
+(Routed-only-Kanon), Preset-gesteuertes Feld (roher Checkpoint-Zustand).
+Hypothese (gelabelt): Core-Kollaps trägt die SP13-Wahl-Kohärenz kausal —
+MI-3-Prüfung, nicht MI-1-Claim.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_mech_interp_tomography` (CPU: 6 PILOT + 6 OFFEN, exit 2)
+→ `scratches/mi1_tomography_experiment.log`; `--gpu` → 6 PASS, exit 0,
+36.3 s (`mi1_tomography_gpu.log`); Roh-Felder 26×8 + Entropie-26 +
+Lens-Trajektorien je Domäne in `mi1_tomography_experiment.json`.

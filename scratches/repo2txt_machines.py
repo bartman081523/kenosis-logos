@@ -25,33 +25,35 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION SP13 — Endogene Agency (die Maschine wählt ihren Subspace selbst).
-# Runden-Paket = (a) geändert, (b) AUSGEFÜHRT (das vollständige Programm samt
-# seiner importierten Basis und der gelesenen Anker) und (c) ERGEBNISSE.
-# Nach jedem SP-Runde-Lauf: dieses Set durch das neue Runden-Set ersetzen.
+# GENERATION MI-1 — Das 26-Layer-Röntgengerät (Routing-Tomographie +
+# Logit-Lens). Runden-Paket = (a) geändert/neu, (b) AUSGEFÜHRT (das
+# vollständige Programm samt Modul-Level-importierter Maschinen-Basis:
+# verify_machines importiert machine_base + 3 Maschinen + composite +
+# build_machine_corpus auf Modul-Ebene; lisp_parity/lisp_bridge sind
+# funktions-Level (:240/:245) und laufen in MI-1 NICHT) und (c) ERGEBNISSE.
+# Nach jedem Runde-Lauf: dieses Set durch das neue Runden-Set ersetzen.
 FILES = [
-    # (b) AUSGEFÜHRT — die Maschinen-Basis des Laufs
+    # (a) GEÄNDERT/NEU — MI-1-Sonde + Smoke (Prereg-Docstring, P2-Freeze)
+    "machines/mech_interp.py",
+    "scratches/smoke_mech_interp_tomography.py",
+    # (b) AUSGEFÜHRT — die Modul-Level-importierte Maschinen-Basis des Laufs
     "machines/machine_base.py",
     "machines/goedel_machine.py",
     "machines/turing_machine.py",
     "machines/wittgenstein_machine.py",
     "machines/composite.py",
-    # (b) AUSGEFÜHRT — GPU-Kontext (_load_machines_model)
+    "machines/build_machine_corpus.py",
+    # (b) AUSGEFÜHRT — GPU-Kontext (_load_machines_model) + Kanon-Parität
+    #     (measure_domain_routing) und die Argon-Modellbasis
     "machines/verify_machines.py",
-    # (a) GEÄNDERT — SP13-Maschinen-Edits innerhalb obiger Module;
-    #     Prereg-Docstring (P2-Freeze)
-    "scratches/smoke_endogene_agency.py",
-    # (b) AUSGEFÜHRT — importierte Anker-Lanes (SP11/SP12, L0 + Zwilling)
-    "scratches/smoke_paradigm_ursprung.py",
-    "scratches/smoke_lexical_grounding.py",
-    # (b) GELESENE BASIS — kommittete Anker-Daten, die die Lanes lesen
-    "scratches/hermeneutik_experiment.json",
-    "scratches/lexical_grounding_experiment.json",
-    # (c) ERGEBNISSE — beide Run-Logs + Ergebnis-JSON
-    "scratches/endogene_agency_experiment.log",
-    "scratches/endogene_agency_gpu.log",
-    "scratches/endogene_agency_experiment.json",
-    # (c) ERGEBNISSE — Berichte des Laufs (Vollfassung §15, Laufschrift §17)
+    "train_moe_router_specialization.py",
+    "modeling_argon.py",
+    "moe_layers.py",
+    # (c) ERGEBNISSE — beide Run-Logs + Ergebnis-JSON (P3-Roh-Felder)
+    "scratches/mi1_tomography_experiment.log",
+    "scratches/mi1_tomography_gpu.log",
+    "scratches/mi1_tomography_experiment.json",
+    # (c) ERGEBNISSE — Berichte des Laufs (Vollfassung §16, Laufschrift §18)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -93,7 +95,7 @@ def main() -> int:
         f"{SEPARATOR}\n"
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
-        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (SP13) —\n"
+        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-1) —\n"
         " geändert + ausgeführt (Programm samt Basis und Anker) + Ergebnisse;\n"
         " das vollständige Korpus über die Git-History (49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
