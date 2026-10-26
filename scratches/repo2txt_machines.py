@@ -25,21 +25,21 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION MI-2 — Das Sublayer-Röntgengerät (Attention-vs-MoE Logit-Lens
-# + strikte Ein-Token-Auflösung). Runden-Paket = (a) geändert/neu, (b)
-# AUSGEFÜHRT (das vollständige Programm samt Modul-Level-importierter
+# GENERATION MI-2-P4 — Das Sublayer-Röntgengerät, Oberflächen-Exakt-Vollierung
+# (resolve_token_ids_exact, 6/6 PASS GRÜN). Runden-Paket = (a) geändert/neu,
+# (b) AUSGEFÜHRT (das vollständige Programm samt Modul-Level-importierter
 # Maschinen-Basis: verify_machines importiert machine_base + 3 Maschinen +
 # composite + build_machine_corpus auf Modul-Ebene; lisp_parity/lisp_bridge
 # sind funktions-Level (:240/:245) und laufen in MI-2 NICHT) und (c)
 # ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das neue Runden-Set
-# ersetzen (MI-1-Paket liegt in Git-History: Commits 67c1b5e/fc367c3).
+# ersetzen (MI-2-Lauf-3-Paket liegt in Git-History: Commits 2455aea/1b4be11).
 FILES = [
-    # (a) GEÄNDERT/NEU — MI-2-Sonde (sublayer_logits, Canon-Anker
-    #     :188-190/:326-351) + Smoke (6-Verdikt-Prereg, P2-Freeze;
-    #     MI-1-Smoke bleibt unangetastet, P1)
-    "machines/mech_interp.py",
+    # (a) GEÄNDERT/NEU — Smoke mit P4-Exakt-Auflösung (re-registrierte
+    #     fällige Oberflächenformen; KORREKTUR-LOG 6 Einträge)
     "scratches/smoke_mech_interp_logit_lens.py",
-    # (b) AUSGEFÜHRT — die Modul-Level-importierte Maschinen-Basis des Laufs
+    # (b) AUSGEFÜHRT — die MI-2-Sonde (sublayer_logits unverändert aus
+    #     Commit 2455aea) und die Modul-Level-importierte Maschinen-Basis
+    "machines/mech_interp.py",
     "machines/machine_base.py",
     "machines/goedel_machine.py",
     "machines/turing_machine.py",
@@ -51,11 +51,12 @@ FILES = [
     "machines/verify_machines.py",
     "modeling_argon.py",
     "moe_layers.py",
-    # (c) ERGEBNISSE — Run-Log + Ergebnis-JSON (P3-Roh-Felder je Probe)
-    "scratches/mi2_logit_lens_gpu.log",
-    "scratches/mi2_logit_lens.json",
-    # (c) ERGEBNISSE — Berichte des Laufs (Vollfassung §17 mit
-    #     §16.3-Korrektur-Vermerk, Laufschrift §19)
+    # (c) ERGEBNISSE — Run-Log + Ergebnis-JSON (P3-Roh-Felder auf allen
+    #     drei fälligen Koordinaten)
+    "scratches/mi2_logit_lens_p4_gpu.log",
+    "scratches/mi2_logit_lens_p4.json",
+    # (c) ERGEBNISSE — Berichte des Laufs (§18 Vollfassung P4,
+    #     Laufschrift §20)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -97,10 +98,11 @@ def main() -> int:
         f"{SEPARATOR}\n"
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
-        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-2) —\n"
+        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-2-P4) —\n"
         " geändert + ausgeführt (Programm samt Basis und Anker) + Ergebnisse;\n"
-        " das vollständige Korpus über die Git-History (MI-1: Commits 67c1b5e/fc367c3;\n"
-        " frühere kumulative Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
+        " das vollständige Korpus über die Git-History (MI-2-Lauf 3: Commits\n"
+        " 2455aea/1b4be11; MI-1: Commits 67c1b5e/fc367c3; frühere kumulative\n"
+        " Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"

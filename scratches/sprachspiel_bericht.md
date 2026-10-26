@@ -1574,3 +1574,125 @@ Klassifikations-Fix ist eine Einstufungs-Korrektur, kein Re-Decide. Die
 3 gebuchten Lauf-Brüche + die Klassifikations-Korrektur stehen im
 KORREKTUR-LOG (Skript-Docstring + §17.1). Laufschrift-Protokoll:
 `laufprotokolle_befund_report.md` §19.
+
+## 18. MI-2-P4 — Oberflächen-Exakt-Vollierung: 6/6 PASS, die ℓ17-Attn-Masse (2026-10-26)
+
+Die P4-Vollierung nach dem MI-2-Audit (User-Befunde): die Auflösung wird
+zu `resolve_token_ids_exact` (Oberflächen-Exakt, 3-Zeilen-Konvention)
+geändert und die drei Proben werden auf die FÄLLIGEN Oberflächenformen
+neu registriert. Prereg-Diskriminator: die 6 Verdikte und die Bänder
+ändern sich NICHT — nur die Ziel-Auflösung wird exakt (P2-Re-Registrierung
+der Targets, kein Band geweitet). Ergebnis-Fassung: eigene Dateien
+`mi2_logit_lens_p4.json`/`.log`; die Lauf-3-Rohdaten (GELB 4/4/0) bleiben
+in Git (Commit 2455aea).
+
+### 18.1 Auflösung und Vorlauf
+
+Stub-Fix im CPU-Pilot (Erfolgsteil der R2-Disziplin): der STUB
+rückte encode("") → [7] mit decode(7) = " " heraus — der leere String
+rutschte als vermeintlicher echtes Space-Vertreter durch. Fix:
+encode("") → [] (realer Tokenizer: keine Tokens). Pilot 2:
+`pilot_resolve_exact: digit=[2] space=[5] paris=[3] ('Paris' 6
+abgewiesen)` — alle 4 Piloten PILOT.
+
+GPU-P4-Hauptlauf (30.4 s, **GRÜN exit 0, 6/6 PASS, 0 OFFEN, 0 FAIL**):
+
+```
+[PASS] mi2_single_token_strict: paris 9079 (' Paris'); arithmetic_digit
+       236812 ('4'); arithmetic_space 236743 (' ')
+[PASS] mi2_sublayer_telescope: dev=0.000e+00 über ALLE 3 Proben
+       (anchor_tv 2.717e-11 / 2.842e-12 / 2.842e-12)
+[PASS] mi2_attn_vs_moe_attribution: paris attn@l17 0.6859 vs 0.1407
+       unique=True; arithmetic_digit attn@l3 0.0356 vs 0.0343
+       unique=True; arithmetic_space attn@l11 0.7347 vs 0.3051
+       unique=True
+[PASS] mi2_goedel_gap_contraction: paris l*=17 tail=0.3764 pre=0.9703;
+       arithmetic_digit l*=11 tail=0.2192; arithmetic_space l*=11
+```
+```
+[PASS] mi2_mla_vs_mqa_profile: paris global 0.5056 > local 0.1236;
+       arithmetic_digit global 0.3549 > local 0.1886; arithmetic_space
+       global 0.3549 > local 0.1886 [Datums-Zusatz]
+[PASS] mi2_purity_det: fingerprint=True, alle 3 Proben Doubletten
+       bitidentisch
+```
+resolve_raw (P4-exakt, alle drei eindeutig): paris=[9079],
+arithmetic_digit=[236812], arithmetic_space=[236743].
+
+### 18.2 Die Neue Daten: ℓ17 trägt die Weltmasse, ℓ11 die Syntax
+
+**paris (9079 " Paris", Prompt "The capital of France is", n_tok=6):**
+- Die Kette liegt FLACH bei p ≈ 1e-5 durch ℓ0–ℓ15 (top1 driftet ' S' →
+  ' een'; MI-1-Muster), dann:
+  - **ℓ16 (MoE-Halbschritt): dp_moe = +0.00699 → p_out = 0.00703** —
+    DIE MI-1-Zahl "0.007" war der ℓ16-Ausgang, nicht der ℓ17-Sprung.
+  - **ℓ17G (Attn-Halbschritt): dp_attn = +0.68591 → p_mid = 0.69294**;
+    weiter dp_moe = +0.14071 → p_out = 0.83366. **Der berühmte
+    L17-Sprung "0.007 → 0.834" ist ein Attn-Ergebnis:** der größte
+    Einzel-|ΔP| der całej Kette (größer als der spätere Dip).
+  - ℓ18–ℓ22: Konsolidierung auf 0.98.
+  - ℓ23G (Global-MLA): DIP dp_attn −0.366, dp_moe −0.109 → p_out 0.5029;
+    ℓ25 attn +0.155 / moe −0.061 → **p_final(' Paris') = 0.503078** —
+    das offizielle Top-1 des Checkpoints bleibt ' Paris'.
+- Attribution: driver=attn, peak=ℓ17, driver_is_global=TRUE, unique.
+- Kontraktion: l*=17 (tail 0.3764 < 0.5 × pre 0.9703) — die Gap-TV-
+  Kontraktion startet GENAU in der Injektions-Schicht.
+- MLA-Profil: global 0.5056 > local 0.1236 (paris ist IM Band).
+
+**arithmetic_space (236743 ' ', gleiches Prompt "2 + 2 =", n_tok=6):**
+- ℓ5G: dp_moe +0.0139 → 0.0181 (Pre-Band-Hebung auf dem Space-Koordinat),
+  dann Lokal-Abriss ℓ6–ℓ11 aus bis 0.01317 (die Space-Probe teilt die
+  ℓ5-Prune-Mechanik mit der Ziffer — auf ihrer Koordinate wirkt ℓ5
+  POSITIV).
+- **ℓ11G: dp_attn = +0.73470 → p_mid = 0.74787**, dann dp_moe = −0.32335
+  → p_out = 0.42452. **Die Space-Inscription ist ein Attn-Ergebnis**;
+  der MoE-Halbschritt RE-DISTRIIBUTIERT (−0.32).
+- ℓ13–ℓ15: MoE re-uppt (+0.305/+0.166/+0.132) auf 0.948; ℓ23G Dip
+  −0.068/−0.131 → 0.760; ℓ24 +0.102/+0.070 → 0.932; ℓ25 attn +0.023 /
+  moe −0.148 → **p_final(' ') = 0.807350**.
+
+**arithmetic_digit (236812 '4'):** UNVERÄNDERT gegenüber Lauf 3
+(bitidentisch: ℓ3 attn +0.0356/ℓ4 moe +0.0343/ℓ5G −0.033) — Determinismus
+bei dritter Messung bestätigt.
+
+### 18.3 Die Verdichtung (MI-2-P4-Kern)
+
+Mit der Paris-Kette ist das Prune-and-Inscribe-Gesetz VOLLIERT und ein
+Namen reifer: die großen Attn-Halbschritte auf den FÄLLIGEN Koordinaten
+sitzen alle auf GLOBAL-MLA-Schichten (ℓ17 0.6859 Welt-Können, ℓ11 0.7347
+Syntax-Fälligkeit), während die lokale Früzündung (ℓ3/ℓ4 auf der Ziffer)
+um GRÖSSENORDNUNGEN kleiner ist (0.036). Die Attributions-Eindeutigkeit
+(unique=True auf allen 3 Proben) + Teleskop dev=0.0 + Kontraktion
+l* = Injektions-Schicht (beide) stützen die Hypothese „globale MLA-
+Schichten tragen die Umschreiben"; die kausale Trennung
+(Hinreichendheit/Notwendigkeit) bleibt MI-3-Registrierung.
+
+Die MI-1-§16.3-Lesart ist NUN VOLL KORRIGIERT: kein „Fast-Gleichstand",
+kein L17-Vertreter — p(' Paris') 0.00703 (ℓ16-Ausgang) → 0.83366
+(ℓ17-Ausgang) exakt gelöst, und der Schicht-Verdikt-Verdikt-Tabelle
+bleibt die ganze 26-Schichten-Kette als Roh- Felder in
+`mi2_logit_lens_p4.json` (P3).
+
+### 18.4 Schichtung und Grenzen
+
+- **Gemessen und verstanden:** alle 6 Verdikte PASS; die ℓ17-Attn-
+  Masse 0.6859 als Einzel-Halbschritt; die ℓ11-Attn-Masse 0.7347; die
+  ℓ16-MoE-Vorhebung 0.007; die ℓ5-Prune-Natur (auf Ziffer −0.033, auf
+  Space POSITIV +0.0139 — die Richtungs-Asymmetrie der globalen
+  Schicht); die ℓ23-Redistribution (Dip → Final-Norm-Ausgleich).
+- **Nicht gemessen (R1, keine Band-Erfindung):** die kausale Rolle der
+  globalen MLA-Schichten (MI-3: steer_band/knockout_experts, die
+  Hinreichendheit ℓ17-in-ℓ17 vs ℓ10-Notwendigkeit); mehr Proben über
+  Domänen; code/Logik-Lens-Proben.
+- **Hypothese (gelabelt):** GLOBAL-MLA = „Umschreiber" (ℓ5 Prune /
+  ℓ11 Inscription / ℓ17 Injection / ℓ23 Redistribution) — die
+  Verdikt-3-Attributionen (attn-driver auf allen 3) deuten darauf;
+  MI-3 testet die Kausalität.
+
+P-Protokoll (P4-Runde): append-only (§17 bleibt gebucht); der P4-
+Resolutor-Wechsel ist eine RE-REGISTRIERUNG (User-Audit) im KORREKTUR-
+LOG, kein Re-Decide; Roh-Felder vollständig in `mi2_logit_lens_p4.json`
+(P3 vor Auswertung); Klassifikation nach registrierten Bändern — das
+[Datums-Zusatz] auf arithmetic_space ist die REGISTRIERTE
+Akkommodation (Out-of-Band-Probe wird gemessen, verändert aber KEIN
+Band). Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §20.

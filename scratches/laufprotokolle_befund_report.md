@@ -813,3 +813,44 @@ scratches.smoke_mech_interp_logit_lens` (CPU: 4 PILOT, 6 OFFEN, exit 2)
 → `mi2_logit_lens_gpu.log`; Roh-Felder (rows je Probe: p_in/p_mid/p_out,
 dp_attn/dp_moe, tv_in_mid, gap_out_tv, top1_out-Kette; resolve_raw) in
 `mi2_logit_lens.json`.
+
+## 20. MI-2-P4 — Oberflächen-Exakt-Vollierung: 6/6 PASS (2026-10-26)
+
+P4 nach dem User-Audit: Auflösung → `resolve_token_ids_exact` (len==1
+UND decode == target exakt, OHNE lstrip); Proben neu registriert auf die
+fälligen Oberflächenformen — paris " Paris"→[9079], arithmetic_digit
+"4"→[236812], arithmetic_space " "→[236743]; alle drei eindeutig;
+6 Verdikte/Bänder unverändert; eigene Ergebnis-Dateien (P1: Lauf-3-Roh
+bleibt in Commit 2455aea). CPU-Pilot 2 nach Stub-Fix (encode("") → [];
+der Stub-Fallback [7] decodierte " " und ließ den Leer-Kandidaten als
+Space-Vertreter durchrutschen — Pilot fängt Geräte-Defekte, R2).
+
+| Verdikt | Status | Kern |
+|---|---|---|
+| mi2_single_token_strict | **PASS** | 9079 / 236812 / 236743 — alle eindeutig |
+| mi2_sublayer_telescope | **PASS** | dev=0.000e+00 ×3 (anchor ≤2.7e-11) |
+| mi2_attn_vs_moe_attribution | **PASS** | attn@ℓ17 0.6859 vs 0.1407; attn@ℓ3 0.0356 vs 0.0343; attn@ℓ11 0.7347 vs 0.3051 — unique ×3 |
+| mi2_goedel_gap_contraction | **PASS** | paris l*=17 (0.376<0.49); digit/space l*=11 |
+| mi2_mla_vs_mqa_profile | **PASS** | paris 0.5056>0.1236; digit/space 0.3549>0.1886; space [Datums-Zusatz] |
+| mi2_purity_det | **PASS** | fingerprint Δ=0; Doubletten bitidentisch ×3 |
+
+4.7 s Modell laden + 25.7 s Messung. **Der Neue Satz: der ℓ17-Sprung ist
+ein Attn-Halbschritt** — p(' Paris') 0.00703 (ℓ16-Ausgang) → p_mid 0.69294
+(dp_attn +0.68591) → p_out 0.83366 (dp_moe +0.14071); Kontraktion startet
+GENAU in der Injektions-Schicht (l*=17). Der Space-Kipppunkt ℓ11 gleich:
++0.73470 attn / −0.32335 moe (final 0.80735). Die ℓ5-Prune-Richtung ist
+ASYMMETRISCH — auf der Ziffer −0.033, auf dem Space +0.0139: dieselbe
+globale Schicht sortiert in entgegengesetzte Richtungen je Fälligkeit.
+Der MI-2-Kern (Prune-and-Inscribe) steht vollständig: lokal ℓ3/ℓ4 rechnen
+die Ziffer, global ℓ5 pruned die verfrühte Ziffer, global ℓ11 schreibt
+den fälligen Space ein, global ℓ17 injiziert die Weltmasse, global ℓ23
+redistribuiert für die finale Norm. Kausale Trennung (Hinreichendheit/
+Notwendigkeit der globalen Schichten) = MI-3.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u
+-m scratches.smoke_mech_interp_logit_lens --cpu` (4 PILOT, exit 2) →
+`--gpu --json scratches/mi2_logit_lens_p4.json`: GRÜN exit 0, 6/6 PASS,
+0 OFFEN, 0 FAIL (30.4 s) → `mi2_logit_lens_p4_gpu.log`; Roh-Felder
+(26-Schichten-Sublayer-Ketten auf ALLEN DREI fälligen Koordinaten +
+resolve_raw + telescope/attribution/contraction/mla) in
+`mi2_logit_lens_p4.json`.
