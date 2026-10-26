@@ -1,0 +1,13 @@
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[PILOT ] pilot_assemble_pct: pct[0/0][3]=0.5 ent[2][1]=1.7999999523162842 shuffled-gleich=True incomplete->ValueError=True
+[PILOT ] pilot_prefix_math: prae-laengen=[3, 1, 0, 0] erwartet=[3, 1, 0, 0]
+[PILOT ] pilot_gate_math: clamp-Floor=0.2500, offene Stute=0.6492, Re-Norm-summe=0.2500=gate
+[PILOT ] pilot_seqtv_math: tv(a1,b1)=0.5752 in (0,1); Positionen 0/2 identisch → tv=0
+[PILOT ] pilot_select_math: core=20 Schichten, prose-Set=(3, 7), code-Set=(0, 1, 4), praefixe verbatim-inklusive
+[PASS  ] mi4_tokenwise_subspace_switch: CHIMERA_PROSE_CODE@ts=16/30: {3,7} 0.350→0.077 {0,1,4} 0.034→0.539 ent 0.880→1.346; CHIMERA_PROSE_MATH@ts=15/38: {3,7} 0.427→0.189 {0,1,4} 0.065→0.203 ent 1.191→1.611
+[PASS  ] mi4_tokenwise_domain_dissociation: CHIMERA_PROSE_CODE@ts=16: prose-H TV 0.0230 vs 0.0195; code-H TV 0.0263 vs 0.0260; CHIMERA_PROSE_MATH@ts=15: prose-H TV 0.0604 vs 0.0401; code-H TV 0.0392 vs 0.0353
+----------------------------------------------------------------------------------------
+Verdikte: 2 PASS | 0 OFFEN | 0 FAIL  (29.8 s)
+GRÜN — beide MI-4-Verdikte PASS; die Umschaltung ist tokenweise gemessen.
+JSON: scratches/mi4_circuit_trace.json

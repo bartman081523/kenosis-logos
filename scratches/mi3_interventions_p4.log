@@ -1,0 +1,31 @@
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+  [row 0] prose: ko_prose=0.0221 ko_code=0.0144 anomal_k47=0.0071 kontrolle_k12=0.0194
+  [row 1] prose: ko_prose=0.0286 ko_code=0.0148 anomal_k47=0.0212 kontrolle_k12=0.0447
+  [row 2] prose: ko_prose=0.0785 ko_code=0.0274 anomal_k47=0.0248 kontrolle_k12=0.0000
+  [row 3] code: ko_prose=0.0160 ko_code=0.0023 anomal_k47=0.0004 kontrolle_k12=0.0129
+  [row 4] code: ko_prose=0.0000 ko_code=0.0031 anomal_k47=0.0000 kontrolle_k12=0.0013
+  [row 5] code: ko_prose=0.0037 ko_code=0.0022 anomal_k47=0.0030 kontrolle_k12=0.0027
+  [row 6] math_logic: ko_prose=0.0161 ko_code=0.0431 anomal_k47=0.0113 kontrolle_k12=0.0187
+  [row 7] math_logic: ko_prose=0.0805 ko_code=0.0261 anomal_k47=0.0201 kontrolle_k12=0.0516
+  [row 8] math_logic: ko_prose=0.0308 ko_code=0.0005 anomal_k47=0.0013 kontrolle_k12=0.0011
+[PILOT ] pilot_band_math: band-template: ok
+[PILOT ] pilot_knockout_math: additiv: ok
+[PILOT ] pilot_restore_math: C3-Runde: bitidentisch
+[PILOT ] pilot_tv_math: tv(a,a)=0, tv(a,b)>0: True
+[PILOT ] pilot_select_math: Baender+Sets registriert ok
+[PILOT ] pilot_gate_math: clamp-Floor 0.2500, offene Stute 0.6492, Re-Norm ok: True
+[PILOT ] pilot_seqtv_math: tv(a,b)=0.1547 in (0,1)
+[PASS  ] mi3_intervention_purity: fingerprint=True control_tv=0.0
+[OFFEN ] mi3_core_vs_edge_sufficiency: Premise nicht repliziert: M_raw=0.3542 (≥ tau=0.01) — volle Daten persistent.
+[FAIL  ] mi3_domain_knockout_specificity: prose: ko_prose=0.0431 > ko_code=0.0189; code: ko_code=0.0025 > ko_prose=0.0066
+[PASS  ] mi3_paris_circuit_resilience: top1-Bedingungen: ko_prose@core=9079, ko_code@core=9079, preset_goedel=9079, preset_turing=9079, preset_wittgenstein=9079 (paris_id=9079)
+[PASS  ] mi3_layer17_paris_localization: attn_share(17)=0.830 Σ|Δp|(17)=0.0861 vs Σ|Δp|(10)=0.0170
+[FAIL  ] mi3_prose_l11_anomaly_probe: Mittel ko{4,7}(ℓ11)=0.0177 vs ko{1,2}(ℓ11)=0.0214
+[PASS  ] mi3_argmax_gate_opening_p4: raw_top1='\n\n' pred_value_raw='unknown'; full_top1='1' pred_value_full='10'; ΔM full=0.0440 core=0.0294 edge=0.0404; gap_raw=0.0425 gap_core=0.0000
+[PASS  ] mi3_sequence_loss_dissociation_p4: SEQ-TV code: ko_code=0.0229 vs ko_prose=0.0109; prose: ko_prose=0.0380 vs ko_code=0.0312 (ΔCE code +0.0331/-0.0126)
+[FAIL  ] mi3_l11_capacity_gate_shield_p4: prose ℓ11: mean-H=0.167/0.200/0.639 mean-gate=0.277/0.289/0.377 floor_frac=0.96/0.95/0.63
+----------------------------------------------------------------------------------------
+Verdikte: 5 PASS | 1 OFFEN | 3 FAIL  (46.2 s)
+ROT — Falsifikator ausgelöst; keine Kürzung, volle Daten persistent.
+JSON: scratches/mi3_interventions_p4.json

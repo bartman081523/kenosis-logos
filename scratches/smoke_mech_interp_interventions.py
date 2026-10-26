@@ -102,6 +102,36 @@ Konventionen: TV auf Fraction-Skala [0,1] (canon_tv); M_digit-Masse
 (sp3-canon); P3 Roh-Felder je eval vollständig in JSON; P4 Einstufung
 nach registrierten Bändern. P1: MI-1-/MI-2-Dateien unangetastet.
 
+PREREG-P4 (RE-REGISTRIERUNG, User-Audit 2026-10-26 — die 6 Basisverdikte
+bleiben UNVERÄNDERT im Register; die P4-Verdikte prüfen die aus den
+Roh-Daten entdeckten Mechanismen; Canon moe_layers.py:66-92 verifiziert:
+top_weights aus RAW-Scores (:80), ×0.15 bei H<1.8 (:79-84), Re-Norm :86,
+capacity_gate = clamp(H/ln8, 0.25, 1.0) :85-88):
+
+V7 mi3_argmax_gate_opening_p4 — SP3-Stummkanal ist ein Argmax-Schwellen-
+   Phänomen, kein Massen-Kanal-Zu. (a) raw-top1 am GENERIC_PROMPT ist
+   KEIN Ziffern-Token (SP3-"unknown"-Reproduktion auf greedy-Ebene);
+   (b) Voll-Steering ({1,3}, dict-Arm, alle Schichten) kippt top1 auf ein
+   Ziffern-Token; (c) ΔM > 0 für full/core/edge (alle drei Bands heben
+   die Digit-Masse); (d) gap_core < gap_raw strikt, gap = p(top1) −
+   p('1'). Datums-Zusatz: edge-Flip + alle P-Felder. Falsifikator: jede
+   der (a)-(d)-Verletzungen.
+
+V8 mi3_sequence_loss_dissociation_p4 — das V3-"FAIL" war ein Last-Token-
+   Phänomen (code-Texte enden auf ')'/'next'; dort trägt Shared Expert +
+   Attention, Routed-Varianz ~null). Gemessen über ALLE Positionen
+   t=1..T-2: (a) mean-SEQ-TV(code, ko{0,1,4}@Core) > mean-SEQ-TV(code,
+   ko{3,7}@Core) strikt; (b) mean-SEQ-TV(prose, ko{3,7}) > mean-SEQ-TV
+   (prose, ko{0,1,4}) strikt. PASS = (a)∧(b). Datums-Zusatz: per-Text
+   SEQ-TVs + teacher-forced ΔCE je Zustand.
+
+V9 mi3_l11_capacity_gate_shield_p4 — das V6-"FAIL" ist das Capacity-Gate-
+   Schild (H(prose,ℓ11)=0.3149 → clamp auf Min 0.25, Expert-2 ×0.15):
+   (a) mean-H(ℓ11) < 1.8 je Prose-Text (low-entropy-Regime aktiv);
+   (b) mean-capacity_gate(ℓ11) ≤ 0.30 je Prose-Text (deep-damped; exakte
+   Canon-Formel je Token). Datums-Zusatz: per-Token-Gate + code/math-
+   Kontrolle (persistent, ohne Predicate). Falsifikator: (a)/(b)-Verletzung.
+
 KORREKTUR-LOG (offen gebucht):
  - 2026-10-26, Lauf 1 (GPU, 41 s): Klassifikations-Schluessel-Bug — die
    evals buchen ihre Ergebnis-Felder unter Kurz-Schuesseln (purity,
@@ -113,18 +143,35 @@ KORREKTUR-LOG (offen gebucht):
    klassifikatorisch, die Messfelder (fingerprint/tvs/massen) sind gueltig.
    Lauf 1: exit 2 GELB; Lauf 2 = Klassifikation ueber unveranderte
    Messfelder (Determinismus verifizierbar an resolve + l17-Datum).
+ - 2026-10-26, P4-Runde: RE-REGISTRIERUNG nach User-Audit (V7-V9 aus den
+   MI-3-Roh-Daten + moe_layers.py-Canon abgeleitet; Basis-Verdikte
+   unverändert im Register). Default-JSON der GPU-Lane wechselt auf
+   mi3_interventions_p4.json; das alte mi3_interventions.json bleibt als
+   MI-3-Baseline-Roh-Datensatz unangetastet (P1/P3). Zwei neue Piloten
+   (pilot_gate_math/pilot_seqtv_math) über die Canon-Formeln (R2).
+ - 2026-10-26, P4-Lauf 1 (GPU, 44 s): CE-Gather-Bug in eval_sequence_
+   _dissociation — torch.gather verlangt Index gleicher Dimension wie
+   Input: gather(1, ids[0,1:T]) (1-D-Index) auf [T-1,V] wirft "Index
+   tensor must have the same number of dimensions as input tensor";
+   eval brach NACH seq-TV-Berechnung, vor CE (BROKEN-Buchung, kein
+   stiller Fallback; V8 ohne Datums-Feld). Fix: ids[0,1:T].unsqueeze(1)
+   (Index [T-1,1], Gather-Ausgang [T-1,1] -> view(-1)). Die sechs anderen
+   Verdikte des Laufs sind vollstaendig und gueltig (V7 PASS, V9 FAIL
+   als registriertes Datum); P4-Lauf 2 = voller Re-Lauf über alle 9.
 
 Run lines:
   CPU: python -m scratches.smoke_mech_interp_interventions       (exit 2;
        schreibt KEIN Ergebnis-JSON ohne explizites --json — P3-Schutz)
   GPU: python -m scratches.smoke_mech_interp_interventions --gpu (exit 0/1;
-       Default-JSON = scratches/mi3_interventions.json, P3-Roh-Felder)
+       Default-JSON = scratches/mi3_interventions_p4.json, P3-Roh-Felder;
+       MI-3-Baseline = mi3_interventions.json, unangetastet)
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -273,6 +320,33 @@ def pilot_rows() -> List[Tuple[str, str, str]]:
                  f"tv(a,a)=0, tv(a,b)>0: {ok_tv}"))
     rows.append(("pilot_select_math", "PILOT" if ok_select else "BROKEN",
                  "Baender+Sets registriert ok" if ok_select else "Fehler"))
+
+    # pilot_gate_math: Canon-Formel des capacity_gate (moe_layers.py:88) und
+    # die x0.15-Zweitexperten-Daempfung bei H < 1.8 — Stub-Werte.
+    ln8 = _torch.log(_torch.tensor(8.0))
+    h_low = float(0.3149)
+    gate_low = float(_torch.clamp(_torch.tensor(h_low) / ln8, min=0.25, max=1.0))
+    h_open = float(1.35)
+    gate_open = float(_torch.clamp(_torch.tensor(h_open) / ln8, min=0.25, max=1.0))
+    ok_gate = (abs(gate_low - 0.25) < 1e-9        # Floor-Klemme bei H=0.3149
+               and gate_open > 0.25)              # Oeffnung bei H=1.35
+    w1, w2 = 0.7, 0.5
+    damped = w2 * 0.15
+    norm = (w1 + damped) / (w1 + damped)           # Re-Norm auf 1.0 (:86)
+    ok_gate = ok_gate and abs(norm - 1.0) < 1e-9 and (w1 + damped) < (w1 + w2)
+
+    # pilot_seqtv_math: SEQ-TV-Formel (canon_tv je Position, Mittel über
+    # die registrierten Binnen-Positionen 1..T-2) — Stub-Verteilungen.
+    p_a = _torch.softmax(_torch.tensor([2.0, 1.0, 0.0]), dim=0)
+    p_b = _torch.softmax(_torch.tensor([2.0, 0.0, 1.0]), dim=0)
+    tv_pos = canon_tv(p_a, p_b)                    # [0,1]-Skala
+    ok_seqtv = tv_pos > 0.0 and tv_pos < 1.0
+
+    rows.append(("pilot_gate_math", "PILOT" if ok_gate else "BROKEN",
+                 f"clamp-Floor {gate_low:.4f}, offene Stute {gate_open:.4f}, "
+                 f"Re-Norm ok: {ok_gate}"))
+    rows.append(("pilot_seqtv_math", "PILOT" if ok_seqtv else "BROKEN",
+                 f"tv(a,b)={tv_pos:.4f} in (0,1)"))
     return rows
 
 
@@ -450,6 +524,161 @@ def eval_l11_anomaly(probe: MechInterpProbe, results: Dict[str, Any]) -> None:
     }
 
 
+def eval_argmax_gate(probe: MechInterpProbe, oracle: Any,
+                     results: Dict[str, Any]) -> None:
+    """V7 — SP3-Stummkanal als Argmax-Schwellen-Phaenomen (raw top1 ist ein
+    Nicht-Ziffern-Token; Steering hebt '1' ueber die Argmax-Schwelle)."""
+    digit_ids: set = set()
+    for d in range(10):
+        enc = probe.tokenizer.encode(str(d), add_special_tokens=False)
+        if (len(enc) == 1
+                and probe.tokenizer.decode([enc[0]], skip_special_tokens=True)
+                .lstrip(" ") == str(d)):
+            digit_ids.add(int(enc[0]))
+    top1_rows: Dict[str, Dict[str, Any]] = {}
+
+    def _measure(tag: str) -> None:
+        p = probe.last_probs(GENERIC_PROMPT)
+        m = probe.digit_mass(GENERIC_PROMPT)
+        top1 = int(p.argmax().item())
+        top1_rows[tag] = {
+            "top1_id": top1,
+            "top1_str": probe.tokenizer.decode([top1],
+                                               skip_special_tokens=True),
+            "top1_is_digit": top1 in digit_ids,
+            "p_top1": float(p.max().item()),
+            "p_digit1": m["digit_probs"].get("1", 0.0),
+            "digit_mass": m["M_digit"],
+        }
+
+    pred_value_raw = oracle.predict_value(GENERIC_PROMPT)
+    _measure("raw")
+    with oracle.steer({"experts": list(EX_WITT), "steer": STEER_AMPLITUDE}):
+        pred_value_full = oracle.predict_value(GENERIC_PROMPT)
+        _measure("full")
+    with probe.steer_band(EX_WITT, BAND_CORE):
+        _measure("core")
+    with probe.steer_band(EX_WITT, BAND_EDGE):
+        _measure("edge")
+
+    dm = {tag: top1_rows[tag]["digit_mass"] - top1_rows["raw"]["digit_mass"]
+          for tag in ("full", "core", "edge")}
+    gaps = {tag: top1_rows[tag]["p_top1"] - top1_rows[tag]["p_digit1"]
+            for tag in ("raw", "core", "full", "edge")}
+    results["argmax_gate"] = {
+        "digit_ids": sorted(digit_ids),
+        "top1": top1_rows,
+        "dm": dm,
+        "gaps": gaps,
+        "pred_value_raw": str(pred_value_raw),
+        "pred_value_full": str(pred_value_full),
+        "raw_top1_not_digit": not top1_rows["raw"]["top1_is_digit"],
+        "raw_pred_unknown": pred_value_raw == "unknown",
+        "full_flip_to_digit": top1_rows["full"]["top1_is_digit"],
+        "edge_flip_to_digit": top1_rows["edge"]["top1_is_digit"],
+        "dm_positive_all": all(v > 0.0 for v in dm.values()),
+        "gap_core_smaller": gaps["core"] < gaps["raw"],
+    }
+
+
+def eval_sequence_dissociation(probe: MechInterpProbe,
+                               results: Dict[str, Any]) -> None:
+    """V8 — SEQ-TV ueber ALLE Binnen-Positionen t=1..T-2 (teacher-forced):
+    das V3-Last-Token-Datum ist ein Phaenomen am Satzende, die Domänen-
+    Kaussäule sitzt mitten im Text (KO-Band = Core 4..23)."""
+    groups = {"prose": DOMAINS["prose"], "code": DOMAINS["code"]}
+    rows: List[Dict[str, Any]] = []
+    acc = {g: {"ko_prose": [], "ko_code": []} for g in groups}
+    ce_acc = {g: {"ko_prose": [], "ko_code": []} for g in groups}
+    for group, texts in groups.items():
+        for text in texts:
+            p_raw = probe.token_probs(text)          # [T, V] fp32
+            T = int(p_raw.shape[0])
+            ids = probe._encode(text)                # [1, T] (deterministisch)
+            binn = list(range(1, T - 1))             # registriert: 1..T-2
+            tvs: Dict[str, List[float]] = {}
+            ces: Dict[str, float] = {}
+            ce_raw = float((-torch.log(
+                p_raw[:T - 1].clamp_min(1e-12)
+                .gather(1, ids[0, 1:T].unsqueeze(1))
+                .view(-1))).mean().item())
+            with probe.knockout_experts(KO_PROSE, BAND_CORE):
+                p_ko1 = probe.token_probs(text)
+            with probe.knockout_experts(KO_CODE, BAND_CORE):
+                p_ko2 = probe.token_probs(text)
+            for tag, p_ko in (("ko_prose", p_ko1), ("ko_code", p_ko2)):
+                tvs[tag] = [canon_tv(p_raw[i], p_ko[i]) for i in binn]
+                ces[tag] = float((-torch.log(
+                    p_ko[:T - 1].clamp_min(1e-12)
+                    .gather(1, ids[0, 1:T].unsqueeze(1))
+                    .view(-1))).mean().item()) - ce_raw
+            rows.append({
+                "group": group, "text": text, "n_tokens": T,
+                "mean_seq_tv_ko_prose": float(sum(tvs["ko_prose"]) / len(tvs["ko_prose"])),
+                "mean_seq_tv_ko_code": float(sum(tvs["ko_code"]) / len(tvs["ko_code"])),
+                "seq_tv_ko_prose": tvs["ko_prose"],
+                "seq_tv_ko_code": tvs["ko_code"],
+                "dce_ko_prose": ces["ko_prose"], "dce_ko_code": ces["ko_code"],
+            })
+            acc[group]["ko_prose"].append(float(sum(tvs["ko_prose"]) / len(tvs["ko_prose"])))
+            acc[group]["ko_code"].append(float(sum(tvs["ko_code"]) / len(tvs["ko_code"])))
+            ce_acc[group]["ko_prose"].append(ces["ko_prose"])
+            ce_acc[group]["ko_code"].append(ces["ko_code"])
+
+    def _mean(xs: List[float]) -> float:
+        return float(sum(xs) / len(xs)) if xs else 0.0
+
+    prose_kopro = _mean(acc["prose"]["ko_prose"])
+    prose_kocode = _mean(acc["prose"]["ko_code"])
+    code_kopro = _mean(acc["code"]["ko_prose"])
+    code_kocode = _mean(acc["code"]["ko_code"])
+    results["sequence_dissociation"] = {
+        "rows_6": rows,
+        "prose_mean_seq_tv_ko_prose": prose_kopro,
+        "prose_mean_seq_tv_ko_code": prose_kocode,
+        "code_mean_seq_tv_ko_prose": code_kopro,
+        "code_mean_seq_tv_ko_code": code_kocode,
+        "prose_mean_dce_ko_prose": _mean(ce_acc["prose"]["ko_prose"]),
+        "prose_mean_dce_ko_code": _mean(ce_acc["prose"]["ko_code"]),
+        "code_mean_dce_ko_prose": _mean(ce_acc["code"]["ko_prose"]),
+        "code_mean_dce_ko_code": _mean(ce_acc["code"]["ko_code"]),
+        "dissociation_prose_seq": bool(prose_kopro > prose_kocode),
+        "dissociation_code_seq": bool(code_kocode > code_kopro),
+    }
+
+
+def eval_l11_shield(probe: MechInterpProbe, results: Dict[str, Any]) -> None:
+    """V9 — Capacity-Gate-Schild an ℓ11 (canon-Formel je Token,
+    moe_layers.py:85-88): die prose-Entropie klemmt das Gate auf den
+    Minimum-Wert, Expert-2 zusaetzlich ×0.15 (:79-84)."""
+    ln8 = math.log(probe.n_experts)
+    texts = (DOMAINS["prose"] + DOMAINS["code"] + DOMAINS["math_logic"])
+    per_text: List[Dict[str, Any]] = []
+    for text in texts:
+        tr = probe.tokenwise_routing(text)
+        T = tr["n_tokens"]
+        ent_l11 = [tr["ent"][t][11] for t in range(T)]
+        gates_l11 = [min(max(e / ln8, 0.25), 1.0) for e in ent_l11]
+        floor_frac = sum(1 for g in gates_l11 if g <= 0.25 + 1e-9) / T
+        per_text.append({
+            "text": text,
+            "mean_h_l11": float(sum(ent_l11) / T),
+            "mean_gate_l11": float(sum(gates_l11) / T),
+            "gate_floor_frac": floor_frac,
+            "ent_l11_per_token": ent_l11,
+        })
+    prose_rows = [r for r in per_text if r["text"] in DOMAINS["prose"]]
+    results["l11_shield"] = {
+        "per_text": per_text,          # 9 (prose-Kontrolle + code + math)
+        "prose_mean_h_l11": [r["mean_h_l11"] for r in prose_rows],
+        "prose_mean_gate_l11": [r["mean_gate_l11"] for r in prose_rows],
+        "prose_gate_floor_frac": [r["gate_floor_frac"] for r in prose_rows],
+        "low_entropy_all": all(r["mean_h_l11"] < 1.8 for r in prose_rows),
+        "deep_damped_all": all(r["mean_gate_l11"] <= 0.30
+                               for r in prose_rows),
+    }
+
+
 def run_gpu(checkpoint_base: str, checkpoint_machines: str,
             results: Dict[str, Any], findings: List[Tuple[str, str, str]]) -> None:
     from machines.verify_machines import _load_machines_model
@@ -493,6 +722,12 @@ def run_gpu(checkpoint_base: str, checkpoint_machines: str,
              lambda: eval_l17_localization(probe, paris_id, results)),
             ("mi3_prose_l11_anomaly_probe",
              lambda: eval_l11_anomaly(probe, results)),
+            ("mi3_argmax_gate_opening_p4",
+             lambda: eval_argmax_gate(probe, oracle, results)),
+            ("mi3_sequence_loss_dissociation_p4",
+             lambda: eval_sequence_dissociation(probe, results)),
+            ("mi3_l11_capacity_gate_shield_p4",
+             lambda: eval_l11_shield(probe, results)),
     ):
         try:
             fn()
@@ -515,6 +750,9 @@ RESULT_KEYS = {
     "mi3_paris_circuit_resilience": "paris_resilience",
     "mi3_layer17_paris_localization": "l17_localization",
     "mi3_prose_l11_anomaly_probe": "l11_anomaly",
+    "mi3_argmax_gate_opening_p4": "argmax_gate",
+    "mi3_sequence_loss_dissociation_p4": "sequence_dissociation",
+    "mi3_l11_capacity_gate_shield_p4": "l11_shield",
 }
 
 
@@ -580,6 +818,41 @@ def classify(name: str, results: Dict[str, Any]) -> Tuple[str, str]:
                 f"ko{{1,2}}(ℓ11)={p['mean_k12']:.4f}")
         return ("PASS", note) if p["outlier_causal"] else ("FAIL", note)
 
+    if name == "mi3_argmax_gate_opening_p4":
+        p = results["argmax_gate"]
+        note = (f"raw_top1={p['top1']['raw']['top1_str']!r} "
+                f"pred_value_raw={p['pred_value_raw']!r}; "
+                f"full_top1={p['top1']['full']['top1_str']!r} "
+                f"pred_value_full={p['pred_value_full']!r}; "
+                f"ΔM full={p['dm']['full']:.4f} core={p['dm']['core']:.4f} "
+                f"edge={p['dm']['edge']:.4f}; gap_raw={p['gaps']['raw']:.4f} "
+                f"gap_core={p['gaps']['core']:.4f}")
+        ok = (p["raw_top1_not_digit"] and p["full_flip_to_digit"]
+              and p["dm_positive_all"] and p["gap_core_smaller"])
+        return ("PASS", note) if ok else ("FAIL", note)
+
+    if name == "mi3_sequence_loss_dissociation_p4":
+        p = results["sequence_dissociation"]
+        note = (f"SEQ-TV code: ko_code={p['code_mean_seq_tv_ko_code']:.4f} vs "
+                f"ko_prose={p['code_mean_seq_tv_ko_prose']:.4f}; prose: "
+                f"ko_prose={p['prose_mean_seq_tv_ko_prose']:.4f} vs "
+                f"ko_code={p['prose_mean_seq_tv_ko_code']:.4f} "
+                f"(ΔCE code {p['code_mean_dce_ko_code']:+.4f}/"
+                f"{p['code_mean_dce_ko_prose']:+.4f})")
+        ok = p["dissociation_code_seq"] and p["dissociation_prose_seq"]
+        return ("PASS", note) if ok else ("FAIL", note)
+
+    if name == "mi3_l11_capacity_gate_shield_p4":
+        p = results["l11_shield"]
+        note = ("prose ℓ11: mean-H="
+                + "/".join(f"{h:.3f}" for h in p["prose_mean_h_l11"])
+                + " mean-gate="
+                + "/".join(f"{g:.3f}" for g in p["prose_mean_gate_l11"])
+                + f" floor_frac="
+                + "/".join(f"{f:.2f}" for f in p["prose_gate_floor_frac"]))
+        ok = p["low_entropy_all"] and p["deep_damped_all"]
+        return ("PASS", note) if ok else ("FAIL", note)
+
     return ("OFFEN", "unregistriertes Verdict — kein stiller Fallback.")
 
 
@@ -622,7 +895,10 @@ def main() -> int:
                   "mi3_domain_knockout_specificity",
                   "mi3_paris_circuit_resilience",
                   "mi3_layer17_paris_localization",
-                  "mi3_prose_l11_anomaly_probe")
+                  "mi3_prose_l11_anomaly_probe",
+                  "mi3_argmax_gate_opening_p4",
+                  "mi3_sequence_loss_dissociation_p4",
+                  "mi3_l11_capacity_gate_shield_p4")
     if args.gpu and not gpu_broken:
         for name in registered:
             if name in {f[0] for f in findings if f[1] == "BROKEN"}:
@@ -670,7 +946,7 @@ def main() -> int:
         "data": data,
     }
     json_path = args.json if args.json is not None else \
-        ("scratches/mi3_interventions.json" if args.gpu else None)
+        ("scratches/mi3_interventions_p4.json" if args.gpu else None)
     if json_path is not None:
         with open(json_path, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, ensure_ascii=False, indent=2)

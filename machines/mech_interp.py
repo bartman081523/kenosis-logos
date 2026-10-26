@@ -458,6 +458,48 @@ class MechInterpProbe:
         logits = self.model(ids).logits[0, -1].detach()
         return torch.softmax(logits.float(), dim=-1)
 
+    @torch.no_grad()
+    def token_probs(self, text: str) -> torch.Tensor:
+        """[T, V] fp32-Softmax je Token-Position (teacher-forced; offizieller
+        Kopf-Pfad) — Basis für SEQ-TV / CE-Messungen über die Sequenz."""
+        ids = self._encode(text)
+        logits = self.model(ids).logits[0].detach()
+        return torch.softmax(logits.float(), dim=-1)
+
+    @torch.no_grad()
+    def tokenwise_routing(self, text: str) -> Dict[str, Any]:
+        """Tokenweise Routing-Trajektorie (EINHEIT T2, MI-4-Instrument):
+        Forward-Hooks auf allen 26 Gates; pct[T][26][8] trägt die
+        normalisierten top_weights (inkl. capacity_gate und 0.15-Dämpfung,
+        exakt canon moe_layers.py:80-92), ent[T][26] die canon
+        router_entropy je Token und Schicht. Assembly in assemble_pct (R2:
+        pilot-lauffähig ohne Modell)."""
+        L = self.n_layers
+        collected: List[Tuple[int, torch.Tensor, torch.Tensor, torch.Tensor]] = []
+
+        def _gate_hook(li: int):
+            def hook_fn(_module, _inp, out):
+                top_indices, top_weights, router_ent = out
+                collected.append((li, top_indices.detach(),
+                                  top_weights.detach(),
+                                  router_ent.detach().float()))
+            return hook_fn
+
+        handles = [layer.moe.gate.register_forward_hook(_gate_hook(li))
+                   for li, layer in enumerate(self.model.model.layers)]
+        ids = None
+        try:
+            ids = self._encode(text)
+            self.model(ids)
+        finally:
+            for handle in handles:
+                handle.remove()
+        if len(collected) != L:
+            raise RuntimeError(
+                f"tokenwise_routing: {len(collected)} statt {L} Gate-Hook-"
+                "Captures — Gerät-Bruch, kein stiller Fallback.")
+        return assemble_pct(collected, self.n_experts, L)
+
 
 CRYSTAL_MIN_TAIL = 2  # Registrierung: stabiler TAIL >= 2 Schichten gilt als Fenster
 
@@ -515,6 +557,38 @@ def apply_expert_knockout(buffer: torch.Tensor, experts: Sequence[int],
                     f"apply_expert_knockout: Experte {e} außerhalb "
                     f"[0, {buffer.numel()})")
             buffer[e] += float(penalty)
+
+
+def assemble_pct(collected: Sequence[Tuple[int, torch.Tensor, torch.Tensor,
+                                       torch.Tensor]],
+                 n_experts: int, n_layers: int) -> Dict[str, Any]:
+    """Canon-Assembly der tokenweisen Routing-Captures (moe_layers.py:
+    top_weights sind normalisiert + ggf. 0.15-gedämpft + capacity_gate-
+    skaliert, sonst 0): pct[T][L][E], ent[T][L]. Reine Tensor-Mathe — vom
+    CPU-Piloten ohne Modell ausführbar (R2)."""
+    if not collected:
+        raise ValueError("assemble_pct: leere Capture-Liste.")
+    ordered = sorted(collected, key=lambda row: row[0])
+    if [row[0] for row in ordered] != list(range(n_layers)):
+        raise ValueError(
+            "assemble_pct: Schichtindizes unvollständig oder außerhalb der "
+            f"Reihenfolge ({[row[0] for row in ordered]}).")
+    ent_first = ordered[0][3]
+    T = int(ent_first.shape[0])
+    pct = [[[0.0] * n_experts for _ in range(n_layers)] for _ in range(T)]
+    ent: List[List[float]] = [[0.0] * n_layers for _ in range(T)]
+    for li, top_indices, top_weights, router_ent in ordered:
+        if int(router_ent.shape[0]) != T:
+            raise ValueError(
+                "assemble_pct: inkonsistente Token-Zahl über Schichten "
+                f"({int(router_ent.shape[0])} vs {T}).")
+        for t in range(T):
+            ent[t][li] = float(router_ent[t].item())
+            for k in range(int(top_weights.shape[1])):
+                e_idx = int(top_indices[t, k].item())
+                pct[t][li][e_idx] += float(top_weights[t, k].item())
+    return {"pct": pct, "ent": ent, "n_tokens": T, "n_layers": n_layers,
+            "n_experts": n_experts}
 
 
 def _store_layer(store: List[torch.Tensor], h: torch.Tensor,
