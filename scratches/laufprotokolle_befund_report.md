@@ -612,3 +612,45 @@ acc/dedrift-Serien, ERRATA-Texte).
 Run (2. Runde): `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python
 -u -m scratches.smoke_paradigm_ursprung` → exit 0.
 Vollfassung: `sprachspiel_bericht.md` §13.1.
+
+---
+
+## 16. SP12 — Lexical Grounding: das gelernte Wort wird Programm (laufschrift)
+
+**(2026-10-26;** Prereg `scratches/smoke_lexical_grounding.py`, Run
+`lexical_grounding_experiment.log/.json`;** CPU-only; ERSTE
+Maschinen-Code-Extension** des SP-Zyklus (`composite.py:108` Signatur
+opt-in + `wittgenstein_machine.py:383-424` `resolve_lexical_ast`); die
+Regression-Freiheit liefert `sp12_l0_anker` über die kommittete
+SP11-lane (bitidentisch).) Kern: die **LEXIKON-GEGENWART** scheidet Klang
+von Gebrauch — Klang-Dach max 0.983123 als DATUM (Formel-Achsen der 16
+Operatoren kollidieren numerisch); die Resolution ist reine Lexikon-Lesung,
+kein RNG-Zug.
+
+**Verdikt-Register (6 Zeilen: 6 PASS, 0 Errata, exit 0):**
+
+| Verdict | Einstufung | Kern |
+| :--- | :--- | :--- |
+| sp12_l0_anker | PASS | machines-Regression: kommittete SP11-lane fields_ok/first_detect_ok True, Doppel-Replay bitidentisch |
+| sp12_det | PASS | Doppel-Läufe Arm A und Arm B bitidentisch |
+| sp12_t1_semantik | PASS | 5 Runden learned; resonance_final 0.999808 ≥ 0.85; Resolver zu ('identity','x') direkt UND im Lauf; NACH-Kandidaten == ["identity"] |
+| sp12_t2_rng_reinheit | PASS | Batch-ASTs + rule_names + w_series identisch in A/A'/B — die Resolution konsumiert KEINE RNG-Züge |
+| sp12_t3_scheidung | PASS | vor_resolution [None×6] (SH-72-Fallback löst NIE auf); Klang-Dach als DATEN; opt-in-Default-Invarianz A == A' |
+| sp12_t4_verdikt | PASS | Arm A HALTED×6, Basis 3, expansions []; Arm B LOOP×6, Basis [5, 7, 9, ...], expansions step1-3:LOOP |
+
+**Kern:** das gelernte Wort wird Programm. VOR dem Spiel ist „spiegel"
+Klang — Resolver None, die Kette bleibt der normale RNG-Batch (alle
+HALTED, Basis 3). NACH 5 gelernten Runden (`lexicon_game[("spiegel",
+"identity")], noise_level=0.0`; Resonanztreppe 0.7447 → 0.9998,
+SP6-Halbwinkelkette) IST „spiegel" die Tautologie ('identity','x') →
+Selbst-Transition (composite.py:66-92) → LOOP → +2 Basis-Terme je LOOP
+(Turing-innerer Expand :241-246 + Composite :132-134) — Basis-Verlauf
+5, 7, 9, 9, 9, 9; ab Schritt 3 ist der Canon-Pool (6 Axiome) erschöpft,
+der Clamp ist DATEN. Der User-Pass exakt canonisch („Basis auf 5" nach
+dem ersten resolvierten Schritt). Mauer 1 (SP10 Wort-Blindheit) gebrochen:
+**Semantische Kausalität geschlossen** — erste der drei Nordstern-Säulen;
+Endogene Agency (SP13) und Individuierung (SP14) folgen.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_lexical_grounding` → `lexical_grounding_experiment.log/.json`.
+Hermeneutische Vollfassung: `sprachspiel_bericht.md` §14.

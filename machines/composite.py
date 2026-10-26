@@ -105,7 +105,7 @@ class CompositeMachine(BaseMachine):
         return TransitionTable(transitions, blank=BLANK)
 
     # -- Protokoll ------------------------------------------------------------
-    def step(self, obj: Any) -> StepResult:
+    def step(self, obj: Any, lexical_grounding: bool = False) -> StepResult:
         text = obj if isinstance(obj, str) else None
 
         # 1. Wittgenstein: Regel-Batch + Gültigkeit (uni_205-Mechanik);
@@ -117,7 +117,19 @@ class CompositeMachine(BaseMachine):
         rule = batch_rules[0] if batch_rules else None
         rule_name = rule.name if rule else "(leer)"
 
-        program = self.compile_rule(rule.ast if rule else ("identity", "x"))
+        # SP12 (opt-in): das gelernte Wort als Programm-Erzeuger. Die
+        # Resolution ist reine Lexikon-Lesung (kein RNG-Zug, kein
+        # Zustands-Mutieren) und ersetzt AUSSCHLIESSLICH das kompilierte
+        # Programm dieses Schritts — der generierte Batch (Regeln,
+        # Validität) bleibt unverändert im Verlauf (Herkunft dokumentiert
+        # in den invariants lexical_word/lexical_ast).
+        lexical_ast = None
+        if lexical_grounding and text is not None:
+            lexical_ast = self.wittgenstein.resolve_lexical_ast(text)
+
+        program = self.compile_rule(
+            lexical_ast if lexical_ast is not None
+            else (rule.ast if rule else ("identity", "x")))
 
         # 2. Turing: führe die Regel als Programm aus (uni_256-Verdikt).
         result_t = self.turing.step(program)
@@ -151,6 +163,9 @@ class CompositeMachine(BaseMachine):
             "rule_name": rule_name,
             "verdict": verdict,
             "transitions": transitions,
+            "lexical_word": text if lexical_grounding else None,
+            "lexical_ast": (str(lexical_ast) if lexical_ast is not None
+                            else None),
             "validity": result_w.invariants.get("validity"),
             "submachines": {
                 "goedel": {"gap": result_g.gap, "trend": result_g.trend},

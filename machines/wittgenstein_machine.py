@@ -379,6 +379,50 @@ class WittgensteinMachine(BaseMachine):
             })
         return protocol
 
+    # -- SP12 — lexikale AST-Auflösung (opt-in) --------------------------------
+    def resolve_lexical_ast(self, word: str, tau: float = 0.85) -> Optional[Tuple]:
+        """SP12 — das gelernte Wort wird Programm (Semantische Kausalität:
+        der soziale Gebrauch übersetzt den Input direkt in die Form des
+        Formalismus).
+
+        Reine Lexikon-Lesung — keine RNG-Züge, kein Zustands-Mutieren, keine
+        Seiteneffekte: der generierte Batch bleibt canonisch. Die Resonanz
+        des Wort-Embeddings gegen die AKTUELLE Lexikon-Einbettung jedes
+        AST-Operators projiziert das Wort auf den Operator höchster
+        Resonanz; ab tau (User-Prereg) wird der AST gebildet —
+        UNARY -> (op, 'x'), BINARY -> (op, 'x', 'x').
+
+        Klang-vs-Gebrauch-Scheidung (Vor-Smoke 2026-10-26): die SH-72-
+        Fallback-Achsen der 16 Operatoren liegen eng beieinander (Formel-
+        Achsen-Dach max 0.9831 > tau) — eine absolute Resonanz-Schwelle
+        scheidet NICHT zwischen Klang und Gebrauch. Die Scheidung ist die
+        LEXIKON-GEGENWART: Kandidaten sind ausschließlich im Lexikon
+        gelernte Operator-Wörter (Vorbild SP6/SP9 — Gebrauchs-Achse, nicht
+        Formel-Achse); ein Wort außerhalb des Lexikons oder ohne gelernten
+        Operator-Partner bleibt unresolviert (None), der SH-72-Fallback
+        (Klang) löst nie auf.
+
+        Canon-Kette des gelösten Falls: ('identity', 'x') wird in
+        composite.compile_rule (:66-92) als Identitäts-Tautologie in eine
+        Selbst-Transition übersetzt -> LOOP -> expand_basis (uni_256:113).
+        Canon-neutral: neue Methode, kein bestehender Pfad berührt."""
+        candidates = [op for op in SymbolicOperator.UNARY + SymbolicOperator.BINARY
+                      if op in self.tokenizer.lexicon]
+        if word not in self.tokenizer.lexicon or not candidates:
+            return None
+        base = self.tokenizer.embed_word(word)
+        best_op = None
+        best_res = -1.0
+        for op in candidates:
+            res = self.tokenizer.resonance(base, self.tokenizer.embed_word(op))
+            if res > best_res:
+                best_res, best_op = res, op
+        if best_op is None or best_res < tau:
+            return None
+        if best_op in SymbolicOperator.BINARY:
+            return (best_op, "x", "x")
+        return (best_op, "x")
+
     # -- Protokoll (uni_241-Gap über den Gültigkeits-Anteil) ------------------
     def step(self, obj: Any) -> StepResult:
         oracle_meta: Dict[str, Any] = {"oracle": None}

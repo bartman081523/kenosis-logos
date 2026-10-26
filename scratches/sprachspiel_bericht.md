@@ -23,6 +23,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
 | SP10 | **Kopplung** — Composite-Zyklus × Lexikon-Dynamik (die Regeln und die Wörter) | CPU | `composite.py:45-51` (exponierte Submaschinen), `wittgenstein_machine.py:244-256` (`_generate_ast` — wort-blind), `lexicon_game` (:342-380) |
 | SP11 | **Ursprung** — die Quelle der Paradigm-Ereignisse (ratio > 2.0) im Composite-Verlauf | CPU | `composite.py:132-140` (ZWEI Signal-Quellen an EIN Register), `:167-182` (Fensterformel), `goedel_machine.py:229-239`, `turing_machine.py:144-157` (loop_detector-Reset), `machine_base.py:51` (GAP_EPS) |
+| SP12 | **Wort→Programm** — das gelernte Wort wird Programm (Semantische Kausalität, opt-in) | CPU | `composite.py:108` (step opt-in `lexical_grounding`), `:126-132` (Resolution ersetzt NUR das Programm), `:66-92` (identity-Tautologie), `wittgenstein_machine.py:383-424` (`resolve_lexical_ast`), `turing_machine.py:241-246` (+2 Terme je LOOP) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -410,7 +411,24 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   Skript `scratches/smoke_paradigm_ursprung.py` (Prereg-Docstring mit
   vier Thesen, 8 Verdikten, OFFEN-Regel); committeter Anker
   `scratches/hermeneutik_experiment.json` (Signal-Kolumnen ex ante gelesen:
-  paradigm_ratio = Gödel, paradigm_detected = Composite).
+  paradigm_ratio = Gödel, paradigm_detected = Composite);
+- SP12: `machines/wittgenstein_machine.py:383-424` (`resolve_lexical_ast`:
+  reine Lexikon-Lesung — Kandidaten ausschließlich lexikon-gelernte
+  Operator-Wörter, τ = 0.85, BINARY → (op, 'x', 'x') / UNARY → (op, 'x');
+  Klang-Dach als DATUM: Formel-Achsen max 0.983123, argmax „min" — die
+  Scheidung ist die LEXIKON-GEGENWART, nicht die absolute Schwelle),
+  `machines/composite.py:108` (Signatur opt-in `lexical_grounding`),
+  `:126-132` (Resolution ersetzt ausschließlich das kompilierte Programm;
+  generierter Batch unverändert), `:162-168` (invariants
+  lexical_word/lexical_ast), `:66-92` (identity-Tautologie →
+  Selbst-Transition → LOOP), `machines/turing_machine.py:144-157`
+  (`expand_basis` EIN Term je Call) + `:241-246` (Turing-innerer Expand →
+  +2 Terme je LOOP, Basis 3→5→7); Lauf
+  `scratches/lexical_grounding_experiment.log` (6 PASS, exit 0) +
+  `scratches/lexical_grounding_experiment.json` (Zwilling A/A'/B mit
+  Batch-RNG-Markern); Skript `scratches/smoke_lexical_grounding.py`
+  (Prereg-Docstring, 6 Verdikte, P2-Freeze; L0-Anker über die kommittete
+  SP11-lane importiert statt kopiert).
 
 ---
 
@@ -905,3 +923,93 @@ log 37 Zeilen (ERRATA-Klassifikation gedruckt), json 4203 Zeilen. Run
 -u -m scratches.smoke_paradigm_ursprung` → exit 0.
 
 Laufschrift-Protokoll (P4): `laufprotokolle_befund_report.md` §15.1.
+
+---
+
+## 14. SP12 — Lexical Grounding: das gelernte Wort wird Programm (2026-10-26)
+
+**(2026-10-26, Task-1-Freigabe der Nordstern-Nachricht;** Prereg
+`scratches/smoke_lexical_grounding.py`, Run
+`lexical_grounding_experiment.log/.json`;** CPU-only; ERSTE
+Maschinen-Code-Extension** des SP-Zyklus: `machines/composite.py:108`
+(Signatur opt-in `lexical_grounding: bool = False`) +
+`machines/wittgenstein_machine.py:383-424` (`resolve_lexical_ast(word,
+tau = 0.85)`); beide Edits additiv und canon-neutral — die Garantie
+liefert `sp12_l0_anker`: die kommittete SP11-lane (`lane_l0_anker` aus
+dem committeten Skript IMPORTIERT, nicht kopiert) reproduziert
+fields_ok/first_detect_ok True und das Doppel-Replay bitidentisch; die
+neuen invariants-Keys (`lexical_word`/`lexical_ast`) ändern die
+verglichenen Feld-Serien nicht, weil die Auslese FELDWEISE läuft.)
+
+**Der Bridging-Punkt (Zeilenkanon, Mauer-1-Befreiung):** SP10 zeigte
+zeilenscharf, dass der Wort-Input stirbt: `composite.py:110` leitet `text`
+in die WM, `wm.step` liest ihn NIE — der Batch kommt aus
+`generate_experiments` (RNG). SP12 rührt NICHTS an dieser Diagnose, sondern
+setzt in die freie Stelle dazwischen — `composite.py:126-132`: bei opt-in
+löst `resolve_lexical_ast(text)` das Wort zum AST auf und ersetzt
+AUSSCHLIESSLICH das kompilierte Programm des Schritts; der generierte
+Batch (Regeln, Gültigkeit) bleibt unverändert im Verlauf, die Herkunft
+des Worts und seiner Übersetzung stehen in den invariants. Die Resolution
+ist reine Lexikon-Lesung — KEIN RNG-Zug; T2 beweist die Batch-Identität
+der drei Arme (A grounded / A' plain / B nach dem Lernen mit gepinnter
+WM-RNG).
+
+**Klang-vs-Gebrauch (der Vor-Smoke-Befund, dokumentiert VOR dem
+P2-Freeze):** die SH-72-Formel-Achsen der 16 Operatoren kollidieren
+numerisch — Formel-Dach max 0.983123 (argmax „min"; „spiegel" selbst
+k=2, idx=25, kind=exp). Eine ABSOLUTE Resonanz-Schwelle τ scheidet NICHT
+zwischen Klang und Gebrauch (das erste Smoked-Wort löste klanglich zu
+('min', 'x', 'x') auf). Die echte Scheidung ist die **LEXIKON-GEGENWART**:
+die Kandidaten des Resolvers sind ausschließlich lexikon-gelernte
+Operator-Wörter; der SH-72-Fallback (Klang) löst NIE auf. „Aktuelle
+Lexikon-Resonanz" wörtlich — Gebrauch schlägt Gematria (SP2/SP9-Stand,
+jetzt als Resolver-Mechanik).
+
+**Die Lern-Treppe:** 5 Runden `lexicon_game([("spiegel", "identity")],
+rounds = 5, noise_level = 0.0)` — alle learned = True; resonance_after
+[0.744742, 0.954255, 0.992537, 0.998802, 0.999808], die SP6-Halbwinkel-
+kette (0.4ⁿ-Shrink der Zwischenresonanz gegen 1.0); NACH-Resonanz
+0.999808 ≥ τ = 0.85, Argmax EINDEUTIG („identity" ist einziger
+lexikalischer Kandidat; `resolver_direct` = ('identity', 'x')).
+
+**Verdikt-Register (6 Zeilen: 6 PASS, 0 Errata, exit 0):**
+
+| Verdict | Einstufung | Kern |
+| :--- | :--- | :--- |
+| sp12_l0_anker | PASS | machines-Regression über die kommittete SP11-lane — fields_ok/first_detect_ok True, Doppel-Replay bitidentisch |
+| sp12_det | PASS | Doppel-Läufe Arm A und Arm B bitidentisch |
+| sp12_t1_semantik | PASS | alle 5 Runden learned; resonance_final 0.999808 ≥ 0.85; der Resolver löst direkt UND im Lauf zu ('identity','x'); NACH-Kandidaten == ["identity"] |
+| sp12_t2_rng_reinheit | PASS | Batch-ASTs + rule_names + w_series je Schritt identisch in A/A'/B — die Resolution konsumiert KEINE RNG-Züge |
+| sp12_t3_scheidung | PASS | vor_resolution == [None×6] (kein Klang-Auslösen); Klang-Dach als DATEN; opt-in-Default-Invarianz A == A' |
+| sp12_t4_verdikt | PASS | Arm A HALTED×6, Basis 3, expansions []; Arm B LOOP×6, Basis [5, 7, 9, ...], expansions step1-3:LOOP |
+
+**Die Semantische Kausalität (das Gesetz der Runde):** das gelernte Wort
+wird Programm. VOR dem Spiel ist „spiegel" Klang — Resolver None, die
+Kette bleibt der normale RNG-Batch (alle HALTED, Basis 3, keine
+Expansion). NACH dem Spiel IST „spiegel" die Tautologie —
+('identity', 'x') übersetzt sich in die Selbst-Transition
+(composite.py:66-92: der Zustand zeigt auf sich selbst), das LOOP-Verdikt,
+und je LOOP wächst die Basis UM ZWEI Terme: Turing-innerer Expand
+(`turing_machine.py:241-246`) + Composite-Expand (`:132-134,
+composite.py:144-146` aufgerufen) — Basis-Verlauf 5, 7, 9, 9, 9, 9; ab
+Schritt 3 ist der Canon-Pool (6 Axiome) erschöpft, der Clamp bei 9 ist
+DATEN, kein Band. Der User-Pass exakt canonisch: „Basis auf 5" nach dem
+ersten resolvierten Schritt, 7 nach dem zweiten.
+
+**Hermeneutische Lesung (die drei Sätze des Nordsterns, Satz 1):** die
+erste der drei Mauern ist gefallen — das soziale Lexikon schreibt jetzt
+IN die Berechnung, statt an ihr vorbei. Die Semantische Kausalität ist
+geschlossen als falsifizierbarer Mechanik-Befund: ein Wort, das die
+Mitspieler mit dem Gebrauch „identity" trainieren, verändert nachweislich
+das kompilierte Programm und damit die Halt-Eigenschaft des Turing-Laufs
+(HALTED → LOOP). Offen für den geschlossenen Zyklus: die ENDOGENE Agency
+(SP13 — kontrafaktisches Probehandeln, `_snapshot`/`_restore_snapshot`,
+`step_autonomous`) und Individuierung (SP14 — zwei baugleiche Maschinen,
+verschiedene Biografien).
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_lexical_grounding` → exit 0. Vor-Smoke-Befunde (Klang-Dach,
++2-Mechanik, L0-Replay) im Plan `~/.claude/plans/sp12-lexical-grounding.md`
+(Änderungsnotizen 1-3), dokumentiert VOR dem P2-Freeze.
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §16.

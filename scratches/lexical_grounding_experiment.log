@@ -1,0 +1,31 @@
+== SP12 — Lexical Grounding: das gelernte Wort wird Programm ==
+Canon: composite.py:108-140/:66-92, turing_machine.py:144-157/:241-246,
+       wittgenstein_machine.py:49-50/:152-246/:342-381
+Prereg tau = 0.85; 5 Lernrunden, noise_level 0.0; seed 42; 6 Schritte
+
+BEFUNDE:
+  sp12_l0_anker              PASS
+  sp12_det                   PASS
+  sp12_t1_semantik           PASS
+  sp12_t2_rng_reinheit       PASS
+  sp12_t3_scheidung          PASS
+  sp12_t4_verdikt            PASS
+
+NOTIZEN:
+  - sp12_l0_anker: machines-Regression über die kommittete SP11-Lane — die committeten Feld-Serien bleiben bitidentisch; fields_ok=True; first_detect_ok=True; deterministic=True
+  - sp12_det: Zwilling-Doppel-Läufe bitidentisch; arm_a=True; arm_b=True
+  - sp12_t1_semantik: 5 Lernrunden (noise_level=0.0) — Gebrauchs-Achse resonance_after[-1] >= tau; der Resolver löst direkt UND im Lauf zu ('identity', 'x') auf; learned=[True, True, True, True, True]; resonance_after=[0.744742, 0.954255, 0.992537, 0.998802, 0.999808]; resonance_final=0.999808; resolver_direct=('identity', 'x'); nach_kandidaten=['identity']; nach_resonanzen={'identity': 0.999808}
+  - sp12_t2_rng_reinheit: Batch-ASTs + rule_names + w_series je Schritt identisch in A/A'/B — die Resolution ist reine Lexikon-Lesung (kein RNG-Zug); batches_a_plain=True; batches_a_b=True
+  - sp12_t3_scheidung: Vor dem Spiel löst der SH-72-Fallback NICHT auf (Klang-Dach als DATEN; die LEXIKON-Gegenwart ist die Scheidung); opt-in-Default-Invarianz A == A'; vor_resolution=[None, None, None, None, None, None]; klang_dach_max=0.983123; klang_dach_argmax=min; spiegel_formula={'k': 2, 'idx': 25, 'kind': 'exp'}
+  - sp12_t4_verdikt: Arm B: das gelernte Wort wird Programm — ('identity','x') ist Tautologie -> LOOP -> +2 Basis-Terme je LOOP (Turing-innerer Expand :241-246 + Composite :132-134); Schritte 3-6 DATEN (Pool-Mechanik); verdicts_a=['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED']; verdicts_b=['LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP']; basis_a=3; basis_b_sizes=[5, 7, 9, 9, 9, 9]; expansions_a=[]; expansions_b=['step1:LOOP', 'step2:LOOP', 'step3:LOOP']
+
+Zwilling (seed 42, 6 Schritte, obj='spiegel'):
+  Arm A verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED'] | final_basis 3 | expansions []
+  Arm B verdicts: ['LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP'] | final_basis 9 | expansions ['step1:LOOP', 'step2:LOOP', 'step3:LOOP']
+  Arm B basis-Verlauf: [5, 7, 9, 9, 9, 9]
+  Arm B lexical: spiegel -> ('identity', 'x')
+  resonance_after: [0.744742, 0.954255, 0.992537, 0.998802, 0.999808]
+
+BILANZ: 6 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+JSON: scratches/lexical_grounding_experiment.json
+GRUEN — Semantische Kausalität geschlossen (das gelernte Wort wird Programm).

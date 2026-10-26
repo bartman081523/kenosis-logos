@@ -1,0 +1,1576 @@
+{
+  "all_pass": true,
+  "det": {
+    "arm_a_deterministic": true,
+    "arm_b_deterministic": true
+  },
+  "findings": [
+    {
+      "assert": true,
+      "data": {
+        "deterministic": true,
+        "fields_ok": true,
+        "first_detect_ok": true
+      },
+      "id": "sp12_l0_anker",
+      "note": "machines-Regression über die kommittete SP11-Lane — die committeten Feld-Serien bleiben bitidentisch"
+    },
+    {
+      "assert": true,
+      "data": {
+        "arm_a": true,
+        "arm_b": true
+      },
+      "id": "sp12_det",
+      "note": "Zwilling-Doppel-Läufe bitidentisch"
+    },
+    {
+      "assert": true,
+      "data": {
+        "learned": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "nach_kandidaten": [
+          "identity"
+        ],
+        "nach_resonanzen": {
+          "identity": 0.999808
+        },
+        "resolver_direct": "('identity', 'x')",
+        "resonance_after": [
+          0.744742,
+          0.954255,
+          0.992537,
+          0.998802,
+          0.999808
+        ],
+        "resonance_final": 0.999808
+      },
+      "id": "sp12_t1_semantik",
+      "note": "5 Lernrunden (noise_level=0.0) — Gebrauchs-Achse resonance_after[-1] >= tau; der Resolver löst direkt UND im Lauf zu ('identity', 'x') auf"
+    },
+    {
+      "assert": true,
+      "data": {
+        "batches_a_b": true,
+        "batches_a_plain": true
+      },
+      "id": "sp12_t2_rng_reinheit",
+      "note": "Batch-ASTs + rule_names + w_series je Schritt identisch in A/A'/B — die Resolution ist reine Lexikon-Lesung (kein RNG-Zug)"
+    },
+    {
+      "assert": true,
+      "data": {
+        "klang_dach_argmax": "min",
+        "klang_dach_max": 0.983123,
+        "spiegel_formula": {
+          "idx": 25,
+          "k": 2,
+          "kind": "exp"
+        },
+        "vor_resolution": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "id": "sp12_t3_scheidung",
+      "note": "Vor dem Spiel löst der SH-72-Fallback NICHT auf (Klang-Dach als DATEN; die LEXIKON-Gegenwart ist die Scheidung); opt-in-Default-Invarianz A == A'"
+    },
+    {
+      "assert": true,
+      "data": {
+        "basis_a": 3,
+        "basis_b_sizes": [
+          5,
+          7,
+          9,
+          9,
+          9,
+          9
+        ],
+        "expansions_a": [],
+        "expansions_b": [
+          "step1:LOOP",
+          "step2:LOOP",
+          "step3:LOOP"
+        ],
+        "verdicts_a": [
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED"
+        ],
+        "verdicts_b": [
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP"
+        ]
+      },
+      "id": "sp12_t4_verdikt",
+      "note": "Arm B: das gelernte Wort wird Programm — ('identity','x') ist Tautologie -> LOOP -> +2 Basis-Terme je LOOP (Turing-innerer Expand :241-246 + Composite :132-134); Schritte 3-6 DATEN (Pool-Mechanik)"
+    }
+  ],
+  "l0": {
+    "deterministic": true,
+    "fields_ok": true,
+    "first_detect_ok": true,
+    "result": {
+      "fields_ok": true,
+      "first_detect_ok": true,
+      "kripke": {
+        "checks": {
+          "expansions": true,
+          "final_basis": true,
+          "gaps": true,
+          "paradigm_detected": true,
+          "paradigm_ratio": true,
+          "verdicts": true
+        },
+        "run": {
+          "basis_size": 7,
+          "expansions": [
+            "step5:LOOP",
+            "step9:LOOP",
+            "step11:paradigm",
+            "step12:paradigm",
+            "step15:paradigm"
+          ],
+          "final_basis": 7,
+          "g_series": [
+            0.8622746589183378,
+            1.3702044925908134,
+            1.1241707503045695,
+            0.8389570498201602,
+            1.0398535844897427,
+            0.5302965550343653,
+            0.2984547296486207,
+            0.2798236873853652,
+            0.5314271260708487,
+            0.12724860813754799,
+            0.37036170033635746,
+            0.19955206051912738,
+            0.04079828317833693,
+            0.0581515868423452,
+            0.247485844265048,
+            0.10778557098568173
+          ],
+          "gap_series": [
+            0.6763136177876604,
+            0.623401469752498,
+            1.3747230834351065,
+            2.94631634994272,
+            0.5132845003854745,
+            1.3989873331597389,
+            5.099479909887874,
+            5.093269562466789,
+            0.9104755620236457,
+            6.3757432027188505,
+            1.1234537001121592,
+            1.7331836035064798,
+            8.680257427734778,
+            8.686041862289448,
+            2.7491610591997566,
+            4.535926273663018
+          ],
+          "para_steps": [
+            11,
+            12,
+            15
+          ],
+          "rows": [
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8622746589183378,
+              "g_ratio": null,
+              "gap": 0.6763136177876604,
+              "new_expansions": [],
+              "rule_name": "(x power exp((x add x)))",
+              "step": 1,
+              "t_count": 2,
+              "t_gap": 0.6666664444445185,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.499999750000125
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.3702044925908134,
+              "g_ratio": null,
+              "gap": 0.623401469752498,
+              "new_expansions": [],
+              "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+              "step": 2,
+              "t_count": 7,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.1241707503045695,
+              "g_ratio": null,
+              "gap": 1.3747230834351065,
+              "new_expansions": [],
+              "rule_name": "(2.72 divide (2.00 subtract x))",
+              "step": 3,
+              "t_count": 8,
+              "t_gap": 2.99999850000075,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8389570498201602,
+              "g_ratio": null,
+              "gap": 2.94631634994272,
+              "new_expansions": [],
+              "rule_name": "sqrt(1.00)",
+              "step": 4,
+              "t_count": 8,
+              "t_gap": 7.9999920000080005,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.0398535844897427,
+              "g_ratio": null,
+              "gap": 0.5132845003854745,
+              "new_expansions": [
+                "step5:LOOP"
+              ],
+              "rule_name": "log(square(identity(x)))",
+              "step": 5,
+              "t_count": 13,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "LOOP",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.5302965550343653,
+              "g_ratio": null,
+              "gap": 1.3989873331597389,
+              "new_expansions": [],
+              "rule_name": "((sqrt(x) divide x) add 2.00)",
+              "step": 6,
+              "t_count": 15,
+              "t_gap": 3.6666654444448517,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2984547296486207,
+              "g_ratio": null,
+              "gap": 5.099479909887874,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 7,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2798236873853652,
+              "g_ratio": null,
+              "gap": 5.093269562466789,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 8,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.5314271260708487,
+              "g_ratio": null,
+              "gap": 0.9104755620236457,
+              "new_expansions": [
+                "step9:LOOP"
+              ],
+              "rule_name": "identity(x)",
+              "step": 9,
+              "t_count": 19,
+              "t_gap": 2.199999560000088,
+              "transitions": 4,
+              "verdict": "LOOP",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.12724860813754799,
+              "g_ratio": 0.3375536891768431,
+              "gap": 6.3757432027188505,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 10,
+              "t_count": 19,
+              "t_gap": 18.999981000019,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": true,
+              "c_ratio": 3.077570931133521,
+              "g_detected": false,
+              "g_gap": 0.37036170033635746,
+              "g_ratio": 0.33452276678733855,
+              "gap": 1.1234537001121592,
+              "new_expansions": [
+                "step11:paradigm"
+              ],
+              "rule_name": "(((x divide x) add x) min (x multiply (x max x)))",
+              "step": 11,
+              "t_count": 23,
+              "t_gap": 2.99999940000012,
+              "transitions": 4,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": true,
+              "c_ratio": 2.9633360477238924,
+              "g_detected": false,
+              "g_gap": 0.19955206051912738,
+              "g_ratio": 0.3482358598577179,
+              "gap": 1.7331836035064798,
+              "new_expansions": [
+                "step12:paradigm"
+              ],
+              "rule_name": "(sqrt(1.00) subtract ((0.00 max x) divide 0.00))",
+              "step": 12,
+              "t_count": 26,
+              "t_gap": 4.999998750000312,
+              "transitions": 3,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": 1.6885456944940591,
+              "g_detected": false,
+              "g_gap": 0.04079828317833693,
+              "g_ratio": 0.32014604606114716,
+              "gap": 8.680257427734778,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 13,
+              "t_count": 26,
+              "t_gap": 25.999974000026,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": 1.6990493558986421,
+              "g_detected": false,
+              "g_gap": 0.0581515868423452,
+              "g_ratio": 0.20842236088700422,
+              "gap": 8.686041862289448,
+              "new_expansions": [],
+              "rule_name": "exp(x)",
+              "step": 14,
+              "t_count": 26,
+              "t_gap": 25.999974000026,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": true,
+              "c_ratio": 2.569057452219217,
+              "g_detected": false,
+              "g_gap": 0.247485844265048,
+              "g_ratio": 0.2617123953450734,
+              "gap": 2.7491610591997566,
+              "new_expansions": [
+                "step15:paradigm"
+              ],
+              "rule_name": "(log(negate(x)) add x)",
+              "step": 15,
+              "t_count": 28,
+              "t_gap": 7.999997333334222,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": 1.8368857696910825,
+              "g_detected": false,
+              "g_gap": 0.10778557098568173,
+              "g_ratio": 0.1950745945536218,
+              "gap": 4.535926273663018,
+              "new_expansions": [],
+              "rule_name": "(2.72 subtract log(x))",
+              "step": 16,
+              "t_count": 29,
+              "t_gap": 13.499993250003374,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            }
+          ],
+          "t_series": [
+            0.6666664444445185,
+            0.49999991666668053,
+            2.99999850000075,
+            7.9999920000080005,
+            0.49999991666668053,
+            3.6666654444448517,
+            14.999985000015002,
+            14.999985000015002,
+            2.199999560000088,
+            18.999981000019,
+            2.99999940000012,
+            4.999998750000312,
+            25.999974000026,
+            25.999974000026,
+            7.999997333334222,
+            13.499993250003374
+          ],
+          "trace": [
+            "step=1 rule=(x power exp((x add x))) verdict=HALTED transitions=2 gap_mean=0.676314 trend=UNKNOWN",
+            "step=2 rule=(((x subtract x) subtract (x multiply x)) subtract verdict=HALTED transitions=5 gap_mean=0.623401 trend=UNKNOWN",
+            "step=3 rule=(2.72 divide (2.00 subtract x)) verdict=HALTED transitions=1 gap_mean=1.374723 trend=UNKNOWN",
+            "step=4 rule=sqrt(1.00) verdict=HALTED transitions=0 gap_mean=2.946316 trend=UNKNOWN",
+            "step=5 rule=log(square(identity(x))) verdict=LOOP transitions=5 gap_mean=0.513285 trend=RISING",
+            "step=6 rule=((sqrt(x) divide x) add 2.00) verdict=HALTED transitions=2 gap_mean=1.398987 trend=RISING",
+            "step=7 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.099480 trend=RISING",
+            "step=8 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.093270 trend=RISING",
+            "step=9 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.910476 trend=RISING",
+            "step=10 rule=x verdict=HALTED transitions=0 gap_mean=6.375743 trend=RISING",
+            "step=11 rule=(((x divide x) add x) min (x multiply (x max x))) verdict=HALTED transitions=4 gap_mean=1.123454 trend=RISING",
+            "step=12 rule=(sqrt(1.00) subtract ((0.00 max x) divide 0.00)) verdict=HALTED transitions=3 gap_mean=1.733184 trend=RISING",
+            "step=13 rule=x verdict=HALTED transitions=0 gap_mean=8.680257 trend=STABLE",
+            "step=14 rule=exp(x) verdict=HALTED transitions=0 gap_mean=8.686042 trend=RISING",
+            "step=15 rule=(log(negate(x)) add x) verdict=HALTED transitions=2 gap_mean=2.749161 trend=STABLE",
+            "step=16 rule=(2.72 subtract log(x)) verdict=HALTED transitions=1 gap_mean=4.535926 trend=RISING"
+          ],
+          "verdict_exp_steps": [
+            5,
+            9
+          ],
+          "w_series": [
+            0.499999750000125,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "kripke_attribution": [
+        {
+          "c_detected": true,
+          "c_ratio": 3.077570931133521,
+          "g_detected": false,
+          "g_ratio": 0.33452276678733855,
+          "step": 11
+        },
+        {
+          "c_detected": true,
+          "c_ratio": 2.9633360477238924,
+          "g_detected": false,
+          "g_ratio": 0.3482358598577179,
+          "step": 12
+        },
+        {
+          "c_detected": true,
+          "c_ratio": 2.569057452219217,
+          "g_detected": false,
+          "g_ratio": 0.2617123953450734,
+          "step": 15
+        }
+      ],
+      "quus": {
+        "checks": {
+          "expansions": true,
+          "final_basis": true,
+          "gaps": true,
+          "paradigm_detected": true,
+          "paradigm_ratio": true,
+          "verdicts": true
+        },
+        "run": {
+          "basis_size": 5,
+          "expansions": [
+            "step5:LOOP",
+            "step11:paradigm",
+            "step12:paradigm",
+            "step15:paradigm"
+          ],
+          "final_basis": 5,
+          "g_series": [
+            0.8622746589183378,
+            1.3702044925908134,
+            1.1241707503045695,
+            0.8389570498201602,
+            1.0398535844897427,
+            0.5302965550343653,
+            0.2984547296486207,
+            0.2798236873853652,
+            0.3559874716806255,
+            0.1833098992500131,
+            0.45583167542631237,
+            0.2172602589329974,
+            0.05077879683156199,
+            0.06853173050570273,
+            0.257258702307425,
+            0.11440783011325406
+          ],
+          "gap_series": [
+            0.6763136177876604,
+            0.623401469752498,
+            1.3747230834351065,
+            2.94631634994272,
+            0.5132845003854745,
+            1.3989873331597389,
+            5.099479909887874,
+            5.093269562466789,
+            2.4536696982617765,
+            5.396097965588672,
+            0.9519437318088029,
+            1.4890863988110876,
+            7.683585265618188,
+            7.689502910176235,
+            2.4190854563249564,
+            4.038133943372085
+          ],
+          "para_steps": [
+            11,
+            12,
+            15
+          ],
+          "rows": [
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8622746589183378,
+              "g_ratio": null,
+              "gap": 0.6763136177876604,
+              "new_expansions": [],
+              "rule_name": "(x power exp((x add x)))",
+              "step": 1,
+              "t_count": 2,
+              "t_gap": 0.6666664444445185,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.499999750000125
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.3702044925908134,
+              "g_ratio": null,
+              "gap": 0.623401469752498,
+              "new_expansions": [],
+              "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+              "step": 2,
+              "t_count": 7,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.1241707503045695,
+              "g_ratio": null,
+              "gap": 1.3747230834351065,
+              "new_expansions": [],
+              "rule_name": "(2.72 divide (2.00 subtract x))",
+              "step": 3,
+              "t_count": 8,
+              "t_gap": 2.99999850000075,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8389570498201602,
+              "g_ratio": null,
+              "gap": 2.94631634994272,
+              "new_expansions": [],
+              "rule_name": "sqrt(1.00)",
+              "step": 4,
+              "t_count": 8,
+              "t_gap": 7.9999920000080005,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.0398535844897427,
+              "g_ratio": null,
+              "gap": 0.5132845003854745,
+              "new_expansions": [
+                "step5:LOOP"
+              ],
+              "rule_name": "log(square(identity(x)))",
+              "step": 5,
+              "t_count": 13,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "LOOP",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.5302965550343653,
+              "g_ratio": null,
+              "gap": 1.3989873331597389,
+              "new_expansions": [],
+              "rule_name": "((sqrt(x) divide x) add 2.00)",
+              "step": 6,
+              "t_count": 15,
+              "t_gap": 3.6666654444448517,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2984547296486207,
+              "g_ratio": null,
+              "gap": 5.099479909887874,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 7,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2798236873853652,
+              "g_ratio": null,
+              "gap": 5.093269562466789,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 8,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.3559874716806255,
+              "g_ratio": null,
+              "gap": 2.4536696982617765,
+              "new_expansions": [],
+              "rule_name": "(sin(x) add 0.00)",
+              "step": 9,
+              "t_count": 16,
+              "t_gap": 6.99999650000175,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.005025123102953219
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.1833098992500131,
+              "g_ratio": 0.3147518270589336,
+              "gap": 5.396097965588672,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 10,
+              "t_count": 16,
+              "t_gap": 15.999984000016001,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.004999997500001254
+            },
+            {
+              "basis_size": 5,
+              "c_detected": true,
+              "c_ratio": 3.1694432582884544,
+              "g_detected": false,
+              "g_gap": 0.45583167542631237,
+              "g_ratio": 0.32746558022208344,
+              "gap": 0.9519437318088029,
+              "new_expansions": [
+                "step11:paradigm"
+              ],
+              "rule_name": "(((x divide x) add x) min (x multiply (x max x)))",
+              "step": 11,
+              "t_count": 20,
+              "t_gap": 2.399999520000096,
+              "transitions": 4,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": true,
+              "c_ratio": 3.0257872220755844,
+              "g_detected": false,
+              "g_gap": 0.2172602589329974,
+              "g_ratio": 0.3444958454628399,
+              "gap": 1.4890863988110876,
+              "new_expansions": [
+                "step12:paradigm"
+              ],
+              "rule_name": "(sqrt(1.00) subtract ((0.00 max x) divide 0.00))",
+              "step": 12,
+              "t_count": 23,
+              "t_gap": 4.249998937500266,
+              "transitions": 3,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": 1.7049413564038214,
+              "g_detected": false,
+              "g_gap": 0.05077879683156199,
+              "g_ratio": 0.318577412148047,
+              "gap": 7.683585265618188,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 13,
+              "t_count": 23,
+              "t_gap": 22.999977000023,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": 1.622439559069387,
+              "g_detected": false,
+              "g_gap": 0.06853173050570273,
+              "g_ratio": 0.2621304278815178,
+              "gap": 7.689502910176235,
+              "new_expansions": [],
+              "rule_name": "exp(x)",
+              "step": 14,
+              "t_count": 23,
+              "t_gap": 22.999977000023,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": true,
+              "c_ratio": 2.0703428448812584,
+              "g_detected": false,
+              "g_gap": 0.257258702307425,
+              "g_ratio": 0.3049858716722229,
+              "gap": 2.4190854563249564,
+              "new_expansions": [
+                "step15:paradigm"
+              ],
+              "rule_name": "(log(negate(x)) add x)",
+              "step": 15,
+              "t_count": 25,
+              "t_gap": 6.999997666667444,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": 1.5822299814642686,
+              "g_detected": false,
+              "g_gap": 0.11440783011325406,
+              "g_ratio": 0.21230206166063492,
+              "gap": 4.038133943372085,
+              "new_expansions": [],
+              "rule_name": "(2.72 subtract log(x))",
+              "step": 16,
+              "t_count": 26,
+              "t_gap": 11.999994000003,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            }
+          ],
+          "t_series": [
+            0.6666664444445185,
+            0.49999991666668053,
+            2.99999850000075,
+            7.9999920000080005,
+            0.49999991666668053,
+            3.6666654444448517,
+            14.999985000015002,
+            14.999985000015002,
+            6.99999650000175,
+            15.999984000016001,
+            2.399999520000096,
+            4.249998937500266,
+            22.999977000023,
+            22.999977000023,
+            6.999997666667444,
+            11.999994000003
+          ],
+          "trace": [
+            "step=1 rule=(x power exp((x add x))) verdict=HALTED transitions=2 gap_mean=0.676314 trend=UNKNOWN",
+            "step=2 rule=(((x subtract x) subtract (x multiply x)) subtract verdict=HALTED transitions=5 gap_mean=0.623401 trend=UNKNOWN",
+            "step=3 rule=(2.72 divide (2.00 subtract x)) verdict=HALTED transitions=1 gap_mean=1.374723 trend=UNKNOWN",
+            "step=4 rule=sqrt(1.00) verdict=HALTED transitions=0 gap_mean=2.946316 trend=UNKNOWN",
+            "step=5 rule=log(square(identity(x))) verdict=LOOP transitions=5 gap_mean=0.513285 trend=RISING",
+            "step=6 rule=((sqrt(x) divide x) add 2.00) verdict=HALTED transitions=2 gap_mean=1.398987 trend=RISING",
+            "step=7 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.099480 trend=RISING",
+            "step=8 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.093270 trend=RISING",
+            "step=9 rule=(sin(x) add 0.00) verdict=HALTED transitions=1 gap_mean=2.453670 trend=RISING",
+            "step=10 rule=x verdict=HALTED transitions=0 gap_mean=5.396098 trend=RISING",
+            "step=11 rule=(((x divide x) add x) min (x multiply (x max x))) verdict=HALTED transitions=4 gap_mean=0.951944 trend=RISING",
+            "step=12 rule=(sqrt(1.00) subtract ((0.00 max x) divide 0.00)) verdict=HALTED transitions=3 gap_mean=1.489086 trend=RISING",
+            "step=13 rule=x verdict=HALTED transitions=0 gap_mean=7.683585 trend=STABLE",
+            "step=14 rule=exp(x) verdict=HALTED transitions=0 gap_mean=7.689503 trend=RISING",
+            "step=15 rule=(log(negate(x)) add x) verdict=HALTED transitions=2 gap_mean=2.419085 trend=STABLE",
+            "step=16 rule=(2.72 subtract log(x)) verdict=HALTED transitions=1 gap_mean=4.038134 trend=STABLE"
+          ],
+          "verdict_exp_steps": [
+            5
+          ],
+          "w_series": [
+            0.499999750000125,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.005025123102953219,
+            0.004999997500001254,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "open": [],
+  "twin": {
+    "arm_a": {
+      "basis_sizes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "batch_asts": [
+        "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+        "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+        "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+        "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+        "0.0",
+        "(np.str_('sqrt'), 'x')"
+      ],
+      "expansions": [],
+      "final_basis": 3,
+      "lexical_asts": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "profile": {
+        "formel_achsen": {
+          "abs": -0.025623,
+          "add": 0.050251,
+          "cos": 0.953649,
+          "divide": 0.704124,
+          "exp": 0.843862,
+          "identity": 0.044724,
+          "log": 0.854018,
+          "max": 0.92689,
+          "min": 0.983123,
+          "multiply": 0.871041,
+          "negate": 0.691442,
+          "power": 0.704124,
+          "sin": 0.866285,
+          "sqrt": 0.982989,
+          "square": 0.050251,
+          "subtract": 0.056877
+        },
+        "formel_argmax": "min",
+        "formel_max": 0.983123,
+        "lexikon_kandidaten": [],
+        "lexikon_resonanzen": {},
+        "lexikon_woerter": [],
+        "spiegel_formula": {
+          "idx": 25,
+          "k": 2,
+          "kind": "exp"
+        }
+      },
+      "rows": [
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+          "g_gap": 0.739737,
+          "gap": 0.679912,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "step": 1,
+          "step_index": 1,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.5
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+          "g_gap": 0.789614,
+          "gap": 0.263205,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+          "step": 2,
+          "step_index": 2,
+          "t_gap": 0.0,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+          "g_gap": 0.869895,
+          "gap": 0.706632,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "(((x min x) multiply (x divide x)) power x)",
+          "step": 3,
+          "step_index": 3,
+          "t_gap": 1.25,
+          "transitions": 3,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+          "g_gap": 0.852614,
+          "gap": 0.617538,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "((sin(x) subtract x) subtract ((x subtract x) divi",
+          "step": 4,
+          "step_index": 4,
+          "t_gap": 1.0,
+          "transitions": 5,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "0.0",
+          "g_gap": 0.423229,
+          "gap": 5.474404,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "0.00",
+          "step": 5,
+          "step_index": 5,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('sqrt'), 'x')",
+          "g_gap": 0.369839,
+          "gap": 5.456608,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "sqrt(x)",
+          "step": 6,
+          "step_index": 6,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        }
+      ],
+      "rule_names": [
+        "(log((x max x)) divide ((x divide x) max 2.00))",
+        "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+        "(((x min x) multiply (x divide x)) power x)",
+        "((sin(x) subtract x) subtract ((x subtract x) divi",
+        "0.00",
+        "sqrt(x)"
+      ],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "w_series": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arm_a_plain": {
+      "basis_sizes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "batch_asts": [
+        "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+        "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+        "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+        "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+        "0.0",
+        "(np.str_('sqrt'), 'x')"
+      ],
+      "expansions": [],
+      "final_basis": 3,
+      "lexical_asts": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "rows": [
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+          "g_gap": 0.739737,
+          "gap": 0.679912,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "step": 1,
+          "step_index": 1,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.5
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+          "g_gap": 0.789614,
+          "gap": 0.263205,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+          "step": 2,
+          "step_index": 2,
+          "t_gap": 0.0,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+          "g_gap": 0.869895,
+          "gap": 0.706632,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "(((x min x) multiply (x divide x)) power x)",
+          "step": 3,
+          "step_index": 3,
+          "t_gap": 1.25,
+          "transitions": 3,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+          "g_gap": 0.852614,
+          "gap": 0.617538,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "((sin(x) subtract x) subtract ((x subtract x) divi",
+          "step": 4,
+          "step_index": 4,
+          "t_gap": 1.0,
+          "transitions": 5,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "0.0",
+          "g_gap": 0.423229,
+          "gap": 5.474404,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "0.00",
+          "step": 5,
+          "step_index": 5,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('sqrt'), 'x')",
+          "g_gap": 0.369839,
+          "gap": 5.456608,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "sqrt(x)",
+          "step": 6,
+          "step_index": 6,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        }
+      ],
+      "rule_names": [
+        "(log((x max x)) divide ((x divide x) max 2.00))",
+        "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+        "(((x min x) multiply (x divide x)) power x)",
+        "((sin(x) subtract x) subtract ((x subtract x) divi",
+        "0.00",
+        "sqrt(x)"
+      ],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "w_series": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arm_b": {
+      "basis_sizes": [
+        5,
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "batch_asts": [
+        "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+        "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+        "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+        "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+        "0.0",
+        "(np.str_('sqrt'), 'x')"
+      ],
+      "expansions": [
+        "step1:LOOP",
+        "step2:LOOP",
+        "step3:LOOP"
+      ],
+      "final_basis": 9,
+      "lexical_asts": [
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')"
+      ],
+      "rows": [
+        {
+          "basis_size": 5,
+          "batch_ast": "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+          "g_gap": 0.739737,
+          "gap": 0.679912,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "step": 1,
+          "step_index": 1,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.5
+        },
+        {
+          "basis_size": 7,
+          "batch_ast": "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+          "g_gap": 0.789614,
+          "gap": 0.263205,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+          "step": 2,
+          "step_index": 2,
+          "t_gap": 0.0,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+          "g_gap": 0.932991,
+          "gap": 0.577664,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "(((x min x) multiply (x divide x)) power x)",
+          "step": 3,
+          "step_index": 3,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+          "g_gap": 0.792154,
+          "gap": 0.797385,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "((sin(x) subtract x) subtract ((x subtract x) divi",
+          "step": 4,
+          "step_index": 4,
+          "t_gap": 1.6,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "0.0",
+          "g_gap": 0.561568,
+          "gap": 0.987189,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "0.00",
+          "step": 5,
+          "step_index": 5,
+          "t_gap": 2.4,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "(np.str_('sqrt'), 'x')",
+          "g_gap": 0.41067,
+          "gap": 1.203556,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "sqrt(x)",
+          "step": 6,
+          "step_index": 6,
+          "t_gap": 3.199999,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        }
+      ],
+      "rule_names": [
+        "(log((x max x)) divide ((x divide x) max 2.00))",
+        "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+        "(((x min x) multiply (x divide x)) power x)",
+        "((sin(x) subtract x) subtract ((x subtract x) divi",
+        "0.00",
+        "sqrt(x)"
+      ],
+      "verdicts": [
+        "LOOP",
+        "LOOP",
+        "LOOP",
+        "LOOP",
+        "LOOP",
+        "LOOP"
+      ],
+      "w_series": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arm_b_meta": {
+      "learned": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "profile_b": {
+        "formel_achsen": {
+          "abs": -0.018128,
+          "add": 0.035037,
+          "cos": 0.685827,
+          "divide": 0.487857,
+          "exp": 0.595777,
+          "identity": 0.999808,
+          "log": 0.60378,
+          "max": 0.662643,
+          "min": 0.716302,
+          "multiply": 0.617208,
+          "negate": 0.478183,
+          "power": 0.487857,
+          "sin": 0.613458,
+          "sqrt": 0.709839,
+          "square": 0.035037,
+          "subtract": 0.039676
+        },
+        "formel_argmax": "identity",
+        "formel_max": 0.999808,
+        "lexikon_kandidaten": [
+          "identity"
+        ],
+        "lexikon_resonanzen": {
+          "identity": 0.999808
+        },
+        "lexikon_woerter": [
+          "identity",
+          "spiegel"
+        ],
+        "spiegel_formula": {
+          "idx": 25,
+          "k": 2,
+          "kind": "exp"
+        }
+      },
+      "protocol": [
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.744742,
+          "round": 0,
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.954255,
+          "round": 1,
+          "rule_name": "(log((x max x)) subtract x)",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.992537,
+          "round": 2,
+          "rule_name": "(x multiply x)",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.998802,
+          "round": 3,
+          "rule_name": "x",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.999808,
+          "round": 4,
+          "rule_name": "(x add x)",
+          "success_rate": 1.0
+        }
+      ],
+      "resonance_after": [
+        0.744742,
+        0.954255,
+        0.992537,
+        0.998802,
+        0.999808
+      ]
+    },
+    "basis_a": 3,
+    "basis_b": 9,
+    "basis_b_sizes": [
+      5,
+      7,
+      9,
+      9,
+      9,
+      9
+    ],
+    "batches_equal_a_b": true,
+    "batches_equal_grounded_plain": true,
+    "expansions_a": [],
+    "expansions_b": [
+      "step1:LOOP",
+      "step2:LOOP",
+      "step3:LOOP"
+    ],
+    "resolver_direct": "('identity', 'x')",
+    "verdicts_a": [
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "verdicts_b": [
+      "LOOP",
+      "LOOP",
+      "LOOP",
+      "LOOP",
+      "LOOP",
+      "LOOP"
+    ]
+  }
+}
