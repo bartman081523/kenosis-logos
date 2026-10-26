@@ -1,0 +1,13 @@
+== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==
+MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert
+
+BEFUNDE:
+  mi6p4_schwelle_weit        OFFEN
+  mi6p4_selbstfremd_gereift  OFFEN
+  mi6p4_oracle_sonder        OFFEN
+  mi6p4_dissonanz            OFFEN
+  mi6p4_det_doppellauf       PASS
+
+BILANZ: 1 PASS; 0 FEHLGESCHLAGEN; 4 OFFEN
+OFFEN — GPU-Lanes nicht gefahren
+JSON: scratches/mi6p4_schluss.json

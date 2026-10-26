@@ -1,0 +1,23 @@
+== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==
+MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert
+GPU-Kontext laden (argon_1b + argon_1b_machines)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+P1a Schwelle-weit (24 Texte, gepooltes Band)
+P1b Selbst/Fremd gereift (Transplant nach bio_gelernt)
+P1d Dissonanz-Hauptsatz (step_autonomous)
+P1c Oracle-Sonder (4 Checkpoints × 6 Zweige)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Traceback (most recent call last):
+  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi6p4_schluss.py", line 435, in <module>
+    sys.exit(main())
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi6p4_schluss.py", line 402, in main
+    gpu["oracle_sonder"] = lane_oracle_sonder(gpu=True)
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi6p4_schluss.py", line 257, in lane_oracle_sonder
+    bio_halted(machine, zweig)
+NameError: name 'bio_halted' is not defined
