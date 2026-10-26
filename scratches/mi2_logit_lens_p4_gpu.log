@@ -1,0 +1,16 @@
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[PILOT ] pilot_telescope: teleskop=0.140000 endpunkte=0.140000
+[PILOT ] pilot_resolve_exact: digit=[2] space=[5] paris=[3] ('Paris' 6 abgewiesen)
+[PILOT ] pilot_contract: tail=0.200 pre=0.900
+[PILOT ] pilot_mla_select: global=(5, 11, 17, 23) lokal_n=22
+[PASS  ] mi2_single_token_strict: paris: id=9079 (' Paris'); arithmetic_digit: id=236812 ('4'); arithmetic_space: id=236743 (' ')
+[PASS  ] mi2_sublayer_telescope: paris: dev=0.000e+00 anchor=2.717e-11; arithmetic_digit: dev=0.000e+00 anchor=2.842e-12; arithmetic_space: dev=0.000e+00 anchor=2.842e-12
+[PASS  ] mi2_attn_vs_moe_attribution: paris: attn@l17 0.6859 vs 0.1407 unique=True; arithmetic_digit: attn@l3 0.0356 vs 0.0343 unique=True; arithmetic_space: attn@l11 0.7347 vs 0.3051 unique=True
+[PASS  ] mi2_goedel_gap_contraction: paris: l*=17 tail=0.3764 pre=0.9703 ok=True; arithmetic_digit: l*=11 tail=0.2192 pre=0.9929 ok=True; arithmetic_space: l*=11 tail=0.2192 pre=0.9929 ok=True
+[PASS  ] mi2_mla_vs_mqa_profile: paris: global=0.5056 local=0.1236 ok=True; arithmetic_digit: global=0.3549 local=0.1886 ok=True; arithmetic_space: global=0.3549 local=0.1886 ok=True [Datums-Zusatz]
+[PASS  ] mi2_purity_det: fingerprint=True paris:ok arithmetic_digit:ok arithmetic_space:ok
+----------------------------------------------------------------------------------------
+Verdikte: 6 PASS | 0 OFFEN | 0 FAIL  (30.4 s)
+GRÜN — alle 6 Verdikte PASS; die Halbschichten sind gemessen.
+JSON: scratches/mi2_logit_lens_p4.json
