@@ -1,0 +1,27 @@
+== SP13 — Endogene Agency: kontrafaktisches Probehandeln ==
+Canon: composite.py:219-301, turing_machine.py:323-327,
+       wittgenstein_machine.py:507-525, machine_base.py:502-516
+Prereg: N_PROBES=5, STEPS_PHASE=6+6, seed 42; Wahl = argmin Composite-Gap
+Modus: CPU
+
+BEFUNDE:
+  sp13_l0_anker              PASS
+  sp13_snapshot_purity       PASS
+  sp13_det                   PASS
+  sp13_causal_loop_closed    PASS
+  sp13_endogenous_switch     OFFEN
+  sp13_gap_dominance         OFFEN
+
+NOTIZEN:
+  - sp13_l0_anker: Zero-Regression über importierte committete Lanes + feldeidentischer SP12-Zwilling
+  - sp13_snapshot_purity: Vorblick sieht LOOP, fressen der axiom_pool NICHT (User-Fund Turing-Snapshot); GPU: Bias-Tensoren unter steer-Rotation restauriert
+  - sp13_det: Autonome Läufe bitidentisch; CPU dokumentiert die Tie-Degeneration als DATUM
+  - sp13_causal_loop_closed: Wort -> Programm -> Voraus-Sicht -> Expansion 3->5 unter der Wahl (SP12 x SP13 gekoppelt)
+  - sp13_endogenous_switch: GPU-Lane OFFEN (ohne --gpu nicht gefahren)
+  - sp13_gap_dominance: GPU-Lane OFFEN (ohne --gpu nicht gefahren)
+
+BILANZ: 4 PASS; 0 FEHLGESCHLAGEN; 2 OFFEN
+CPU-Tie-Datum: ohne Oracle sind alle Kandidaten-Gaps identisch;
+die Wahl-Aussagen sind die GPU-Aussagen (oracle-mode).
+JSON: scratches/endogene_agency_experiment.json
+OFFEN — GPU-Lanes nicht gefahren (kein stiller Fallback).

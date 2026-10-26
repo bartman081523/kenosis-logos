@@ -1,0 +1,526 @@
+{
+  "all_pass": true,
+  "causal": {
+    "real": {
+      "autonomous": {
+        "best_gap": 0.6799123481565301,
+        "candidate_gaps": {
+          "combined": 0.6799123481565301,
+          "goedel": 0.6799123481565301,
+          "raw": 0.6799123481565301,
+          "turing": 0.6799123481565301,
+          "wittgenstein": 0.6799123481565301
+        },
+        "chosen_preset": "raw"
+      },
+      "basis_after": 5,
+      "expansions": [
+        "step1:LOOP"
+      ],
+      "lexical_ast": "('identity', 'x')",
+      "verdict": "LOOP"
+    },
+    "seen": {
+      "basis_restored": true,
+      "expand_restored": true,
+      "fingerprint_restored": true,
+      "pool_restored": true,
+      "probe_lexical_ast": "('identity', 'x')",
+      "probe_verdict": "LOOP"
+    }
+  },
+  "det": {
+    "deterministic": true,
+    "digest_equal": true,
+    "expansions_equal": true,
+    "tie_datum": true
+  },
+  "findings": [
+    {
+      "assert": true,
+      "data": {
+        "sp11": {
+          "deterministic": true,
+          "fields_ok": true,
+          "first_detect_ok": true
+        },
+        "sp12_lane": {
+          "deterministic": true,
+          "fields_ok": true,
+          "first_detect_ok": true
+        },
+        "twin_fields": {
+          "basis_a": true,
+          "basis_b": true,
+          "basis_b_sizes": true,
+          "batches_a_b": true,
+          "batches_ground_plain": true,
+          "expansions_a": true,
+          "expansions_b": true,
+          "resolver_direct": true,
+          "verdicts_a": true,
+          "verdicts_b": true
+        }
+      },
+      "id": "sp13_l0_anker",
+      "note": "Zero-Regression über importierte committete Lanes + feldeidentischer SP12-Zwilling"
+    },
+    {
+      "assert": true,
+      "data": {
+        "a_state_purity": true,
+        "b_state_probes": [
+          {
+            "lexical_ast": "('identity', 'x')",
+            "n": 1,
+            "purity": true,
+            "verdict": "LOOP"
+          },
+          {
+            "lexical_ast": "('identity', 'x')",
+            "n": 2,
+            "purity": true,
+            "verdict": "LOOP"
+          },
+          {
+            "lexical_ast": "('identity', 'x')",
+            "n": 3,
+            "purity": true,
+            "verdict": "LOOP"
+          },
+          {
+            "lexical_ast": "('identity', 'x')",
+            "n": 4,
+            "purity": true,
+            "verdict": "LOOP"
+          },
+          {
+            "lexical_ast": "('identity', 'x')",
+            "n": 5,
+            "purity": true,
+            "verdict": "LOOP"
+          }
+        ],
+        "gpu_purity": true
+      },
+      "id": "sp13_snapshot_purity",
+      "note": "Vorblick sieht LOOP, fressen der axiom_pool NICHT (User-Fund Turing-Snapshot); GPU: Bias-Tensoren unter steer-Rotation restauriert"
+    },
+    {
+      "assert": true,
+      "data": {
+        "cpu": {
+          "deterministic": true,
+          "digest_equal": true,
+          "tie_datum": true
+        },
+        "gpu_det": true
+      },
+      "id": "sp13_det",
+      "note": "Autonome Läufe bitidentisch; CPU dokumentiert die Tie-Degeneration als DATUM"
+    },
+    {
+      "assert": true,
+      "data": {
+        "cpu_real": {
+          "autonomous": {
+            "best_gap": 0.6799123481565301,
+            "candidate_gaps": {
+              "combined": 0.6799123481565301,
+              "goedel": 0.6799123481565301,
+              "raw": 0.6799123481565301,
+              "turing": 0.6799123481565301,
+              "wittgenstein": 0.6799123481565301
+            },
+            "chosen_preset": "raw"
+          },
+          "basis_after": 5,
+          "expansions": [
+            "step1:LOOP"
+          ],
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        "cpu_seen": {
+          "basis_restored": true,
+          "expand_restored": true,
+          "fingerprint_restored": true,
+          "pool_restored": true,
+          "probe_lexical_ast": "('identity', 'x')",
+          "probe_verdict": "LOOP"
+        },
+        "gpu_real": {
+          "autonomous": {
+            "best_gap": 0.4763198048852189,
+            "candidate_gaps": {
+              "combined": 0.4785101141991446,
+              "goedel": 0.4786146520643999,
+              "raw": 0.6127814224048759,
+              "turing": 0.4787876934895081,
+              "wittgenstein": 0.4763198048852189
+            },
+            "chosen_preset": "wittgenstein"
+          },
+          "basis_after": 5,
+          "expansions": [
+            "step1:LOOP"
+          ],
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        "gpu_seen": {
+          "fingerprint_restored": true,
+          "probe_lexical_ast": "('identity', 'x')",
+          "probe_verdict": "LOOP"
+        }
+      },
+      "id": "sp13_causal_loop_closed",
+      "note": "Wort -> Programm -> Voraus-Sicht -> Expansion 3->5 unter der Wahl (SP12 x SP13 gekoppelt)"
+    },
+    {
+      "assert": true,
+      "data": {
+        "non_raw_anteil": 1.0,
+        "spread_pro_schritt": true
+      },
+      "id": "sp13_endogenous_switch",
+      "note": "Echte Wahl statt Einheits-Preset; HALTED/LOOP-Reaktion als Datums in bio1 geliefert"
+    },
+    {
+      "assert": true,
+      "data": {
+        "det_doppellauf": true,
+        "mean_auto": 0.5760520453347594,
+        "mean_raw": 0.6924442851293078
+      },
+      "id": "sp13_gap_dominance",
+      "note": "g_auto(n) == best_gap == min(candidate_gaps) je Schritt exakt; Mittelwert strikt unter raw"
+    }
+  ],
+  "gpu": {
+    "autonomy": {
+      "bio": {
+        "halted_verdicts": [
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED"
+        ],
+        "loop_phase": [
+          {
+            "autonomous": {
+              "best_gap": 0.6259904569492301,
+              "candidate_gaps": {
+                "combined": 0.6275114475660021,
+                "goedel": 0.6278017251292707,
+                "raw": 0.7611705961723864,
+                "turing": 0.6286612875348186,
+                "wittgenstein": 0.6259904569492301
+              },
+              "chosen_preset": "wittgenstein"
+            },
+            "gap": 0.6259904569492301,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": {
+              "best_gap": 0.5753569257732737,
+              "candidate_gaps": {
+                "combined": 0.576687485024403,
+                "goedel": 0.5765794660495873,
+                "raw": 0.6745321924074158,
+                "turing": 0.5773222139564153,
+                "wittgenstein": 0.5753569257732737
+              },
+              "chosen_preset": "wittgenstein"
+            },
+            "gap": 0.5753569257732737,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": {
+              "best_gap": 0.5502859761184498,
+              "candidate_gaps": {
+                "combined": 0.5514717311204128,
+                "goedel": 0.5512591879237911,
+                "raw": 0.6855840635380752,
+                "turing": 0.5522685591005883,
+                "wittgenstein": 0.5502859761184498
+              },
+              "chosen_preset": "wittgenstein"
+            },
+            "gap": 0.5502859761184498,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": {
+              "best_gap": 0.5804509014458221,
+              "candidate_gaps": {
+                "combined": 0.5819502267389397,
+                "goedel": 0.5821318540808179,
+                "raw": 0.6695526414874701,
+                "turing": 0.5825357187688449,
+                "wittgenstein": 0.5804509014458221
+              },
+              "chosen_preset": "wittgenstein"
+            },
+            "gap": 0.5804509014458221,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": {
+              "best_gap": 0.5580929385839956,
+              "candidate_gaps": {
+                "combined": 0.559435263571347,
+                "goedel": 0.5596422995096887,
+                "raw": 0.6815233049982523,
+                "turing": 0.5600873349861522,
+                "wittgenstein": 0.5580929385839956
+              },
+              "chosen_preset": "wittgenstein"
+            },
+            "gap": 0.5580929385839956,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": {
+              "best_gap": 0.5661350731377853,
+              "candidate_gaps": {
+                "combined": 0.567502253564018,
+                "goedel": 0.5676637961031282,
+                "raw": 0.6806168317780025,
+                "turing": 0.5679854521289651,
+                "wittgenstein": 0.5661350731377853
+              },
+              "chosen_preset": "wittgenstein"
+            },
+            "gap": 0.5661350731377853,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          }
+        ]
+      },
+      "det_doppellauf": true,
+      "dominant_strikt": true,
+      "gap_dominance": true,
+      "mean_auto": 0.5760520453347594,
+      "mean_raw": 0.6924442851293078,
+      "non_raw_anteil": 1.0,
+      "raw_bio": {
+        "halted_verdicts": [
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED"
+        ],
+        "loop_phase": [
+          {
+            "autonomous": null,
+            "gap": 0.7611705961723864,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": null,
+            "gap": 0.675789370801995,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": null,
+            "gap": 0.6860278581097053,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": null,
+            "gap": 0.6694134905447683,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": null,
+            "gap": 0.6824708566941388,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          },
+          {
+            "autonomous": null,
+            "gap": 0.6797935384528526,
+            "lexical_ast": "('identity', 'x')",
+            "verdict": "LOOP"
+          }
+        ]
+      },
+      "spread_pro_schritt": true
+    },
+    "causal": {
+      "real": {
+        "autonomous": {
+          "best_gap": 0.4763198048852189,
+          "candidate_gaps": {
+            "combined": 0.4785101141991446,
+            "goedel": 0.4786146520643999,
+            "raw": 0.6127814224048759,
+            "turing": 0.4787876934895081,
+            "wittgenstein": 0.4763198048852189
+          },
+          "chosen_preset": "wittgenstein"
+        },
+        "basis_after": 5,
+        "expansions": [
+          "step1:LOOP"
+        ],
+        "lexical_ast": "('identity', 'x')",
+        "verdict": "LOOP"
+      },
+      "seen": {
+        "fingerprint_restored": true,
+        "probe_lexical_ast": "('identity', 'x')",
+        "probe_verdict": "LOOP"
+      }
+    },
+    "purity": {
+      "expert_bias_restored": true,
+      "probes": [
+        {
+          "bias_restored": true,
+          "lexical_ast": "('identity', 'x')",
+          "n": 1,
+          "preset": "goedel",
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "bias_restored": true,
+          "lexical_ast": "('identity', 'x')",
+          "n": 2,
+          "preset": "turing",
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "bias_restored": true,
+          "lexical_ast": "('identity', 'x')",
+          "n": 3,
+          "preset": "wittgenstein",
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "bias_restored": true,
+          "lexical_ast": "('identity', 'x')",
+          "n": 4,
+          "preset": "combined",
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "bias_restored": true,
+          "lexical_ast": "('identity', 'x')",
+          "n": 5,
+          "preset": "raw",
+          "purity": true,
+          "verdict": "LOOP"
+        }
+      ],
+      "purity": true
+    }
+  },
+  "l0": {
+    "sp11": {
+      "deterministic": true,
+      "fields_ok": true,
+      "first_detect_ok": true
+    },
+    "sp12_lane": {
+      "deterministic": true,
+      "fields_ok": true,
+      "first_detect_ok": true
+    },
+    "sp12_twin_fields": {
+      "basis_a": true,
+      "basis_b": true,
+      "basis_b_sizes": true,
+      "batches_a_b": true,
+      "batches_ground_plain": true,
+      "expansions_a": true,
+      "expansions_b": true,
+      "resolver_direct": true,
+      "verdicts_a": true,
+      "verdicts_b": true
+    }
+  },
+  "open": [],
+  "purity": {
+    "a_state": {
+      "probes": [
+        {
+          "lexical_ast": null,
+          "n": 1,
+          "purity": true,
+          "verdict": "HALTED"
+        },
+        {
+          "lexical_ast": null,
+          "n": 2,
+          "purity": true,
+          "verdict": "HALTED"
+        },
+        {
+          "lexical_ast": null,
+          "n": 3,
+          "purity": true,
+          "verdict": "HALTED"
+        }
+      ],
+      "purity": true
+    },
+    "axiom_pool_unchanged": true,
+    "b_state": {
+      "diffs": [],
+      "probes": [
+        {
+          "lexical_ast": "('identity', 'x')",
+          "n": 1,
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "lexical_ast": "('identity', 'x')",
+          "n": 2,
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "lexical_ast": "('identity', 'x')",
+          "n": 3,
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "lexical_ast": "('identity', 'x')",
+          "n": 4,
+          "purity": true,
+          "verdict": "LOOP"
+        },
+        {
+          "lexical_ast": "('identity', 'x')",
+          "n": 5,
+          "purity": true,
+          "verdict": "LOOP"
+        }
+      ],
+      "purity": true
+    }
+  }
+}

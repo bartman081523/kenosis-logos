@@ -505,10 +505,20 @@ class WittgensteinMachine(BaseMachine):
 
     # -- Observations-Schicht -------------------------------------------------
     def _snapshot(self) -> Dict[str, Any]:
+        # SP13: Der S2/S3-Schedule mutiert noise_level je Batch (:313-316) und
+        # zählt _schedule_index (:338); das Lexikon wächst durch lexicon_game
+        # (learn_pair ERSETZT die Einträge, :232-233 — Kopie verlustfrei).
+        lexicon = {}
+        for word, vector in self.tokenizer.lexicon.items():
+            lexicon[word] = (np.asarray(vector).copy()
+                             if isinstance(vector, np.ndarray) else list(vector))
         return {"step": self._step_index, "trace": list(self._trace),
                 "gap_history": list(self._gap_history),
                 "experiment_history": list(self.experiment_history),
                 "generated_rules": list(self.generated_rules),
+                "noise_level": self.noise_level,
+                "schedule_index": self._schedule_index,
+                "lexicon": lexicon,
                 "rng_state": self._rng.bit_generator.state}
 
     def _restore_snapshot(self, snapshot: Dict[str, Any]) -> None:
@@ -517,4 +527,11 @@ class WittgensteinMachine(BaseMachine):
         self._gap_history = snapshot["gap_history"]
         self.experiment_history = snapshot["experiment_history"]
         self.generated_rules = snapshot["generated_rules"]
+        self.noise_level = snapshot["noise_level"]
+        self._schedule_index = snapshot["schedule_index"]
+        lexicon = {}
+        for word, vector in snapshot["lexicon"].items():
+            lexicon[word] = (np.asarray(vector).copy()
+                             if isinstance(vector, np.ndarray) else list(vector))
+        self.tokenizer.lexicon = lexicon
         self._rng.bit_generator.state = snapshot["rng_state"]

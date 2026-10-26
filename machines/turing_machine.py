@@ -319,6 +319,10 @@ class TuringMachine(BaseMachine):
                 "transition_count": self._transition_count, "step": self._step_index,
                 "trace": list(self._trace), "gap_history": list(self._gap_history),
                 "max_transitions": self.max_transitions,
+                # SP13: expand_basis pop(0) (:149) und innerer Expand (:241-246)
+                # laufen auch in observe()-Proben — der Pool muss mit.
+                "axiom_pool": list(self.axiom_pool),
+                "last_verdict": self._last_verdict,
                 "rng_state": self._rng.bit_generator.state}
 
     def _restore_snapshot(self, snapshot: Dict[str, Any]) -> None:
@@ -334,6 +338,8 @@ class TuringMachine(BaseMachine):
         self._trace = snapshot["trace"]
         self._gap_history = snapshot["gap_history"]
         self.max_transitions = snapshot["max_transitions"]
+        self.axiom_pool = snapshot["axiom_pool"]
+        self._last_verdict = snapshot["last_verdict"]
         self._rng.bit_generator.state = snapshot["rng_state"]
 
 

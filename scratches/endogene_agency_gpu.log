@@ -1,0 +1,29 @@
+== SP13 — Endogene Agency: kontrafaktisches Probehandeln ==
+Canon: composite.py:219-301, turing_machine.py:323-327,
+       wittgenstein_machine.py:507-525, machine_base.py:502-516
+Prereg: N_PROBES=5, STEPS_PHASE=6+6, seed 42; Wahl = argmin Composite-Gap
+Modus: CPU+GPU
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+
+BEFUNDE:
+  sp13_l0_anker              PASS
+  sp13_snapshot_purity       PASS
+  sp13_det                   PASS
+  sp13_causal_loop_closed    PASS
+  sp13_endogenous_switch     PASS
+  sp13_gap_dominance         PASS
+
+NOTIZEN:
+  - sp13_l0_anker: Zero-Regression über importierte committete Lanes + feldeidentischer SP12-Zwilling
+  - sp13_snapshot_purity: Vorblick sieht LOOP, fressen der axiom_pool NICHT (User-Fund Turing-Snapshot); GPU: Bias-Tensoren unter steer-Rotation restauriert
+  - sp13_det: Autonome Läufe bitidentisch; CPU dokumentiert die Tie-Degeneration als DATUM
+  - sp13_causal_loop_closed: Wort -> Programm -> Voraus-Sicht -> Expansion 3->5 unter der Wahl (SP12 x SP13 gekoppelt)
+  - sp13_endogenous_switch: Echte Wahl statt Einheits-Preset; HALTED/LOOP-Reaktion als Datums in bio1 geliefert
+  - sp13_gap_dominance: g_auto(n) == best_gap == min(candidate_gaps) je Schritt exakt; Mittelwert strikt unter raw
+
+BILANZ: 6 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+CPU-Tie-Datum: ohne Oracle sind alle Kandidaten-Gaps identisch;
+die Wahl-Aussagen sind die GPU-Aussagen (oracle-mode).
+JSON: scratches/endogene_agency_experiment.json
+GRUEN — Endogene Agency: die Maschine waehlt ihren Subspace selbst.

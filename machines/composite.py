@@ -20,7 +20,7 @@ Wittgenstein-Maschine als Subsystem.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 
@@ -215,6 +215,82 @@ class CompositeMachine(BaseMachine):
         return (f"CompositeMachine(step={self._step_index}, gap={gap.current:.4f} "
                 f"{gap.trend}, expansions={len(self.expansions)}, "
                 f"turing_basis={len(self.turing.basis)} dims)")
+
+    # -- SP13 — kontrafaktisches Probehandeln & endogene Agency ----------------
+    def observe(self, obj: Any, lexical_grounding: bool = False) -> StepResult:
+        """Nicht-mutierende Vorschau: der machine_base.py:502-Rahmen
+        (Snapshot -> step -> Restore im finally) mit der Superset-Signatur
+        SP12s. Die Vorschau sieht den ganzen Schritt voraus — inklusive
+        LOOP-Expansionen und Argon-Orakel-Abfragen — und kehrt bitgenau
+        an den Ausgangspunkt zurück."""
+        snapshot = self._snapshot()
+        try:
+            return self.step(obj, lexical_grounding=lexical_grounding)
+        finally:
+            self._restore_snapshot(snapshot)
+
+    def _snapshot(self) -> Dict[str, Any]:
+        return {
+            "step": self._step_index,
+            "trace": list(self._trace),
+            "gap_history": list(self._gap_history),
+            "expansions": list(self.expansions),
+            "goedel": self.goedel._snapshot(),
+            "turing": self.turing._snapshot(),
+            "wittgenstein": self.wittgenstein._snapshot(),
+        }
+
+    def _restore_snapshot(self, snapshot: Dict[str, Any]) -> None:
+        self._step_index = snapshot["step"]
+        self._trace = snapshot["trace"]
+        self._gap_history = snapshot["gap_history"]
+        self.expansions = snapshot["expansions"]
+        self.goedel._restore_snapshot(snapshot["goedel"])
+        self.turing._restore_snapshot(snapshot["turing"])
+        self.wittgenstein._restore_snapshot(snapshot["wittgenstein"])
+
+    def step_autonomous(
+        self,
+        obj: Any,
+        candidates: Sequence[Any] = (None, "goedel", "turing",
+                                     "wittgenstein", "combined"),
+        lexical_grounding: bool = False,
+    ) -> StepResult:
+        """SP13 — Endogene Agency: die Maschine erprobt die Subspace-
+        Kandidaten kontrafaktisch (nicht-mutierende observe()-Proben unter
+        oracle.steer; ohne Oracle ungesteuert — CPU-degeneriert) und vollzieht
+        den realen, mutierenden Schritt unter dem Preset, das den Composite-
+        Gap minimiert (argmin, strict <: Ties → früherer Kandidat). Das
+        Programm des Schritts ist in ALLEN Proben identisch (Generierung/
+        Resolution konsumieren keine steuerabhängigen Züge) — der einzige
+        Kanal der Wahl ist die Orakel-Kohärenz (Gödel-Gap)."""
+        candidate_gaps: Dict[str, float] = {}
+        best_preset: Any = None
+        best_gap = float("inf")
+        for preset in candidates:
+            label = "raw" if preset is None else str(preset)
+            if preset is None or self.oracle is None:
+                probe = self.observe(obj, lexical_grounding=lexical_grounding)
+            else:
+                with self.oracle.steer(preset):
+                    probe = self.observe(obj,
+                                         lexical_grounding=lexical_grounding)
+            candidate_gaps[label] = float(probe.gap)
+            if float(probe.gap) < best_gap:
+                best_gap = float(probe.gap)
+                best_preset = preset
+        chosen_label = "raw" if best_preset is None else str(best_preset)
+        if best_preset is None or self.oracle is None:
+            result = self.step(obj, lexical_grounding=lexical_grounding)
+        else:
+            with self.oracle.steer(best_preset):
+                result = self.step(obj, lexical_grounding=lexical_grounding)
+        result.invariants["autonomous"] = {
+            "chosen_preset": chosen_label,
+            "best_gap": best_gap,
+            "candidate_gaps": candidate_gaps,
+        }
+        return result
 
     # -- FACRM-Schichten (uni_204:331/:361) ------------------------------------
     def run_facrm(self, trials: int = 10, count: int = 20,
