@@ -1,0 +1,17 @@
+== MI-7 — Epistemische Triangulation ==
+MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis-Vorrat unverändert (是X即非X)
+CPU-Pilot fertig
+GPU-Kontext laden (argon_1b + argon_1b_machines)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+P1 Korpus + σ_bio + Arme-Batterie + Dekoys (REV-1-Datum + REV-2-Bänder)
+
+BEFUNDE:
+  mi7_dissociation_rev2        PASS
+  mi7_purity                   PASS
+  mi7_dekoy_rev2               PASS
+  mi7_det_doppellauf           PASS
+
+BILANZ: 4 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+GRUEN — MI-7-Bänder eingehalten
+JSON: scratches/mi7_triangulation_rev2.json

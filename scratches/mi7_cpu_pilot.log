@@ -1,0 +1,13 @@
+== MI-7 — Epistemische Triangulation ==
+MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis-Vorrat unverändert (是X即非X)
+CPU-Pilot fertig
+
+BEFUNDE:
+  mi7_triple_dissociation      OFFEN
+  mi7_purity                   OFFEN
+  mi7_dekoy                    OFFEN
+  mi7_det_doppellauf           PASS
+
+BILANZ: 1 PASS; 0 FEHLGESCHLAGEN; 3 OFFEN
+OFFEN — GPU-Lanes nicht gefahren
+JSON: scratches/mi7_triangulation.json
