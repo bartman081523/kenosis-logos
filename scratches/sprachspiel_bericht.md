@@ -1377,3 +1377,200 @@ P4-Einstufung nach registrierten Bändern, keine Weitung. KORREKTUR-LOG
 mit 4 gebuchten Brüchen (Pilot-Finder, 2 GPU-Scans, Klassifikation) im
 Skript + §16.1. Laufschrift-Protokoll:
 `laufprotokolle_befund_report.md` §18.
+
+## 17. MI-2 — Das Sublayer-Röntgengerät: Attention-vs-MoE Logit-Lens + strikte Ein-Token-Auflösung (2026-10-26)
+
+**(Spur-Eröffnung.)** Der User las das MI-1-Konkatenat und hielt drei
+Funde zurück: (1) der Band-Bruch an der Trainings-Grenze als
+**dreistufiges Arbeitsregime** der Router — Token-Aufnahme (ℓ=0..3) →
+Domänen-Spezialisierung (ℓ=4..23) → Vokabular-Synthese (ℓ=24..25); (2)
+die **prose-L11-Anomalie** (E3 44.6 % → 2.3 %, E4 2.3 % → 44.6 %, H =
+0.3149 — der extremste Entropie-Wert des Feldes), gebunden an die
+globalen MLA-Schichten (`modeling_argon.py:188-190`: `is_global =
+(layer_idx % 6 == (pattern-1))` → ℓ ∈ {5, 11, 17, 23}); (3) der
+**Tokenizer-Bruch**: für `" 4"` (Tokens `[236743(" "), 236771("4")]`)
+nahm `resolve_token_ids` (MI-1-smoke:204-215) `encoded[0]` — das
+LEERZEICHEN-Token — als Vertreter der '4' in die Kandidatenliste auf.
+Die MI-2-Freigabe (User): „Sollen wir genau dieses Sublayer-Röntgengerät
+(Task MI-2: Attention-vs-MoE Logit-Lens + strikte Ein-Token-Auflösung)
+als Nächstes aufsetzen?" — angenommen.
+
+**Korrektur-Buchung zu §16.3 (P1: MI-1-Dateien unangetastet).** Die
+§16.3-Nuance 1 („Fast-Gleichstand ‚ ' 0.8074 vs ‚ 4' 0.80735") war ein
+Auflösungs-Artefakt: `answer_prob["4"]` maß faktisch p(236743) — die
+Antwort-Koordinate war versehentlich dasselbe Token wie der Top-1. Die
+MI-1-Top-1-Trajektorie bleibt gültig (das Leerzeichen IST das echte
+Top-1); was fällt, ist der Gleichstand. Die Struktur-Anatomie für MI-2
+(Canon-Audit exakt): `modeling_argon.py:326-351` —
+`h_mid = h_in + post_attention_layernorm(attn_out)` (:345), `h_out =
+h_mid + post_feedforward_layernorm(moe_out)` (:350); der Lens-Pfad
+bleibt offiziell (`norm → lm_head`, softcap None; Modell-Wrapper trägt
+`lm_head` selbst, `norm` sitzt am ArgonModel-Submodul :362/:626-634 —
+genau diese Trennung wurde im GPU-Lauf 1 als Bruch sichtbar und
+vermessen, s. KORREKTUR-LOG).
+
+### 17.1 Prereg (P2-Freeze, fixiert VOR dem Erstrun)
+
+Sechs falsifizierbare Verdikte (Skript-Docstring
+`smoke_mech_interp_logit_lens.py`; drei registrierte Proben je 1
+Ein-Token-Target: paris „The capital of France is" → 'Paris',
+arithmetic „2 + 2 =" → '4', arithmetic_sp „2 + 2 = " → ' '; OFFEN ≠
+PASS, exit 0/1/2):
+
+- **mi2_single_token_strict** — `resolve_token_ids_strict`: eine
+  Kandidaten-ID zählt nur, wenn sie ALS EINZELTOKEN
+  `decode([id]).lstrip(' ') == target` erfüllt; je Probe genau 1 ID.
+  Falsifikator: Vertreter-Falle (aufgelöste ID decodiert "" oder " ").
+  Leere Auflösung → OFFEN je Probe, keine Band-Erfindung (R1).
+- **mi2_sublayer_telescope** — Σ_ℓ(ΔP_attn+ΔP_moe) = P_final(target) −
+  P_emb(target) ± 1e-6 und anchor_tv ≤ 1e-3, exakt je Probe.
+- **mi2_purity_det** — Fingerabdruck (expert_bias + gate.weight) Δ=0
+  vor/nach allen Hooks; Doubletten bitidentisch (torch.equal je row).
+- **mi2_attn_vs_moe_attribution** — DATUM-Verdikt: Haupt-Treiber =
+  größerer der beiden globalen Kanal-Maxima; Eindeutigkeits-Band Marge
+  > 1e-3 (PASS), Gleichstand → OFFEN mit voller ΔP-Kette; Peak-Schicht
+  und is_global mitgeloggt.
+- **mi2_goedel_gap_contraction** — gap-Lesart = MI-1-Definition (canon_tv
+  der Schicht-Verteilung gegen p_final), auf der p_out-Folge
+  (gap_out_tv, von der Sonde je Schicht geliefert): Tail-Mittel
+  [ℓ*..25] < 0.5 × Pre-Mittel [0..ℓ*−1] je Probe mit stabilem Tail
+  (CRYSTAL_MIN_TAIL=2); kein Tail → OFFEN (Via-Negativa).
+- **mi2_mla_vs_mqa_profile** — Mittel tv_in_mid über {5,11,17,23} >
+  Mittel über die 22 lokalen MQA-Schichten, strikt je Probe; Band (P2)
+  legt paris + arithmetic fest (2/2 PASS, 1/2 OFFEN, 0/2 FAIL);
+  arithmetic_sp als Datums-Zusatz. Konvergenz-Datum zitiert: die
+  MI-1-Entropie-Delle e11 < e10 UND e11 < e12 quer über 6/6 Domänen.
+
+KORREKTUR-LOG (3 gebuchte Lauf-Brüche + 1 Klassifikations-Korrektur):
+(1) GPU-Hauptlauf 1 (30.1 s): `norm_mod = self.model.norm` —
+AttributeError (der Wrapper trägt norm nicht, Canon :362/:626-634;
+MI-1-Muster mech_interp.py:178) — BROKEN gebucht, exit 2 GELB, kein
+stiller Fallback; Fix `norm_mod = self.model.model.norm`. (2)
+GPU-Hauptlauf 2 (30.4 s, ROT exit 1): die MI2-Messung selbst — paris
+mehrdeutig `[9079, 50429]` (BEIDE echte Ein-Token-Vertreter von
+"Paris"), arithmetic_sp leer (die lstrip-Konvention zerstört
+Space-Targets SICH selbst), arithmetic EINDEUTIG 236812 ('4', die
+no-Space-Form); der Smoke klassifizierte Leer/Mehrdeutigkeit fälschlich
+als FAIL — Falsifikator-Familie falsch angewendet (Display-Klassifikation,
+MI-1-GELB-Familie). (3) Klassifikations-Fix: FAIL nur bei
+Vertreter-Falle; Leer/Mehrdeutigkeit → OFFEN je Probe (registrierte
+Allokation), Messdaten unverändert; GPU-Hauptlauf 3 (29.4 s) als
+Doppel-Det-Datum: 4 PASS | 4 OFFEN | 0 FAIL, exit 2 GELB, alle Werte
+bitidentisch zu Lauf 2.
+
+### 17.2 Verdikt-Register
+
+| Verdikt | Band (P2-Freeze) | Ergebnis |
+|---|---|---|
+| mi2_single_token_strict | je Probe genau 1 ID, Vertreter-Falle → FAIL | **OFFEN** (arithmetic 236812 '4' ✓; paris 2 IDs beide echt; sp leer — Konventions-Grenze) |
+| mi2_sublayer_telescope | dev ± 1e-6, anchor ≤ 1e-3 | **PASS** (dev **0.0**, anchor 2.842e-12) |
+| mi2_purity_det | Fingerabdruck Δ=0; Doubletten bitidentisch | **PASS** |
+| mi2_attn_vs_moe_attribution | Eindeutigkeit > 1e-3 | **PASS** (attn@ℓ3 0.0356 vs moe@ℓ4 0.0343, Marge 1.3e-3) |
+| mi2_goedel_gap_contraction | Tail < 0.5 × Pre | **PASS** (ℓ*=11: 0.2192 < 0.5×0.9929) |
+| mi2_mla_vs_mqa_profile | global > lokal in 2/2 Band-Proben | **OFFEN** (arithmetic 0.3549 > 0.1886 ✓ = 1/2; paris-Lane nicht gefahren) |
+
+4 PASS | 4 OFFEN | 0 FAIL, exit 2 GELB auf GPU — ehrlich gebucht: die
+OFFEN-Fälle sind Konventions-Grenzen des Instruments, keine
+Modell-Brüche und keine Band-Weitung. Die Feld-Aussagen sind
+GPU-Aussagen; die Konvention-Parität (anchor_tv 2.8e-12) misst exakt
+den offiziellen Kopf.
+
+### 17.3 Die Daten an voller Auflösung
+
+**Die strikte Auflösung liefert drei Daten über die Konvention selbst
+(das Instrument ist Teil der Messung).** (1) "Paris" hat ZWEI echte
+Ein-Token-Vertreter — 9079 (‚ Paris', mit Space) und 50429 (‚Paris',
+ohne Space); beide decodieren nach lstrip korrekt, die lstrip-Konvention
+kann sie nicht unterscheiden: Mehrdeutigkeit der Form, nicht der Sache.
+Die natürliche Fortsetzung im Kontext ist 9079 (MI-1-Datum p=0.5031);
+eine MI-3-Registrierung kann den Kontext-Vertreter pinnen. (2) Ein
+Leerzeichen-Target ist unter der lstrip-Konvention UNAUFFINDBAR —
+`decode(' ').lstrip(' ') == ""` zerstört das Target selbst;
+arithmetic_sp bleibt leer gelabelt. Die Konvention braucht für
+Space-Targets eine exakte-Dekode-Fassung (nicht lstrip), registriert für
+eine nächste Runde, NICHT in diesem Lauf geändert. (3) „2 + 2 =" löst
+EINDEUTIG 236812 (‚4', die no-Space-Form) — der Vertreter 236743 fällt
+raus, und mit ihm bestätigt sich der MI-1-Artefakt-Verdikt.
+
+**Die korrigierte Arithmetik-Lesart: kein Gleichstand, ein
+Space-Top-1.** p_final(236812) = 2.98e-7; official_top1 = lens_top1 =
+236743 (‚ ') mit p = 0.8074. Nach "=" erwartet das Modell das
+Leerzeichen — und NUR das: die bare-'4'-Masse ist Null auf 8 Dezimalen.
+Mit der korrigierten Koordinate fällt §16.3-Nuance 1 endgültig: es gab
+keinen „Fast-Gleichstand", es gab versehentlich dieselbe Koordinate.
+
+**Die Ziffer-Hypothese wird im Pre-Band GERECHNET und von der globalen
+MLA-Schicht ℓ=5 BESCHNITTEN.** Die ΔP-Kette auf 236812: Attention
+schreibt bei ℓ=3 +0.0356 (p_mid 0.0357 — der größte
+Einzel-Sublayer-Schub der Kette), MoE bei ℓ=4 +0.0343 (p_out 0.0516);
+dann subtrahiert die GLOBALE MLA-Schicht ℓ=5 −0.0328 (Attention) und
+−0.0153 (MoE) → 0.0036 — danach ist '4' tot (≤ 6e-4 über alle
+restlichen 21 Schichten). Das Attribution-Datum: beide Kanal-Maxima
+sind LOKAL (ℓ=3 attn, ℓ=4 moe) und liegen im Pre-Band — die
+Ziffer-Wette lebt in Token-Aufnahme/Übergang, nicht im Core. Die
+User-Hypothese „globale MLA-Schichten sind die Wissens-Injektoren" ist
+für die Ziffer-Koordinate GEGENTEILIG gemessen: ℓ=5 injiziert nicht,
+sondern prunet.
+
+**Der Space kristallisiert exakt an der globalen MLA-Schicht ℓ=11.**
+Top-1-Kipp ℓ=10 (‚/=' 1.3 %) → ℓ=11 (‚ ' 42.5 %); gap_out_tv fällt
+0.9853 → 0.5697 IN ℓ=11; tv_in_mid(ℓ=11) = 0.7802 — die größte
+Attention-Verteilungs-Umschreibung der ganzen Kette ist genau die
+globale Schicht, die den Space einrastet (Konvergenz zur
+MI-1-Entropie-Delle an e11). Danach Steigung der Space-Masse bis 0.9920
+(ℓ=17-20), Plateau, die ℓ=23-25-Umverteilung bleibt das MI-1-Datum
+(Nuance 2 hält unverändert).
+
+**Das MLA-Profil ist kein „globale Schichten sind lauter"-Effekt,
+sondern zwei Ereignisse.** Global-Mittel tv_in_mid 0.3549 > lokal
+0.1886 (1.88×) — aber die globalen Mittel tragen NUR zwei Schichten:
+ℓ=5 (0.5616, die Ziffer-Prune) und ℓ=11 (0.7802, die
+Space-Einschreibung); ℓ=17 (0.0089) und ℓ=23 (0.0691) sind nach dem
+Kristallisieren still. Größte lokale tv: ℓ=0 (0.9988, Emb-Attention)
+und ℓ=3 (0.7136) — die Early-Band-Kette ist lokal geprägt. Die
+Architektur-Sonde trennt also nicht „MLA schreibt immer stärker",
+sondern: die globalen Schichten TRAGEN die zwei Umschreibungs-Ereignisse
+(Prune + Inscription), der Rest ist still.
+
+**Das Teleskop ist eine Identität, keine Approximation.** Σ(ΔP_attn +
+ΔP_moe) − (P_final − P_emb) = 0.0 (exakt, kein Rundungs-Rest über 52
+Sublayer-Δ) und anchor_tv 2.842e-12 — die Halbschichten-Zerlegung ist
+bruchfrei und misst denselben offiziellen Kopf wie MI-1. Determinismus:
+Lauf 2 ↔ Lauf 3 alle Felder bitidentisch (dev 0.0, anchor 2.842e-12,
+0.0356/0.0343, ℓ*=11 tail 0.2192/pre 0.9929, 0.3549/0.1886).
+
+### 17.4 Schichtung (Gemessen / Nicht messbar / Hypothese)
+
+- **Gemessen:** die Sublayer-Identität (dev 0.0, anchor 2.8e-12), die
+  ΔP-Kette auf 236812 (Attn-Write ℓ3, MoE-Write ℓ4, MLA-Prune ℓ5 −0.033),
+  die Space-Kristallisation an ℓ=11 (tv_in_mid 0.7802, gap-Fall
+  0.9853→0.5697), das MLA-Profil 0.3549 > 0.1886 (1/2 des Bandes; paris
+  nicht gefahren), die drei Konventions-Daten (2 echte Paris-Vertreter,
+  Unauffindbarkeit von Space-Targets unter lstrip, arithmetic 236812
+  eindeutig), die p_final-Lesung 2.98e-7 vs Space 0.8074, der
+  Determinismus Lauf 2↔3 bitidentisch, die Reinheit (Fingerabdruck Δ=0,
+  Doubletten bitidentisch).
+- **Nicht messbar in diesem Lauf:** die PARIS-Sublayer-Kette (Kontext-
+  Vertreter steht unter der Form-Mehrdeutigkeit aus — Pin-Mechanik ist
+  eine MI-3-Registrierung), die Space-Koordinate als Target
+  (Konventions-Grenze), Code/Logik-Lens-Proben ohne eindeutige
+  Ein-Token-Targets (R1, keine Band-Erfindung). Die MLA-vs-MQA-Band-
+  Aussage bleibt auf 1/2 — das Band ist NICHT geweitet worden.
+- **Hypothese (als solche gelabelt):** die globale-MLA-Rolle
+  „Wissens-Injektor" braucht Proben-Streuung: das Ein-Proben-Bild ist
+  kompatibel mit „dieselbe globale Schicht trägt beide Rollen" (ℓ=5:
+  Prune auf der Ziffer-Koordinate bei tv 0.56; ℓ=11: Inscription auf
+  der Antwort-Koordinate bei tv 0.78) — MI-3 (Steering/Ablation) muß
+  Hinreichendheit/Notwendigkeit der globalen Schichten TRENNEN;
+  MI-2 behauptet die kausale Rolle nicht.
+
+P-Protokoll: append-only Berichte; der §16.3-Korrektur-Vermerk steht
+hier (MI-1-Dateien unangetastet, P1); Prereg im Skript-Docstring
+(P2-Freeze vor GPU-Lauf 1); Roh-Felder (rows je Probe: p_in/p_mid/p_out,
+dp_attn/dp_moe, tv_in_mid, gap_out_tv, top1_out-Kette; resolve_raw mit
+allen Kandidaten-IDs) vollständig in `mi2_logit_lens.json` (P3 vor
+Auswertung); Verdikt P4-Einstufung nach registrierten Bändern — der
+Klassifikations-Fix ist eine Einstufungs-Korrektur, kein Re-Decide. Die
+3 gebuchten Lauf-Brüche + die Klassifikations-Korrektur stehen im
+KORREKTUR-LOG (Skript-Docstring + §17.1). Laufschrift-Protokoll:
+`laufprotokolle_befund_report.md` §19.

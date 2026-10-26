@@ -754,3 +754,62 @@ scratches.smoke_mech_interp_tomography` (CPU: 6 PILOT + 6 OFFEN, exit 2)
 → `scratches/mi1_tomography_experiment.log`; `--gpu` → 6 PASS, exit 0,
 36.3 s (`mi1_tomography_gpu.log`); Roh-Felder 26×8 + Entropie-26 +
 Lens-Trajektorien je Domäne in `mi1_tomography_experiment.json`.
+
+## 19. MI-2 — Das Sublayer-Röntgengerät: die Identität und die zwei Umschreibungen (2026-10-26)
+
+(Laufschrift 19 — Hermeneutische Vollfassung in `sprachspiel_bericht.md`
+§17; Freigabe nach dem MI-1-Audit des Users: dreistufiges Regime,
+prose-L11-Anomalie, Tokenizer-Bruch; MI-2 = Attention-vs-MoE
+Logit-Lens + strikte Ein-Token-Auflösung. P1-Korrektur gebucht: die
+MI-1-§16.3-Nuance „Fast-Gleichstand" war ein Auflösungs-Artefakt.)
+
+### Verdikt-Register
+
+| Verdikt | Band | Ergebnis |
+|---|---|---|
+| mi2_single_token_strict | je Probe genau 1 ID; Vertreter-Falle → FAIL | OFFEN (arithmetic 236812 ✓; paris [9079, 50429] beide echt; sp leer) |
+| mi2_sublayer_telescope | dev ± 1e-6, anchor ≤ 1e-3 | PASS (dev **0.0**, anchor 2.842e-12) |
+| mi2_purity_det | Fingerabdruck Δ=0; Doubletten bitidentisch | PASS |
+| mi2_attn_vs_moe_attribution | Eindeutigkeit > 1e-3 | PASS (attn@ℓ3 0.0356 vs moe@ℓ4 0.0343) |
+| mi2_goedel_gap_contraction | Tail < 0.5 × Pre | PASS (ℓ*=11: 0.2192 < 0.4964) |
+| mi2_mla_vs_mqa_profile | global > lokal in 2/2 | OFFEN (arithmetic 0.3549 > 0.1886 = 1/2) |
+
+Kern: **Das Teleskop ist eine IDENTITÄT** — Σ(ΔP_attn+ΔP_moe) = P_final
+− P_emb mit dev = 0.0 über 52 Sublayer-Δ, anchor_tv 2.8e-12 (offizieller
+Kopf, deterministisch Lauf 2↔3 bitidentisch). **Die strikte
+Ein-Token-Auflösung** löst „2 + 2 =" eindeutig auf 236812 (‚4',
+no-Space-Form) und bestätigt damit den MI-1-Artefakt (Vertreter 236743
+wurde gemessen statt der Ziffer): der Gleichstand von §16.3-Nuance 1
+FÄLLT — p_final('4') = 2.98e-7, Top-1 ist das Leerzeichen mit 0.8074.
+Das Instrument liefert drei Konventions-Daten: "Paris" hat zwei echte
+Vertreter (9079/50429 — Form-Mehrdeutigkeit), Space-Targets sind unter
+lstrip unauffindbar, Code/Logik-Proben ohne Ein-Token-Targets bleiben
+R1-nicht-messbar. **Die Ziffer-Hypothese wird im Pre-Band gerechnet und
+von globaler MLA ℓ=5 beschnitten** (Attn-Write ℓ3 +0.0356, MoE-Write ℓ4
++0.0343, MLA-Prune ℓ5 −0.0328 → '4' tot ≤ 6e-4; beide Kanal-Maxima
+LOKAL) — für die Ziffer-Koordinate ist ℓ5 kein Injektor, sondern
+Pruner. **Der Space kristallisiert an globaler MLA ℓ=11** (Top-1-Kipp,
+tv_in_mid 0.7802 — größte Attention-Umschreibung der Kette, gap-Fall
+0.9853→0.5697; Konvergenz zur MI-1-e11-Delle). **MLA-Profil:** global
+0.3549 > lokal 0.1886 (1.88×), aber getragen von NUR zwei globalen
+Schichten (ℓ5 Prune, ℓ11 Inscription; ℓ17/ℓ23 still) — die Architektur
+trennt nicht „MLA schreibt lauter", sondern trägt die zwei
+Umschreibungs-Ereignisse. KORREKTUR-LOG: 3 Lauf-Brüche gebucht
+(GPU-Lauf 1 norm-Modul-Bruch — norm sitzt am ArgonModel-Submodul
+:362/:626-634, Fix norm_mod = self.model.model.norm; GPU-Lauf 2
+Messung-ROT durch Falsifikator-Fehlklassifikation; Lauf 3 als
+Doppel-Det-Datum nach Klassifikations-Fix — Leer/Mehrdeutigkeit → OFFEN
+je Probe, FAIL nur bei Vertreter-Falle). Nicht messbar: paris-Sublayer-
+Kette (Kontext-Pin der Vertreter = MI-3-Registrierung), Space-Target,
+die 2/2-MLA-Band-Aussage (1/2, Band nicht geweitet). Hypothese
+(gelabelt): globale MLA-Schichten tragen beide Rollen (ℓ5 Prune, ℓ11
+Inscription) — kausale Trennung = MI-3.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_mech_interp_logit_lens` (CPU: 4 PILOT, 6 OFFEN, exit 2)
+→ `--gpu`: Lauf 1 BROKEN/exit 2 (30.1 s, gebucht), Lauf 2 ROT/exit 1
+(30.4 s, Messung + Klassifikations-Bug), Lauf 3 GELB/exit 2
+(4 PASS | 4 OFFEN | 0 FAIL, 29.4 s, Werte bitidentisch zu Lauf 2)
+→ `mi2_logit_lens_gpu.log`; Roh-Felder (rows je Probe: p_in/p_mid/p_out,
+dp_attn/dp_moe, tv_in_mid, gap_out_tv, top1_out-Kette; resolve_raw) in
+`mi2_logit_lens.json`.
