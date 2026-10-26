@@ -249,6 +249,27 @@ class CompositeMachine(BaseMachine):
         self.turing._restore_snapshot(snapshot["turing"])
         self.wittgenstein._restore_snapshot(snapshot["wittgenstein"])
 
+    def preview_steps(
+        self,
+        inputs: Sequence[Any],
+        lexical_grounding: bool = False,
+    ) -> List[StepResult]:
+        """MI-6 — mehrstufige Voraus-Sicht: k Schritte als geschlossene
+        Proben-Kette ohne Zwischenmutation (derselbe Snapshot -> step ->
+        Restore-Rahmen wie observe, k-fach). Die Kette sieht k künftige
+        Verdicts voraus — inklusive Expansionen und Orakel-Abfragen — und
+        kehrt bitgenau an den Ausgangspunkt zurück. Canon-neutral: neue
+        Methode, kein bestehender Pfad berührt."""
+        snapshot = self._snapshot()
+        results: List[StepResult] = []
+        try:
+            for obj in inputs:
+                results.append(
+                    self.step(obj, lexical_grounding=lexical_grounding))
+        finally:
+            self._restore_snapshot(snapshot)
+        return results
+
     def step_autonomous(
         self,
         obj: Any,

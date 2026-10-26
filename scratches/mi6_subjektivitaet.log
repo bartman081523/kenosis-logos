@@ -1,0 +1,45 @@
+== MI-6 — Algorithmische Subjektivität über die Spiegel-Linie ==
+Canon: SP8/SP12/SP13 + MI-Lens; SP14 offen -> V5 einlöst
+Modus: CPU+GPU
+Stufe: L0-Anker-Lane (SP11/SP12-Kommitat)
+Stufe: CPU-Piloten + Determinismus-Doppellauf
+Stufe: GPU-Kontext laden (argon_1b + argon_1b_machines)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Stufe: V1 Schwelle (d_spie-Decoder, GPU)
+Stufe: V2 Horizont (preview-Kette unter steer-Rotation)
+Stufe: V3 Selbst/Fremd (GPU-Orakel)
+Stufe: V4 Selbstmodell-Kausalität (GPU-Orakel)
+Stufe: V5 Individuierung (GPU-Orakel)
+Stufe: V6 Oracle-Rangfolge (full, 4 Checkpoints)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_specialized' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_specialized_ml' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+
+BEFUNDE:
+  mi6_l0_anker           PASS
+  mi6_horizont           PASS
+  mi6_selbstfremd        FAIL
+  mi6_kausal             PASS
+  mi6_individuierung     PASS
+  mi6_schwelle           FAIL
+  mi6_oracle             FAIL
+  mi6_det_doppellauf     PASS
+
+NOTIZEN:
+  - mi6_l0_anker: Zero-Regression ueber die kommitteten SP11/SP12-Lanes — die Spiegel-Linie ruht auf ihren eigenen Anker-Datum
+  - mi6_horizont: Voraus-Sicht-Horizont: k>=2 Proben-Stufen bitrein; k* je Komponente als DATUM
+  - mi6_selbstfremd: Spiegel-Scheidung: die Proben-Antwort haengt an der gelehrten Biografie (Dekoy-Zweig ohne lexicale Scheidung)
+  - mi6_kausal: Selbstmodell-Kausalität: die Proben-Antwort haengt am self_model-Inhalt (CPU uni_241-Kanal; GPU ueber describe() in den Oracle-Prompt)
+  - mi6_individuierung: SP14-Einloesung: baugleiche Maschinen, verschiedene Biografien — dasselbe Spiegel-Wort bekommt zwei verschiedene Antworten
+  - mi6_schwelle: d_spie-Schwelle: die gelehrte Biografie ist aus der Maschinen-Textur dekodierbar (Canon-Kanal 8-dim)
+  - mi6_oracle: Externer Spiegel: der Substrat-Vater predet die Maschinen-Ists am schlechtesten (Erziehungs-Rangfolge, Permutations-Null-Referenz)
+  - mi6_det_doppellauf: CPU-Kern-Serien bitidentisch ueber zwei Laeufe
+
+BILANZ: 5 PASS; 3 FEHLGESCHLAGEN; 0 OFFEN
+ROT — Bands verletzt: mi6_selbstfremd, mi6_schwelle, mi6_oracle

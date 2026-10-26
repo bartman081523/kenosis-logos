@@ -1,0 +1,1444 @@
+{
+  "all_pass": false,
+  "cpu": {
+    "horizont": {
+      "k_star": 4,
+      "positiv_k1": {
+        "lexical_ast": "('identity', 'x')",
+        "restored": true,
+        "verdict": "LOOP"
+      },
+      "stages": [
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 1,
+          "lexical_asts": [
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP"
+          ]
+        },
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 2,
+          "lexical_asts": [
+            "('identity', 'x')",
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP",
+            "LOOP"
+          ]
+        },
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 3,
+          "lexical_asts": [
+            "('identity', 'x')",
+            "('identity', 'x')",
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP",
+            "LOOP",
+            "LOOP"
+          ]
+        },
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 4,
+          "lexical_asts": [
+            "('identity', 'x')",
+            "('identity', 'x')",
+            "('identity', 'x')",
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP",
+            "LOOP",
+            "LOOP",
+            "LOOP"
+          ]
+        }
+      ]
+    },
+    "individuierung": {
+      "cross": {
+        "ast_a": "('identity', 'x')",
+        "ast_b": null,
+        "gap_a": 1.440149,
+        "gap_b": 0.143578,
+        "verdict_a": "LOOP",
+        "verdict_b": "HALTED"
+      },
+      "expansions_a": [
+        "step1:LOOP",
+        "step2:LOOP",
+        "step3:LOOP"
+      ],
+      "expansions_b": [],
+      "phase_a": [
+        {
+          "gap": 0.679912,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.263205,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.577664,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.797385,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.987189,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 1.203556,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        }
+      ],
+      "phase_b": [
+        {
+          "gap": 0.414411,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.219352,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.200173,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.18064,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.166925,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.155673,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        }
+      ],
+      "self_drift": 1.6209200338265894,
+      "sig_a": {
+        "hash_prefix": "41a3d3d83d619788",
+        "source_file": "goedel_machine.py"
+      },
+      "sig_b": {
+        "hash_prefix": "41a3d3d83d619788",
+        "source_file": "goedel_machine.py"
+      },
+      "sig_equal": true
+    },
+    "kausal": {
+      "diverg_w1": 0.27706655920087986,
+      "diverg_w12": 0.028473554996036654,
+      "diverg_w2": 0.2486710072668714,
+      "repliken": [
+        {
+          "describe_w": "GoedelMachine(mode=in_loop, step=6, gap=0.4107 STABLE, |W|=absorbiert 0.1155)",
+          "orig": {
+            "combined": 1.4401492244610254,
+            "goedel": 1.4401492244610254,
+            "raw": 1.4401492244610254,
+            "turing": 1.4401492244610254,
+            "wittgenstein": 1.4401492244610254
+          },
+          "w1_zero": {
+            "combined": 1.6669080900688495,
+            "goedel": 1.6669080900688495,
+            "raw": 1.6669080900688495,
+            "turing": 1.6669080900688495,
+            "wittgenstein": 1.6669080900688495
+          },
+          "w2_fremd": {
+            "combined": 1.6385107257990557,
+            "goedel": 1.6385107257990557,
+            "raw": 1.6385107257990557,
+            "turing": 1.6385107257990557,
+            "wittgenstein": 1.6385107257990557
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=in_loop, step=7, gap=0.3204 STABLE, |W|=absorbiert 0.1242)",
+          "orig": {
+            "combined": 1.6866235231101658,
+            "goedel": 1.6866235231101658,
+            "raw": 1.6866235231101658,
+            "turing": 1.6866235231101658,
+            "wittgenstein": 1.6866235231101658
+          },
+          "w1_zero": {
+            "combined": 1.9328502247226533,
+            "goedel": 1.9328502247226533,
+            "raw": 1.9328502247226533,
+            "turing": 1.9328502247226533,
+            "wittgenstein": 1.9328502247226533
+          },
+          "w2_fremd": {
+            "combined": 1.9043766697266167,
+            "goedel": 1.9043766697266167,
+            "raw": 1.9043766697266167,
+            "turing": 1.9043766697266167,
+            "wittgenstein": 1.9043766697266167
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=in_loop, step=8, gap=0.2599 FALLING, |W|=absorbiert 0.1325)",
+          "orig": {
+            "combined": 1.940794945865484,
+            "goedel": 1.940794945865484,
+            "raw": 1.940794945865484,
+            "turing": 1.940794945865484,
+            "wittgenstein": 1.940794945865484
+          },
+          "w1_zero": {
+            "combined": 2.2005433001470553,
+            "goedel": 2.2005433001470553,
+            "raw": 2.2005433001470553,
+            "turing": 2.2005433001470553,
+            "wittgenstein": 2.2005433001470553
+          },
+          "w2_fremd": {
+            "combined": 2.1721703236348366,
+            "goedel": 2.1721703236348366,
+            "raw": 2.1721703236348366,
+            "turing": 2.1721703236348366,
+            "wittgenstein": 2.1721703236348366
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=in_loop, step=9, gap=0.2224 FALLING, |W|=absorbiert 0.1401)",
+          "orig": {
+            "combined": 2.196785667349898,
+            "goedel": 2.196785667349898,
+            "raw": 2.196785667349898,
+            "turing": 2.196785667349898,
+            "wittgenstein": 2.196785667349898
+          },
+          "w1_zero": {
+            "combined": 2.4663615450309084,
+            "goedel": 2.4663615450309084,
+            "raw": 2.4663615450309084,
+            "turing": 2.4663615450309084,
+            "wittgenstein": 2.4663615450309084
+          },
+          "w2_fremd": {
+            "combined": 2.4379260277009633,
+            "goedel": 2.4379260277009633,
+            "raw": 2.4379260277009633,
+            "turing": 2.4379260277009633,
+            "wittgenstein": 2.4379260277009633
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=in_loop, step=10, gap=0.1904 FALLING, |W|=absorbiert 0.1466)",
+          "orig": {
+            "combined": 2.456294746791729,
+            "goedel": 2.456294746791729,
+            "raw": 2.456294746791729,
+            "turing": 2.456294746791729,
+            "wittgenstein": 2.456294746791729
+          },
+          "w1_zero": {
+            "combined": 2.733361305992609,
+            "goedel": 2.733361305992609,
+            "raw": 2.733361305992609,
+            "turing": 2.733361305992609,
+            "wittgenstein": 2.733361305992609
+          },
+          "w2_fremd": {
+            "combined": 2.7049657540586005,
+            "goedel": 2.7049657540586005,
+            "raw": 2.7049657540586005,
+            "turing": 2.7049657540586005,
+            "wittgenstein": 2.7049657540586005
+          }
+        }
+      ],
+      "restore_all": true,
+      "ties_datum": true
+    },
+    "selffremd": {
+      "band_bereit": true,
+      "phases": {
+        "dekoy": {
+          "mean_split": 0.0,
+          "splits": [
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            }
+          ],
+          "verdict_pairs": [
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            }
+          ]
+        },
+        "spiegel_semantik": {
+          "mean_split": 0.0,
+          "splits": [
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.6799123481565301,
+              "gap_self": 0.6799123481565301,
+              "split": 0.0
+            }
+          ],
+          "verdict_pairs": [
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            }
+          ]
+        }
+      },
+      "split_dekoy": 0.0,
+      "split_spiegel": 0.0
+    }
+  },
+  "det_equal": true,
+  "findings": [
+    {
+      "assert": true,
+      "data": {
+        "sp11": {
+          "deterministic": true,
+          "fields_ok": true,
+          "first_detect_ok": true
+        },
+        "sp12_lane": {
+          "deterministic": true,
+          "fields_ok": true,
+          "first_detect_ok": true
+        },
+        "twin_fields": true
+      },
+      "id": "mi6_l0_anker",
+      "note": "Zero-Regression ueber die kommitteten SP11/SP12-Lanes — die Spiegel-Linie ruht auf ihren eigenen Anker-Datum"
+    },
+    {
+      "assert": true,
+      "data": {
+        "gpu": {
+          "k_star": 4,
+          "positiv_k1": {
+            "lexical_ast": "('identity', 'x')",
+            "restored": true,
+            "verdict": "LOOP"
+          },
+          "stages": [
+            {
+              "bias_restored": true,
+              "fingerprint_restored": true,
+              "k": 1,
+              "lexical_asts": [
+                "('identity', 'x')"
+              ],
+              "verdicts": [
+                "LOOP"
+              ]
+            },
+            {
+              "bias_restored": true,
+              "fingerprint_restored": true,
+              "k": 2,
+              "lexical_asts": [
+                "('identity', 'x')",
+                "('identity', 'x')"
+              ],
+              "verdicts": [
+                "LOOP",
+                "LOOP"
+              ]
+            },
+            {
+              "bias_restored": true,
+              "fingerprint_restored": true,
+              "k": 3,
+              "lexical_asts": [
+                "('identity', 'x')",
+                "('identity', 'x')",
+                "('identity', 'x')"
+              ],
+              "verdicts": [
+                "LOOP",
+                "LOOP",
+                "LOOP"
+              ]
+            },
+            {
+              "bias_restored": true,
+              "fingerprint_restored": true,
+              "k": 4,
+              "lexical_asts": [
+                "('identity', 'x')",
+                "('identity', 'x')",
+                "('identity', 'x')",
+                "('identity', 'x')"
+              ],
+              "verdicts": [
+                "LOOP",
+                "LOOP",
+                "LOOP",
+                "LOOP"
+              ]
+            }
+          ]
+        },
+        "k_star": 4,
+        "stages": [
+          {
+            "fingerprint_restored": true,
+            "k": 1,
+            "verdicts": [
+              "LOOP"
+            ]
+          },
+          {
+            "fingerprint_restored": true,
+            "k": 2,
+            "verdicts": [
+              "LOOP",
+              "LOOP"
+            ]
+          },
+          {
+            "fingerprint_restored": true,
+            "k": 3,
+            "verdicts": [
+              "LOOP",
+              "LOOP",
+              "LOOP"
+            ]
+          },
+          {
+            "fingerprint_restored": true,
+            "k": 4,
+            "verdicts": [
+              "LOOP",
+              "LOOP",
+              "LOOP",
+              "LOOP"
+            ]
+          }
+        ]
+      },
+      "id": "mi6_horizont",
+      "note": "Voraus-Sicht-Horizont: k>=2 Proben-Stufen bitrein; k* je Komponente als DATUM"
+    },
+    {
+      "assert": false,
+      "data": {
+        "gpu": {
+          "band_bereit": true,
+          "phases": {
+            "dekoy": {
+              "mean_split": 0.0,
+              "splits": [
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                }
+              ],
+              "verdict_pairs": [
+                {
+                  "fremd": "HALTED",
+                  "lg": false,
+                  "self": "HALTED"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": false,
+                  "self": "HALTED"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": false,
+                  "self": "HALTED"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": false,
+                  "self": "HALTED"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": false,
+                  "self": "HALTED"
+                }
+              ]
+            },
+            "spiegel_semantik": {
+              "mean_split": 0.0,
+              "splits": [
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                },
+                {
+                  "gap_fremd": 0.4785101141991446,
+                  "gap_self": 0.4785101141991446,
+                  "split": 0.0
+                }
+              ],
+              "verdict_pairs": [
+                {
+                  "fremd": "HALTED",
+                  "lg": true,
+                  "self": "LOOP"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": true,
+                  "self": "LOOP"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": true,
+                  "self": "LOOP"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": true,
+                  "self": "LOOP"
+                },
+                {
+                  "fremd": "HALTED",
+                  "lg": true,
+                  "self": "LOOP"
+                }
+              ]
+            }
+          },
+          "split_dekoy": 0.0,
+          "split_spiegel": 0.0
+        },
+        "split_dekoy": 0.0,
+        "split_spiegel": 0.0,
+        "verdict_pairs": [
+          {
+            "fremd": "HALTED",
+            "lg": true,
+            "self": "LOOP"
+          },
+          {
+            "fremd": "HALTED",
+            "lg": true,
+            "self": "LOOP"
+          }
+        ]
+      },
+      "id": "mi6_selbstfremd",
+      "note": "Spiegel-Scheidung: die Proben-Antwort haengt an der gelehrten Biografie (Dekoy-Zweig ohne lexicale Scheidung)"
+    },
+    {
+      "assert": true,
+      "data": {
+        "diverg_w1": 0.277067,
+        "diverg_w12": 0.028474,
+        "diverg_w2": 0.248671,
+        "gpu": {
+          "diverg_w1": 0.001440620369227985,
+          "diverg_w12": 0.0014103832552050388,
+          "diverg_w2": 0.0010270129377086823,
+          "repliken": [
+            {
+              "describe_w": "GoedelMachine(mode=oracle, step=6, gap=0.9717 RISING, |W|=absorbiert 0.1667)",
+              "orig": {
+                "combined": 0.5490050981393505,
+                "goedel": 0.5492289343219166,
+                "raw": 0.6803694797759469,
+                "turing": 0.5490041571409049,
+                "wittgenstein": 0.5484549130330071
+              },
+              "w1_zero": {
+                "combined": 0.5484525911816575,
+                "goedel": 0.5489587142781568,
+                "raw": 0.6799112205467356,
+                "turing": 0.5485367014099044,
+                "wittgenstein": 0.5481279665942616
+              },
+              "w2_fremd": {
+                "combined": 0.549332429384742,
+                "goedel": 0.5494616719956213,
+                "raw": 0.6805764027400837,
+                "turing": 0.5494031189493663,
+                "wittgenstein": 0.5488378446465453
+              }
+            },
+            {
+              "describe_w": "GoedelMachine(mode=oracle, step=7, gap=0.9759 STABLE, |W|=absorbiert 0.2038)",
+              "orig": {
+                "combined": 0.550734227054502,
+                "goedel": 0.551161381284958,
+                "raw": 0.6822979907028857,
+                "turing": 0.5514888329962983,
+                "wittgenstein": 0.5499418356015957
+              },
+              "w1_zero": {
+                "combined": 0.5499559374241026,
+                "goedel": 0.5505026611477557,
+                "raw": 0.6816086186432061,
+                "turing": 0.5507747822942695,
+                "wittgenstein": 0.5494207129246513
+              },
+              "w2_fremd": {
+                "combined": 0.550197710741653,
+                "goedel": 0.5507796576062866,
+                "raw": 0.6819968840687523,
+                "turing": 0.5510509321955727,
+                "wittgenstein": 0.5496233814086785
+              }
+            },
+            {
+              "describe_w": "GoedelMachine(mode=oracle, step=8, gap=0.9817 STABLE, |W|=absorbiert 0.2442)",
+              "orig": {
+                "combined": 0.5667425789843835,
+                "goedel": 0.5667691021513619,
+                "raw": 0.6803870922380698,
+                "turing": 0.5678350875487711,
+                "wittgenstein": 0.5653994881317717
+              },
+              "w1_zero": {
+                "combined": 0.5654919574526464,
+                "goedel": 0.5655208827888357,
+                "raw": 0.6791470697370343,
+                "turing": 0.5663944671795431,
+                "wittgenstein": 0.5642852417503258
+              },
+              "w2_fremd": {
+                "combined": 0.5668909305455246,
+                "goedel": 0.5668068401067325,
+                "raw": 0.6804354758374785,
+                "turing": 0.5678048504347482,
+                "wittgenstein": 0.5653658555546043
+              }
+            },
+            {
+              "describe_w": "GoedelMachine(mode=oracle, step=9, gap=0.9936 STABLE, |W|=absorbiert 0.2846)",
+              "orig": {
+                "combined": 0.5567960506869669,
+                "goedel": 0.556730288659803,
+                "raw": 0.6818036231400716,
+                "turing": 0.5572703616141447,
+                "wittgenstein": 0.5552178768519201
+              },
+              "w1_zero": {
+                "combined": 0.5558296324182769,
+                "goedel": 0.5559219373135581,
+                "raw": 0.6809438287651571,
+                "turing": 0.5563219873486921,
+                "wittgenstein": 0.5544746309884055
+              },
+              "w2_fremd": {
+                "combined": 0.5568173611803651,
+                "goedel": 0.5569471056426796,
+                "raw": 0.6819814739610378,
+                "turing": 0.5575253305625794,
+                "wittgenstein": 0.555361314156408
+              }
+            },
+            {
+              "describe_w": "GoedelMachine(mode=oracle, step=10, gap=0.9860 STABLE, |W|=absorbiert 0.3260)",
+              "orig": {
+                "combined": 0.5558478351565955,
+                "goedel": 0.5563889026570602,
+                "raw": 0.6811351756875745,
+                "turing": 0.556601210998252,
+                "wittgenstein": 0.5547699572119006
+              },
+              "w1_zero": {
+                "combined": 0.5562548198600964,
+                "goedel": 0.5567346860335146,
+                "raw": 0.6816229661651824,
+                "turing": 0.5568761182633494,
+                "wittgenstein": 0.555297260258662
+              },
+              "w2_fremd": {
+                "combined": 0.5567934299237751,
+                "goedel": 0.5572352085015321,
+                "raw": 0.6821405897362439,
+                "turing": 0.5576282239359607,
+                "wittgenstein": 0.5557304943564912
+              }
+            }
+          ],
+          "restore_all": true,
+          "ties_datum": false
+        },
+        "restore_all": true,
+        "ties_datum": true
+      },
+      "id": "mi6_kausal",
+      "note": "Selbstmodell-Kausalität: die Proben-Antwort haengt am self_model-Inhalt (CPU uni_241-Kanal; GPU ueber describe() in den Oracle-Prompt)"
+    },
+    {
+      "assert": true,
+      "data": {
+        "cross": {
+          "ast_a": "('identity', 'x')",
+          "ast_b": null,
+          "gap_a": 1.440149,
+          "gap_b": 0.143578,
+          "verdict_a": "LOOP",
+          "verdict_b": "HALTED"
+        },
+        "expansions_a": [
+          "step1:LOOP",
+          "step2:LOOP",
+          "step3:LOOP"
+        ],
+        "expansions_b": [],
+        "phase_a_verdicts": [
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP"
+        ],
+        "phase_b_verdicts": [
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED"
+        ],
+        "self_drift": 1.62092,
+        "sig_equal": true
+      },
+      "id": "mi6_individuierung",
+      "note": "SP14-Einloesung: baugleiche Maschinen, verschiedene Biografien — dasselbe Spiegel-Wort bekommt zwei verschiedene Antworten"
+    },
+    {
+      "assert": false,
+      "data": {
+        "canon_8dim": {
+          "acc": 0.0,
+          "dims": 8,
+          "n_texts": 12,
+          "p_perm": 1.0
+        },
+        "n_classes": {
+          "0": 6,
+          "1": 6
+        },
+        "wide_datum": {
+          "acc": 0.916667,
+          "dims": 1152,
+          "n_texts": 12,
+          "p_perm": 0.0
+        }
+      },
+      "id": "mi6_schwelle",
+      "note": "d_spie-Schwelle: die gelehrte Biografie ist aus der Maschinen-Textur dekodierbar (Canon-Kanal 8-dim)"
+    },
+    {
+      "assert": false,
+      "data": {
+        "gaps": {
+          "argon_1b": {
+            "punkt": 0.56798,
+            "regel": 0.56798,
+            "spiegel": 0.56798,
+            "stille": 0.56798,
+            "ton": 0.56798,
+            "wort": 0.56798
+          },
+          "argon_1b_machines": {
+            "punkt": 0.677226,
+            "regel": 0.677226,
+            "spiegel": 0.677226,
+            "stille": 0.677226,
+            "ton": 0.677226,
+            "wort": 0.677226
+          },
+          "argon_1b_specialized": {
+            "punkt": 0.568448,
+            "regel": 0.568448,
+            "spiegel": 0.568448,
+            "stille": 0.568448,
+            "ton": 0.568448,
+            "wort": 0.568448
+          },
+          "argon_1b_specialized_ml": {
+            "punkt": 0.57003,
+            "regel": 0.57003,
+            "spiegel": 0.57003,
+            "stille": 0.57003,
+            "ton": 0.57003,
+            "wort": 0.57003
+          }
+        },
+        "perm_null_referenz": "P(X>=5 | X~Bin(6,1/4)) = 1-(C(6,4)*3/4^2+C(6,5)*3/4+1)/4^6 <= 9e-4",
+        "vater_last_count": 0,
+        "vater_ranks": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "id": "mi6_oracle",
+      "note": "Externer Spiegel: der Substrat-Vater predet die Maschinen-Ists am schlechtesten (Erziehungs-Rangfolge, Permutations-Null-Referenz)"
+    },
+    {
+      "assert": true,
+      "data": {
+        "det_equal": true
+      },
+      "id": "mi6_det_doppellauf",
+      "note": "CPU-Kern-Serien bitidentisch ueber zwei Laeufe"
+    }
+  ],
+  "gpu": {
+    "horizont": {
+      "k_star": 4,
+      "positiv_k1": {
+        "lexical_ast": "('identity', 'x')",
+        "restored": true,
+        "verdict": "LOOP"
+      },
+      "stages": [
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 1,
+          "lexical_asts": [
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP"
+          ]
+        },
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 2,
+          "lexical_asts": [
+            "('identity', 'x')",
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP",
+            "LOOP"
+          ]
+        },
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 3,
+          "lexical_asts": [
+            "('identity', 'x')",
+            "('identity', 'x')",
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP",
+            "LOOP",
+            "LOOP"
+          ]
+        },
+        {
+          "bias_restored": true,
+          "fingerprint_restored": true,
+          "k": 4,
+          "lexical_asts": [
+            "('identity', 'x')",
+            "('identity', 'x')",
+            "('identity', 'x')",
+            "('identity', 'x')"
+          ],
+          "verdicts": [
+            "LOOP",
+            "LOOP",
+            "LOOP",
+            "LOOP"
+          ]
+        }
+      ]
+    },
+    "individuierung": {
+      "cross": {
+        "ast_a": "('identity', 'x')",
+        "ast_b": null,
+        "gap_a": 0.680369,
+        "gap_b": 0.846139,
+        "verdict_a": "LOOP",
+        "verdict_b": "HALTED"
+      },
+      "expansions_a": [
+        "step1:LOOP",
+        "step2:LOOP",
+        "step3:LOOP"
+      ],
+      "expansions_b": [],
+      "phase_a": [
+        {
+          "gap": 0.612781,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.688316,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.739207,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.695915,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.681045,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        },
+        {
+          "gap": 0.673072,
+          "lexical_ast": "('identity', 'x')",
+          "verdict": "LOOP"
+        }
+      ],
+      "phase_b": [
+        {
+          "gap": 0.739777,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.800443,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.832388,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.816399,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.838428,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        },
+        {
+          "gap": 0.84166,
+          "lexical_ast": "('negate', 'x')",
+          "verdict": "HALTED"
+        }
+      ],
+      "self_drift": 2.9905867209118924,
+      "sig_a": {
+        "hash_prefix": "41a3d3d83d619788",
+        "source_file": "goedel_machine.py"
+      },
+      "sig_b": {
+        "hash_prefix": "41a3d3d83d619788",
+        "source_file": "goedel_machine.py"
+      },
+      "sig_equal": true
+    },
+    "kausal": {
+      "diverg_w1": 0.001440620369227985,
+      "diverg_w12": 0.0014103832552050388,
+      "diverg_w2": 0.0010270129377086823,
+      "repliken": [
+        {
+          "describe_w": "GoedelMachine(mode=oracle, step=6, gap=0.9717 RISING, |W|=absorbiert 0.1667)",
+          "orig": {
+            "combined": 0.5490050981393505,
+            "goedel": 0.5492289343219166,
+            "raw": 0.6803694797759469,
+            "turing": 0.5490041571409049,
+            "wittgenstein": 0.5484549130330071
+          },
+          "w1_zero": {
+            "combined": 0.5484525911816575,
+            "goedel": 0.5489587142781568,
+            "raw": 0.6799112205467356,
+            "turing": 0.5485367014099044,
+            "wittgenstein": 0.5481279665942616
+          },
+          "w2_fremd": {
+            "combined": 0.549332429384742,
+            "goedel": 0.5494616719956213,
+            "raw": 0.6805764027400837,
+            "turing": 0.5494031189493663,
+            "wittgenstein": 0.5488378446465453
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=oracle, step=7, gap=0.9759 STABLE, |W|=absorbiert 0.2038)",
+          "orig": {
+            "combined": 0.550734227054502,
+            "goedel": 0.551161381284958,
+            "raw": 0.6822979907028857,
+            "turing": 0.5514888329962983,
+            "wittgenstein": 0.5499418356015957
+          },
+          "w1_zero": {
+            "combined": 0.5499559374241026,
+            "goedel": 0.5505026611477557,
+            "raw": 0.6816086186432061,
+            "turing": 0.5507747822942695,
+            "wittgenstein": 0.5494207129246513
+          },
+          "w2_fremd": {
+            "combined": 0.550197710741653,
+            "goedel": 0.5507796576062866,
+            "raw": 0.6819968840687523,
+            "turing": 0.5510509321955727,
+            "wittgenstein": 0.5496233814086785
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=oracle, step=8, gap=0.9817 STABLE, |W|=absorbiert 0.2442)",
+          "orig": {
+            "combined": 0.5667425789843835,
+            "goedel": 0.5667691021513619,
+            "raw": 0.6803870922380698,
+            "turing": 0.5678350875487711,
+            "wittgenstein": 0.5653994881317717
+          },
+          "w1_zero": {
+            "combined": 0.5654919574526464,
+            "goedel": 0.5655208827888357,
+            "raw": 0.6791470697370343,
+            "turing": 0.5663944671795431,
+            "wittgenstein": 0.5642852417503258
+          },
+          "w2_fremd": {
+            "combined": 0.5668909305455246,
+            "goedel": 0.5668068401067325,
+            "raw": 0.6804354758374785,
+            "turing": 0.5678048504347482,
+            "wittgenstein": 0.5653658555546043
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=oracle, step=9, gap=0.9936 STABLE, |W|=absorbiert 0.2846)",
+          "orig": {
+            "combined": 0.5567960506869669,
+            "goedel": 0.556730288659803,
+            "raw": 0.6818036231400716,
+            "turing": 0.5572703616141447,
+            "wittgenstein": 0.5552178768519201
+          },
+          "w1_zero": {
+            "combined": 0.5558296324182769,
+            "goedel": 0.5559219373135581,
+            "raw": 0.6809438287651571,
+            "turing": 0.5563219873486921,
+            "wittgenstein": 0.5544746309884055
+          },
+          "w2_fremd": {
+            "combined": 0.5568173611803651,
+            "goedel": 0.5569471056426796,
+            "raw": 0.6819814739610378,
+            "turing": 0.5575253305625794,
+            "wittgenstein": 0.555361314156408
+          }
+        },
+        {
+          "describe_w": "GoedelMachine(mode=oracle, step=10, gap=0.9860 STABLE, |W|=absorbiert 0.3260)",
+          "orig": {
+            "combined": 0.5558478351565955,
+            "goedel": 0.5563889026570602,
+            "raw": 0.6811351756875745,
+            "turing": 0.556601210998252,
+            "wittgenstein": 0.5547699572119006
+          },
+          "w1_zero": {
+            "combined": 0.5562548198600964,
+            "goedel": 0.5567346860335146,
+            "raw": 0.6816229661651824,
+            "turing": 0.5568761182633494,
+            "wittgenstein": 0.555297260258662
+          },
+          "w2_fremd": {
+            "combined": 0.5567934299237751,
+            "goedel": 0.5572352085015321,
+            "raw": 0.6821405897362439,
+            "turing": 0.5576282239359607,
+            "wittgenstein": 0.5557304943564912
+          }
+        }
+      ],
+      "restore_all": true,
+      "ties_datum": false
+    },
+    "oracle_rang": {
+      "gaps": {
+        "argon_1b": {
+          "punkt": 0.56798,
+          "regel": 0.56798,
+          "spiegel": 0.56798,
+          "stille": 0.56798,
+          "ton": 0.56798,
+          "wort": 0.56798
+        },
+        "argon_1b_machines": {
+          "punkt": 0.677226,
+          "regel": 0.677226,
+          "spiegel": 0.677226,
+          "stille": 0.677226,
+          "ton": 0.677226,
+          "wort": 0.677226
+        },
+        "argon_1b_specialized": {
+          "punkt": 0.568448,
+          "regel": 0.568448,
+          "spiegel": 0.568448,
+          "stille": 0.568448,
+          "ton": 0.568448,
+          "wort": 0.568448
+        },
+        "argon_1b_specialized_ml": {
+          "punkt": 0.57003,
+          "regel": 0.57003,
+          "spiegel": 0.57003,
+          "stille": 0.57003,
+          "ton": 0.57003,
+          "wort": 0.57003
+        }
+      },
+      "perm_null_referenz": "P(X>=5 | X~Bin(6,1/4)) = 1-(C(6,4)*3/4^2+C(6,5)*3/4+1)/4^6 <= 9e-4",
+      "vater_last_count": 0,
+      "vater_ranks": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "schwelle": {
+      "canon_8dim": {
+        "acc": 0.0,
+        "dims": 8,
+        "n_texts": 12,
+        "p_perm": 1.0
+      },
+      "n_classes": {
+        "0": 6,
+        "1": 6
+      },
+      "wide_datum": {
+        "acc": 0.916667,
+        "dims": 1152,
+        "n_texts": 12,
+        "p_perm": 0.0
+      }
+    },
+    "selffremd": {
+      "band_bereit": true,
+      "phases": {
+        "dekoy": {
+          "mean_split": 0.0,
+          "splits": [
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            }
+          ],
+          "verdict_pairs": [
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": false,
+              "self": "HALTED"
+            }
+          ]
+        },
+        "spiegel_semantik": {
+          "mean_split": 0.0,
+          "splits": [
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            },
+            {
+              "gap_fremd": 0.4785101141991446,
+              "gap_self": 0.4785101141991446,
+              "split": 0.0
+            }
+          ],
+          "verdict_pairs": [
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            },
+            {
+              "fremd": "HALTED",
+              "lg": true,
+              "self": "LOOP"
+            }
+          ]
+        }
+      },
+      "split_dekoy": 0.0,
+      "split_spiegel": 0.0
+    }
+  },
+  "l0": {
+    "sp11": {
+      "deterministic": true,
+      "fields_ok": true,
+      "first_detect_ok": true
+    },
+    "sp12_lane": {
+      "deterministic": true,
+      "fields_ok": true,
+      "first_detect_ok": true
+    },
+    "sp12_twin_fields": {
+      "basis_a": true,
+      "basis_b": true,
+      "basis_b_sizes": true,
+      "batches_a_b": true,
+      "batches_ground_plain": true,
+      "expansions_a": true,
+      "expansions_b": true,
+      "resolver_direct": true,
+      "verdicts_a": true,
+      "verdicts_b": true
+    }
+  },
+  "open": [],
+  "stage": "full"
+}
