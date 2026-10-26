@@ -1,0 +1,10 @@
+== SP16 — Kybernetische Textgenerierung + Audit der «unmöglichen Texte» (Live-Provenanz W→C→S, Horizont-Weiche, Zwillings-Divergenz) ==
+
+BEFUNDE:
+  sp16_live_provenance_audit       OFFEN
+  sp16_horizon_loop_avoidance      OFFEN
+  sp16_twin_divergence_stream      OFFEN
+  sp16_purity_and_det              OFFEN
+BILANZ: 0 PASS | 0 FAIL | 4 OFFEN
+OFFEN — GPU-Lanes nicht gefahren
+JSON: scratches/sp16_impossible_texts.json
