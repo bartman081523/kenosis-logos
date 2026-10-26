@@ -1,0 +1,21 @@
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+========================================================================================
+MI-1 — 26-LAYER-RÖNTGERÄT (Routing-Tomographie + Logit-Lens)
+========================================================================================
+[PILOT ] pilot_tv_math: tv(id,id)=0.000e+00, tv(id,other)=1.000000
+[PILOT ] pilot_bands: edge=[0, 1, 2, 3, 24, 25], |core|=20
+[PILOT ] pilot_crystal_at7: star=7
+[PILOT ] pilot_crystal_oscillation: oscillation_star=None (erwartet None)
+[PILOT ] pilot_crystal_at0: star=0
+[PILOT ] pilot_tv_uniform_onehot: tv=0.875000, erwartet 0.875000
+[PASS  ] mi1_canon_parity: parity_tv_max=2.235e-08 row_sum_dev=1.192e-07 fields=True
+[PASS  ] mi1_layer_resolution: code=0.6993; math_logic=0.5672; prose=0.9154; goedel=0.5773; turing=0.4882; wittgenstein=0.6418
+[PASS  ] mi1_purity_det: fingerprint=True det_routing=True det_lens=True
+[PASS  ] mi1_depth_specialization: core=0.5908 edge=0.2242 grenze=0.5 (F1 core<=grenze, F2 core<=edge)
+[PASS  ] mi1_entropy_regime: core<edge in 6/6 Domänen
+[PASS  ] mi1_crystallization: paris: ℓ*=17; arithmetic: ℓ*=11 | core=4..23
+----------------------------------------------------------------------------------------
+Verdikte: 6 PASS | 0 OFFEN | 0 FAIL  (36.3 s)
+GRÜN — alle 6 Verdikte PASS; das 26-Layer-Feld ist gemessen.
+JSON: scratches/mi1_tomography_experiment.json

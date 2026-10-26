@@ -1,0 +1,19 @@
+========================================================================================
+MI-1 — 26-LAYER-RÖNTGERÄT (Routing-Tomographie + Logit-Lens)
+========================================================================================
+[PILOT ] pilot_tv_math: tv(id,id)=0.000e+00, tv(id,other)=1.000000
+[PILOT ] pilot_bands: edge=[0, 1, 2, 3, 24, 25], |core|=20
+[PILOT ] pilot_crystal_at7: star=7
+[PILOT ] pilot_crystal_oscillation: oscillation_star=None (erwartet None)
+[PILOT ] pilot_crystal_at0: star=0
+[PILOT ] pilot_tv_uniform_onehot: tv=0.875000, erwartet 0.875000
+[OFFEN ] mi1_canon_parity: GPU-Lane OFFEN (ohne --gpu nicht gefahren; kein stiller Fallback)
+[OFFEN ] mi1_layer_resolution: GPU-Lane OFFEN (ohne --gpu nicht gefahren; kein stiller Fallback)
+[OFFEN ] mi1_purity_det: GPU-Lane OFFEN (ohne --gpu nicht gefahren; kein stiller Fallback)
+[OFFEN ] mi1_depth_specialization: GPU-Lane OFFEN (ohne --gpu nicht gefahren; kein stiller Fallback)
+[OFFEN ] mi1_entropy_regime: GPU-Lane OFFEN (ohne --gpu nicht gefahren; kein stiller Fallback)
+[OFFEN ] mi1_crystallization: GPU-Lane OFFEN (ohne --gpu nicht gefahren; kein stiller Fallback)
+----------------------------------------------------------------------------------------
+Verdikte: 0 PASS | 6 OFFEN | 0 FAIL  (1.1 s)
+GELB — offen (GPU-Lane nicht gefahren oder Bruch gebucht; OFFEN ist kein PASS).
+JSON: scratches/mi1_tomography_experiment.json
