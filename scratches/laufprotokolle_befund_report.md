@@ -1156,3 +1156,67 @@ KORREKTUR-LOG leer (REGISTER-Widerlegung, kein Lauf-Bug); Rev-1 bleibt
 das widerlegte Register (kein Relabeling — 是X即非X). Kein
 Erlebens-Claim: Herkunfts-Scheidung im Fortsetzungs-strom.
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §24.
+
+## 27. SP15 — 1152D-Breitband-Selbstmodell: Erstlauf ROT (K1/K2) → REV-2 ROT (K3/K4) → REV-4 GRÜN über der exakten Canon-Zelle (2026-10-26)
+
+**Gerüst.** Neuer Smoke `scratches/smoke_sp15_jl_wide.py` (P1
+append-only); Maschinen-Berührungen ADDITIV mit L0-Anker-Pflicht:
+`machine_base.hidden_state` Opt-in `projection="orthogonal_jl"` (QR
+Seed 42, orthonormal, je d gecached; Default-Pfad byte-unverändert)
+und `GoedelMachine.enable_wide_read()` (W_read 8×1152, Delta
+uni_241:220 ohne Zerfall, Snapshot-Kreislauf bitgenau, reset nullt
+den Adapter). Bänder (Plan Revision 3, PREREG): V1 L0-Regression
+(P4-Zahlen bitidentisch), V2 JL-Tragkanal, V3 Kausal-Verstärkung
+(sens ≥ 0.014406 ∧ ratio ≥ 10), V4 purity, V5 det-Pilot.
+
+**Run-Folge.** CPU-Pilot GRÜN. **Erstlauf: 3 PASS | 2 FAIL, exit 1
+ROT** — L0 PASS exakt; jl Dilution (0.625/0.24 → 0.791667/0.005);
+kausal ratio 1.08241 < 10 — KORREKTUR-LOG K1/K2 beweislich
+(composite.py:140 übergibt dem Gödel das Trace-Outcome →
+describe()-Kanal uniform; das Training lernte nie auf Text-Hiddens).
+**REV-2: 4 PASS | 1 FAIL, exit 1** — V2 trägt (crossing [256], jl256
+0.958333/0.0 = das wide-gepoolte-Datum exakt; 8/32/64 bitidentisch
+zum Erstlauf — Re-Run-Stabilität); kausal FAIL mit sens_wide EXAKT
+0.0, ratio 0.0 — KORREKTUR K3 beweislich (uni_204-encode der 24
+Renderings = 0: 2-/5-Valenz-Akkumulation über die 100-Position-Zyklen
+mod 10**15 → _text_seed 0 → Ist text-unabhängig; n_distinct_raw_block
+1; Canon-DATUM, kein Instrument-Fehler) und K4 beweislich
+(tanh-Sättigung: pred-Norm √8 = 2.828427, tanh′ ≈ 0 → div 0.0;
+Block-Lesung im glatten Bereich 0.001843). **REV-3: 5 PASS | 0 FAIL,
+exit 0 GRÜN** (LINEAR-Lesungen beidseitig, Band unverändert;
+Fold-Eingabe nur für die tanh-DATUM-Arme) — kausal PASS (sens_lin_wide
+0.92931, ratio 235.387538); DATUM n_distinct_raw_tanh WIDE 24 bei
+Fold-Eingabe (K3 am Gegenstück bestätigt), Canon-Seeds [0], Digests
+identisch zu REV-2 — aber KORREKTUR K5 beweislich (spec-DATUM
+0.285075): die Block-Seite maß eine konsekutive Ersatzmatrix; die
+Canon-Zelle ist STRIDED (machine_base `reshape(-1, d).mean(axis=0)`).
+**REV-4 (K5-Korrektur, Bänder UNVERÄNDERT — keine Formeländerung): 
+5 PASS | 0 FAIL | 0 OFFEN, exit 0 GRÜN** — die Block-Seite liest
+jetzt den direkten Canon-Pfad; Pilot `sp15_cpu_pilot_rev4.log`.
+
+**Verdikt-Ergebnis** (`sp15_wide_rev4.json`): sens_lin_wide 0.92931
+(bitidentisch zu REV-3 — die Wide-Seite unverändert; **64.5×** die
+MI-6-Konstante 0.0014406), sens_lin_block 0.003159 (die EXAKTE
+Canon-STRIDED-Zelle), **ratio_lin 294.178538** — der trainierte
+Wide-Leser reagiert ~294× stärker auf den additiven Experten-Knockout
+([1,3], −50, alle 26 Schichten) als die Canon-Block-Dilution
+(z_norm 0.200-0.326 gegen Readout 328-365 — drei Größenordnungen
+Readout-Spanne). tanh-DATUM re-run-stabil: ko == raw EXAKT je Text
+(div 0.0), 24 distinct raw je Seite bei Fold-Eingabe (gegen 1 bei
+uni_204-Eingabe), pred-Norm 2.828427 = √8 (Sättigung am
+Vorhersagepfad; Block-Leser ungesättigt, max 0.525221);
+Canon-Seed-Werte alle 0 (canon_seed_values [0]). Trainings-Digests
+(adapter 9f9f2d05…, gap 4e1e7387…) das DRITE Mal bitidentisch
+(REV-2/REV-3/REV-4) — In-Lauf-Determinismus über Runs; restore
+beidseitig True. L0-Exakt (wide_gepoolt 0.958333/0.0, canon-8
+0.0/1.0, textur 1.0/0.0, numerisch 0.833333/0.025); crossing [256]
+(jl256 0.958333/0.0, ortho ≤ 9.99e-16); purity PASS; det PASS.
+
+**BILANZ REV-4: 5 PASS | 0 FAIL | 0 OFFEN — exit 0 GRÜN.**
+KORREKTUR-LOG der Runde: K1-K5, alle beweislich (Code + JSON-DATUM),
+kein Relabeling, keine Band-Weitung — die Bänder seit Rev-1
+unverändert; REV-3 bleibt als GRÜN-mit-K5-Befund verbatim. Kein
+Erlebens-Claim: die Kausal-Verstärkung ist eine gemessene
+Sensitivität der gelernten opt-in-Lesung; der Canon-Seed-Kollaps
+bleibt Canon-Eigenschaft.
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §25.

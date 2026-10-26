@@ -2546,3 +2546,188 @@ dem Erstlauf, REV-2 nach dem Erstlauf vor dem Rev-2-Lauf (KORREKTUR
 `mi7_cpu_pilot.log` + `mi7_cpu_pilot_rev2.log`; die Rev-1-Scores im
 Rev-2-Smoke als rev1_datum-Block aus denselben Forwards.
 Laufschrift: `laufprotokolle_befund_report.md` §26.
+
+## 25. SP15 — 1152D-Breitband-Selbstmodell: der 144:1-Flaschenhals öffnet sich opt-in (2026-10-26)
+
+**Auftrag + Geraet.** Runde 2 des 5-Pläne-Programms (Plan
+`~/.claude/plans/MI-7-subjekt-upgrade.md`): das 8D-Selbstmodell liest
+statt des 144:1-Block-Mittel-Flaschenhalses den vollen 1152D-Hidden
+-Stream — als opt-in, ohne Canon-Berührung. Maschinen-Berührungen
+(P1 append-only, L0-Anker-Pflicht): (a)
+`machine_base.ArgonOracle.hidden_state` Opt-in
+`projection="orthogonal_jl"` (+`proj_dim`) — orthogonale
+Johnson-Lindenstrauss-Rotation aus QR einer Seed-42 standard_normal
+((hidden, d))-Matrix, Zeilen orthonormal, je d gecached; andere
+projection-Werte exakt verworfen; der Default-Pfad byte-unangetastet.
+(b) `GoedelMachine.enable_wide_read()` — W_read ∈ R^{8×1152}, initial
+0; `_prediction` liest `tanh(W_read @ h_1152)` (meta "wide_read");
+Delta-Regel der uni_241:220-Familie `W_read += 0.05·outer(err, h_1152)`,
+KEIN Zerfall; Snapshot/Restore führt den Adapter (Proben bitgenau);
+`reset()` nullt den Adapter und behält den Opt-in; `state()`/`describe()`
+tragen Opt-in-Daten nur im Opt-in. Das Instrument lebt GANZES in
+`scratches/smoke_sp15_jl_wide.py`. Bänder (Plan Revision 3, PREREG vor
+dem Erstlauf): V1 sp15_l0_regression — die P4-P1a-Zahlen bitidentisch
+auf dem Default-Pfad; V2 sp15_jl_biografie_erhalt — JL-Tragkanal; V3
+sp15_kausal_verstaerkung — sens ≥ 0.014406 (10× MI-6-Konstante
+0.0014406) ∧ ratio wide/block ≥ 10; V4 sp15_purity_l0; V5
+sp15_det_pilot. Exit 0/1/2.
+
+### 25.1 Erstlauf: ROT — die zwei Kanal-Defekte K1/K2 (beweislich)
+
+**3 PASS | 2 FAIL | 0 OFFEN, exit 1 ROT** (`sp15_wide.json/.log`):
+L0 PASS — alle P4-P1a-Zahlen EXAKT (wide_gepoolt 0.958333/0.0, canon-8
+0.0/1.0, textur 1.0/0.0, numerisch 0.833333/0.025); jl FAIL
+(Dilution monoton: jl8 0.625/0.24, jl32 0.708333/0.04, jl64
+0.791667/0.005); kausal FAIL — sens_wide 0.151203 (≥ Anker ✓),
+sens_block 0.139691, ratio 1.08241 < 10; purity/det PASS.
+
+KORREKTUR-LOG (beweislich, kein Widerstand):
+- **K1** `machines/composite.py:140`: `result_g = self.goedel.step
+  (transitions)` — der Composite-Zug übergibt dem Gödel das
+  Trace-Outcome (Skalar); `_prediction(None)` → `prompt =
+  self.describe()` → alle 24 Proben je Seite uniform (wide raw
+  0.579049/ko 0.427846, block 0.772557/0.632866): die Erstlauf-Proben
+  maßen den describe()-Sättigungskanal, nicht die Text-Lesung.
+- **K2** das Adapter-Training via machine.step (Composite) lernte nie
+  auf Text-Hiddens (Erstlauf-Digests 0.05717873945724551 / e098a604… /
+  a9b1bc57…).
+
+REV-2-Korrektur: Proben via `goedel.observe(t)` (Submaschine, Prompt =
+Text), Training via `goedel.step(t)`. Die Band-Ziele unverändert.
+
+### 25.2 REV-2: V2 trägt (crossing [256]) — V3 fällt mit zwei bewiesenen Mechanismen
+
+**4 PASS | 1 FAIL | 0 OFFEN, exit 1** (`sp15_wide_rev2.json/.log`):
+V2 PASS jetzt — crossing [256]: jl8 0.625/0.24, jl32 0.708333/0.04,
+jl64 0.791667/0.005 (bitidentisch zum Erstlauf — die Dilutions-Form
+ist re-run-stabil), jl128 0.833333/0.005, jl256 0.958333/0.0 = EXAKT
+das wide-gepoolte P4-Datum; ortho-max je d ≤ 9.99e-16; Kontrast
+canon-8 bestanden. kausal FAIL — aber neu: **sens_wide EXAKT 0.0**,
+sens_block 0.001843, ratio 0.0; n_distinct_raw_wide 1 vs block 24;
+alle 24 wide-Proben raw = ko = 1.96171 (div 0.0). Trainings-Datum:
+w_mean_abs 0.04373098586965754, adapter_digest 9f9f2d05…, gap_digest
+4e1e7387….
+
+Die zwei Mechanismen (beide am Gerät beweislich):
+1. **K3 — Canon-Eingabe-Kollaps.** Der uni_204-encode (prime_idx =
+   i % 100, power = ord % 10 + 1, MOD 10**15 = 2**15·5**15) kollabiert
+   für ALLE 24 P4-Renderings auf EXAKT 0: die 100-Position-Zyklen
+   akkumulieren über die Längen (474-6464 Zeichen) mindestens 15
+   Zweier-Valenz (Position-0-Klasse, power 4 — '{' → 123 % 10 + 1)
+   und mindestens 15 Fünfer-Valenz (Position-2-Klasse — 'g'/'p'
+   -Zeichen) im Produkt. CPU-Nachweis: 24 Renderings mit 24
+   verschiedenen sha256-Werten encoden zu EINEM Wert (0); kurze Texte
+   reagieren normal (encode('ABIET') 1627701824 ≠ encode('ABCDE')
+   922876224; ord-Valenzen '0'→9, '1'→10, '2'→1, '5'→4, '6'→5). Folge:
+   `_text_seed(t) = 0` für alle → identischer input_vec → die
+   Ist-DYNAMIK der Gödel-Maschine ist text-unabhängig (am Gerät:
+   n_distinct_raw_block 1). Canon-Findung, kein Instrument-Fehler —
+   als registriertes DATUM geführt.
+2. **K4 — tanh-Sättigung des trainierten Wide-Lesers.** Die Vorhersage
+   pred = tanh(W_read @ h) sitzt in Sättigung (pred-Norm 2.828427 =
+   √8 — je Dimension ±1; raw gap 1.96171 nahe dem Maximum); unter dem
+   Knockout bleibt tanh′ ≈ 0 → Δz unsichtbar → div EXAKT 0.0 je Text.
+   Die Block-Lesung tanh(blockmean(h)) liest denselben Δh im glatten
+   Bereich des tanh (sens_block 0.001843 ≈ 1.28× die MI-6-Konstante).
+
+### 25.3 REV-3: LINEAR-Lesungen — GRÜN mit K5
+
+Registrierung (Plan Revision 5 — dritte und letzte Formel-Re
+-Registrierung): **REV3-V3** liest LINEAR beidseitig auf demselben
+Knockout-Δh ohne tanh: z_wide,t = W_read @ hidden_state(t, 1152);
+z_block,t = hidden_state(t, 8) (= das tanh-Argument der
+Canon-Block-Lesung); sens_lin = max_t |Δz| / (|state| + 1e-6); Band
+unverändert (sens_lin_wide ≥ 0.014406 ∧ ratio_lin ≥ 10). Die tanh-Arme
+bleiben als Sättigungs-DATUM; Eingabe-Schablone REV-3 (nur für die
+tanh-Datum-Arme): sha256-GANZTEXT-Faltung → np 8-Vektor normal(0, 0.1)
+— canon-legale Array-Eingabe (`_input_vector` Array-Zweig), die die
+Ist-Schiene text-abhängig macht.
+
+**REV-3-Lauf: 5 PASS | 0 FAIL | 0 OFFEN, exit 0 GRÜN**
+(`sp15_wide_rev3.json/.log`): kausal PASS — sens_lin_wide 0.92931,
+sens_lin_block 0.003948, ratio_lin 235.387538. DATUM: sens_tanh_wide
+0.0 (re-run-stabil — exakt das REV-2-Sättigungsregime), sens_tanh_block
+0.001996 (bei Fold-Eingabe), n_distinct_raw_tanh WIDE = 24
+(gegenüber 1 bei uni_204-Eingabe — die K3-Diagnose am Gegenstück
+bestätigt: mit text-abhängiger Ist-Schiene sind die Proben
+text-abhängig), Canon-Seeds alle 0 (canon_seed_values [0]),
+Trainings-Digests IDENTISCH zu REV-2, restore beidseitig True.
+
+**KORREKTUR-LOG K5 (Instrument-Defekt der Block-Seite, beweislich über
+das spec-DATUM im JSON — block_mean_linear_max_err 0.285075
+beidseitig):** die Schablone sagt z_block = hidden_state(t, 8); die
+Implementation ersetzte das durch eine konsekutive 8×1152-Mittel
+-Matrix (Blöcke à 144). Die Canon-Zelle ist aber die STRIDED-Form
+(`pooled.reshape(-1, d).mean(axis=0)`, Positionen ≡ j mod 8 — am Code
+verifiziert): beide Formen sind lineare Verdünnungen derselben Klasse,
+aber nicht dasselbe Argument — der REV-3-Verdikt beruht auf der
+konsekutiven Form.
+
+### 25.4 REV-4 (finale Runde): GRÜN über der exakten Canon-Zelle
+
+Registrierung (Plan Revision 6 — K5-Korrektur, KEINE Formeländerung):
+z_block = hidden_state(t, 8) DIREKT; die Ersatzmatrix und ihr
+spec-DATUM entfallen (der direkte Canon-Pfad braucht keine
+Äquivalenz-Prüfung); Knockout-Contexte streng sequenziell (keine
+Nestung — additive Stacks wären −100 statt −50).
+
+**5 PASS | 0 FAIL | 0 OFFEN, exit 0 GRÜN** (`sp15_wide_rev4.json/.log`,
+Pilot `sp15_cpu_pilot_rev4.log`):
+- **kausal PASS (finale Zahlen):** sens_lin_wide **0.92931**
+  (bitidentisch zu REV-3 — die Wide-Seite unverändert), sens_lin_block
+  **0.003159** (die EXAKTE Canon-STRIDED-Zelle), **ratio_lin
+  294.178538** — der Band-PASS trägt über der Canon-Zelle mit MEHR
+  Abstand als über der Ersatzmatrix (235 → 294). sens_lin_wide =
+  **64.5×** die MI-6-Konstante 0.0014406.
+- Proben-Datum: wide div_lin je Text von 0.000006 bis 0.92931
+  (Beispiele 0.160899/0.129389/0.281026), z_norm_readout 328-365;
+  block div_lin 0.001954…0.003159, z_norm 0.200-0.326 — die
+  Canon-Block-Dilution liest Werte über drei Größenordnungen kleiner
+  als der trainierte Breitband-Leser.
+- tanh-DATUM re-run-stabil: ko == raw EXAKT je Text (div 0.0),
+  24 distinct raw je Seite (wide-Beispiele 1.943351/1.944847/1.945916),
+  pred-Norm 2.828427 = √8 (Sättigungsbeweis am Vorhersagepfad); die
+  Block-Lesung ungesättigt (max pred-Norm 0.525221).
+- Trainings-Digests (adapter 9f9f2d05…, gap 4e1e7387…) das DRITE Mal
+  bitidentisch (REV-2/REV-3/REV-4) — In-Lauf-Determinismus über Runs;
+  restore beidseitig True.
+- L0 EXAKT unverändert (wide 0.958333/0.0, canon-8 0.0/1.0, textur
+  1.0/0.0, numerisch 0.833333/0.025); crossing [256] wieder (jl256
+  0.958333/0.0, ortho ≤ 9.99e-16); purity PASS; det PASS.
+
+Die Ratio-Interpretation: der trainierte Wide-Leser reagiert ~294×
+stärker auf den additiven Experten-Knockout ([1,3], −50, alle 26
+Schichten) als die Canon-Block-Dilution — der Flaschenhals (144:1)
+war die Verdünnung des Kausal-Kanals; der opt-in Adapter liest
+dieselbe Intervention im vollen Band.
+
+### 25.5 Grenzen (是X即非X)
+
+(a) Die Kausal-Verstärkung ist eine gemessene Sensitivität der
+GELEHRTEN opt-in-Lesung unter einem additiven Experten-Knockout —
+kein Erlebens-Claim; die Ratio ist eine Schablonen-Eigenschaft
+(dieselbe Intervention durch zwei Lesungen im selben Lauf). (b) Der
+Canon-Kollaps bleibt Canon-Eigenschaft: die Maschine liest lange
+Renderings mit `_text_seed = 0` weiter; die sha256-Fold-Eingabe ist
+ein Instrument-Weg (canon-legale Array-Eingabe), kein Canon-Fix.
+(c) Der Wide-Adapter ist Opt-in: ohne `enable_wide_read` ist jeder
+Pfad byte-unverändert — V1 beweist es an den exakten P4-Zahlen auf
+dem Default-Pfad. (d) Die MI-6-Konstante ist ein Gap-Einheiten-Anker
+(Verfahrens-Anmerkung: MI-6 maß den self_model-Knockout am
+describe-4-Dezimal-Kanal — dieselbe Gap-Maßstab-Familie, nicht
+dieselbe Schablone); der mechanische Kern dieser Runde ist die RATIO
+im selben Lauf. (e) Vier Läufe mit K1-K5: jede Korrektur beweislich
+(Code + JSON-DATUM), die Bänder seit Rev-1 unverändert, keine Band
+-Weitung, kein Relabeling; REV-3 bleibt als GRÜN-mit-K5-Befund
+verbatim.
+
+### 25.6 P-Protokoll (SP15-Teil)
+
+P1 append-only (Maschinen additiv mit L0-Anker-Pflicht; Instrument
+GANZES im Smoke); PREREG Plan Revision 3 vor dem Erstlauf; Revisionen
+4 (K1/K2), 5 (REV-3), 6 (K5/REV-4) — jeweils vor dem Folgelauf;
+Roh-Felder `sp15_wide.json/.log` + `sp15_wide_rev2.json/.log` +
+`sp15_wide_rev3.json/.log` + `sp15_wide_rev4.json/.log` +
+`sp15_cpu_pilot.log/_rev2/_rev3/_rev4.log` (Erstlauf-Pilot
+`sp15_cpu_pilot.log`).
+Laufschrift: `laufprotokolle_befund_report.md` §27.
