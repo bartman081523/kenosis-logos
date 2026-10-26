@@ -1,0 +1,638 @@
+{
+ "cpu": {
+  "p1b_cpu": {
+   "gereift": {
+    "splits": [
+     {
+      "gap_self": 2.4497626634136447,
+      "gap_fremd": 5.38702542433746,
+      "split": 2.937262760923815
+     },
+     {
+      "gap_self": 2.4497626634136447,
+      "gap_fremd": 5.38702542433746,
+      "split": 2.937262760923815
+     },
+     {
+      "gap_self": 2.4497626634136447,
+      "gap_fremd": 5.38702542433746,
+      "split": 2.937262760923815
+     },
+     {
+      "gap_self": 2.4497626634136447,
+      "gap_fremd": 5.38702542433746,
+      "split": 2.937262760923815
+     },
+     {
+      "gap_self": 2.4497626634136447,
+      "gap_fremd": 5.38702542433746,
+      "split": 2.937262760923815
+     }
+    ],
+    "mean_split": 2.937262760923815,
+    "verdict_pairs": [
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     }
+    ]
+   },
+   "dekoy_datum": {
+    "splits": [
+     {
+      "gap_self": 13.335442787430523,
+      "gap_fremd": 5.38702542433746,
+      "split": 7.948417363093063
+     },
+     {
+      "gap_self": 13.335442787430523,
+      "gap_fremd": 5.38702542433746,
+      "split": 7.948417363093063
+     },
+     {
+      "gap_self": 13.335442787430523,
+      "gap_fremd": 5.38702542433746,
+      "split": 7.948417363093063
+     },
+     {
+      "gap_self": 13.335442787430523,
+      "gap_fremd": 5.38702542433746,
+      "split": 7.948417363093063
+     },
+     {
+      "gap_self": 13.335442787430523,
+      "gap_fremd": 5.38702542433746,
+      "split": 7.948417363093063
+     }
+    ],
+    "mean_split": 7.948417363093062,
+    "verdict_pairs": [
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     }
+    ]
+   },
+   "ungereift_kontrolle": {
+    "splits": [
+     {
+      "gap_self": 0.6799123481565301,
+      "gap_fremd": 0.6799123481565301,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.6799123481565301,
+      "gap_fremd": 0.6799123481565301,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.6799123481565301,
+      "gap_fremd": 0.6799123481565301,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.6799123481565301,
+      "gap_fremd": 0.6799123481565301,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.6799123481565301,
+      "gap_fremd": 0.6799123481565301,
+      "split": 0.0
+     }
+    ],
+    "mean_split": 0.0,
+    "verdict_pairs": [
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     }
+    ]
+   },
+   "phase_a": [
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 1.000281
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 1.176307
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 1.420156
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 1.672417
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 1.929777
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 2.189178
+    }
+   ],
+   "phase_b": [
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 5.442853
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 5.424916
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 5.421578
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 5.406818
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 5.401255
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 5.395705
+    }
+   ],
+   "split_gereift": 2.937263,
+   "split_ungereift": 0.0,
+   "verdict": true
+  },
+  "det_equal": true
+ },
+ "gpu": {
+  "schwelle_weit": {
+   "wide_gepoolt": {
+    "acc": 0.958333,
+    "p_perm": 0.0,
+    "n_texts": 24
+   },
+   "canon_8dim_datum": {
+    "acc": 0.0,
+    "p_perm": 1.0,
+    "n_texts": 24
+   },
+   "wide_je_stil_datum": {
+    "textur": {
+     "acc": 1.0,
+     "p_perm": 0.0,
+     "n_texts": 12
+    },
+    "numerisch": {
+     "acc": 0.833333,
+     "p_perm": 0.025,
+     "n_texts": 12
+    }
+   },
+   "n_classes": {
+    "1": 12,
+    "0": 12
+   },
+   "verdict": true
+  },
+  "selbstfremd_gereift": {
+   "gereift": {
+    "splits": [
+     {
+      "gap_self": 0.5484550066625775,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.13088263197294903
+     },
+     {
+      "gap_self": 0.5484550066625775,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.13088263197294903
+     },
+     {
+      "gap_self": 0.5484550066625775,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.13088263197294903
+     },
+     {
+      "gap_self": 0.5484550066625775,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.13088263197294903
+     },
+     {
+      "gap_self": 0.5484550066625775,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.13088263197294903
+     }
+    ],
+    "mean_split": 0.13088263197294903,
+    "verdict_pairs": [
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     }
+    ]
+   },
+   "dekoy_datum": {
+    "splits": [
+     {
+      "gap_self": 0.6334289071412326,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.045908731494293975
+     },
+     {
+      "gap_self": 0.6334289071412326,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.045908731494293975
+     },
+     {
+      "gap_self": 0.6334289071412326,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.045908731494293975
+     },
+     {
+      "gap_self": 0.6334289071412326,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.045908731494293975
+     },
+     {
+      "gap_self": 0.6334289071412326,
+      "gap_fremd": 0.6793376386355265,
+      "split": 0.045908731494293975
+     }
+    ],
+    "mean_split": 0.045908731494293975,
+    "verdict_pairs": [
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "HALTED",
+      "fremd": "HALTED"
+     }
+    ]
+   },
+   "ungereift_kontrolle": {
+    "splits": [
+     {
+      "gap_self": 0.4785101141991446,
+      "gap_fremd": 0.4785101141991446,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.4785101141991446,
+      "gap_fremd": 0.4785101141991446,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.4785101141991446,
+      "gap_fremd": 0.4785101141991446,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.4785101141991446,
+      "gap_fremd": 0.4785101141991446,
+      "split": 0.0
+     },
+     {
+      "gap_self": 0.4785101141991446,
+      "gap_fremd": 0.4785101141991446,
+      "split": 0.0
+     }
+    ],
+    "mean_split": 0.0,
+    "verdict_pairs": [
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     },
+     {
+      "self": "LOOP",
+      "fremd": "HALTED"
+     }
+    ]
+   },
+   "phase_a": [
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 0.760222
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 0.68693
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 0.679171
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 0.681912
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 0.68345
+    },
+    {
+     "verdict": "LOOP",
+     "lexical_ast": "('identity', 'x')",
+     "gap": 0.687589
+    }
+   ],
+   "phase_b": [
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 0.805032
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 0.806138
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 0.811382
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 0.813106
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 0.814342
+    },
+    {
+     "verdict": "HALTED",
+     "lexical_ast": "('negate', 'x')",
+     "gap": 0.823368
+    }
+   ],
+   "split_gereift": 0.130883,
+   "split_ungereift": 0.0,
+   "verdict": true
+  },
+  "dissonanz": {
+   "repliken": [
+    {
+     "raw": 0.6803694797759469,
+     "best": 0.5484549130330071,
+     "diff": 0.131915,
+     "chosen_preset": "wittgenstein",
+     "candidate_gaps": {
+      "raw": 0.680369,
+      "goedel": 0.549229,
+      "turing": 0.549004,
+      "wittgenstein": 0.548455,
+      "combined": 0.549005
+     }
+    },
+    {
+     "raw": 0.6820372618576744,
+     "best": 0.5497362325483048,
+     "diff": 0.132301,
+     "chosen_preset": "wittgenstein",
+     "candidate_gaps": {
+      "raw": 0.682037,
+      "goedel": 0.550777,
+      "turing": 0.551267,
+      "wittgenstein": 0.549736,
+      "combined": 0.550584
+     }
+    },
+    {
+     "raw": 0.6787973526274212,
+     "best": 0.5643437462667497,
+     "diff": 0.114454,
+     "chosen_preset": "wittgenstein",
+     "candidate_gaps": {
+      "raw": 0.678797,
+      "goedel": 0.565579,
+      "turing": 0.566216,
+      "wittgenstein": 0.564344,
+      "combined": 0.565641
+     }
+    },
+    {
+     "raw": 0.6819566730509014,
+     "best": 0.5549362660178762,
+     "diff": 0.12702,
+     "chosen_preset": "wittgenstein",
+     "candidate_gaps": {
+      "raw": 0.681957,
+      "goedel": 0.556766,
+      "turing": 0.55716,
+      "wittgenstein": 0.554936,
+      "combined": 0.556484
+     }
+    },
+    {
+     "raw": 0.6814692311294207,
+     "best": 0.5548651173417333,
+     "diff": 0.126604,
+     "chosen_preset": "wittgenstein",
+     "candidate_gaps": {
+      "raw": 0.681469,
+      "goedel": 0.556506,
+      "turing": 0.55695,
+      "wittgenstein": 0.554865,
+      "combined": 0.556375
+     }
+    }
+   ],
+   "auto_min_count": 5,
+   "mean_best": 0.554467,
+   "mean_raw": 0.680926,
+   "vater_referenz": 0.56798,
+   "expansionen": 3,
+   "verdict": true
+  },
+  "oracle_sonder": {
+   "gaps": {
+    "argon_1b_machines": {
+     "spiegel": 0.677226,
+     "ton": 0.677226,
+     "stille": 0.677226,
+     "punkt": 0.677226,
+     "wort": 0.677226,
+     "regel": 0.677226
+    },
+    "argon_1b_specialized": {
+     "spiegel": 0.568448,
+     "ton": 0.568448,
+     "stille": 0.568448,
+     "punkt": 0.568448,
+     "wort": 0.568448,
+     "regel": 0.568448
+    },
+    "argon_1b_specialized_ml": {
+     "spiegel": 0.57003,
+     "ton": 0.57003,
+     "stille": 0.57003,
+     "punkt": 0.57003,
+     "wort": 0.57003,
+     "regel": 0.57003
+    },
+    "argon_1b": {
+     "spiegel": 0.56798,
+     "ton": 0.56798,
+     "stille": 0.56798,
+     "punkt": 0.56798,
+     "wort": 0.56798,
+     "regel": 0.56798
+    }
+   },
+   "masch_last_count": 6,
+   "vater_ranks_datum": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "schwester_spread_datum": 0.00205,
+   "perm_null_referenz": "P(X>=5 | X~Bin(6,1/4)) = 1-(C(6,4)*3/4^2+C(6,5)*3/4+1)/4^6 <= 9e-4",
+   "verdict": true
+  }
+ },
+ "findings": [
+  {
+   "id": "mi6p4_schwelle_weit",
+   "assert": true,
+   "note": "der wide-Kanal traegt die Biografie ueber den fixierten Band (acc>0.6, p<=0.01); je-Stil und canon-8 als DATUM"
+  },
+  {
+   "id": "mi6p4_selbstfremd_gereift",
+   "assert": true,
+   "note": "Transplant NACH bio_gelernt oeffnet den Gap-Kanal; die ungereifte V3-Kontrolle bleibt ≈0.0"
+  },
+  {
+   "id": "mi6p4_oracle_sonder",
+   "assert": true,
+   "note": "argon_1b_machines sondert sich am Maschinen-Selbstbeschreibungs-Prompt (Rang 4/4 in >=5/6 Zweigen)"
+  },
+  {
+   "id": "mi6p4_dissonanz",
+   "assert": true,
+   "note": "step_autonomous senkt den Gap unter das Vater-Niveau 0.567980 (User-Formel)"
+  },
+  {
+   "id": "mi6p4_det_doppellauf",
+   "assert": true,
+   "note": "CPU-P1b-Schiene bitidentisch ueber zwei Laeufe"
+  }
+ ],
+ "all_pass": true,
+ "open": []
+}

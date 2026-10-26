@@ -1059,3 +1059,55 @@ konstanten Oracle-Prompts verbatim im PREREG-ERGÄNZUNG-Block des Smoke
 Buchung des Erstruns 1.
 
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §23.
+
+---
+
+## 25-P4. MI-6-P4 — der Subjekt-Schluss (Laufschrift, 2026-10-26)
+
+**Gerüst.** Neuer Smoke `scratches/smoke_mi6p4_schluss.py` — 4 NEUE,
+vorab registrierte Bänder (Plan-Datei MI-6-subjektivitaet-spiegel.md,
+Revision 3, Addendum fixiert vor jedem GPU-Lauf) + Determinismus
+-Doppellauf der CPU-Schiene; die MI-6-Verdikte V1/V3/V6 bleiben UNVERÄNDERT
+FAIL (kein Relabeling). Import-Schiene: LEX_PAIR/LEX_PAIR_B/Zeitpunkte
+-Konstanten + bio_gelernt/bio_halted/learn_pair_pin/probe_gap_on/
+render_state/_load_machines_ctx aus dem MI-6-Smoke — die P4-Lanes sind
+MI-6-Gerüste unter neuen Bändern.
+
+**Run-Folge P4.** CPU-Pilot: deterministisch (det_einfach PASS); in_loop
+blind 0.0/0.0 (MI-6-Risiko 4 repliziert). GPU **Erstrun** GEBROCHEN ohne
+JSON — NameError `bio_halted` in lane_oracle_sonder (Import-Lücke;
+Log gesichert `mi6p4_erstrun_gebrochen.log`) → Re-Lauf-1 volle Serie:
+lief komplett (4 PASS/1 FAIL/0 OFFEN exit 1), ABER P1b-Arm-DEFEKT —
+BEIDE Maschinen ohne learn_pair_pin gereift (phase_a 6× HALTED/None —
+A nie LOOP-Tradition; die ungereifte KONTROLLE trennte, gereift nicht —
+invertiert, Defekt statt Befund); Teil-JSON NICHT verwertet (Log gesichert
+`mi6p4_relauf1_p1b_defekt.log`). Fix: LEX_PAIR vor A-Bio, LEX_PAIR_B vor
+B-Bio (PREREG-Mechanik, kein Band). Eine gestartete Instanz wurde extern
+gestoppt (Log nur Header — kein Band-Ereignis). **Re-Lauf-2** volle
+Serie: VOLL durch, **5 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN — exit 0 GRÜN**.
+
+**Verdikt-Ergebnis** (alle Zahlen `mi6p4_schluss.json`):
+mi6p4_schwelle_weit PASS (wide-1152 gepoolt acc **0.958333**, p_perm **0.0**,
+n 24 = 6 ECHTE Zeitpunkte (1,2,3,4,6,8) ×2 Maschinen ×2 Stile, 12/12;
+canon-8 DATUM 0.0/p 1.0 — die 144er-Blockmittelung, machine_base.py:362
+am Code verifiziert; je-Stil DATUM textur 1.0/p 0.0, numerisch 0.833333/
+p 0.025); mi6p4_selbstfremd_gereift PASS (gereifte Transplant split
+**0.130883** konstant in 5/5 Repliken — gap_self 0.548455 vs gap_fremd
+0.679338; UNGEREIFTE V3-Kontrolle **0.0** exakt, 0.47851/0.47851 =
+MI-6-Doppel-Genauigkeits-Konstante; Dekoy-Arm 0.045909; Verdikt-Paare
+gereift 5× LOOP/HALTED, dekoy 5× HALTED/HALTED; Wort-Formular: A 6× LOOP
+('identity','x') gaps 0.760222→0.687589, B 6× HALTED ('negate','x')
+0.805032→0.823368; CPU-DATUM gereift 2.937263 vs ungereift 0.0);
+mi6p4_oracle_sonder PASS (masch_last **6/6**, Band ≥5; gaps identisch
+MI-6-V6 0.677226/0.570030/0.568448/0.567980, Konstanz über 6 Zweige
+repliziert; Schwester-Spread 0.00205; KORREKTUR-LOG IV: die perm_null
+-Annotation „≤9e-4" war arithmetisch falsch, wahr 19/4096 ≈ 4.64e-3 —
+Annotation korrigiert, Roh-JSON bleibt, Band unberührt);
+mi6p4_dissonanz PASS (**5/5** best_gap<raw_gap; mean_raw 0.680926 →
+mean_best **0.554467 < 0.567980** Vater-Niveau; Preset wittgenstein 5/5;
+diffs 0.114454…0.132301; Expansionen 3); mi6p4_det_doppellauf PASS
+(CPU bitidentisch).
+
+**BILANZ P4: 5 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN — exit 0 GRÜN.**
+KORREKTUR-LOG ×4 (Erstrun-Import / Re-Lauf-1-P1b-Arm / KILL / Arithmetik).
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §23.9–23.12.

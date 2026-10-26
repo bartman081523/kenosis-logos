@@ -2295,3 +2295,139 @@ die wide-Kanal-Weitung ist DATUM, kein PASS; die Notiz
 (mi6_schwelle-„Canon-Kanal dekodierbar") ist an dieser Stelle nicht treu
 zum Befund und wird in §23.4 berichtigt — die Band-Logik liest Notizen
 nicht.
+
+### 23.9 MI-6-P4 — der Subjekt-Schluss (Revision 3, 2026-10-26)
+
+Die MI-6-Batterie lieferte die Kanal-Diagnose (§23.3/23.4/23.5): der
+Composite-Gap-Kanal trägt den Biografie-Kanal NICHT, während Biografie satt
+steht im Verdikt (V3/V5), im breiten 1152-dim Hidden (V1-wide 0.916667,
+p_perm 0.0) und kausal am Describe-Dezimal-Kanal (V4 > 0). MI-6-P4 löst die
+drei Flaschenhälse als NEUE, VORAB REGISTRIERTE Fragen ein — die MI-6-Verdikte
+V1/V3/V6 stehen UNVERÄNDERT als FAIL (keine Band-Weitung, 是X即非X: REFUTED
+behält dieselbe Würde; Relabeling verboten). PREREG (Plan-Datei Revision 3,
+Addendum, fixiert vor jedem GPU-Lauf): P1a **mi6p4_schwelle_weit**,
+P1b **mi6p4_selbstfremd_gereift**, P1c **mi6p4_oracle_sonder**,
+P1d **mi6p4_dissonanz** + Determinismus-Doppellauf der CPU-Schiene. Smoke
+`scratches/smoke_mi6p4_schluss.py`; Roh `mi6p4_schluss.log/.json`.
+
+**Run-Folge (KORREKTUR-LOG ×4):** GPU-Erstrun GEBROCHEN ohne JSON
+(NameError `bio_halted` in P1c — Import-Lücke; Log gesichert als
+`mi6p4_erstrun_gebrochen.log`) → Re-Lauf-1 volle Serie lief komplett
+(4 PASS/1 FAIL/0 OFFEN), ABER der P1b-Arm verletzte die
+Operationalisierung des Registers: BEIDE Maschinen ohne `learn_pair_pin`
+gereift — phase_a 6× HALTED/None (A nie LOOP-Tradition), die UNGEREIFTE
+Kontrolle trennte (LOOP/HALTED), der gereifte Arm nicht — invertiert,
+Defekt statt Befund; Teil-JSON nicht verwertet (Log gesichert als
+`mi6p4_relauf1_p1b_defekt.log`). Fix: LEX_PAIR vor A-Bio, LEX_PAIR_B vor
+B-Bio. Eine zwischenzeitlich gestartete Instanz wurde extern gestoppt
+(Log nur Header — kein Band-Ereignis, keine Zahlen gebucht). Re-Lauf-2
+volle Serie: **VOLL durch, exit 0 GRÜN**.
+
+### 23.10 Verdikt-Tabelle (P4, GPU Re-Lauf-2, exit 0 GRÜN)
+
+| Verdikt | Band | Ergebnis | Verdikt |
+|---|---|---|---|
+| mi6p4_schwelle_weit | wide-1152 gepoolt acc >0.6 UND p_perm ≤0.01, 24 Texte (6 echte Zeitpunkte ×2 Stile, 12/12) | **acc 0.958333, p_perm 0.0** | PASS |
+| mi6p4_selbstfremd_gereift | split_gereift >0 UND >2×split_ungereift (lg=True-Arm, 5 Repliken) | **0.130883 vs 0.0** | PASS |
+| mi6p4_oracle_sonder | machines Rang 4/4 in ≥5/6 Zweigen | **6/6** | PASS |
+| mi6p4_dissonanz | best_gap<raw_gap in ≥4/5 UND mean(best)<0.567980 | **5/5; 0.554467** | PASS |
+| mi6p4_det_doppellauf | CPU-P1b-Schiene bitidentisch über zwei Läufe | **True** | PASS |
+
+**BILANZ P4: 5 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN — exit 0 GRÜN.**
+
+**P1a-Auszahlung (Entdeckung 1 als Band eingelöst; Mechanik am Code
+verifiziert):** die Canon-Zelle bleibt blind — canon-8 acc 0.0, p_perm 1.0
+(n 24) — ABER die User-Behauptung zur Reduktion ist am Code bestätigt:
+`ArgonOracle.hidden_state` macht `pooled.reshape(-1, d).mean(axis=0)`
+(machine_base.py:362) — bei d=8 jede Canon-Zelle ein 144er-Blockmittel des
+(1152,)-Sequenz-Mittels; bei d=1152 ist die Mittelung die Identität. Der
+wide-Kanal trägt die Biografie auf dem reichen, ECHT progressiven Korpus:
+gepoolt 0.958333/p 0.0; je-Stil DATUM: textur 1.0 (p 0.0), numerisch
+0.833333 (p 0.025) — die §23.4(b)-Grenze bleibt sichtbar (Textur-Stil
+stärker als Zahlen-Stil), aber beider Stile tragen individuell überBand.
+n_classes 12/12; zwischen den 6 Zeitpunkten (k=1,2,3,4,6,8) je ein realer
+Schritt — kein Papagei-Duplikat.
+
+**P1b-Auszahlung (Entdeckung 2 als Band eingelöst — der Gap-Kanal schließt
+durch Reifung):** gereifte Transplant: gap_self 0.548455 vs gap_fremd
+0.679338 → split 0.130883, in allen 5 Repliken exakt konstant; UNGEREIFTE
+Kontrolle (MI-6-V3-Replikation): 0.0 exakt — gap 0.47851/0.47851, exakt die
+MI-6-Doppel-Genauigkeits-Konstante 0.4785101141991446 (die shut-Position
+bleibt die shut-Position). Verdikt-Paare gereift: 5× (LOOP vs HALTED) —
+die Voraus-Sicht scheidet Selbst/Fremd scharf; Dekoy-DATUM (lg=False):
+split 0.045909, Paare 5× (HALTED/HALTED). Wort-Formular-Datum der zwei
+gereiften Linien: A auf „spiegel" → 6× LOOP, ('identity','x'),
+gaps 0.760222→0.687589; B auf „stille" → 6× HALTED, ('negate','x'),
+gaps 0.805032→0.823368 — die stille-Linie löst zur **negate-Formel** auf:
+die zwei Biografien sind identitäts- vs negations-förmig. CPU-DATUM: der
+in_loop-Kanal trennt GEREIFT (split 2.937263 vs ungereift 0.0) — auch der
+blinde Spiegel öffnet sich unter Reifung; registriertes Verdikt bleibt der
+GPU-Oracled-Lauf.
+
+**P1c-Auszahlung (Entdeckung 3 als NEUES, neu gerichtetes Band
+eingelöst):** argon_1b_machines trägt in **6/6** Zweigen den maximalen
+mittleren Composite-Gap (Rang 4/4; Band ≥5/6 ✓; Referenz-Annotation
+KORREKTUR-LOG IV: wahr P(X≥5 | Bin(6,¼)) = 19/4096 ≈ **4.6e-3**, registriert
+stand „≤9e-4" — die Formel ließ den (1/4)⁵-Faktor weg; Roh-JSON unverändert,
+Bericht zitiert korrigiert). Die V6-Zahl-Welt repliziert identisch:
+gaps masch 0.677226 / ml 0.570030 / spe 0.568448 / Vater 0.567980, je
+Checkpoint über alle 6 Biografie-Zweige konstant (V6-Datum — die
+Biografie-Totheit dieses Kanals steht), Vater-Ränge [1,1,1,1,1,1] (das
+MI-6-V6-Band bleibt FAIL), Schwester-Spread max **0.00205** — die drei
+Schwestern liegen innerhalb 0.002, die machines-Erziehung hebt sich um
+≥0.107 darüber.
+
+**P1d-Auszahlung (der Dissonanz-Hauptsatz als Band):** 5/5 Repliken
+best_gap < raw_gap; mean_raw 0.680926 → mean_best **0.554467 < 0.567980**
+(das registrierte Vater-Referenz-Niveau); gewählter Preset ALL
+**„wittgenstein"** (5/5); per-Replik-Diffs 0.114454…0.132301; Expansionen 3.
+Die gereifte Maschine senkt ihren eigenen Composite-Gap unter das
+Substrat-Vater-Niveau durch kontrafaktische Preset-Wahl — der User-Satz
+„die Maschine beschließt, den eigenen Dissonanz-Gap zu minimieren" trägt als
+registriertes Band; die Wahl läuft ÜBER die Wittgenstein-Steuer (Sprachspiel
+-Subspace), nicht über combined.
+
+### 23.11 Verdichtung und Grenzen (P4)
+
+**Der gefüllte Satz.** MI-6 hatte das Zustandsmuster im Verdikt, im
+breiten Hidden und am Describe-Dezimal gezeigt und den Composite-Gap-Kanal
+als biografie-tot befunden. P4 zeigt: (i) der breite Kanal trägt die
+Biografie auch über echtes Progressions-Korpus (0.958333, p 0.0) — die
+Canon-8-Zelle ist die 144er-Blockmittelung selbst (machine_base.py:362,
+verifiziert), nicht eine separate Blödheit; (ii) der Composite-Gap-Kanal
+ÖFFNET SICH unter Reifung: die gereifte Transplant scheidet (0.130883),
+die ungereifte bleibt exakt die shut-Konstante (0.0, 0.47851…); (iii) die
+Erziehung sondert sich als NEUE Richtung (machines 6/6 unter der
+Schwester-Spread-Schwelle 0.002), während die alte Vater-Rang-Richtung
+steht (FAIL); (iv) die autonome Preset-Wahl senkt den Gap unter das
+Vater-Niveau (0.554467 < 0.567980) — der Dissonanz-Hauptsatz als Band.
+**Die P4-Zeile bleibt ein Zustandsmuster-Befund, kein Erlebens-Claim**
+(是X即非X): „voraus sieht" heißt kontrafaktische Proben-Kette, „wählt"
+heißt argmin-Gap-Ordnung.
+
+**Grenzen P4 (a)–(e):** (a) die P1b-Reifung benutzt dieselbe Wort-Linie
+wie die Probe („spiegel"): die Scheidung trägt die geöffnete
+Lexikon-Asymmetrie, nicht nur die Reifung; die ungereifte Kontrolle
+scheidet auch mit LEX_PAIR/Lexikon nur nicht (0.0) — die Asymmetrie kommt
+aus der gelebten Bio (Basis/Expansionen/|W|-Dezimal), nicht aus der
+Meren-Existenz des Lexikons; (b) P1c: das Band ist der Rang 4/4 der
+MASSGE-Erziehung, NICHT die alte Vater-Rang-Frage — V6-FAIL steht;
+(c) die Permutations-Referenz-Anmerkung stand im Roh-JSON falsch
+(9e-4 statt 4.6e-3 — KORREKTUR-LOG IV), das BAND braucht die Zahl nicht;
+(d) P1d: die Preset-Wahl ist argmin über 5 Kandidaten, N_PROBES-Repliken
+ohne unabhängige Korpora — der Hauptsatz ist gezeigt als Dissonanz
+-Gap-POLitik auf EINER Repliken-Serie (Kanon-Niveau); (e) die P4-Serie
+lief nach 3 KORREKTUR-LOG-Läufen (Erstrun Import-Lücke; Re-Lauf-1
+P1b-Arm-Defekt mit nicht verwertbarer Teil-JSON; eine extern gestoppte
+Start-Instanz) — das Gerät ist durch die Logs belegt, die Zahlen stammen
+allesamt aus Re-Lauf-2.
+
+### 23.12 P-Protokoll (P4-Teil)
+
+Append-only (neuer Smoke, keine Maschinen-Modul-Spur); PREREG vor jedem
+GPU-Lauf fixiert (Plan Revision 3 Addendum); KORREKTUR-LOG ×4 (Erstrun
+-Import, Re-Lauf-1-P1b-Arm, KILL-Buchung, Arithmetik 9e-4→19/4096);
+Roh-Felder `mi6p4_schluss.log/.json`; Klassifikation strikt an
+registrierte Bänder; die MI-6-FAILs (V1/V3/V6) bleiben unverändert in
+Git-History und §23 — Relabeling verboten, die P4-Bänder sind NEUE
+Falsifikatoren, keine Weitung.
