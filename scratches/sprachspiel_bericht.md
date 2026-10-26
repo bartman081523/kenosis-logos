@@ -1696,3 +1696,111 @@ LOG, kein Re-Decide; Roh-Felder vollständig in `mi2_logit_lens_p4.json`
 [Datums-Zusatz] auf arithmetic_space ist die REGISTRIERTE
 Akkommodation (Out-of-Band-Probe wird gemessen, verändert aber KEIN
 Band). Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §20.
+
+## 19. MI-3 — Kausale Interventionen: Hinreichendheit und Notwendigkeit getrennt (2026-10-26)
+
+### 19.1 Die Sonde und der Vorlauf
+
+MI-3 greift erstmals nicht nur lesend in den Routing-Träger ein: **steer_band**
+(SET-Semantik nach dem SP13-dict-Arm: `fill_(-50)` + `g[e]=+50`, NUR in den
+gegebenen Schichten) und **knockout_experts** (ADDITIV auf dem GELERNTEN
+Bias: `g[e] += -50`, Rest unverändert) — beide selbst-restaurierend mit
+`copy_` + `torch.equal`-Verifikation (EINHEIT C3). Die Reinstreue der Sonde
+ist VORGESCHALTET als eigenes Verdict (V1), nicht implizit: **mi3_intervention_
+purity PASS — fingerprint_equal=True (expert_bias + gate.weight, alle 26
+Schichten), Kontrolle-Forward canon_tv 0.0 exakt.** Jede Messung dieses
+Laufs trägt nur ihre ausdrückliche Intervention.
+
+Vorlauf-Buchung (KORREKTUR-LOG Lauf 1): die erste GPU-Ausführung lieferte
+die MESSFELDER vollständig, klassifizierte aber alles OFFEN — die evals
+buchen unter Ergebnis-Schlüsseln (purity, sufficiency, …), die Klassifikation
+prüfte Mitgliedschaft unter den registrierten Lang-Namen. Fix: RESULT_KEYS-
+Mapping. Rein klassifikatorischer Fehler; die Roh-Felder von Lauf 1 blieben
+persistent, und die Läufe 2–4 bestätigen die Feld-Felder bit-stabil.
+
+Determinismus-Anker (4 Läufe bit-identisch): resolve=[9079]; dp_attn(ℓ17)
+0.6859115078113973; dp_moe(ℓ17) 0.1407126784324646; m_raw 0.3541586399078369.
+Fünf CPU-Piloten über die ECHTEN Tensor-Helfer (R2: die Piloten führen
+apply_band_steer/apply_expert_knockout aus, keine Synonyme).
+
+### 19.2 Die Verdikt-Tabelle
+
+| Verdict | Status | Kern-Datum |
+|---|---|---|
+| mi3_intervention_purity | **PASS** | fingerprint_equal=True; control_tv=0.0 |
+| mi3_core_vs_edge_sufficiency | **OFFEN** | Premise nicht repliziert: M_raw=0.3542 ≥ tau — ΔM_full 0.0440 ≥ ΔM_core 0.0294 (ratio 0.668); ΔM_edge 0.0404 > ΔM_core |
+| mi3_domain_knockout_specificity | **FAIL** | prose-Seite hält (ko{3,7} 0.0431 > ko{0,1,4} 0.0189); code-Seite fällt (ko{0,1,4} 0.0025 < ko{3,7} 0.0066) |
+| mi3_paris_circuit_resilience | **PASS** | top1=9079 unter allen 5 Bedingungen (2 Core-KOs + 3 Presets) |
+| mi3_layer17_paris_localization | **PASS** | attn_share(17)=0.830 (P4-Datum exakt); Σ\|Δp\|(ℓ17)=0.0861 vs Σ\|Δp\|(ℓ10)=0.0170 — 5.1× |
+| mi3_prose_l11_anomaly_probe | **FAIL** | ko{4,7}(ℓ11)=0.0177 ≤ ko{1,2}(ℓ11)=0.0214 |
+
+3 PASS \| 1 OFFEN \| 2 FAIL → ROT (Falsifikatoren ausgelöst, exit 1).
+
+### 19.3 Verdichtung: die kausale Last trennt sich
+
+**(a) Hinreichendheit sitzt NICHT im Core.** Die registrierte Premise
+(M_raw < 0.01 auf dem SP13-GENERIC_PROMPT) repliziert nicht — die Digit-
+MASSE ist schon ungesteuert 0.354. Die registered OFFEN-Lane greift; die
+persistenten Δ-Daten sagen aber zusätzlich: das Digit-Öffnen über Bias-
+Steering trägt ΔM_core 0.0294 gegen ΔM_edge 0.0404 — das Edge-Band
+(Kopf-Schichten 24/25 + Setup 0..3) trägt 41% mehr. Sogar bei intakter
+Premise wäre die registered Vorhersage (Core ≥ 80%, Core > Edge strikt)
+gescheitert. Die MI-1-Core-Lesart gilt für das ROUTING-PROFIL, nicht für
+das Digit-Masse-Öffnen über den Bias-Kanal.
+
+**(b) Notwendigkeit ist kanal-spitz.** Die prose-Notwendigkeit tritt klar
+heraus: ko{3,7} verschiebt prose 0.0431 (bis 0.0785 auf "Oma erzählt")
+und schont code (0.0025). Die Umkehrung fällt: ko{0,1,4} — die MI-1-code-
+Spezialisten — verschieben code NUR 0.0025 (kaum über Null). Das MI-1-
+Profil (E4/E0/E1 als code-Träger) ist ein Routing-PROFILE-Datum, keine
+Bias-Notwendigkeit: **code-Routing ist über gate.weight getragen** — der
+Gewichts-Träger, den knockout_experts bewusst unangetastet lässt.
+
+**(c) Das ℓ17-Recall-Ereignis ist notwedig über den Bias-Kanal.** Per-
+Experten-KO in GENAU ℓ17 verschiebt p(' Paris') Σ|Δp| 0.0861; genau
+dieselben 8 KOs in ℓ10 (Local-Schicht) nur 0.0170 — 5.1×. Die Träger
+sind e6 (0.0290), e7 (0.0247), e4 (0.0172) in ℓ17 — und die Antwort ist
+dergleich robust: top1 bleibt 9079 UNTER ALLEN 5 Interventions-Bedingungen
+(ko{3,7}@Core, ko{0,1,4}@Core, drei volle Preset-Steerings). Das MI-2-P4-
+Datum (attn_share 0.829774…) reproduziert sich bit-exakt als MI-3-Messung.
+
+**(d) Die L11-Entropy-Delle ist profil-stark aber bias-neutral.** ko{4,7}
+(MI-1: E4 44.6% prose-ℓ11) stört prose in ℓ11 NUR 0.0177; die Kontrolle
+{1,2} 0.0214. Falsifikator ausgelöst: die Anomalie-Paar-Marker sind
+kein Bias-Kausal-Datum — dieselbe Grenze wie (b), mit dem Zusatz-Datenpunkt
+dass die Kontrolle {1,2} pro Text bis 0.0516 (math_logic row 7) schlägt.
+
+Der Neue Satz (MI-3): **Die kausale Last trennt sich auf zwei Träger:
+die prose-Notwendigkeit (e3/e7) und das ℓ17-Recall-Fenster (5.1× über
+ℓ10) liegen im Bias-Kanal; die code-Notwendigkeit und die L11-Anomalie
+LIEGEN NICHT im Bias-Kanal — sie tragen über gate.weight und entziehen
+sich dem Bias-Retrieb, das MI-1-Profil war Tracer-Träger, nicht Kausal-
+Träger.**
+
+### 19.4 Schichtung und Grenzen
+
+- **bias-only-Intervention:** knockout_experts greift NUR den expert_bias-
+  Kanal (+penalty) an; gate.weight bleibt unangetastet. Die Fails sind
+  GRENZEN DES BIAS-KANALS — kein Beweis der Nicht-Kausalität der Experten
+  schlechthin; der Nächste Schritt wäre Ko-Intervention auf gate.weight
+  (Neue Runde, nicht in dieser registriert).
+- **SP13-Level-Diskrepanz (Registrierungsschärfe):** die SP13-"Stumm"-Beobachtung
+  sitzt auf predict_value (greedy decode), die registrierte Premise auf
+  der Digit-MASSE — der Masse-Greedy-Gap (0.354 Masse bei einem dumm
+  decodierenden Kanal) ist ein eigenes Messdatum und bleibt OFFEN-markiert.
+- **[Datums-Zusatz]:** math_logic läuft in V3 außerhalb der registrierten
+  Dissociation (prose/code); die 9 Rows (inkl. anomal_/{kontrolle_}-Spalten)
+  bleiben persistent.
+- **Buchungen:** der Plan hatte die Sektion als §21/§22 eingetragen; die
+  echten Report-Folgen sind **§19 (sprachspiel) / §21 (laufprotokolle)** —
+  berichtigt. Der Klassifikations-Schlüssel-Bug ist im KORREKTUR-LOG der
+  Smoke gebucht (Lauf 1, 41 s, Roh persistent).
+
+P-Protokoll (MI-3-Runde): P1 — MI-1-/MI-2-Dateien unangetastet (nur
+mech_interp erweitert, kein alter Code verändert); P2 — Registrierung
+im Pre-Reg-Docstring und Planfile VOR der ersten Messung, Bänder und
+Experten-Sets sind Canon-Zitate, nie geweitet; P3 — Roh-Felder (alle
+per-Text-TVs, alle per-Experten-Σ, alle Massen) in `mi3_interventions.json`
+vor Auswertung; P4 — Klassifikation strikt nach den registrierten
+Falsifikatoren ohne Still-Fallback (die 2 FAILs stehen). Laufschrift:
+`laufprotokolle_befund_report.md` §21.

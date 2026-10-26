@@ -1,16 +1,17 @@
 ==============================================================================
 repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung
 (Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)
-GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-2-P4) —
+GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-3) —
  geändert + ausgeführt (Programm samt Basis und Anker) + Ergebnisse;
- das vollständige Korpus über die Git-History (MI-2-Lauf 3: Commits
- 2455aea/1b4be11; MI-1: Commits 67c1b5e/fc367c3; frühere kumulative
- Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).
-Dateien: 15   bytes: 443110   Zeilen: 8891
+ das vollständige Korpus über die Git-History (MI-3: Commits s.
+ Runden-Commit; MI-2-P4: d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11;
+ MI-1: 67c1b5e/fc367c3; frühere kumulative Fassungen: 49ecc31 =
+ 88 Dateien, 2f61402 = 84).
+Dateien: 15   bytes: 427268   Zeilen: 8284
 ==============================================================================
 INDEX
-  scratches/smoke_mech_interp_logit_lens.py  [   26129 B   577 Zeilen]
-  machines/mech_interp.py  [   17595 B   375 Zeilen]
+  scratches/smoke_mech_interp_interventions.py  [   32397 B   686 Zeilen]
+  machines/mech_interp.py  [   25059 B   527 Zeilen]
   machines/machine_base.py  [   24646 B   579 Zeilen]
   machines/goedel_machine.py  [   12952 B   273 Zeilen]
   machines/turing_machine.py  [   16403 B   347 Zeilen]
@@ -20,148 +21,137 @@ INDEX
   machines/verify_machines.py  [   28669 B   580 Zeilen]
   modeling_argon.py  [   36503 B   781 Zeilen]
   moe_layers.py  [    6329 B   140 Zeilen]
-  scratches/mi2_logit_lens_p4_gpu.log  [    2206 B    16 Zeilen]
-  scratches/mi2_logit_lens_p4.json  [   49332 B  1352 Zeilen]
-  scratches/sprachspiel_bericht.md  [  104079 B  1697 Zeilen]
-  scratches/laufprotokolle_befund_report.md  [   52979 B   855 Zeilen]
+  scratches/mi3_interventions.log  [    2702 B    26 Zeilen]
+  scratches/mi3_interventions.json  [   10860 B   335 Zeilen]
+  scratches/sprachspiel_bericht.md  [  110682 B  1805 Zeilen]
+  scratches/laufprotokolle_befund_report.md  [   54778 B   886 Zeilen]
 ==============================================================================
 
 ==============================================================================
-### FILE: scratches/smoke_mech_interp_logit_lens.py
-### bytes: 26129   lines: 577
+### FILE: scratches/smoke_mech_interp_interventions.py
+### bytes: 32397   lines: 686
 ==============================================================================
 """
-smoke_mech_interp_logit_lens.py — MI-2: Sublayer-Röntgengerät
-(Attention-vs-MoE Logit-Lens) + strikte Ein-Token-Auflösung.
+smoke_mech_interp_interventions.py — MI-3: Kausale Interventionen
+(steer_band + knockout_experts), Hinreichendheit/Notwendigkeit getrennt.
 
-PREREG (P2-Freeze, fixiert VOR der ersten Messung; Bands nie geweitet;
-OFFEN ≠ PASS; exit 0 alle PASS / 1 FAIL / 2 OFFEN; ohne --gpu bleiben die
-Modell-Lanes OFFEN — kein stiller Fallback).
+PREREG (P2-Freeze, fixiert VOR der ersten Messung; Bänder nie geweitet;
+OFFEN ≠ PASS; exit 0 alle PASS / 1 FAIL / 2 sonst; ohne --gpu bleiben die
+Modell-Lane OFFEN gebucht — kein stiller Fallback).
 
 Canon-Anker (voll gelesen 2026-10-26):
- - modeling_argon.py:188-190  is_global = (layer_idx % 6 == 5) ->
-   globale MLA-Schichten L5, L11, L17, L23.
- - modeling_argon.py:326-351  DecoderLayer-Sublayer-Struktur:
-   h_mid = h_in + post_attention_layernorm(attn_out) (:345);
-   h_out = h_mid + post_feedforward_layernorm(moe_out) (:350).
- - modeling_argon.py:615/:733/:735-736  offizieller Kopf-Pfad
-   (norm -> lm_head; softcap None im Checkpoint argon_1b_machines).
- - mech_interp.py  Sonde layerwise_logits (MI-1-Muster) + sublayer_logits
-   (h_mid = h_out(l-1) + normed_attn — exakt die Original-Addition :345).
- - mi1_tomography_experiment.json  MI-1-Datum: prose-L11-Anomalie
-   (E3 2.3% / E4 44.6%, H=0.3149) + Entropie-Delle e11 < e10 UND e11 < e12
-   quer über 6/6 Domänen (Konvergenz-Datum zu den globalen MLA-Schichten).
+ - machine_base.py:229-267   oracle.steer: Preset-Arm = copy_ der GELERNTEN
+                             Bias (Voll-Steering); dict-Arm = fill_(-steer)
+                             + g[e]=+steer (SET, alle Schichten); Restore
+                             copy_ in finally.
+ - machine_base.py:239-271   predict_value (greedy Ziffern, "unknown").
+ - machine_base.py:273-322   predict_scale_0_9 / SP3-Folge:
+                             M_digit = Σ_d P_full(id(d)); tau=0.01; Ziffern
+                             je ein einziges Token, Resolution-ValueError.
+ - machine_base.py:276-284   SP13 Restore-Audit (bias clones + equal).
+ - Presets auf Disk (gelesen): argon_1b_machines/machine_presets/
+   {goedel[2,7], turing[6,0], wittgenstein[3,1], combined}.json — gelernte
+   expert_bias flach 208 (26x8), steer 50.0.
+ - modeling_argon.py:188-190 globale MLA-Schichten {5, 11, 17, 23}.
+ - mech_interp.py:63-69      MI-1-Bänder: Edge {0,1,2,3,24,25},
+                             Core {4..23} (Training-Hook-Bereich), plus
+                             GLOBAL=(5,11,17,23).
+ - MI-2-P4-Daten (commits d1fc355/cb46509, mi2_logit_lens_p4.json):
+   Paris-Kette ℓ16 MoE +0.00699 -> 0.00703; ℓ17G Attn +0.68591 -> 0.69294,
+   MoE +0.14071 -> 0.83366; Space-ℓ11G Attn +0.73470 / MoE -0.32335;
+   ℓ5-Prune asymmetrisch (Ziffer -0.033, Space +0.0139).
 
-USER-FUND (MI-1-Audit 2026-10-26, am MI-1-Smoke verifiziert):
-resolve_token_ids (smoke_mech_interp_tomography.py:204-215) nahm für
-" 4" (2 Tokens [236743(" "), 236771("4")]) encoded[0] = LEERZEICHEN-Token
-als Vertreter von "4" — die MI-1-"Fast-Gleichstand"-Nuance (§16.3, 0.8074
-vs 0.80735) war ein Auflösungs-Artefakt: answer_prob["4"] maß faktisch
-p(236743). MI-2 fixiert die Konvention (mi2_single_token_strict) und
-bucht die Korrektur in den Berichten; MI-1-Dateien bleiben unangetastet
-(P1). Die MI-1-Top-1-Trajektorie (Leerzeichen als echtes Top-1) bleibt
-gültig — nur die Antwort-Koordinate war versehentlich dasselbe Token.
+Registrierte Theorie-Stufen (vier Felder je Verdict siehe unten):
 
-Die 6 registrierten Verdikte:
+V1 mi3_intervention_purity — Reversibilität der Sonde (EINHEIT C3).
+   (a) Behauptung: die Sonde verändert den Träger NUR innerhalb der
+       Interventions-Blöcke. (b) Begründung: C3 (copy_-Muster) + SP13-
+       Restore-Audit. (c) Vorhersage: nach der Serie fingerprint_equal
+       (expert_bias + gate.weight, alle 26 Schichten) UND canon_tv(P_final
+       nach der Serie, P_final vor) == 0.0. (d) Falsifikator: Fingerprint-
+       Mismatch ODER tv > 0.
+   Serien-Bedingungen (jede im eigenen Block): steer_band({1,3}, EDGE),
+   steer_band({1,3}, CORE), steer_band({1,3}, GLOBAL), knockout {3,7}@CORE,
+   knockout {0,1,4}@CORE.
 
-1. mi2_single_token_strict — resolve_token_ids_strict garantiert, dass
-   JEDE aufgelöste ID als EINZELTOKEN decode([id]).lstrip(' ') == target
-   erfüllt; je registrierter Probe genau 1 ID. Falsifikator: eine
-   aufgelöste ID decodiert zu "" oder " " (Vertreter-Falle), oder
-   Auflösung leer (-> OFFEN je Probe, keine Band-Erfindung).
+V2 mi3_core_vs_edge_sufficiency — Hinreichendheit (EINHEIT C1) am SP3-
+   Stummkanal. (a) Behauptung: das Digit-Kanal-Öffnen (SP13: raw dumm,
+   Voll-Steering {1,3} öffnet) liegt im CORE-BAND (4..23), nicht am EDGE.
+   (b) Begründung: SP13 (smoke_sprachspiel.py, wittgenstein-Preset-Öffnen)
+   + MI-1 Kernprofil (prose-L11-Anomalie im Core). (c) Vorhersage:
+   ΔM_full > 0 UND ΔM_core ≥ 0.8 × ΔM_full UND ΔM_core > ΔM_edge
+   strikt — ΔM_x = M_x − M_raw; M = M_digit am GENERIC_PROMPT (SP13-
+   Literal), Steerings als dict-Direktsteuerung (SET, {1,3}) auf dem
+   jeweiligen Band. (d) Falsifikator: (b)- oder (c)-Verletzung. Premise-
+   Bruch: M_raw ≥ tau=0.01 (SP-Canon tau) -> OFFEN "Premise nicht
+   repliziert" (volle Daten bleiben persistent).
 
-2. mi2_sublayer_telescope — für jede Probe exakt
-   sum(dp_attn(l) + dp_moe(l)) == p_final(target) - p_emb(target)
-   (± 1e-6) und anchor_tv <= 1e-3. Falsifikator: Teleskop-Bruch.
+V3 mi3_domain_knockout_specificity — Notwendigkeit (EINHEIT C1+C2,
+   Double Dissociation). (a) Behauptung: die Domänen-Spezialisten tragen
+   kausale Last domänenspezifisch. (b) Begründung: MI-1-Kernprofil
+   (prose E3/E7 88.8%, code E4/E0/E1; Training-Hook-Bereich 4..23).
+   (c) Vorhersage: KO {3,7} im Core stört prose stärker als KO {0,1,4}
+   UND KO {0,1,4} stört code stärker als KO {3,7} — beide strikt (Mittel
+   über die je 3 registrierten Texte; per-Text TVs persistent).
+   (d) Falsifikator: eine der beiden Dissociationen verletzt.
+   math_logic-Texte laufen als Datums-Zusatz (out-of-Predicate, wie
+   MI-2 [Datums-Zusatz]; kein Band geweitet).
 
-3. mi2_purity_det — fingerprint() (expert_bias + gate.weight je Schicht)
-   bitidentisch vor/nach allen Hooks; Doubletten: dp_attn/dp_moe/
-   gap_out_tv je Schicht bitidentisch (torch.equal je row).
-   Falsifikator: jeder Δ oder Hook-Rest.
+V4 mi3_paris_circuit_resilience — Welt-Wissen-Schutz. (a) Behauptung:
+   das Fakten-Recall-Top-1 überlebt komplette Domänen-Steerings und die
+   Spezialisten-Knockouts. (b) Begründung: MI-2-P4 — das Recall-Ereignis
+   sitzt als großes Attn-Halbschritt in ℓ17 (nicht in den Domain-
+   Spezialisten-Schichten allein). (c) Vorhersage: top1 == 9079 in jeden
+   der 2+3 Bedingungen: KO {3,7}@Core, KO {0,1,4}@Core, Preset-Steering
+   goedel/turing/wittgenstein (oracle.steer, GELERNTE Bias). (d)
+   Falsifikator: jede Bedingung's-Argmax ≠ 9079.
 
-4. mi2_attn_vs_moe_attribution — DATUM-Verdikt: je Probe der
-   Haupt-Treiber des Kristallisations-Durchbruchs = der größere der
-   Kanal-Maxima; Band: beide Kanal-Maxima unterscheiden sich strikt
-   > 1e-3 (eindeutiger Treiber -> PASS); Gleichstand -> OFFEN mit
-   voller Kette. Kein Vorhersage-Band, WELCHER Kanal gewinnt — das
-   gemessene Datum. Peak-Schicht und is_global mitgeloggt.
+V5 mi3_layer17_paris_localization — (a) Behauptung: der Löwenanteil des
+   Recall-Sprungs wird am ℓ17-Halbschritt getragen und die ℓ17-KO
+   stört die Antwort-Koordinate stärker als ℓ10-KO. (b) Begründung:
+   MI-2-P4-Verdikt (attn@ℓ17 0.68591 vs moe 0.14071) + ℓ17-Attribution
+   driver_is_global=True. (c) Vorhersage: (A-Datum) ΔP_attn(17)/(ΔP_attn
+   (17)+ΔP_moe(17)) > 0.5; (B-kausal) Σ_e |Δp_e(9079)|(ℓ17) > Σ_e
+   |Δp_e(9079)|(ℓ10) strikt (8 Einzel-Experten-KOs pro Schicht).
+   (d) Falsifikator: (A) Anteil ≤ 0.5 ODER (B) ℓ10 ≥ ℓ17.
 
-5. mi2_goedel_gap_contraction — gap-Lesart = MI-1-Definition (canon_tv
-   der Schicht-Verteilung gegen P_final), hier auf der p_out-Folge
-   (gap_out_tv, von der Sonde je Schicht geliefert). Für jede Probe mit
-   stabilem Tail (top1_out_id konstant ab l*, CRYSTAL_MIN_TAIL=2):
-   Mittel(gap_out_tv | [l*..25]) < 0.5 × Mittel(gap_out_tv | [0..l*-1]).
-   Falsifikator: Tail-Mittel >= 0.5 × Pre-Mittel; kein stabiler Tail
-   -> OFFEN (Via-Negativa). Kein l*-Band — l* wird aus dem Bild gelesen.
+V6 mi3_prose_l11_anomaly_probe — der Outlier-Verdikt. (a) Behauptung:
+   die prose-Anomalie-Paar {4,7} (MI-1: E3 2.3%/E4 44.6% an prose-ℓ11)
+   trägt kausale Last in GENAU ℓ11. (b) Begründung: MI-1-L11-Anomalie
+   (E4 44.6% an prose am ℓ11) + die MI-1-Entropie-Delle quer 6/6 (e11).
+   (c) Vorhersage: KO {4,7} in EXAKT ℓ11 verschiebt die Ausgabeverteilung
+   (canon_tv) auf den 3 prose-Texten stärker als KO {1,2} — strikt.
+   (d) Falsifikator: Mittel{k4,7} ≤ Mittel{k1,2}.
 
-6. mi2_mla_vs_mqa_profile — Mittel tv_in_mid über globale MLA-Schichten
-   {5,11,17,23} > Mittel über die 22 lokalen MQA-Schichten, strikt je
-   Probe (paris, arithmetic — arithmetic_sp ohne is_global-Kontrolle im
-   Band: alle drei werden gemessen, das Band legt paris+arithmetic fest
-   [P2]; arithmetic_sp läuft als Datums-Zusatz). 2/2 PASS, 1/2 OFFEN,
-   0/2 FAIL. Konvergenz-Datum zitiert: MI-1-Entropie-Delle e11 6/6.
-   Code/Logik-Lens-Proben ohne eindeutige Ein-Token-Targets bleiben in
-   diesem Lauf NICHT MESSBAR gelabelt (R1: keine Band-Erfindung).
+Registrierte Proben-Texte (MI-1-smoke_mech_interp_tomography.py:146-191
+GENAU kopiert — P1-reuse, kein neues Textmaterial):
+ DOMAINS je 3 Texte auf code/math_logic/prose/goedel/turing/wittgenstein.
+Registrierte Prompt-Literale:
+ GENERIC_PROMPT = "Validity of a symbolic experiment batch, "
+                   "single digit per ten percent: "
+ PARIS_TEXT = "The capital of France is", target " Paris".
 
-Registrierte Proben (je 1 target, strikt Ein-Token):
-  paris         "The capital of France is" -> target "Paris"
-  arithmetic    "2 + 2 ="                  -> target "4"
-  arithmetic_sp "2 + 2 = "                 -> target " "
+Konventionen: TV auf Fraction-Skala [0,1] (canon_tv); M_digit-Masse
+(sp3-canon); P3 Roh-Felder je eval vollständig in JSON; P4 Einstufung
+nach registrierten Bändern. P1: MI-1-/MI-2-Dateien unangetastet.
 
 KORREKTUR-LOG (offen gebucht):
- - CPU-Pilot prüft resolve_strict am Stub + echten Tokenizer (GPU-Lane):
-   " 4" -> [236743, 236771]; strict wirft 236743 raus, behält 236771;
-   " Paris" -> [9079] bleibt; synaptische Teleskop-/Band-Mathe.
- - MI-1-Arithmetik-Antwortmasse als Auflösungs-Artefakt gebucht; die
-   MI-2-target-Lesart (236771) liefert die korrigierte Messung.
- - GPU-Hauptlauf 1 (30.1 s) brach an norm_mod = self.model.norm —
-   AttributeError: 'ArgonForConditionalGeneration' object has no attribute
-   'norm' (BROKEN gebucht, exit 2 GELB). Canon: norm sitzt am
-   ArgonModel-Submodul (modeling_argon.py:362), der Wrapper :626-634
-   trägt nur lm_head; MI-1-Muster mech_interp.py:178. Fix
-   norm_mod = self.model.model.norm vor dem Rerun — P2 unberührt,
-   kein Band geweitet, kein stiller Fallback.
- - GPU-Hauptlauf 2 (30.4 s, ROT exit 1): MI2-Messung — paris mehrdeutig
-   ids=[9079, 50429] (BEIDE echte Ein-Token-Vertreter von "Paris": ' Paris'
-   und 'Paris' ohne Space-Form), arithmetic_sp leer (lstrip(' ') zerstört
-   das Leerzeichen-Target selbst: decode(' ')=lstrip->"") — genau die
-   registrierte Grenze. arithmetic EINDEUTIG id=236812 ('4'): das
-   no-Space-'4'-Token; der Vertreter 236743 fällt raus, MI-1 maß 236743
-   (Artefakt). Smoke-Klassifikation buchte Leer/Mehrdeutigkeit fälschlich
-   als FAIL — die registrierte Familie ist OFFEN je Probe (Falsifikator
-   nur bei Vertreter-Falle/Dekode-Bruch). Fix der Klassifikation
-   (Messdaten unverändert) + rerun: Leer/Mehrdeutigkeit -> OFFEN je
-   Probe; Messdaten unverändert.
- - P4-VERSION (2026-10-26, OBERFLÄCHEN-EXAKT, User-Schnitt im
-   MI-2-Audit): resolve_token_ids_strict -> resolve_token_ids_exact —
-   len(encoded) == 1 UND decode([id]) == target EXAKT OHNE lstrip;
-   Mehr-Token-Kandidaten werden abgewiesen, BEVOR ein Vertreter
-   entstehen kann. Re-registrierte Proben (Target = die an der
-   Textposition FÄLLIGE Oberflächenform): paris "The capital of France
-   is" -> " Paris" -> [9079]; arithmetic_digit "2 + 2 =" -> "4" ->
-   [236812]; arithmetic_space "2 + 2 =" -> " " -> [236743]. Alle drei
-   eindeutig. Die 6 Verdikte/Bänder ändern sich NICHT — nur die
-   Ziel-Auflösung wird exakt; das lstrip-Teilresultat (GELB 4/4/0,
-   Lauf 3) bleibt als §17.3 gebucht. Ergebnis-Fassung: eigene P4-Dateien
-   (mi2_logit_lens_p4.json/.log), die Lauf-3-Rohdaten bleiben in Git
-   (Commit 2455aea).
- - CPU-Pilot 2 (nach Stub-Fix, "" -> []): pilot_resolve_exact
-   digit=[2] space=[5] paris=[3] ('Paris' 6 abgewiesen) — alle 4 Piloten
-   PILOT. Der erste Pilot hatte den Stub-Defekt gefangen (encode("")) —
-   Fallback [7] decodierte " " und ließ den Leer-Kandidaten als echten
-   Space-Vertreter durchrutschen; kein Sonde/Modell-Defekt, R2-Modus.
- - GPU-P4-Hauptlauf (30.4 s, GRÜN exit 0, 6/6 PASS, 0 OFFEN, 0 FAIL):
-   alle drei Proben eindeutig aufgelöst (resolve_raw=[9079]/[236812]/
-   [236743]); Teleskop dev=0.000e+00 über alle 3 Proben (anchor_tv
-   2.7e-11..3e-12). MI-2 damitschließt 6/6 P4 GRÜN.
-
-Konventionen: TV auf Fraction-Skala [0,1] (canon_tv); P3 Roh-Felder
-(sublayer-rows je Probe) vollständig in JSON; P4 Einstufung nach
-registrierten Bändern. P1: MI-1-Dateien unangetastet.
+ - 2026-10-26, Lauf 1 (GPU, 41 s): Klassifikations-Schluessel-Bug — die
+   evals buchen ihre Ergebnis-Felder unter Kurz-Schuesseln (purity,
+   sufficiency, domain_knockout, paris_resilience, l17_localization,
+   l11_anomaly), die Klassifikation pruefte aber Mitgliedschaft unter den
+   registrierten Lang-Namen -> alle 6 OFFEN trotz vollstaendiger Messung.
+   Fix: RESULT_KEYS-Mapping (registrierter Name -> Ergebnis-Schluessel).
+   Der Lauf-1-Roh-Datensatz blieb persistent (P3) — der Fehler war rein
+   klassifikatorisch, die Messfelder (fingerprint/tvs/massen) sind gueltig.
+   Lauf 1: exit 2 GELB; Lauf 2 = Klassifikation ueber unveranderte
+   Messfelder (Determinismus verifizierbar an resolve + l17-Datum).
 
 Run lines:
-  CPU: python -m scratches.smoke_mech_interp_logit_lens           (exit 2)
-  GPU: python -m scratches.smoke_mech_interp_logit_lens --gpu     (exit 0/1)
+  CPU: python -m scratches.smoke_mech_interp_interventions       (exit 2;
+       schreibt KEIN Ergebnis-JSON ohne explizites --json — P3-Schutz)
+  GPU: python -m scratches.smoke_mech_interp_interventions --gpu (exit 0/1;
+       Default-JSON = scratches/mi3_interventions.json, P3-Roh-Felder)
 """
 
 from __future__ import annotations
@@ -174,40 +164,89 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 
-from machines.mech_interp import CRYSTAL_MIN_TAIL, MechInterpProbe
-
-JSON_PATH = "scratches/mi2_logit_lens.json"
+from machines.mech_interp import (
+    MechInterpProbe, apply_band_steer, apply_expert_knockout, canon_tv,
+    layer_bands,
+)
 
 # -- Registrierte Konstanten --------------------------------------------------
-TELESCOPE_TOL = 1e-6
-LENS_ANCHOR_TOL = 1e-3
-DRIVER_MARGIN = 1e-3      # Eindeutigkeit des Haupt-Treibers (Verdikt 4)
-CONTRACT_RATIO = 0.5      # Tail-Mittel < 0.5 x Pre-Mittel (Verdikt 5)
+STEER_AMPLITUDE = 50.0
+KO_PENALTY = -50.0
+M_DIGIT_TAU = 0.01          # SP-Canon tau (machine_base.py:285-286)
+SUFF_RATIO_CORE = 0.8       # Vorhersage (c): ΔM_core ≥ 0.8 × ΔM_full (V2)
 MAX_LENGTH = 128
-GLOBAL_LAYERS = (5, 11, 17, 23)   # modeling_argon.py:188-190
+N_LAYERS = 26               # Argon-1B (Canon)
 
-LENS_PROBES: List[Tuple[str, str, str]] = [
-    # (name, prompt, target) — P4: Target = die an der Textposition
-    # FÄLLIGE Oberflächenform; Auflösung exakt (kein lstrip)
-    ("paris", "The capital of France is", " Paris"),
-    ("arithmetic_digit", "2 + 2 =", "4"),
-    ("arithmetic_space", "2 + 2 =", " "),
-]
-CAND_MAP: Dict[str, Tuple[str, ...]] = {
-    "paris": (" Paris", "Paris"),
-    "arithmetic_digit": (" 4", "4"),
-    "arithmetic_space": (" ", ""),
+_EDGE_LIST, _CORE_LIST = layer_bands(N_LAYERS)
+BAND_EDGE = tuple(_EDGE_LIST)        # (0, 1, 2, 3, 24, 25)
+BAND_CORE = tuple(_CORE_LIST)        # (4, ..., 23)
+BAND_GLOBAL = (5, 11, 17, 23)        # modeling_argon.py:188-190 (layer % 6 == 5)
+
+EX_WITT = (1, 3)            # SP-Canon wittgenstein-Preset-Experten
+KO_PROSE = (3, 7)           # MI-1 prose-Monopolisten
+KO_CODE = (0, 1, 4)         # MI-1 code-Spezialisten
+KO_ANOM_A = (4, 7)          # MI-1-L11-Outlier-Paar (Verdikt 6)
+KO_ANOM_B = (1, 2)          # Kontroll-Paar (Verdikt 6)
+
+PRESETS = ("goedel", "turing", "wittgenstein")
+
+GENERIC_PROMPT = ("Validity of a symbolic experiment batch, "
+                  "single digit per ten percent: ")
+PARIS_TEXT = "The capital of France is"
+
+DOMAINS: Dict[str, List[str]] = {
+    "code": [
+        "def quicksort(items):\n    if len(items) <= 1:\n        return items\n"
+        "    pivot = items[0]\n    return quicksort([x for x in items[1:] if x < pivot])"
+        " + [pivot] + quicksort([x for x in items[1:] if x >= pivot])",
+        "for i in range(10):\n    buffer[i] = buffer[i] * 2 % 255\n    print(buffer[i])",
+        "class Node:\n    def __init__(self, value, next=None):\n"
+        "        self.value = value\n        self.next = next",
+    ],
+    "math_logic": [
+        "For all natural numbers n, the sum 1 + 2 + ... + n equals n(n+1)/2.",
+        "If P implies Q and Q is false, then P is false. Proof: assume P, then Q, contradiction.",
+        "Jede endliche Gruppe mit Primzahlordnung ist zyklisch.",
+    ],
+    "prose": [
+        "Der warme Sommerwind trug in der Abenddämmerung den Duft von Kiefern "
+        "über den stillen Bergsee.",
+        "The warm summer breeze carried the scent of pine trees across the quiet "
+        "mountain lake at dusk.",
+        "Oma erzählt ihre Geschichte vom alten Garten, der jedes Jahr im Mai "
+        "in Blüten stand.",
+    ],
+    "goedel": [
+        "Die Gödelnummer eines Formelausdrucks entsteht aus Primfaktoren: "
+        "2^1 · 3^2 · 5^1 kodiert die Zeichenfolge (x).",
+        "Jede konsistente formale Theorie, in der Arithmetik ausdrückbar ist, "
+        "enthält wahre, aber unbeweisbare Sätze.",
+        "Ein Satz, der seine eigene Unbeweisbarkeit behauptet, ist wahr, "
+        "wenn die Theorie widerspruchsfrei bleibt.",
+    ],
+    "turing": [
+        "Eine Turingmaschine liest das Symbol, schreibt das neue Symbol, bewegt "
+        "den Kopf nach links oder rechts und wechselt den Zustand.",
+        "The transition table maps (state, read) to (write, move, next): "
+        "(s0, '0') -> ('1', R, s1).",
+        "Die Halteproblementcheidung ist unmöglich, denn jede Entscheidersimulation "
+        "wäre selbst eine Turingmaschine.",
+    ],
+    "wittgenstein": [
+        "Ein Wort hat Bedeutung im Gebrauch, nicht im Wörterbuch — das "
+        "Sprachspiel gibt der Zeichenfolge ihre Rolle.",
+        "Die Grenzen meiner Sprache bedeuten die Grenzen meiner Welt.",
+        "Zu einem Satz gehört erst die Grammatik des Spiels: 'Ziegel!' ist "
+        "Anruf, Befehl, Antwort — je nach Zug im Spiel.",
+    ],
 }
 
 
 def resolve_token_ids_exact(tokenizer, target: str,
                             candidates: Tuple[str, ...]) -> List[int]:
-    """MI-2-P4-Konvention (Oberflächen-Exakt, User-Schnitt): eine
-    Kandidaten-Oberfläche zählt nur bei len(encoded) == 1 UND
-    decode([id]) == target EXAKT (OHNE lstrip). Mehr-Token-Kandidaten
-    wie " 4" ([236743(" "), 236812("4")]) werden abgewiesen, BEVOR ein
-    Vertreter entstehen kann; " " und " Paris" sind als exakte
-    Oberflächenformen auflösbar (236743, 9079)."""
+    """MI-2-P4-Auflösung (Oberflächen-Exakt, gebucht 2026-10-26):
+    len(encoded) == 1 UND decode([id]) == target EXAKT (kein lstrip);
+    Mehr-Token-Kandidaten abgewiesen, bevor ein Vertreter entsteht."""
     ids: List[int] = []
     for cand in candidates:
         encoded = tokenizer.encode(cand, add_special_tokens=False)
@@ -219,399 +258,470 @@ def resolve_token_ids_exact(tokenizer, target: str,
     return ids
 
 
-# -- CPU-PILOT (R2: PILOT promotet nie Verdicte) -------------------------------
+# -- CPU-Pilot (PILOT-Labels, promovieren keine Verdicts — R2) ---------------
 def pilot_rows() -> List[Tuple[str, str, str]]:
-    out: List[Tuple[str, str, str]] = []
+    import torch as _torch
 
-    # pilot_telescope: synthetische dp-Felder teleskopieren exakt auf die
-    # Endpunktdifferenz
-    dp = [(0.01, 0.02), (0.03, -0.01), (0.05, 0.04)]
-    telescoped = sum(a + b for a, b in dp)
-    endpoints = (0.01 + 0.02 + 0.03 - 0.01 + 0.05 + 0.04)  # p_final - p_emb
-    ok = abs(telescoped - endpoints) < 1e-12
-    out.append(("pilot_telescope", "PILOT" if ok else "BROKEN",
-                f"teleskop={telescoped:.6f} endpunkte={endpoints:.6f}"))
+    rows: List[Tuple[str, str, str]] = []
 
-    # pilot_resolve_exact: Vertreter-Abweisung + Space-Form + Paris-Spiegel
-    # am Stub-Tokenizer (exakte Konvention, P4)
-    class _StubTok:
-        # encode(" 4") -> [1(" "), 2("4")], encode("4") -> [2("4")],
-        # encode(" ") -> [5(" ")], " Paris" -> [3], "Paris" -> [6],
-        # encode("") -> [] (realer Tokenizer: keine Tokens)
-        def encode(self, text: str, add_special_tokens: bool = False):
-            return {" 4": [1, 2], "4": [2], " ": [5],
-                    " Paris": [3], "Paris": [6], "": []}.get(text, None)
+    # pilot_band_math: SET-Semantik des echten Helfers an Stub-Buffer.
+    buf = _torch.tensor([1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5])
+    apply_band_steer(buf, (1, 3), 50.0)
+    ok_band = _torch.equal(buf, _torch.tensor(
+        [-50.0, 50.0, -50.0, 50.0, -50.0, -50.0, -50.0, -50.0]))
 
-        def decode(self, seq, skip_special_tokens: bool = True):
-            return {1: " ", 2: "4", 3: " Paris", 5: " ",
-                    6: "Paris", 7: " "}[seq[0]]
+    # pilot_knockout_math: ADDITIVE Semantik des echten Helfers.
+    buf2 = _torch.tensor([1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5])
+    apply_expert_knockout(buf2, (0, 2), -50.0)
+    ok_knock = _torch.equal(buf2, _torch.tensor(
+        [-48.5, 2.5, -46.5, 4.5, 5.5, 6.5, 7.5, 8.5]))
 
-    stub = _StubTok()
-    ids_digit = resolve_token_ids_exact(stub, "4", (" 4", "4"))
-    ids_space = resolve_token_ids_exact(stub, " ", (" ", ""))
-    ids_paris = resolve_token_ids_exact(stub, " Paris", (" Paris", "Paris"))
-    ok = ids_digit == [2] and ids_space == [5] and ids_paris == [3]
-    out.append(("pilot_resolve_exact", "PILOT" if ok else "BROKEN",
-                f"digit={ids_digit} space={ids_space} "
-                f"paris={ids_paris} ('Paris' 6 abgewiesen)"))
+    # pilot_restore_math: C3-Runde (clone -> mutate -> copy_ -> equal).
+    orig = buf.clone()
+    apply_expert_knockout(buf, (5,), -50.0)
+    buf.copy_(orig)
+    ok_restore = _torch.equal(buf, orig)
+    ok_restore = ok_restore and not _torch.equal(buf, orig * 0 + 1.0)
 
-    # pilot_contract: Tail < 0.5 x Pre an synthetischem gap-Verlauf
-    gaps = [0.9] * 6 + [0.2] * 8
-    pre = gaps[:6]
-    tail = gaps[6:]
-    ok = (sum(tail) / len(tail)) < CONTRACT_RATIO * (sum(pre) / len(pre))
-    out.append(("pilot_contract", "PILOT" if ok else "BROKEN",
-                f"tail={sum(tail) / len(tail):.3f} pre={sum(pre) / len(pre):.3f}"))
+    # pilot_tv_math: canon_tv-Identität/Differenz.
+    a = _torch.softmax(_torch.zeros(8), dim=0)
+    b = _torch.softmax(_torch.tensor([3.0, 0, 0, 0, 0, 0, 0, 0]), dim=0)
+    ok_tv = canon_tv(a, a) == 0.0 and canon_tv(a, b) > 0.0
 
-    # pilot_mla_select: globale Schicht-Selektion {5,11,17,23} aus % 6
-    glo = tuple(i for i in range(26) if i % 6 == 5)
-    loc_n = sum(1 for i in range(26) if i % 6 != 5)
-    ok = glo == GLOBAL_LAYERS and loc_n == 22
-    out.append(("pilot_mla_select", "PILOT" if ok else "BROKEN",
-                f"global={glo} lokal_n={loc_n}"))
-    return out
+    # pilot_select_math: Bänder + Experten-Sets konsistent.
+    ok_select = (
+        len(BAND_EDGE) == 6 and len(BAND_CORE) == 20
+        and BAND_GLOBAL == (5, 11, 17, 23)
+        and all(0 <= e < 8 for e in EX_WITT)
+        and all(0 <= e < 8 for e in KO_PROSE + KO_CODE)
+        and set(KO_ANOM_A + KO_ANOM_B) <= set(range(8)))
+
+    rows.append(("pilot_band_math", "PILOT" if ok_band else "BROKEN",
+                 f"band-template: {buf.tolist() if not ok_band else 'ok'}"))
+    rows.append(("pilot_knockout_math", "PILOT" if ok_knock else "BROKEN",
+                 "additiv: ok" if ok_knock else f"knockout: {buf2.tolist()}"))
+    rows.append(("pilot_restore_math", "PILOT" if ok_restore else "BROKEN",
+                 f"C3-Runde: {'bitidentisch' if ok_restore else 'Mismatch'}"))
+    rows.append(("pilot_tv_math", "PILOT" if ok_tv else "BROKEN",
+                 f"tv(a,a)=0, tv(a,b)>0: {ok_tv}"))
+    rows.append(("pilot_select_math", "PILOT" if ok_select else "BROKEN",
+                 "Baender+Sets registriert ok" if ok_select else "Fehler"))
+    return rows
 
 
-# -- Registrierte Auswertungen (P3-Roh -> Verdikt) ------------------------------
-def eval_telescope(results: Dict[str, Dict[str, Any]]
-                   ) -> Tuple[str, str, str, Dict[str, Any]]:
-    notes, fields = [], {}
-    ok = True
-    for name, res in results.items():
-        dev = abs(res["telescope_target"] - res["endpoints_target"])
-        anchor = res["anchor_tv"]
-        ok &= dev <= TELESCOPE_TOL and anchor <= LENS_ANCHOR_TOL
-        fields[name] = {"telescope_dev": dev, "anchor_tv": anchor}
-        notes.append(f"{name}: dev={dev:.3e} anchor={anchor:.3e}")
-    status = "PASS" if ok else "FAIL"
-    return "mi2_sublayer_telescope", status, "; ".join(notes), fields
-
-
-def eval_purity_det(probe: MechInterpProbe, fp_before, results,
-                    tokenizer) -> Tuple[str, str, str, Dict[str, Any]]:
+# -- GPU-Lane -----------------------------------------------------------------
+def eval_purity(probe: MechInterpProbe, oracle: Any, fp_before: Dict[str, Any],
+                p_before: torch.Tensor, results: Dict[str, Any]) -> None:
+    """V1 — Serien-Interventionen, NACH der Serie fingerprint + Kontroll-TV."""
+    # Serien-Bedingungen (P2 registriert): jede in eigenem Block.
+    with probe.steer_band(EX_WITT, BAND_EDGE):
+        pass
+    with probe.steer_band(EX_WITT, BAND_CORE):
+        pass
+    with probe.steer_band(EX_WITT, BAND_GLOBAL):
+        pass
+    with probe.knockout_experts(KO_PROSE, BAND_CORE):
+        pass
+    with probe.knockout_experts(KO_CODE, BAND_CORE):
+        pass
     fp_after = probe.fingerprint()
-    fp_ok = probe.fingerprint_equal(fp_before, fp_after)
-    det_notes, fields = [], {}
-    det_ok = True
-    for name, text, target in LENS_PROBES:
-        ids = resolve_token_ids_exact(tokenizer, target, CAND_MAP[name])
-        if len(ids) != 1:
-            continue
-        rerun = probe.sublayer_logits(text, {"id": ids[0], "str": target})
-        rows_a, rows_b = results[name]["rows"], rerun["rows"]
-        same = len(rows_a) == len(rows_b) and all(
-            torch.equal(torch.tensor(a[k]), torch.tensor(b[k]))
-            for a, b in zip(rows_a, rows_b)
-            for k in ("dp_attn", "dp_moe", "gap_out_tv", "tv_in_mid",
-                      "top1_out_id"))
-        det_ok &= same
-        fields[name] = same
-        det_notes.append(f"{name}:{'ok' if same else 'BRUCH'}")
-    ok = fp_ok and det_ok
-    return ("mi2_purity_det", "PASS" if ok else "FAIL",
-            f"fingerprint={fp_ok} " + " ".join(det_notes),
-            {"fingerprint": fp_ok, **fields})
+    equal = probe.fingerprint_equal(fp_before, fp_after)
+    p_after = probe.last_probs(GENERIC_PROMPT)
+    tv = canon_tv(p_before, p_after)
+    results["purity"] = {
+        "fingerprint_equal": bool(equal),
+        "control_tv": tv,
+        "tv_zero": bool(tv == 0.0),
+        "series": ["steer_band(EX_WITT, EDGE)", "steer_band(EX_WITT, CORE)",
+                   "steer_band(EX_WITT, GLOBAL)",
+                   "knockout(KO_PROSE, CORE)", "knockout(KO_CODE, CORE)"],
+    }
 
 
-def eval_attribution(results: Dict[str, Dict[str, Any]]
-                     ) -> Tuple[str, str, str, Dict[str, Any]]:
-    notes, fields = [], {}
-    all_unique = True
-    for name, res in results.items():
-        rows = res["rows"]
-        attn_row = max(rows, key=lambda r: r["dp_attn"])
-        moe_row = max(rows, key=lambda r: r["dp_moe"])
-        if attn_row["dp_attn"] > moe_row["dp_moe"]:
-            driver = "attn"
-            lead, challenger = attn_row["dp_attn"], moe_row["dp_moe"]
-        else:
-            driver = "moe"
-            lead, challenger = moe_row["dp_moe"], attn_row["dp_attn"]
-        unique = (lead - challenger) > DRIVER_MARGIN
-        all_unique &= unique
-        fields[name] = {
-            "driver": driver,
-            "peak_layer": (attn_row["layer"] if driver == "attn"
-                           else moe_row["layer"]),
-            "driver_is_global": (attn_row["is_global"] if driver == "attn"
-                                 else moe_row["is_global"]),
-            "lead": lead, "challenger": challenger, "unique": unique,
-            "max_dp_attn": {"layer": attn_row["layer"],
-                            "value": attn_row["dp_attn"],
-                            "is_global": attn_row["is_global"]},
-            "max_dp_moe": {"layer": moe_row["layer"],
-                           "value": moe_row["dp_moe"],
-                           "is_global": moe_row["is_global"]},
-        }
-        notes.append(f"{name}: {driver}@l{fields[name]['peak_layer']} "
-                     f"{lead:.4f} vs {challenger:.4f} unique={unique}")
-    # Gleichständige Attribution -> OFFEN (Verteilung, keine Kürzung)
-    status = "PASS" if all_unique else "OFFEN"
-    suffix = ("" if all_unique else
-              " | Gleichstand der Kanäle — kein eindeutiger Treiber "
-              "(OFFEN, keine Kürzung)")
-    return ("mi2_attn_vs_moe_attribution", status,
-            "; ".join(notes) + suffix, fields)
+def eval_sufficiency(probe: MechInterpProbe, oracle: Any,
+                     results: Dict[str, Any]) -> None:
+    """V2 — SP3-Stummkanal am GENERIC_PROMPT; Steerings als dict-Direkt-
+    steuerung (SET, {1,3}) über die Bänder (oracle.steer dict-Arm-Canon)."""
+    m_raw = probe.digit_mass(GENERIC_PROMPT)
+    with oracle.steer({"experts": list(EX_WITT), "steer": STEER_AMPLITUDE}):
+        m_full = probe.digit_mass(GENERIC_PROMPT)
+    with probe.steer_band(EX_WITT, BAND_CORE):
+        m_core = probe.digit_mass(GENERIC_PROMPT)
+    with probe.steer_band(EX_WITT, BAND_EDGE):
+        m_edge = probe.digit_mass(GENERIC_PROMPT)
+    dm_full = m_full["M_digit"] - m_raw["M_digit"]
+    dm_core = m_core["M_digit"] - m_raw["M_digit"]
+    dm_edge = m_edge["M_digit"] - m_raw["M_digit"]
+    results["sufficiency"] = {
+        "m_raw": m_raw, "m_full": m_full, "m_core": m_core, "m_edge": m_edge,
+        "dm_full": dm_full, "dm_core": dm_core, "dm_edge": dm_edge,
+        "premise_raw_dumb": bool(m_raw["unknown"]),
+        "full_opens": bool(dm_full > 0.0),
+        "core_ratio": (dm_core / dm_full) if dm_full > 0.0 else None,
+        "core_sufficient": bool(dm_full > 0.0
+                                and dm_core >= SUFF_RATIO_CORE * dm_full),
+        "edge_smaller": bool(dm_core > dm_edge),
+    }
 
 
-def eval_contraction(results: Dict[str, Dict[str, Any]]
-                     ) -> Tuple[str, str, str, Dict[str, Any]]:
-    notes, fields = [], {}
-    overall: Optional[bool] = True
-    for name, res in results.items():
-        rows = res["rows"]
-        final_top1 = rows[-1]["top1_out_id"]
-        l_star = None
-        for start in range(len(rows)):
-            span = len(rows) - start
-            if span < CRYSTAL_MIN_TAIL:
-                break
-            if all(rows[i]["top1_out_id"] == final_top1
-                   for i in range(start, len(rows))):
-                l_star = rows[start]["layer"]
-                break
-        if l_star is None:
-            overall = None
-            fields[name] = {"l_star": None, "note": "kein stabiler Tail"}
-            continue
-        tail = [r["gap_out_tv"] for r in rows if r["layer"] >= l_star]
-        pre = [r["gap_out_tv"] for r in rows if r["layer"] < l_star]
-        tail_mean = sum(tail) / len(tail)
-        pre_mean = sum(pre) / len(pre)
-        ok = tail_mean < CONTRACT_RATIO * pre_mean
-        fields[name] = {"l_star": l_star, "tail_mean": tail_mean,
-                        "pre_mean": pre_mean, "ok": ok}
-        notes.append(f"{name}: l*={l_star} tail={tail_mean:.4f} "
-                     f"pre={pre_mean:.4f} ok={ok}")
-    if overall is None:
-        status = "OFFEN"
-    elif overall:
-        status = "PASS"
-    else:
-        status = "FAIL"
-    return ("mi2_goedel_gap_contraction", status,
-            "; ".join(notes) if notes else "kein stabiler Tail", fields)
+def eval_domain_knockout(probe: MechInterpProbe, results: Dict[str, Any]) -> None:
+    """V3 — Double Dissociation im Core-Band; TVs per Text (EINHEIT T1/R3)."""
+    texts = DOMAINS["prose"] + DOMAINS["code"] + DOMAINS["math_logic"]
+    labels = (["prose"] * 3) + (["code"] * 3) + (["math_logic"] * 3)
+    raw_p = [probe.last_probs(t) for t in texts]
+    tv_prose_ko: Dict[str, List[float]] = {"ko_prose": [], "ko_code": [],
+                                           "ko_anom_a": [], "ko_anom_b": []}
+    with probe.knockout_experts(KO_PROSE, BAND_CORE) as _:
+        ko_p1 = [probe.last_probs(t) for t in texts]
+    with probe.knockout_experts(KO_CODE, BAND_CORE):
+        ko_p2 = [probe.last_probs(t) for t in texts]
+    with probe.knockout_experts(KO_ANOM_A, (11,)):
+        ko_p3 = [probe.last_probs(t) for t in texts]
+    with probe.knockout_experts(KO_ANOM_B, (11,)):
+        ko_p4 = [probe.last_probs(t) for t in texts]
+    rows: List[Dict[str, Any]] = []
+    for i, (t, label, p0, p1, p2, p3, p4) in enumerate(
+            zip(texts, labels, raw_p, ko_p1, ko_p2, ko_p3, ko_p4)):
+        tv1, tv2, tv3, tv4 = (canon_tv(p0, p1), canon_tv(p0, p2),
+                              canon_tv(p0, p3), canon_tv(p0, p4))
+        rows.append({"text": t, "domain": label, "tv_ko_prose": tv1,
+                     "tv_ko_code": tv2, "tv_ko_anom_a": tv3,
+                     "tv_ko_anom_b": tv4})
+        print(f"  [row {i}] {label}: ko_prose={tv1:.4f} ko_code={tv2:.4f}"
+              f" anomal_k47={tv3:.4f} kontrolle_k12={tv4:.4f}")
+        if label == "prose":
+            tv_prose_ko["ko_prose"].append(tv1)
+            tv_prose_ko["ko_code"].append(tv2)
+            tv_prose_ko["ko_anom_a"].append(tv3)
+            tv_prose_ko["ko_anom_b"].append(tv4)
+
+    def _mean(xs: List[float]) -> float:
+        return float(sum(xs) / len(xs)) if xs else 0.0
+
+    prose_kopro = _mean(tv_prose_ko["ko_prose"])
+    prose_kocode = _mean(tv_prose_ko["ko_code"])
+    code_kopro = _mean([r["tv_ko_prose"] for r in rows if r["domain"] == "code"])
+    code_kocode = _mean([r["tv_ko_code"] for r in rows if r["domain"] == "code"])
+    results["domain_knockout"] = {
+        "rows_9": rows,   # 9 Rows (3x prose/code/math_logic)
+        "prose_mean_ko_prose": prose_kopro,
+        "prose_mean_ko_code": prose_kocode,
+        "code_mean_ko_prose": code_kopro,
+        "code_mean_ko_code": code_kocode,
+        "dissociation_prose": bool(prose_kopro > prose_kocode),
+        "dissociation_code": bool(code_kocode > code_kopro),
+    }
 
 
-def eval_mla(results: Dict[str, Dict[str, Any]]
-             ) -> Tuple[str, str, str, Dict[str, Any]]:
-    # Band (P2): paris + arithmetic_digit; arithmetic_space Datums-Zusatz
-    band_names = ("paris", "arithmetic_digit")
-    notes, fields = [], {}
-    wins = 0
-    for name, res in results.items():
-        rows = res["rows"]
-        gm = sum(r["tv_in_mid"] for r in rows
-                 if r["layer"] in GLOBAL_LAYERS) / len(GLOBAL_LAYERS)
-        lm = sum(r["tv_in_mid"] for r in rows
-                 if r["layer"] not in GLOBAL_LAYERS) / (len(rows) - len(GLOBAL_LAYERS))
-        ok = gm > lm
-        in_band = name in band_names
-        if in_band:
-            wins += ok
-        fields[name] = {"global_mean_tv": gm, "local_mean_tv": lm,
-                        "ok": ok, "in_band": in_band}
-        notes.append(f"{name}: global={gm:.4f} local={lm:.4f} ok={ok}"
-                     + ("" if in_band else " [Datums-Zusatz]"))
-    status = ("PASS" if wins == 2 else
-              "OFFEN" if wins == 1 else "FAIL")
-    return ("mi2_mla_vs_mqa_profile", status, "; ".join(notes), fields)
+def eval_paris_resilience(probe: MechInterpProbe, oracle: Any,
+                          paris_id: int, results: Dict[str, Any]) -> None:
+    """V4 — top1 == 9079 unter 5 registrierten Bedingungen."""
+    conditions: Dict[str, int] = {}
+    with probe.knockout_experts(KO_PROSE, BAND_CORE):
+        conditions["ko_prose@core"] = int(probe.last_probs(PARIS_TEXT).argmax().item())
+    with probe.knockout_experts(KO_CODE, BAND_CORE):
+        conditions["ko_code@core"] = int(probe.last_probs(PARIS_TEXT).argmax().item())
+    for preset in PRESETS:
+        with oracle.steer(preset):
+            conditions[f"preset_{preset}"] = int(
+                probe.last_probs(PARIS_TEXT).argmax().item())
+    stable = all(v == paris_id for v in conditions.values())
+    results["paris_resilience"] = {
+        "paris_id": paris_id,
+        "conditions_top1": conditions,
+        "stable": bool(stable),
+    }
 
 
-# -- GPU-Lane ------------------------------------------------------------------
-def run_gpu(checkpoint_base: str, checkpoint_machines: str
-            ) -> Tuple[List[Tuple[str, str, str]], Dict[str, Any]]:
+def eval_l17_localization(probe: MechInterpProbe, paris_id: int,
+                          results: Dict[str, Any]) -> None:
+    """V5 — (A) Sublayer-Datum auf 9077 (P4-Referenz); (B) Einzel-Experten-
+    KOs in ℓ17 vs ℓ10 (16 Forwards, per-Experte persistiert)."""
+    sub = probe.sublayer_logits(PARIS_TEXT, {"id": paris_id, "str": " Paris"})
+    r17 = sub["rows"][17]
+    da, dm = r17["dp_attn"], r17["dp_moe"]
+    share = da / (da + dm) if (da + dm) != 0.0 else 0.0
+
+    def _sum_abs_dp(layer: int) -> Dict[str, Any]:
+        deltas: Dict[str, float] = {}
+        raw = probe.last_probs(PARIS_TEXT)[paris_id].item()
+        for e in range(8):
+            with probe.knockout_experts((e,), (layer,)):
+                ko = probe.last_probs(PARIS_TEXT)[paris_id].item()
+            deltas[str(e)] = abs(ko - raw)
+        return {"total": float(sum(deltas.values())), "per_expert": deltas,
+                "p_raw": raw}
+
+    s17 = _sum_abs_dp(17)
+    s10 = _sum_abs_dp(10)
+    results["l17_localization"] = {
+        "sublayer_17": {"dp_attn": da, "dp_moe": dm, "attn_share": share,
+                        "anchor_tv": sub["anchor_tv"],
+                        "telescope_broken": sub["telescope_broken"]},
+        "ko_total_17": s17, "ko_total_10": s10,
+        "l17_lion": bool(share > 0.5),
+        "l17_stronger": bool(s17["total"] > s10["total"]),
+    }
+
+
+def eval_l11_anomaly(probe: MechInterpProbe, results: Dict[str, Any]) -> None:
+    """V6 — KO {4,7} vs {1,2} in GENAU ℓ11 auf den 3 prose-Texten."""
+    texts = DOMAINS["prose"]
+    raw_p = [probe.last_probs(t) for t in texts]
+    with probe.knockout_experts(KO_ANOM_A, (11,)):
+        ko_a = [probe.last_probs(t) for t in texts]
+    with probe.knockout_experts(KO_ANOM_B, (11,)):
+        ko_b = [probe.last_probs(t) for t in texts]
+    tv_a = [canon_tv(p, q) for p, q in zip(raw_p, ko_a)]
+    tv_b = [canon_tv(p, q) for p, q in zip(raw_p, ko_b)]
+    mean_a = float(sum(tv_a) / len(tv_a))
+    mean_b = float(sum(tv_b) / len(tv_b))
+    results["l11_anomaly"] = {
+        "tv_k47": tv_a, "tv_k12": tv_b,
+        "mean_k47": mean_a, "mean_k12": mean_b,
+        "outlier_causal": bool(mean_a > mean_b),
+    }
+
+
+def run_gpu(checkpoint_base: str, checkpoint_machines: str,
+            results: Dict[str, Any], findings: List[Tuple[str, str, str]]) -> None:
     from machines.verify_machines import _load_machines_model
 
-    model, tokenizer = _load_machines_model(checkpoint_base,
-                                            checkpoint_machines)
-    device = next(model.parameters()).device
-    probe = MechInterpProbe(model, tokenizer, device, max_length=MAX_LENGTH)
+    model, tokenizer = _load_machines_model(checkpoint_base, checkpoint_machines)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.use_deterministic_algorithms(True)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    probe = MechInterpProbe(model, tokenizer, device=device,
+                            max_length=MAX_LENGTH)
+    from machines.machine_base import ArgonOracle
+    oracle = ArgonOracle(model, tokenizer, device=device)
 
-    findings: List[Tuple[str, str, str]] = []
-    data: Dict[str, Any] = {}
+    # Auflösung (Oberflächen-Exakt, keine Vertreter):
+    paris_ids = resolve_token_ids_exact(tokenizer, " Paris", (" Paris",))
+    results["resolve"] = {"paris": paris_ids}
+    if len(paris_ids) != 1:
+        findings.append((
+            "mi3_resolve_target",
+            "OFFEN",
+            f"Paris-Auflösung nicht eindeutig ({paris_ids}) — OFFEN ist "
+            "kein PASS; sonstiges gemessen und persistent (keine Band-"
+            "Erfindung)."))
+        paris_id = paris_ids[0] if paris_ids else -1
+    else:
+        paris_id = paris_ids[0]
 
     fp_before = probe.fingerprint()
+    p_before = probe.last_probs(GENERIC_PROMPT)
 
-    # -- Verdikt 1: strikte Ein-Token-Auflösung (echter Tokenizer) ----------
-    # Registrierte Falsifikator-Familie (P4-exakt): FAIL nur, wenn eine
-    # aufgelöste ID NICHT exakt zu target decodiert. Leere ODER
-    # mehrdeutige Auflösung -> OFFEN je Probe (registrierte Allokation;
-    # kein Falsifikator, keine Band-Erfindung).
-    strict_notes, any_falsifier = [], False
-    n_unique, n_offen_lane = 0, 0
-    resolved: Dict[str, int] = {}
-    resolve_raw: Dict[str, List[int]] = {}
-    for name, _text, target in LENS_PROBES:
-        ids = resolve_token_ids_exact(tokenizer, target, CAND_MAP[name])
-        resolve_raw[name] = ids
-        if len(ids) == 0:
-            n_offen_lane += 1
-            strict_notes.append(f"{name}: leer (OFFEN je Probe — Konvention)")
-            continue
-        if len(ids) > 1:
-            n_offen_lane += 1
-            strict_notes.append(
-                f"{name}: mehrdeutig ids={ids} (alle echt — OFFEN je Probe)")
-            continue
-        tid = ids[0]
-        decoded = tokenizer.decode([tid], skip_special_tokens=True)
-        if decoded != target:
-            any_falsifier = True
-            strict_notes.append(f"{name}: BAD id={tid} decoded='{decoded}'")
-        else:
-            n_unique += 1
-            resolved[name] = tid
-            strict_notes.append(f"{name}: id={tid} ('{decoded}')")
-    data["resolve"] = resolved
-    data["resolve_raw"] = resolve_raw
-    v1_status = ("FAIL" if any_falsifier else
-                 "PASS" if n_unique == len(LENS_PROBES) else "OFFEN")
-    findings.append(("mi2_single_token_strict", v1_status,
-                     "; ".join(strict_notes)))
+    for name, fn in (
+            ("mi3_intervention_purity",
+             lambda: eval_purity(probe, oracle, fp_before, p_before, results)),
+            ("mi3_core_vs_edge_sufficiency",
+             lambda: eval_sufficiency(probe, oracle, results)),
+            ("mi3_domain_knockout_specificity",
+             lambda: eval_domain_knockout(probe, results)),
+            ("mi3_paris_circuit_resilience",
+             lambda: eval_paris_resilience(probe, oracle, paris_id, results)),
+            ("mi3_layer17_paris_localization",
+             lambda: eval_l17_localization(probe, paris_id, results)),
+            ("mi3_prose_l11_anomaly_probe",
+             lambda: eval_l11_anomaly(probe, results)),
+    ):
+        try:
+            fn()
+        except Exception as exc:      # noqa: BLE001 — BROKEN-Buchung
+            results.setdefault("broken", {})[name] = f"{type(exc).__name__}: {exc}"
+            findings.append((
+                name, "BROKEN",
+                f"GPU-Lane brach: {type(exc).__name__}: {exc} "
+                "(kein stiller Fallback; sonstiges gemessen bleibt)."))
 
-    # -- 3 Proben über die Sonde --------------------------------------------
-    results: Dict[str, Dict[str, Any]] = {}
-    missing: List[str] = []
-    for name, text, target in LENS_PROBES:
-        if name not in resolved:
-            missing.append(name)
-            continue
-        results[name] = probe.sublayer_logits(
-            text, {"id": resolved[name], "str": target})
-    data["probes"] = results
-    for name in missing:
-        findings.append((name, "OFFEN",
-                         "target nicht eindeutig auflösbar — keine "
-                         "Band-Erfindung."))
 
-    # -- Verdikt 2: Teleskop --------------------------------------------------
-    if results:
-        f2 = eval_telescope(results)
-        findings.append(f2[:3])
-        data["telescope"] = f2[3]
-    else:
-        findings.append(("mi2_sublayer_telescope", "OFFEN", "keine Probe"))
+# -- classification + main ----------------------------------------------------
+# Registrierter Verdict-Name -> Ergebnis-Schluessel der evals
+# (KORREKTUR-LOG Lauf 1: Klassifikation pruefte sonst Mitgliedschaft
+# unter Lang-Namen, waehrend die evals unter Kurz-Schluesseln buchen).
+RESULT_KEYS = {
+    "mi3_intervention_purity": "purity",
+    "mi3_core_vs_edge_sufficiency": "sufficiency",
+    "mi3_domain_knockout_specificity": "domain_knockout",
+    "mi3_paris_circuit_resilience": "paris_resilience",
+    "mi3_layer17_paris_localization": "l17_localization",
+    "mi3_prose_l11_anomaly_probe": "l11_anomaly",
+}
 
-    # -- Verdikt 4: Attribution ----------------------------------------------
-    if results:
-        f4 = eval_attribution(results)
-        findings.append(f4[:3])
-        data["attribution"] = f4[3]
-    else:
-        findings.append(("mi2_attn_vs_moe_attribution", "OFFEN",
-                         "keine Probe"))
 
-    # -- Verdikt 5: Tail-Kontraktion -----------------------------------------
-    if results:
-        f5 = eval_contraction(results)
-        findings.append(f5[:3])
-        data["contraction"] = f5[3]
-    else:
-        findings.append(("mi2_goedel_gap_contraction", "OFFEN", "keine Probe"))
+def classify(name: str, results: Dict[str, Any]) -> Tuple[str, str]:
+    """P4-Einstufung je registrierten Bänder (kein Re-Decide, kein
+    Band-Kompromiss)."""
+    if name == "mi3_intervention_purity":
+        p = results["purity"]
+        return ("PASS", f"fingerprint={p['fingerprint_equal']} "
+                        f"control_tv={p['control_tv']!r}") if (
+            p["fingerprint_equal"] and p["tv_zero"]) else (
+            "FAIL", f"fingerprint={p['fingerprint_equal']} "
+                        f"control_tv={p['control_tv']!r}")
 
-    # -- Verdikt 6: MLA-vs-MQA -------------------------------------------------
-    if results:
-        f6 = eval_mla(results)
-        findings.append(f6[:3])
-        data["mla"] = f6[3]
-    else:
-        findings.append(("mi2_mla_vs_mqa_profile", "OFFEN", "keine Probe"))
+    if name == "mi3_core_vs_edge_sufficiency":
+        p = results["sufficiency"]
+        if p["premise_raw_dumb"] is False:
+            return ("OFFEN",
+                    f"Premise nicht repliziert: M_raw={p['m_raw']['M_digit']:.4f} "
+                    f"(≥ tau={M_DIGIT_TAU}) — volle Daten persistent.")
+        if not p["full_opens"]:
+            return ("OFFEN",
+                    f"ΔM_full={p['dm_full']:.4f} ≤ 0 — Steering öffnet den "
+                    "Digit-Kanal hier nicht (keine Band-Erfindung); Daten "
+                    "persistent.")
+        if p["core_sufficient"] and p["edge_smaller"]:
+            return ("PASS",
+                    f"ΔM_full={p['dm_full']:.4f} core_ratio="
+                    f"{p['core_ratio']:.3f} edge={p['dm_edge']:.4f}")
+        return ("FAIL",
+                f"ΔM_full={p['dm_full']:.4f} core_ratio="
+                f"{p['core_ratio']:.3f} core_sufficient="
+                f"{p['core_sufficient']} edge_smaller={p['edge_smaller']}")
 
-    # -- Verdikt 3: Purity/Det (Doubletten NACH allen anderen Lanes) ----------
-    if results:
-        f3 = eval_purity_det(probe, fp_before, results, tokenizer)
-        findings.append(f3[:3])
-        data["purity_det"] = f3[3]
-    else:
-        findings.append(("mi2_purity_det", "OFFEN", "keine Probe"))
+    if name == "mi3_domain_knockout_specificity":
+        p = results["domain_knockout"]
+        ok = p["dissociation_prose"] and p["dissociation_code"]
+        note = (f"prose: ko_prose={p['prose_mean_ko_prose']:.4f} > "
+                f"ko_code={p['prose_mean_ko_code']:.4f}; "
+                f"code: ko_code={p['code_mean_ko_code']:.4f} > "
+                f"ko_prose={p['code_mean_ko_prose']:.4f}")
+        return ("PASS", note) if ok else ("FAIL", note)
 
-    return findings, data
+    if name == "mi3_paris_circuit_resilience":
+        p = results["paris_resilience"]
+        note = ("top1-Bedingungen: "
+                + ", ".join(f"{k}={v}" for k, v in p["conditions_top1"].items())
+                + f" (paris_id={p['paris_id']})")
+        return ("PASS", note) if p["stable"] else ("FAIL", note)
+
+    if name == "mi3_layer17_paris_localization":
+        p = results["l17_localization"]
+        note = (f"attn_share(17)={p['sublayer_17']['attn_share']:.3f} "
+                f"Σ|Δp|(17)={p['ko_total_17']['total']:.4f} vs "
+                f"Σ|Δp|(10)={p['ko_total_10']['total']:.4f}")
+        if p["l17_lion"] and p["l17_stronger"]:
+            return ("PASS", note)
+        return ("FAIL", note)
+
+    if name == "mi3_prose_l11_anomaly_probe":
+        p = results["l11_anomaly"]
+        note = (f"Mittel ko{{4,7}}(ℓ11)={p['mean_k47']:.4f} vs "
+                f"ko{{1,2}}(ℓ11)={p['mean_k12']:.4f}")
+        return ("PASS", note) if p["outlier_causal"] else ("FAIL", note)
+
+    return ("OFFEN", "unregistriertes Verdict — kein stiller Fallback.")
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="MI-2: Sublayer-Röntgengerät (Attention vs MoE)")
+        description="MI-3: Kausale Interventionen (steer_band + knockout)")
     ap.add_argument("--gpu", action="store_true")
     ap.add_argument("--checkpoint_base", default="./argon_1b")
     ap.add_argument("--checkpoint_machines", default="./argon_1b_machines")
-    ap.add_argument("--json", default=JSON_PATH)
+    ap.add_argument("--json", default=None,
+                    help="Ergebnis-Pfad; Default: GPU->MI-3-Datei, "
+                         "CPU-Lane schreibt OHNE --json nichts "
+                         "(P3-Schutz, MI-2-P4-Muster)")
     args = ap.parse_args()
 
     t0 = time.time()
     findings: List[Tuple[str, str, str]] = list(pilot_rows())
 
     data: Dict[str, Any] = {"pilot": [
-        {"name": f[0], "status": f[1], "note": f[2]} for f in findings]}
+        {"name": n, "status": s, "note": note} for n, s, note in findings]}
 
     gpu_broken = False
     if args.gpu:
+        results: Dict[str, Any] = {}
         try:
-            gpu_findings, gpu_data = run_gpu(
-                args.checkpoint_base, args.checkpoint_machines)
-            findings.extend(gpu_findings)
-            data["gpu"] = gpu_data
-        except Exception as exc:  # noqa: BLE001 — registrierte OFFEN-Buchung
+            run_gpu(args.checkpoint_base, args.checkpoint_machines,
+                    results, findings)
+        except Exception as exc:      # noqa: BLE001 — BROKEN-Buchung
             gpu_broken = True
-            findings.append(("gpu_broken", "BROKEN",
-                             f"{type(exc).__name__}: {exc}"))
+            findings.append((
+                "gpu_broken", "BROKEN",
+                f"GPU-Lane brach vor der Messung: {type(exc).__name__}: "
+                f"{exc} (kein stiller Fallback)."))
+        else:
+            data["gpu"] = results
+
+    verdicts = [f for f in findings if not f[0].startswith("pilot_")]
+    classified: List[Tuple[str, str, str]] = []
+    registered = ("mi3_intervention_purity", "mi3_core_vs_edge_sufficiency",
+                  "mi3_domain_knockout_specificity",
+                  "mi3_paris_circuit_resilience",
+                  "mi3_layer17_paris_localization",
+                  "mi3_prose_l11_anomaly_probe")
+    if args.gpu and not gpu_broken:
+        for name in registered:
+            if name in {f[0] for f in findings if f[1] == "BROKEN"}:
+                note = next(f[2] for f in findings
+                            if f[0] == name and f[1] == "BROKEN")
+                classified.append((name, "BROKEN", note))
+            elif RESULT_KEYS[name] not in results:
+                classified.append((
+                    name, "OFFEN",
+                    "GPU-Lane lieferte kein Datum — OFFEN ist kein PASS"))
+            else:
+                classified.append((name, *classify(name, results)))
     else:
-        gpu_broken = True
+        for name in registered:
+            classified.append((
+                name, "OFFEN",
+                "GPU-Lane nicht gefahren oder Bruch gebucht (OFFEN ist "
+                "kein PASS)."))
+    findings.extend(classified)
 
-    registered = ("mi2_single_token_strict", "mi2_sublayer_telescope",
-                  "mi2_purity_det", "mi2_attn_vs_moe_attribution",
-                  "mi2_goedel_gap_contraction", "mi2_mla_vs_mqa_profile")
-    for name in registered:
-        if not any(f[0] == name for f in findings):
-            findings.append((name, "OFFEN",
-                             "GPU-Lane nicht gefahren oder Bruch gebucht "
-                             "(OFFEN ist kein PASS)."))
+    has_fail = any(s == "FAIL" for _, s, _ in classified)
+    all_pass = all(s == "PASS" for _, s, _ in classified)
 
-    for name, status, note in findings:
-        print(f"[{status:6s}] {name}: {note}")
-
-    verdicts = [f for f in findings
-                if not f[0].startswith(("pilot_", "gpu_broken"))]
-    all_pass = all(status == "PASS" for _, status, _ in verdicts)
-    has_fail = any(status == "FAIL" for _, status, _ in verdicts)
-    n_pass = sum(1 for f in verdicts if f[1] == "PASS")
-    n_open = sum(1 for f in verdicts if f[1] == "OFFEN")
-    n_fail = sum(1 for f in verdicts if f[1] == "FAIL")
-
-    elapsed = time.time() - t0
+    for n, s, note in findings:
+        print(f"[{s:6s}] {n}: {note}")
     print("-" * 88)
-    print(f"Verdikte: {n_pass} PASS | {n_open} OFFEN | {n_fail} FAIL  "
-          f"({elapsed:.1f} s)")
+    counts = [sum(1 for _, s, _ in classified if s == k) for k in
+              ("PASS", "OFFEN", "FAIL")]
+    print(f"Verdikte: {counts[0]} PASS | {counts[1]} OFFEN | {counts[2]} FAIL"
+          f"  ({time.time() - t0:.1f} s)")
     if has_fail:
-        print("ROT — mindestens ein Falsifikator beobachtet (P4: Einstufung, "
-              "nicht Re-Decide).")
+        print("ROT — Falsifikator ausgelöst; keine Kürzung, volle Daten "
+              "persistent.")
     elif all_pass and not gpu_broken:
-        print("GRÜN — alle 6 Verdikte PASS; die Halbschichten sind gemessen.")
+        print("GRÜN — alle 6 Verdikte PASS; die Kausalität ist gemessen.")
     else:
         print("GELB — offen (GPU-Lane nicht gefahren oder Bruch gebucht; "
               "OFFEN ist kein PASS).")
 
     payload = {
         "all_pass": bool(all_pass and not has_fail and not gpu_broken),
-        "open": [f[0] for f in verdicts if f[1] == "OFFEN"],
+        "open": [f[0] for f in classified if f[1] == "OFFEN"],
         "findings": [{"name": f[0], "status": f[1], "note": f[2]}
                      for f in findings],
         "data": data,
     }
-    with open(args.json, "w", encoding="utf-8") as handle:
-        json.dump(payload, handle, ensure_ascii=False, indent=2)
-    print(f"JSON: {args.json}")
+    json_path = args.json if args.json is not None else \
+        ("scratches/mi3_interventions.json" if args.gpu else None)
+    if json_path is not None:
+        with open(json_path, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, ensure_ascii=False, indent=2)
+        print(f"JSON: {json_path}")
+    else:
+        print("JSON: — (CPU-Lane schreibt ohne --json nichts)")
     if has_fail:
         return 1
     return 0 if (all_pass and not gpu_broken) else 2
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import sys as _sys
+    raise SystemExit(main())
 
 ==============================================================================
 ### FILE: machines/mech_interp.py
-### bytes: 17595   lines: 375
+### bytes: 25059   lines: 527
 ==============================================================================
 """
 machines/mech_interp.py
@@ -659,7 +769,8 @@ Fraction-Konvention (Summe 1.0 je Schicht); Prozent = x100.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+import contextlib
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
 
 import torch
 
@@ -953,6 +1064,125 @@ class MechInterpProbe:
         """Kleinsten stabilen Layer-Start lesen (Modulfunktion)."""
         return crystallization_start(rows)
 
+    # -- MI-3: Kausale Interventionen (EINHEIT C1–C3) ----------------------
+    def _buffers(self, layers: Optional[Sequence[int]]) -> List[int]:
+        sel = list(range(self.n_layers)) if layers is None \
+            else [int(l) for l in layers]
+        for l in sel:
+            if not (0 <= l < self.n_layers):
+                raise ValueError(
+                    f"Intervention: Schicht {l} außerhalb [0, {self.n_layers})")
+        return sorted(set(sel))
+
+    @contextlib.contextmanager
+    def steer_band(self, experts: Sequence[int],
+                   layers: Optional[Sequence[int]] = None,
+                   steer: float = 50.0) -> Iterator[Dict[str, Any]]:
+        """Hinreichendheits-Lesart (EINHEIT C1): expert_bias NUR in den
+        gegebenen Schichten auf das Template gesetzt (+steer für experts,
+        -steer für den Rest) — SET-Semantik nach machine_base.py:249-256
+        (dict-Arm), band-limitiert. Restaurierung exakt (C3)."""
+        experts = [int(e) for e in experts]
+        if not experts:
+            raise ValueError("steer_band: experts leer — kein Band-Steering.")
+        if not steer > 0:
+            raise ValueError("steer_band: steer muss > 0 sein (Amplitude).")
+        sel = self._buffers(layers)
+        layers_all = self.model.model.layers
+        original = [layers_all[l].moe.gate.expert_bias.data.clone()
+                    for l in sel]
+        try:
+            for l in sel:
+                apply_band_steer(layers_all[l].moe.gate.expert_bias.data,
+                                 experts, steer)
+            yield {"experts": experts, "layers": sel, "steer": float(steer),
+                   "mode": "set"}
+        finally:
+            with torch.no_grad():
+                for l, orig in zip(sel, original):
+                    layers_all[l].moe.gate.expert_bias.data.copy_(orig)
+            bad = [l for l, orig in zip(sel, original)
+                   if not torch.equal(
+                       layers_all[l].moe.gate.expert_bias.data, orig)]
+            if bad:
+                raise RuntimeError(
+                    f"steer_band: Restaurierung nicht bitidentisch in "
+                    f"Schichten {bad} — Gerät-Bruch, kein stiller Fallback "
+                    "(EINHEIT C3).")
+
+    @contextlib.contextmanager
+    def knockout_experts(self, experts: Sequence[int],
+                         layers: Optional[Sequence[int]] = None,
+                         penalty: float = -50.0) -> Iterator[Dict[str, Any]]:
+        """Notwendigkeits-Lesart (EINHEIT C1): die gegebenen Experten in den
+        gegebenen Schichten ADDITIV stummschalten (g[e] += penalty auf dem
+        GELERNTEN Original-Bias), die übrigen Experten tragen lernende
+        Bias weiter (MI-3-Audits). Restaurierung exakt (C3)."""
+        experts = [int(e) for e in experts]
+        if not experts:
+            raise ValueError("knockout_experts: experts leer.")
+        if penalty >= 0:
+            raise ValueError("knockout_experts: penalty muss < 0 sein "
+                             "(Stummschaltung).")
+        sel = self._buffers(layers)
+        layers_all = self.model.model.layers
+        original = [layers_all[l].moe.gate.expert_bias.data.clone()
+                    for l in sel]
+        try:
+            for l in sel:
+                apply_expert_knockout(
+                    layers_all[l].moe.gate.expert_bias.data, experts, penalty)
+            yield {"experts": experts, "layers": sel, "penalty": float(penalty),
+                   "mode": "additive"}
+        finally:
+            with torch.no_grad():
+                for l, orig in zip(sel, original):
+                    layers_all[l].moe.gate.expert_bias.data.copy_(orig)
+            bad = [l for l, orig in zip(sel, original)
+                   if not torch.equal(
+                       layers_all[l].moe.gate.expert_bias.data, orig)]
+            if bad:
+                raise RuntimeError(
+                    f"knockout_experts: Restaurierung nicht bitidentisch in "
+                    f"Schichten {bad} — Gerät-Bruch, kein stiller Fallback "
+                    "(EINHEIT C3).")
+
+    @torch.no_grad()
+    def digit_mass(self, text: str, tau: float = 0.01) -> Dict[str, Any]:
+        """M_digit = Σ_d P_full(id(d)) über die voll-Vokabular-Softmax
+        (SP3-Folge-Canon, machine_base.py:281-322). Resolution wie der
+        Canon: je Ziffer ein einziges Token mit decode.lstrip == str(d);
+        sonst ValueError (kein stiller Fallback). Meldung 'unknown' als
+        Feld, nicht als Rückgabe-Abkürzung (M_raw < tau -> unknown=True)."""
+        p = self.last_probs(text)
+        digit_ids: List[int] = []
+        for d in range(10):
+            ids = self.tokenizer.encode(str(d), add_special_tokens=False)
+            token_id = int(ids[0]) if len(ids) == 1 else -1
+            decoded = (self.tokenizer.decode([token_id], skip_special_tokens=True)
+                       if token_id >= 0 else "?")
+            if token_id < 0 or decoded.lstrip(" ") != str(d):
+                raise ValueError(
+                    f"digit_mass: Ziffer '{d}' löst nicht als ein-Ziffern-"
+                    f"Token auf (decode='{decoded}') — kein stiller Fallback.")
+            digit_ids.append(token_id)
+        probs = p.index_select(
+            0, torch.tensor(digit_ids, device=p.device))
+        mass = float(probs.sum().item())
+        top_d = int(torch.argmax(probs).item()) if mass > 0.0 else None
+        return {"M_digit": mass, "unknown": mass < tau,
+                "digit_probs": {str(d): float(probs[i].item())
+                                for i, d in enumerate(range(10))},
+                "top_digit": top_d}
+
+    @torch.no_grad()
+    def last_probs(self, text: str) -> torch.Tensor:
+        """Offizielle End-Verteilung P(logits[last], softmax) — der Kopf-Pfad
+        des Modells (Canon :615/:733), fp32-Softmax."""
+        ids = self._encode(text)
+        logits = self.model(ids).logits[0, -1].detach()
+        return torch.softmax(logits.float(), dim=-1)
+
 
 CRYSTAL_MIN_TAIL = 2  # Registrierung: stabiler TAIL >= 2 Schichten gilt als Fenster
 
@@ -978,6 +1208,38 @@ def crystallization_start(rows: Sequence[Dict[str, Any]],
 def _out_layer(o: Any) -> torch.Tensor:
     """Decoder-Layer-Output (h, layer_entropy, present_kv) -> Residual h."""
     return o[0] if isinstance(o, tuple) else o.detach()
+
+
+def apply_band_steer(buffer: torch.Tensor, experts: Sequence[int],
+                     steer: float) -> None:
+    """Band-Steering auf EINE Bias-Zeile: SET-Semantik nach dem registrierten
+    dict-Arm von machine_base.steer (fill_(-steer) + g[e]=+steer) — das
+    Template ueberschreibt den gelernten Bias fuer die Dauer des Blocks;
+    Restaurierung macht der ContextManager (C3, copy_-Muster)."""
+    with torch.no_grad():
+        buffer.fill_(-float(steer))
+        for e in experts:
+            e = int(e)
+            if not (0 <= e < buffer.numel()):
+                raise ValueError(
+                    f"apply_band_steer: Experte {e} außerhalb [0, {buffer.numel()})")
+            buffer[e] = float(steer)
+
+
+def apply_expert_knockout(buffer: torch.Tensor, experts: Sequence[int],
+                          penalty: float) -> None:
+    """Experten-Knockout auf EINE Bias-Zeile: ADDITIV auf den gelernten
+    Original-Bias (die Spezialisten werden stummgeschaltet, alle übrigen
+    tragen lernende Bias weiter — Notwendigkeits-Lesart des MI-3-Audits).
+    In-place; Restaurierung macht der ContextManager."""
+    with torch.no_grad():
+        for e in experts:
+            e = int(e)
+            if not (0 <= e < buffer.numel()):
+                raise ValueError(
+                    f"apply_expert_knockout: Experte {e} außerhalb "
+                    f"[0, {buffer.numel()})")
+            buffer[e] += float(penalty)
 
 
 def _store_layer(store: List[torch.Tensor], h: torch.Tensor,
@@ -5064,1380 +5326,373 @@ class ArgonMoELayer(nn.Module):
         return total_out, entropy_reshaped
 
 ==============================================================================
-### FILE: scratches/mi2_logit_lens_p4_gpu.log
-### bytes: 2206   lines: 16
+### FILE: scratches/mi3_interventions.log
+### bytes: 2702   lines: 26
 ==============================================================================
 [transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
 [transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[PILOT ] pilot_telescope: teleskop=0.140000 endpunkte=0.140000
-[PILOT ] pilot_resolve_exact: digit=[2] space=[5] paris=[3] ('Paris' 6 abgewiesen)
-[PILOT ] pilot_contract: tail=0.200 pre=0.900
-[PILOT ] pilot_mla_select: global=(5, 11, 17, 23) lokal_n=22
-[PASS  ] mi2_single_token_strict: paris: id=9079 (' Paris'); arithmetic_digit: id=236812 ('4'); arithmetic_space: id=236743 (' ')
-[PASS  ] mi2_sublayer_telescope: paris: dev=0.000e+00 anchor=2.717e-11; arithmetic_digit: dev=0.000e+00 anchor=2.842e-12; arithmetic_space: dev=0.000e+00 anchor=2.842e-12
-[PASS  ] mi2_attn_vs_moe_attribution: paris: attn@l17 0.6859 vs 0.1407 unique=True; arithmetic_digit: attn@l3 0.0356 vs 0.0343 unique=True; arithmetic_space: attn@l11 0.7347 vs 0.3051 unique=True
-[PASS  ] mi2_goedel_gap_contraction: paris: l*=17 tail=0.3764 pre=0.9703 ok=True; arithmetic_digit: l*=11 tail=0.2192 pre=0.9929 ok=True; arithmetic_space: l*=11 tail=0.2192 pre=0.9929 ok=True
-[PASS  ] mi2_mla_vs_mqa_profile: paris: global=0.5056 local=0.1236 ok=True; arithmetic_digit: global=0.3549 local=0.1886 ok=True; arithmetic_space: global=0.3549 local=0.1886 ok=True [Datums-Zusatz]
-[PASS  ] mi2_purity_det: fingerprint=True paris:ok arithmetic_digit:ok arithmetic_space:ok
+  [row 0] prose: ko_prose=0.0221 ko_code=0.0144 anomal_k47=0.0071 kontrolle_k12=0.0194
+  [row 1] prose: ko_prose=0.0286 ko_code=0.0148 anomal_k47=0.0212 kontrolle_k12=0.0447
+  [row 2] prose: ko_prose=0.0785 ko_code=0.0274 anomal_k47=0.0248 kontrolle_k12=0.0000
+  [row 3] code: ko_prose=0.0160 ko_code=0.0023 anomal_k47=0.0004 kontrolle_k12=0.0129
+  [row 4] code: ko_prose=0.0000 ko_code=0.0031 anomal_k47=0.0000 kontrolle_k12=0.0013
+  [row 5] code: ko_prose=0.0037 ko_code=0.0022 anomal_k47=0.0030 kontrolle_k12=0.0027
+  [row 6] math_logic: ko_prose=0.0161 ko_code=0.0431 anomal_k47=0.0113 kontrolle_k12=0.0187
+  [row 7] math_logic: ko_prose=0.0805 ko_code=0.0261 anomal_k47=0.0201 kontrolle_k12=0.0516
+  [row 8] math_logic: ko_prose=0.0308 ko_code=0.0005 anomal_k47=0.0013 kontrolle_k12=0.0011
+[PILOT ] pilot_band_math: band-template: ok
+[PILOT ] pilot_knockout_math: additiv: ok
+[PILOT ] pilot_restore_math: C3-Runde: bitidentisch
+[PILOT ] pilot_tv_math: tv(a,a)=0, tv(a,b)>0: True
+[PILOT ] pilot_select_math: Baender+Sets registriert ok
+[PASS  ] mi3_intervention_purity: fingerprint=True control_tv=0.0
+[OFFEN ] mi3_core_vs_edge_sufficiency: Premise nicht repliziert: M_raw=0.3542 (≥ tau=0.01) — volle Daten persistent.
+[FAIL  ] mi3_domain_knockout_specificity: prose: ko_prose=0.0431 > ko_code=0.0189; code: ko_code=0.0025 > ko_prose=0.0066
+[PASS  ] mi3_paris_circuit_resilience: top1-Bedingungen: ko_prose@core=9079, ko_code@core=9079, preset_goedel=9079, preset_turing=9079, preset_wittgenstein=9079 (paris_id=9079)
+[PASS  ] mi3_layer17_paris_localization: attn_share(17)=0.830 Σ|Δp|(17)=0.0861 vs Σ|Δp|(10)=0.0170
+[FAIL  ] mi3_prose_l11_anomaly_probe: Mittel ko{4,7}(ℓ11)=0.0177 vs ko{1,2}(ℓ11)=0.0214
 ----------------------------------------------------------------------------------------
-Verdikte: 6 PASS | 0 OFFEN | 0 FAIL  (30.4 s)
-GRÜN — alle 6 Verdikte PASS; die Halbschichten sind gemessen.
-JSON: scratches/mi2_logit_lens_p4.json
+Verdikte: 3 PASS | 1 OFFEN | 2 FAIL  (40.6 s)
+ROT — Falsifikator ausgelöst; keine Kürzung, volle Daten persistent.
+JSON: scratches/mi3_interventions.json
 
 
 ==============================================================================
-### FILE: scratches/mi2_logit_lens_p4.json
-### bytes: 49332   lines: 1352
+### FILE: scratches/mi3_interventions.json
+### bytes: 10860   lines: 335
 ==============================================================================
 {
-  "all_pass": true,
-  "open": [],
+  "all_pass": false,
+  "open": [
+    "mi3_core_vs_edge_sufficiency"
+  ],
   "findings": [
     {
-      "name": "pilot_telescope",
+      "name": "pilot_band_math",
       "status": "PILOT",
-      "note": "teleskop=0.140000 endpunkte=0.140000"
+      "note": "band-template: ok"
     },
     {
-      "name": "pilot_resolve_exact",
+      "name": "pilot_knockout_math",
       "status": "PILOT",
-      "note": "digit=[2] space=[5] paris=[3] ('Paris' 6 abgewiesen)"
+      "note": "additiv: ok"
     },
     {
-      "name": "pilot_contract",
+      "name": "pilot_restore_math",
       "status": "PILOT",
-      "note": "tail=0.200 pre=0.900"
+      "note": "C3-Runde: bitidentisch"
     },
     {
-      "name": "pilot_mla_select",
+      "name": "pilot_tv_math",
       "status": "PILOT",
-      "note": "global=(5, 11, 17, 23) lokal_n=22"
+      "note": "tv(a,a)=0, tv(a,b)>0: True"
     },
     {
-      "name": "mi2_single_token_strict",
-      "status": "PASS",
-      "note": "paris: id=9079 (' Paris'); arithmetic_digit: id=236812 ('4'); arithmetic_space: id=236743 (' ')"
+      "name": "pilot_select_math",
+      "status": "PILOT",
+      "note": "Baender+Sets registriert ok"
     },
     {
-      "name": "mi2_sublayer_telescope",
+      "name": "mi3_intervention_purity",
       "status": "PASS",
-      "note": "paris: dev=0.000e+00 anchor=2.717e-11; arithmetic_digit: dev=0.000e+00 anchor=2.842e-12; arithmetic_space: dev=0.000e+00 anchor=2.842e-12"
+      "note": "fingerprint=True control_tv=0.0"
     },
     {
-      "name": "mi2_attn_vs_moe_attribution",
-      "status": "PASS",
-      "note": "paris: attn@l17 0.6859 vs 0.1407 unique=True; arithmetic_digit: attn@l3 0.0356 vs 0.0343 unique=True; arithmetic_space: attn@l11 0.7347 vs 0.3051 unique=True"
+      "name": "mi3_core_vs_edge_sufficiency",
+      "status": "OFFEN",
+      "note": "Premise nicht repliziert: M_raw=0.3542 (≥ tau=0.01) — volle Daten persistent."
     },
     {
-      "name": "mi2_goedel_gap_contraction",
-      "status": "PASS",
-      "note": "paris: l*=17 tail=0.3764 pre=0.9703 ok=True; arithmetic_digit: l*=11 tail=0.2192 pre=0.9929 ok=True; arithmetic_space: l*=11 tail=0.2192 pre=0.9929 ok=True"
+      "name": "mi3_domain_knockout_specificity",
+      "status": "FAIL",
+      "note": "prose: ko_prose=0.0431 > ko_code=0.0189; code: ko_code=0.0025 > ko_prose=0.0066"
     },
     {
-      "name": "mi2_mla_vs_mqa_profile",
+      "name": "mi3_paris_circuit_resilience",
       "status": "PASS",
-      "note": "paris: global=0.5056 local=0.1236 ok=True; arithmetic_digit: global=0.3549 local=0.1886 ok=True; arithmetic_space: global=0.3549 local=0.1886 ok=True [Datums-Zusatz]"
+      "note": "top1-Bedingungen: ko_prose@core=9079, ko_code@core=9079, preset_goedel=9079, preset_turing=9079, preset_wittgenstein=9079 (paris_id=9079)"
     },
     {
-      "name": "mi2_purity_det",
+      "name": "mi3_layer17_paris_localization",
       "status": "PASS",
-      "note": "fingerprint=True paris:ok arithmetic_digit:ok arithmetic_space:ok"
+      "note": "attn_share(17)=0.830 Σ|Δp|(17)=0.0861 vs Σ|Δp|(10)=0.0170"
+    },
+    {
+      "name": "mi3_prose_l11_anomaly_probe",
+      "status": "FAIL",
+      "note": "Mittel ko{4,7}(ℓ11)=0.0177 vs ko{1,2}(ℓ11)=0.0214"
     }
   ],
   "data": {
     "pilot": [
       {
-        "name": "pilot_telescope",
+        "name": "pilot_band_math",
         "status": "PILOT",
-        "note": "teleskop=0.140000 endpunkte=0.140000"
+        "note": "band-template: ok"
       },
       {
-        "name": "pilot_resolve_exact",
+        "name": "pilot_knockout_math",
         "status": "PILOT",
-        "note": "digit=[2] space=[5] paris=[3] ('Paris' 6 abgewiesen)"
+        "note": "additiv: ok"
       },
       {
-        "name": "pilot_contract",
+        "name": "pilot_restore_math",
         "status": "PILOT",
-        "note": "tail=0.200 pre=0.900"
+        "note": "C3-Runde: bitidentisch"
       },
       {
-        "name": "pilot_mla_select",
+        "name": "pilot_tv_math",
         "status": "PILOT",
-        "note": "global=(5, 11, 17, 23) lokal_n=22"
+        "note": "tv(a,a)=0, tv(a,b)>0: True"
+      },
+      {
+        "name": "pilot_select_math",
+        "status": "PILOT",
+        "note": "Baender+Sets registriert ok"
       }
     ],
     "gpu": {
       "resolve": {
-        "paris": 9079,
-        "arithmetic_digit": 236812,
-        "arithmetic_space": 236743
-      },
-      "resolve_raw": {
         "paris": [
           9079
-        ],
-        "arithmetic_digit": [
-          236812
-        ],
-        "arithmetic_space": [
-          236743
         ]
       },
-      "probes": {
-        "paris": {
-          "rows": [
-            {
-              "layer": 0,
-              "is_global": false,
-              "p_in": 0.0,
-              "p_mid": 2.614648565457564e-16,
-              "p_out": 1.4199838204690014e-15,
-              "dp_attn": 2.614648565457564e-16,
-              "dp_moe": 1.158518963923245e-15,
-              "tv_in_mid": 0.005218103993684053,
-              "gap_out_tv": 0.9999823570251465,
-              "top1_out_id": 555,
-              "top1_out_str": " S",
-              "top1_out_prob": 0.9993693232536316
-            },
-            {
-              "layer": 1,
-              "is_global": false,
-              "p_in": 1.4199838204690014e-15,
-              "p_mid": 1.9609054980359968e-14,
-              "p_out": 1.953218674039664e-14,
-              "dp_attn": 1.8189071159890966e-14,
-              "dp_moe": -7.686823996332776e-17,
-              "tv_in_mid": 0.0005090564955025911,
-              "gap_out_tv": 0.999948263168335,
-              "top1_out_id": 555,
-              "top1_out_str": " S",
-              "top1_out_prob": 0.9957962036132812
-            },
-            {
-              "layer": 2,
-              "is_global": false,
-              "p_in": 1.953218674039664e-14,
-              "p_mid": 2.4099563490642684e-12,
-              "p_out": 9.347834599481367e-14,
-              "dp_attn": 2.3904241623238717e-12,
-              "dp_moe": -2.3164780030694547e-12,
-              "tv_in_mid": 0.0035201888531446457,
-              "gap_out_tv": 0.9998953342437744,
-              "top1_out_id": 555,
-              "top1_out_str": " S",
-              "top1_out_prob": 0.9989539384841919
-            },
-            {
-              "layer": 3,
-              "is_global": false,
-              "p_in": 9.347834599481367e-14,
-              "p_mid": 2.407718739050324e-06,
-              "p_out": 1.283956862607738e-06,
-              "dp_attn": 2.407718645571978e-06,
-              "dp_moe": -1.123761876442586e-06,
-              "tv_in_mid": 0.37275147438049316,
-              "gap_out_tv": 0.9993236064910889,
-              "top1_out_id": 555,
-              "top1_out_str": " S",
-              "top1_out_prob": 0.7293774485588074
-            },
-            {
-              "layer": 4,
-              "is_global": false,
-              "p_in": 1.283956862607738e-06,
-              "p_mid": 3.2890391594264656e-05,
-              "p_out": 3.36839584633708e-05,
-              "dp_attn": 3.160643473165692e-05,
-              "dp_moe": 7.935668691061437e-07,
-              "tv_in_mid": 0.2286989837884903,
-              "gap_out_tv": 0.9946781992912292,
-              "top1_out_id": 555,
-              "top1_out_str": " S",
-              "top1_out_prob": 0.3292332589626312
-            },
-            {
-              "layer": 5,
-              "is_global": true,
-              "p_in": 3.36839584633708e-05,
-              "p_mid": 2.7210857297177427e-05,
-              "p_out": 3.3425317269575316e-06,
-              "dp_attn": -6.4731011661933735e-06,
-              "dp_moe": -2.3868325570219895e-05,
-              "tv_in_mid": 0.6636539697647095,
-              "gap_out_tv": 0.9929879307746887,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.015922341495752335
-            },
-            {
-              "layer": 6,
-              "is_global": false,
-              "p_in": 3.3425317269575316e-06,
-              "p_mid": 4.735897618957097e-06,
-              "p_out": 6.075935289118206e-06,
-              "dp_attn": 1.393365891999565e-06,
-              "dp_moe": 1.3400376701611094e-06,
-              "tv_in_mid": 0.1407845914363861,
-              "gap_out_tv": 0.9916505813598633,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.015251926146447659
-            },
-            {
-              "layer": 7,
-              "is_global": false,
-              "p_in": 6.075935289118206e-06,
-              "p_mid": 4.04243428420159e-06,
-              "p_out": 5.388411864259979e-06,
-              "dp_attn": -2.0335010049166158e-06,
-              "dp_moe": 1.3459775800583884e-06,
-              "tv_in_mid": 0.19390565156936646,
-              "gap_out_tv": 0.9835635423660278,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.005909110885113478
-            },
-            {
-              "layer": 8,
-              "is_global": false,
-              "p_in": 5.388411864259979e-06,
-              "p_mid": 4.521388746070443e-06,
-              "p_out": 5.800700819236226e-06,
-              "dp_attn": -8.67023118189536e-07,
-              "dp_moe": 1.2793120731657837e-06,
-              "tv_in_mid": 0.1734885722398758,
-              "gap_out_tv": 0.9881792068481445,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.0012380094267427921
-            },
-            {
-              "layer": 9,
-              "is_global": false,
-              "p_in": 5.800700819236226e-06,
-              "p_mid": 8.134888958011288e-06,
-              "p_out": 2.9714740321651334e-06,
-              "dp_attn": 2.334188138775062e-06,
-              "dp_moe": -5.163414925846155e-06,
-              "tv_in_mid": 0.0804176777601242,
-              "gap_out_tv": 0.9900550246238708,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.0005033986526541412
-            },
-            {
-              "layer": 10,
-              "is_global": false,
-              "p_in": 2.9714740321651334e-06,
-              "p_mid": 8.567445547669195e-06,
-              "p_out": 5.030164174968377e-06,
-              "dp_attn": 5.595971515504061e-06,
-              "dp_moe": -3.537281372700818e-06,
-              "tv_in_mid": 0.17026391625404358,
-              "gap_out_tv": 0.9896560311317444,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.0014389983844012022
-            },
-            {
-              "layer": 11,
-              "is_global": true,
-              "p_in": 5.030164174968377e-06,
-              "p_mid": 1.944245923368726e-05,
-              "p_out": 1.3550420590036083e-05,
-              "dp_attn": 1.4412295058718883e-05,
-              "dp_moe": -5.892038643651176e-06,
-              "tv_in_mid": 0.18391865491867065,
-              "gap_out_tv": 0.9803752303123474,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.008566686883568764
-            },
-            {
-              "layer": 12,
-              "is_global": false,
-              "p_in": 1.3550420590036083e-05,
-              "p_mid": 6.043440862413263e-06,
-              "p_out": 4.238525434629992e-06,
-              "dp_attn": -7.50697972762282e-06,
-              "dp_moe": -1.8049154277832713e-06,
-              "tv_in_mid": 0.10214316099882126,
-              "gap_out_tv": 0.9793194532394409,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.005065219942480326
-            },
-            {
-              "layer": 13,
-              "is_global": false,
-              "p_in": 4.238525434629992e-06,
-              "p_mid": 7.390310656774091e-06,
-              "p_out": 8.67155449668644e-06,
-              "dp_attn": 3.151785222144099e-06,
-              "dp_moe": 1.2812438399123494e-06,
-              "tv_in_mid": 0.15617544949054718,
-              "gap_out_tv": 0.9584134817123413,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.0169691052287817
-            },
-            {
-              "layer": 14,
-              "is_global": false,
-              "p_in": 8.67155449668644e-06,
-              "p_mid": 1.245000930794049e-05,
-              "p_out": 1.4167450899549294e-05,
-              "dp_attn": 3.7784548112540506e-06,
-              "dp_moe": 1.7174415916088037e-06,
-              "tv_in_mid": 0.10976362228393555,
-              "gap_out_tv": 0.9352235794067383,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.018022650852799416
-            },
-            {
-              "layer": 15,
-              "is_global": false,
-              "p_in": 1.4167450899549294e-05,
-              "p_mid": 3.168395778629929e-05,
-              "p_out": 3.5861608921550214e-05,
-              "dp_attn": 1.7516506886749994e-05,
-              "dp_moe": 4.177651135250926e-06,
-              "tv_in_mid": 0.17470833659172058,
-              "gap_out_tv": 0.923046350479126,
-              "top1_out_id": 4831,
-              "top1_out_str": " een",
-              "top1_out_prob": 0.029225366190075874
-            },
-            {
-              "layer": 16,
-              "is_global": false,
-              "p_in": 3.5861608921550214e-05,
-              "p_mid": 4.004740185337141e-05,
-              "p_out": 0.007031111512333155,
-              "dp_attn": 4.185792931821197e-06,
-              "dp_moe": 0.006991064110479783,
-              "tv_in_mid": 0.22215993702411652,
-              "gap_out_tv": 0.78879314661026,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.29897046089172363
-            },
-            {
-              "layer": 17,
-              "is_global": true,
-              "p_in": 0.007031111512333155,
-              "p_mid": 0.6929426193237305,
-              "p_out": 0.8336552977561951,
-              "dp_attn": 0.6859115078113973,
-              "dp_moe": 0.1407126784324646,
-              "tv_in_mid": 0.807860255241394,
-              "gap_out_tv": 0.495465487241745,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.8336552977561951
-            },
-            {
-              "layer": 18,
-              "is_global": false,
-              "p_in": 0.8336552977561951,
-              "p_mid": 0.8870387077331543,
-              "p_out": 0.9503450393676758,
-              "dp_attn": 0.05338340997695923,
-              "dp_moe": 0.06330633163452148,
-              "tv_in_mid": 0.11603248864412308,
-              "gap_out_tv": 0.4862745404243469,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.9503450393676758
-            },
-            {
-              "layer": 19,
-              "is_global": false,
-              "p_in": 0.9503450393676758,
-              "p_mid": 0.8840906023979187,
-              "p_out": 0.9787572026252747,
-              "dp_attn": -0.06625443696975708,
-              "dp_moe": 0.09466660022735596,
-              "tv_in_mid": 0.06625481694936752,
-              "gap_out_tv": 0.4942115545272827,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.9787572026252747
-            },
-            {
-              "layer": 20,
-              "is_global": false,
-              "p_in": 0.9787572026252747,
-              "p_mid": 0.9836750626564026,
-              "p_out": 0.9836809635162354,
-              "dp_attn": 0.00491786003112793,
-              "dp_moe": 5.900859832763672e-06,
-              "tv_in_mid": 0.004979338496923447,
-              "gap_out_tv": 0.49598991870880127,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.9836809635162354
-            },
-            {
-              "layer": 21,
-              "is_global": false,
-              "p_in": 0.9836809635162354,
-              "p_mid": 0.9820634126663208,
-              "p_out": 0.982250988483429,
-              "dp_attn": -0.0016175508499145508,
-              "dp_moe": 0.0001875758171081543,
-              "tv_in_mid": 0.002288253977894783,
-              "gap_out_tv": 0.49340373277664185,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.982250988483429
-            },
-            {
-              "layer": 22,
-              "is_global": false,
-              "p_in": 0.982250988483429,
-              "p_mid": 0.9790648221969604,
-              "p_out": 0.9781275987625122,
-              "dp_attn": -0.003186166286468506,
-              "dp_moe": -0.0009372234344482422,
-              "tv_in_mid": 0.00488640833646059,
-              "gap_out_tv": 0.48593154549598694,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.9781275987625122
-            },
-            {
-              "layer": 23,
-              "is_global": true,
-              "p_in": 0.9781275987625122,
-              "p_mid": 0.6122009754180908,
-              "p_out": 0.5028460025787354,
-              "dp_attn": -0.3659266233444214,
-              "dp_moe": -0.10935497283935547,
-              "tv_in_mid": 0.36686277389526367,
-              "gap_out_tv": 0.17831242084503174,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.5028460025787354
-            },
-            {
-              "layer": 24,
-              "is_global": false,
-              "p_in": 0.5028460025787354,
-              "p_mid": 0.38825711607933044,
-              "p_out": 0.4091317355632782,
-              "dp_attn": -0.11458888649940491,
-              "dp_moe": 0.020874619483947754,
-              "tv_in_mid": 0.19129320979118347,
-              "gap_out_tv": 0.25779497623443604,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.4091317355632782
-            },
-            {
-              "layer": 25,
-              "is_global": false,
-              "p_in": 0.4091317355632782,
-              "p_mid": 0.5637405514717102,
-              "p_out": 0.5030781626701355,
-              "dp_attn": 0.154608815908432,
-              "dp_moe": -0.06066238880157471,
-              "tv_in_mid": 0.19883379340171814,
-              "gap_out_tv": 0.0,
-              "top1_out_id": 9079,
-              "top1_out_str": " Paris",
-              "top1_out_prob": 0.5030781626701355
-            }
-          ],
-          "target_id": 9079,
-          "target_str": " Paris",
-          "p_emb": 0.0,
-          "p_final": 0.5030781626701355,
-          "p_final_top1_id": 9079,
-          "official_top1_id": 9079,
+      "purity": {
+        "fingerprint_equal": true,
+        "control_tv": 0.0,
+        "tv_zero": true,
+        "series": [
+          "steer_band(EX_WITT, EDGE)",
+          "steer_band(EX_WITT, CORE)",
+          "steer_band(EX_WITT, GLOBAL)",
+          "knockout(KO_PROSE, CORE)",
+          "knockout(KO_CODE, CORE)"
+        ]
+      },
+      "sufficiency": {
+        "m_raw": {
+          "M_digit": 0.3541586399078369,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.010250135324895382,
+            "1": 0.318872332572937,
+            "2": 0.00584035087376833,
+            "3": 0.0027587860822677612,
+            "4": 0.0010149008594453335,
+            "5": 0.0033277315087616444,
+            "6": 0.0010803563054651022,
+            "7": 0.0009534110431559384,
+            "8": 0.0010149008594453335,
+            "9": 0.009045712649822235
+          },
+          "top_digit": 1
+        },
+        "m_full": {
+          "M_digit": 0.3981333374977112,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.01158132217824459,
+            "1": 0.36028435826301575,
+            "2": 0.005823454353958368,
+            "3": 0.002928216941654682,
+            "4": 0.0011467061704024673,
+            "5": 0.003532103728502989,
+            "6": 0.0010772307869046926,
+            "7": 0.0010119646321982145,
+            "8": 0.0011467061704024673,
+            "9": 0.00960125308483839
+          },
+          "top_digit": 1
+        },
+        "m_core": {
+          "M_digit": 0.38351842761039734,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.011167587712407112,
+            "1": 0.34741345047950745,
+            "2": 0.0059775784611701965,
+            "3": 0.002823608461767435,
+            "4": 0.0010387474903836846,
+            "5": 0.003405921859666705,
+            "6": 0.0010387474903836846,
+            "7": 0.0009166914387606084,
+            "8": 0.0010387474903836846,
+            "9": 0.0086973262950778
+          },
+          "top_digit": 1
+        },
+        "m_edge": {
+          "M_digit": 0.3945757746696472,
+          "unknown": false,
+          "digit_probs": {
+            "0": 0.009078812785446644,
+            "1": 0.36265188455581665,
+            "2": 0.0051729511469602585,
+            "3": 0.002601123182103038,
+            "4": 0.0010186145082116127,
+            "5": 0.0027688811533153057,
+            "6": 0.000956899777520448,
+            "7": 0.0008989241905510426,
+            "8": 0.0008989241905510426,
+            "9": 0.00852875504642725
+          },
+          "top_digit": 1
+        },
+        "dm_full": 0.04397469758987427,
+        "dm_core": 0.029359787702560425,
+        "dm_edge": 0.0404171347618103,
+        "premise_raw_dumb": false,
+        "full_opens": true,
+        "core_ratio": 0.6676518387091964,
+        "core_sufficient": false,
+        "edge_smaller": false
+      },
+      "domain_knockout": {
+        "rows_9": [
+          {
+            "text": "Der warme Sommerwind trug in der Abenddämmerung den Duft von Kiefern über den stillen Bergsee.",
+            "domain": "prose",
+            "tv_ko_prose": 0.022092562168836594,
+            "tv_ko_code": 0.014367884024977684,
+            "tv_ko_anom_a": 0.007055392488837242,
+            "tv_ko_anom_b": 0.019435057416558266
+          },
+          {
+            "text": "The warm summer breeze carried the scent of pine trees across the quiet mountain lake at dusk.",
+            "domain": "prose",
+            "tv_ko_prose": 0.028605341911315918,
+            "tv_ko_code": 0.014820069074630737,
+            "tv_ko_anom_a": 0.021150756627321243,
+            "tv_ko_anom_b": 0.04474794864654541
+          },
+          {
+            "text": "Oma erzählt ihre Geschichte vom alten Garten, der jedes Jahr im Mai in Blüten stand.",
+            "domain": "prose",
+            "tv_ko_prose": 0.07849752902984619,
+            "tv_ko_code": 0.027385298162698746,
+            "tv_ko_anom_a": 0.02476227656006813,
+            "tv_ko_anom_b": 0.0
+          },
+          {
+            "text": "def quicksort(items):\n    if len(items) <= 1:\n        return items\n    pivot = items[0]\n    return quicksort([x for x in items[1:] if x < pivot]) + [pivot] + quicksort([x for x in items[1:] if x >= pivot])",
+            "domain": "code",
+            "tv_ko_prose": 0.01600937359035015,
+            "tv_ko_code": 0.002291174605488777,
+            "tv_ko_anom_a": 0.0003526957880239934,
+            "tv_ko_anom_b": 0.012892390601336956
+          },
+          {
+            "text": "for i in range(10):\n    buffer[i] = buffer[i] * 2 % 255\n    print(buffer[i])",
+            "domain": "code",
+            "tv_ko_prose": 5.627153313980671e-06,
+            "tv_ko_code": 0.003081684932112694,
+            "tv_ko_anom_a": 7.023089892754797e-06,
+            "tv_ko_anom_b": 0.0012839620467275381
+          },
+          {
+            "text": "class Node:\n    def __init__(self, value, next=None):\n        self.value = value\n        self.next = next",
+            "domain": "code",
+            "tv_ko_prose": 0.0036619119346141815,
+            "tv_ko_code": 0.002213649684563279,
+            "tv_ko_anom_a": 0.003017505630850792,
+            "tv_ko_anom_b": 0.002716937568038702
+          },
+          {
+            "text": "For all natural numbers n, the sum 1 + 2 + ... + n equals n(n+1)/2.",
+            "domain": "math_logic",
+            "tv_ko_prose": 0.016052229329943657,
+            "tv_ko_code": 0.043115537613630295,
+            "tv_ko_anom_a": 0.011282689869403839,
+            "tv_ko_anom_b": 0.018685299903154373
+          },
+          {
+            "text": "If P implies Q and Q is false, then P is false. Proof: assume P, then Q, contradiction.",
+            "domain": "math_logic",
+            "tv_ko_prose": 0.08051086962223053,
+            "tv_ko_code": 0.026136793196201324,
+            "tv_ko_anom_a": 0.020058976486325264,
+            "tv_ko_anom_b": 0.051614101976156235
+          },
+          {
+            "text": "Jede endliche Gruppe mit Primzahlordnung ist zyklisch.",
+            "domain": "math_logic",
+            "tv_ko_prose": 0.03079836629331112,
+            "tv_ko_code": 0.0004735705442726612,
+            "tv_ko_anom_a": 0.0013457300374284387,
+            "tv_ko_anom_b": 0.0011473591439425945
+          }
+        ],
+        "prose_mean_ko_prose": 0.043065144369999565,
+        "prose_mean_ko_code": 0.018857750420769055,
+        "code_mean_ko_prose": 0.0065589708927594375,
+        "code_mean_ko_code": 0.00252883640738825,
+        "dissociation_prose": true,
+        "dissociation_code": false
+      },
+      "paris_resilience": {
+        "paris_id": 9079,
+        "conditions_top1": {
+          "ko_prose@core": 9079,
+          "ko_code@core": 9079,
+          "preset_goedel": 9079,
+          "preset_turing": 9079,
+          "preset_wittgenstein": 9079
+        },
+        "stable": true
+      },
+      "l17_localization": {
+        "sublayer_17": {
+          "dp_attn": 0.6859115078113973,
+          "dp_moe": 0.1407126784324646,
+          "attn_share": 0.8297743027918699,
           "anchor_tv": 2.7168940708310885e-11,
-          "telescope_target": 0.5030781626701355,
-          "endpoints_target": 0.5030781626701355,
-          "telescope_broken": false,
-          "n_tokens": 6
+          "telescope_broken": false
         },
-        "arithmetic_digit": {
-          "rows": [
-            {
-              "layer": 0,
-              "is_global": false,
-              "p_in": 0.0,
-              "p_mid": 0.0018984951311722398,
-              "p_out": 8.878265418850451e-13,
-              "dp_attn": 0.0018984951311722398,
-              "dp_moe": -0.0018984951302844133,
-              "tv_in_mid": 0.9988484382629395,
-              "gap_out_tv": 0.9999997615814209,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 1.0
-            },
-            {
-              "layer": 1,
-              "is_global": false,
-              "p_in": 8.878265418850451e-13,
-              "p_mid": 7.193977413777475e-09,
-              "p_out": 5.905088085178534e-10,
-              "dp_attn": 7.19308958723559e-09,
-              "dp_moe": -6.6034686052596214e-09,
-              "tv_in_mid": 2.1728688807343133e-05,
-              "gap_out_tv": 0.9999967813491821,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.9999634027481079
-            },
-            {
-              "layer": 2,
-              "is_global": false,
-              "p_in": 5.905088085178534e-10,
-              "p_mid": 2.5161569283227436e-05,
-              "p_out": 5.290323315421119e-05,
-              "dp_attn": 2.516097877441892e-05,
-              "dp_moe": 2.7741663870983757e-05,
-              "tv_in_mid": 0.19357751309871674,
-              "gap_out_tv": 0.9999340176582336,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.8008785247802734
-            },
-            {
-              "layer": 3,
-              "is_global": false,
-              "p_in": 5.290323315421119e-05,
-              "p_mid": 0.03565435856580734,
-              "p_out": 0.005453153979033232,
-              "dp_attn": 0.03560145533265313,
-              "dp_moe": -0.03020120458677411,
-              "tv_in_mid": 0.7136473655700684,
-              "gap_out_tv": 0.9997190237045288,
-              "top1_out_id": 236770,
-              "top1_out_str": "1",
-              "top1_out_prob": 0.6302988529205322
-            },
-            {
-              "layer": 4,
-              "is_global": false,
-              "p_in": 0.005453153979033232,
-              "p_mid": 0.01729419082403183,
-              "p_out": 0.05161035433411598,
-              "dp_attn": 0.011841036844998598,
-              "dp_moe": 0.03431616351008415,
-              "tv_in_mid": 0.1677214652299881,
-              "gap_out_tv": 0.9973331093788147,
-              "top1_out_id": 236770,
-              "top1_out_str": "1",
-              "top1_out_prob": 0.3813517987728119
-            },
-            {
-              "layer": 5,
-              "is_global": true,
-              "p_in": 0.05161035433411598,
-              "p_mid": 0.01884710229933262,
-              "p_out": 0.003565748455002904,
-              "dp_attn": -0.03276325203478336,
-              "dp_moe": -0.015281353844329715,
-              "tv_in_mid": 0.561591386795044,
-              "gap_out_tv": 0.9789906740188599,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.38717392086982727
-            },
-            {
-              "layer": 6,
-              "is_global": false,
-              "p_in": 0.003565748455002904,
-              "p_mid": 0.0020648965146392584,
-              "p_out": 0.0032570785842835903,
-              "dp_attn": -0.0015008519403636456,
-              "dp_moe": 0.001192182069644332,
-              "tv_in_mid": 0.30754944682121277,
-              "gap_out_tv": 0.9891542196273804,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.5145695209503174
-            },
-            {
-              "layer": 7,
-              "is_global": false,
-              "p_in": 0.0032570785842835903,
-              "p_mid": 0.00123639777302742,
-              "p_out": 0.0006810056511312723,
-              "dp_attn": -0.0020206808112561703,
-              "dp_moe": -0.0005553921218961477,
-              "tv_in_mid": 0.4958338141441345,
-              "gap_out_tv": 0.9926426410675049,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.46734389662742615
-            },
-            {
-              "layer": 8,
-              "is_global": false,
-              "p_in": 0.0006810056511312723,
-              "p_mid": 0.00040926269139163196,
-              "p_out": 0.000230277277296409,
-              "dp_attn": -0.00027174295973964036,
-              "dp_moe": -0.00017898541409522295,
-              "tv_in_mid": 0.49939215183258057,
-              "gap_out_tv": 0.9871859550476074,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.029232433065772057
-            },
-            {
-              "layer": 9,
-              "is_global": false,
-              "p_in": 0.000230277277296409,
-              "p_mid": 0.00020063108240719885,
-              "p_out": 0.0002830356534104794,
-              "dp_attn": -2.9646194889210165e-05,
-              "dp_moe": 8.240457100328058e-05,
-              "tv_in_mid": 0.11786168813705444,
-              "gap_out_tv": 0.9913842678070068,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.028870420530438423
-            },
-            {
-              "layer": 10,
-              "is_global": false,
-              "p_in": 0.0002830356534104794,
-              "p_mid": 0.00035936804488301277,
-              "p_out": 0.00021293500321917236,
-              "dp_attn": 7.633239147253335e-05,
-              "dp_moe": -0.0001464330416638404,
-              "tv_in_mid": 0.17059096693992615,
-              "gap_out_tv": 0.9852915406227112,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.013173822313547134
-            },
-            {
-              "layer": 11,
-              "is_global": true,
-              "p_in": 0.00021293500321917236,
-              "p_mid": 0.00019538748892955482,
-              "p_out": 0.00034162195515818894,
-              "dp_attn": -1.754751428961754e-05,
-              "dp_moe": 0.00014623446622863412,
-              "tv_in_mid": 0.7801573276519775,
-              "gap_out_tv": 0.5697215795516968,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.42451587319374084
-            },
-            {
-              "layer": 12,
-              "is_global": false,
-              "p_in": 0.00034162195515818894,
-              "p_mid": 0.00028884265339002013,
-              "p_out": 0.00017329846741631627,
-              "dp_attn": -5.277930176816881e-05,
-              "dp_moe": -0.00011554418597370386,
-              "tv_in_mid": 0.1261191964149475,
-              "gap_out_tv": 0.6040826439857483,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.38994669914245605
-            },
-            {
-              "layer": 13,
-              "is_global": false,
-              "p_in": 0.00017329846741631627,
-              "p_mid": 0.00013435044093057513,
-              "p_out": 4.2639214370865375e-05,
-              "dp_attn": -3.894802648574114e-05,
-              "dp_moe": -9.171122655970976e-05,
-              "tv_in_mid": 0.09117123484611511,
-              "gap_out_tv": 0.265084445476532,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.7314428687095642
-            },
-            {
-              "layer": 14,
-              "is_global": false,
-              "p_in": 4.2639214370865375e-05,
-              "p_mid": 5.3675361414207146e-05,
-              "p_out": 5.8825069572776556e-05,
-              "dp_attn": 1.103614704334177e-05,
-              "dp_moe": 5.1497081585694104e-06,
-              "tv_in_mid": 0.05895976722240448,
-              "gap_out_tv": 0.18920926749706268,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.8497462868690491
-            },
-            {
-              "layer": 15,
-              "is_global": false,
-              "p_in": 5.8825069572776556e-05,
-              "p_mid": 5.645853889291175e-05,
-              "p_out": 5.524842708837241e-05,
-              "dp_attn": -2.366530679864809e-06,
-              "dp_moe": -1.2101118045393378e-06,
-              "tv_in_mid": 0.04010581970214844,
-              "gap_out_tv": 0.18425361812114716,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9477441906929016
-            },
-            {
-              "layer": 16,
-              "is_global": false,
-              "p_in": 5.524842708837241e-05,
-              "p_mid": 3.275561539339833e-05,
-              "p_out": 2.9022834496572614e-05,
-              "dp_attn": -2.249281169497408e-05,
-              "dp_moe": -3.732780896825716e-06,
-              "tv_in_mid": 0.02531650848686695,
-              "gap_out_tv": 0.18763460218906403,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9901214838027954
-            },
-            {
-              "layer": 17,
-              "is_global": true,
-              "p_in": 2.9022834496572614e-05,
-              "p_mid": 9.705976481200196e-06,
-              "p_out": 3.2625482617731905e-06,
-              "dp_attn": -1.9316858015372418e-05,
-              "dp_moe": -6.443428219427005e-06,
-              "tv_in_mid": 0.008933346718549728,
-              "gap_out_tv": 0.18799231946468353,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9920299053192139
-            },
-            {
-              "layer": 18,
-              "is_global": false,
-              "p_in": 3.2625482617731905e-06,
-              "p_mid": 8.303652066388167e-06,
-              "p_out": 3.068787009397056e-06,
-              "dp_attn": 5.041103804614977e-06,
-              "dp_moe": -5.2348650569911115e-06,
-              "tv_in_mid": 0.0041720010340213776,
-              "gap_out_tv": 0.18693505227565765,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9932944178581238
-            },
-            {
-              "layer": 19,
-              "is_global": false,
-              "p_in": 3.068787009397056e-06,
-              "p_mid": 4.463207460503327e-06,
-              "p_out": 6.070260951673845e-07,
-              "dp_attn": 1.3944204511062708e-06,
-              "dp_moe": -3.856181365335942e-06,
-              "tv_in_mid": 0.00044583622366189957,
-              "gap_out_tv": 0.19061031937599182,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9978083968162537
-            },
-            {
-              "layer": 20,
-              "is_global": false,
-              "p_in": 6.070260951673845e-07,
-              "p_mid": 6.465035653491213e-07,
-              "p_out": 2.527095261939394e-07,
-              "dp_attn": 3.947747018173686e-08,
-              "dp_moe": -3.9379403915518196e-07,
-              "tv_in_mid": 0.000505890988279134,
-              "gap_out_tv": 0.18955324590206146,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9964810609817505
-            },
-            {
-              "layer": 21,
-              "is_global": false,
-              "p_in": 2.527095261939394e-07,
-              "p_mid": 6.043790676812932e-07,
-              "p_out": 3.05704679703922e-06,
-              "dp_attn": 3.5166954148735385e-07,
-              "dp_moe": 2.452667729357927e-06,
-              "tv_in_mid": 0.0030241436325013638,
-              "gap_out_tv": 0.1850995570421219,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9894943833351135
-            },
-            {
-              "layer": 22,
-              "is_global": false,
-              "p_in": 3.05704679703922e-06,
-              "p_mid": 1.859822418737167e-06,
-              "p_out": 4.590300250129076e-06,
-              "dp_attn": -1.197224378302053e-06,
-              "dp_moe": 2.7304778313919087e-06,
-              "tv_in_mid": 0.0036272427532821894,
-              "gap_out_tv": 0.15932868421077728,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9592868089675903
-            },
-            {
-              "layer": 23,
-              "is_global": true,
-              "p_in": 4.590300250129076e-06,
-              "p_mid": 3.219398877263302e-06,
-              "p_out": 5.291922661854187e-06,
-              "dp_attn": -1.3709013728657737e-06,
-              "dp_moe": 2.072523784590885e-06,
-              "tv_in_mid": 0.06909247487783432,
-              "gap_out_tv": 0.055468738079071045,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.7600820064544678
-            },
-            {
-              "layer": 24,
-              "is_global": false,
-              "p_in": 5.291922661854187e-06,
-              "p_mid": 2.8343881695036544e-06,
-              "p_out": 1.0369544725108426e-05,
-              "dp_attn": -2.4575344923505327e-06,
-              "dp_moe": 7.535156555604772e-06,
-              "tv_in_mid": 0.10564354807138443,
-              "gap_out_tv": 0.13328561186790466,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9320326447486877
-            },
-            {
-              "layer": 25,
-              "is_global": false,
-              "p_in": 1.0369544725108426e-05,
-              "p_mid": 4.428753982210765e-06,
-              "p_out": 2.979030000460625e-07,
-              "dp_attn": -5.940790742897661e-06,
-              "dp_moe": -4.130850982164702e-06,
-              "tv_in_mid": 0.025015713647007942,
-              "gap_out_tv": 0.0,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.8073500990867615
-            }
-          ],
-          "target_id": 236812,
-          "target_str": "4",
-          "p_emb": 0.0,
-          "p_final": 2.979030000460625e-07,
-          "p_final_top1_id": 236743,
-          "official_top1_id": 236743,
-          "anchor_tv": 2.842217780574252e-12,
-          "telescope_target": 2.979030000460625e-07,
-          "endpoints_target": 2.979030000460625e-07,
-          "telescope_broken": false,
-          "n_tokens": 6
-        },
-        "arithmetic_space": {
-          "rows": [
-            {
-              "layer": 0,
-              "is_global": false,
-              "p_in": 0.0,
-              "p_mid": 2.654886372965848e-07,
-              "p_out": 3.6283439801114165e-15,
-              "dp_attn": 2.654886372965848e-07,
-              "dp_moe": -2.654886336682408e-07,
-              "tv_in_mid": 0.9988484382629395,
-              "gap_out_tv": 0.9999997615814209,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 1.0
-            },
-            {
-              "layer": 1,
-              "is_global": false,
-              "p_in": 3.6283439801114165e-15,
-              "p_mid": 6.914249988526633e-13,
-              "p_out": 7.433408055756985e-12,
-              "dp_attn": 6.877966548725519e-13,
-              "dp_moe": 6.7419830569043215e-12,
-              "tv_in_mid": 2.1728688807343133e-05,
-              "gap_out_tv": 0.9999967813491821,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.9999634027481079
-            },
-            {
-              "layer": 2,
-              "is_global": false,
-              "p_in": 7.433408055756985e-12,
-              "p_mid": 4.608502024439076e-07,
-              "p_out": 1.1572536351422968e-07,
-              "dp_attn": 4.6084276903585186e-07,
-              "dp_moe": -3.4512483892967794e-07,
-              "tv_in_mid": 0.19357751309871674,
-              "gap_out_tv": 0.9999340176582336,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.8008785247802734
-            },
-            {
-              "layer": 3,
-              "is_global": false,
-              "p_in": 1.1572536351422968e-07,
-              "p_mid": 0.00024023719015531242,
-              "p_out": 8.280177280539647e-05,
-              "dp_attn": 0.0002401214647917982,
-              "dp_moe": -0.00015743541734991595,
-              "tv_in_mid": 0.7136473655700684,
-              "gap_out_tv": 0.9997190237045288,
-              "top1_out_id": 236770,
-              "top1_out_str": "1",
-              "top1_out_prob": 0.6302988529205322
-            },
-            {
-              "layer": 4,
-              "is_global": false,
-              "p_in": 8.280177280539647e-05,
-              "p_mid": 0.0016086103860288858,
-              "p_out": 0.0015584976645186543,
-              "dp_attn": 0.0015258086132234894,
-              "dp_moe": -5.0112721510231495e-05,
-              "tv_in_mid": 0.1677214652299881,
-              "gap_out_tv": 0.9973331093788147,
-              "top1_out_id": 236770,
-              "top1_out_str": "1",
-              "top1_out_prob": 0.3813517987728119
-            },
-            {
-              "layer": 5,
-              "is_global": true,
-              "p_in": 0.0015584976645186543,
-              "p_mid": 0.004205356817692518,
-              "p_out": 0.018108366057276726,
-              "dp_attn": 0.002646859153173864,
-              "dp_moe": 0.013903009239584208,
-              "tv_in_mid": 0.561591386795044,
-              "gap_out_tv": 0.9789906740188599,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.38717392086982727
-            },
-            {
-              "layer": 6,
-              "is_global": false,
-              "p_in": 0.018108366057276726,
-              "p_mid": 0.009547983296215534,
-              "p_out": 0.010032509453594685,
-              "dp_attn": -0.008560382761061192,
-              "dp_moe": 0.0004845261573791504,
-              "tv_in_mid": 0.30754944682121277,
-              "gap_out_tv": 0.9891542196273804,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.5145695209503174
-            },
-            {
-              "layer": 7,
-              "is_global": false,
-              "p_in": 0.010032509453594685,
-              "p_mid": 0.0035776356235146523,
-              "p_out": 0.0037983451038599014,
-              "dp_attn": -0.006454873830080032,
-              "dp_moe": 0.00022070948034524918,
-              "tv_in_mid": 0.4958338141441345,
-              "gap_out_tv": 0.9926426410675049,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.46734389662742615
-            },
-            {
-              "layer": 8,
-              "is_global": false,
-              "p_in": 0.0037983451038599014,
-              "p_mid": 0.0032191004138439894,
-              "p_out": 0.010754011571407318,
-              "dp_attn": -0.0005792446900159121,
-              "dp_moe": 0.007534911157563329,
-              "tv_in_mid": 0.49939215183258057,
-              "gap_out_tv": 0.9871859550476074,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.029232433065772057
-            },
-            {
-              "layer": 9,
-              "is_global": false,
-              "p_in": 0.010754011571407318,
-              "p_mid": 0.008801854215562344,
-              "p_out": 0.007299585733562708,
-              "dp_attn": -0.0019521573558449745,
-              "dp_moe": -0.0015022684819996357,
-              "tv_in_mid": 0.11786168813705444,
-              "gap_out_tv": 0.9913842678070068,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.028870420530438423
-            },
-            {
-              "layer": 10,
-              "is_global": false,
-              "p_in": 0.007299585733562708,
-              "p_mid": 0.009268224239349365,
-              "p_out": 0.013173822313547134,
-              "dp_attn": 0.0019686385057866573,
-              "dp_moe": 0.003905598074197769,
-              "tv_in_mid": 0.17059096693992615,
-              "gap_out_tv": 0.9852915406227112,
-              "top1_out_id": 202750,
-              "top1_out_str": "/=",
-              "top1_out_prob": 0.013173822313547134
-            },
-            {
-              "layer": 11,
-              "is_global": true,
-              "p_in": 0.013173822313547134,
-              "p_mid": 0.7478702664375305,
-              "p_out": 0.42451587319374084,
-              "dp_attn": 0.7346964441239834,
-              "dp_moe": -0.3233543932437897,
-              "tv_in_mid": 0.7801573276519775,
-              "gap_out_tv": 0.5697215795516968,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.42451587319374084
-            },
-            {
-              "layer": 12,
-              "is_global": false,
-              "p_in": 0.42451587319374084,
-              "p_mid": 0.326809287071228,
-              "p_out": 0.38994669914245605,
-              "dp_attn": -0.09770658612251282,
-              "dp_moe": 0.06313741207122803,
-              "tv_in_mid": 0.1261191964149475,
-              "gap_out_tv": 0.6040826439857483,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.38994669914245605
-            },
-            {
-              "layer": 13,
-              "is_global": false,
-              "p_in": 0.38994669914245605,
-              "p_mid": 0.4263225793838501,
-              "p_out": 0.7314428687095642,
-              "dp_attn": 0.03637588024139404,
-              "dp_moe": 0.3051202893257141,
-              "tv_in_mid": 0.09117123484611511,
-              "gap_out_tv": 0.265084445476532,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.7314428687095642
-            },
-            {
-              "layer": 14,
-              "is_global": false,
-              "p_in": 0.7314428687095642,
-              "p_mid": 0.6842503547668457,
-              "p_out": 0.8497462868690491,
-              "dp_attn": -0.047192513942718506,
-              "dp_moe": 0.16549593210220337,
-              "tv_in_mid": 0.05895976722240448,
-              "gap_out_tv": 0.18920926749706268,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.8497462868690491
-            },
-            {
-              "layer": 15,
-              "is_global": false,
-              "p_in": 0.8497462868690491,
-              "p_mid": 0.815561056137085,
-              "p_out": 0.9477441906929016,
-              "dp_attn": -0.03418523073196411,
-              "dp_moe": 0.13218313455581665,
-              "tv_in_mid": 0.04010581970214844,
-              "gap_out_tv": 0.18425361812114716,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9477441906929016
-            },
-            {
-              "layer": 16,
-              "is_global": false,
-              "p_in": 0.9477441906929016,
-              "p_mid": 0.9264119863510132,
-              "p_out": 0.9901214838027954,
-              "dp_attn": -0.021332204341888428,
-              "dp_moe": 0.06370949745178223,
-              "tv_in_mid": 0.02531650848686695,
-              "gap_out_tv": 0.18763460218906403,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9901214838027954
-            },
-            {
-              "layer": 17,
-              "is_global": true,
-              "p_in": 0.9901214838027954,
-              "p_mid": 0.9885473251342773,
-              "p_out": 0.9920299053192139,
-              "dp_attn": -0.0015741586685180664,
-              "dp_moe": 0.0034825801849365234,
-              "tv_in_mid": 0.008933346718549728,
-              "gap_out_tv": 0.18799231946468353,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9920299053192139
-            },
-            {
-              "layer": 18,
-              "is_global": false,
-              "p_in": 0.9920299053192139,
-              "p_mid": 0.9887486696243286,
-              "p_out": 0.9932944178581238,
-              "dp_attn": -0.003281235694885254,
-              "dp_moe": 0.004545748233795166,
-              "tv_in_mid": 0.0041720010340213776,
-              "gap_out_tv": 0.18693505227565765,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9932944178581238
-            },
-            {
-              "layer": 19,
-              "is_global": false,
-              "p_in": 0.9932944178581238,
-              "p_mid": 0.9928826093673706,
-              "p_out": 0.9978083968162537,
-              "dp_attn": -0.00041180849075317383,
-              "dp_moe": 0.004925787448883057,
-              "tv_in_mid": 0.00044583622366189957,
-              "gap_out_tv": 0.19061031937599182,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9978083968162537
-            },
-            {
-              "layer": 20,
-              "is_global": false,
-              "p_in": 0.9978083968162537,
-              "p_mid": 0.9983142614364624,
-              "p_out": 0.9964810609817505,
-              "dp_attn": 0.0005058646202087402,
-              "dp_moe": -0.001833200454711914,
-              "tv_in_mid": 0.000505890988279134,
-              "gap_out_tv": 0.18955324590206146,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9964810609817505
-            },
-            {
-              "layer": 21,
-              "is_global": false,
-              "p_in": 0.9964810609817505,
-              "p_mid": 0.9934572577476501,
-              "p_out": 0.9894943833351135,
-              "dp_attn": -0.003023803234100342,
-              "dp_moe": -0.003962874412536621,
-              "tv_in_mid": 0.0030241436325013638,
-              "gap_out_tv": 0.1850995570421219,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9894943833351135
-            },
-            {
-              "layer": 22,
-              "is_global": false,
-              "p_in": 0.9894943833351135,
-              "p_mid": 0.9924986958503723,
-              "p_out": 0.9592868089675903,
-              "dp_attn": 0.003004312515258789,
-              "dp_moe": -0.03321188688278198,
-              "tv_in_mid": 0.0036272427532821894,
-              "gap_out_tv": 0.15932868421077728,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9592868089675903
-            },
-            {
-              "layer": 23,
-              "is_global": true,
-              "p_in": 0.9592868089675903,
-              "p_mid": 0.8913074731826782,
-              "p_out": 0.7600820064544678,
-              "dp_attn": -0.06797933578491211,
-              "dp_moe": -0.13122546672821045,
-              "tv_in_mid": 0.06909247487783432,
-              "gap_out_tv": 0.055468738079071045,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.7600820064544678
-            },
-            {
-              "layer": 24,
-              "is_global": false,
-              "p_in": 0.7600820064544678,
-              "p_mid": 0.8618410229682922,
-              "p_out": 0.9320326447486877,
-              "dp_attn": 0.10175901651382446,
-              "dp_moe": 0.07019162178039551,
-              "tv_in_mid": 0.10564354807138443,
-              "gap_out_tv": 0.13328561186790466,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.9320326447486877
-            },
-            {
-              "layer": 25,
-              "is_global": false,
-              "p_in": 0.9320326447486877,
-              "p_mid": 0.954906165599823,
-              "p_out": 0.8073500990867615,
-              "dp_attn": 0.022873520851135254,
-              "dp_moe": -0.14755606651306152,
-              "tv_in_mid": 0.025015713647007942,
-              "gap_out_tv": 0.0,
-              "top1_out_id": 236743,
-              "top1_out_str": " ",
-              "top1_out_prob": 0.8073500990867615
-            }
-          ],
-          "target_id": 236743,
-          "target_str": " ",
-          "p_emb": 0.0,
-          "p_final": 0.8073500990867615,
-          "p_final_top1_id": 236743,
-          "official_top1_id": 236743,
-          "anchor_tv": 2.842217780574252e-12,
-          "telescope_target": 0.8073500990867615,
-          "endpoints_target": 0.8073500990867615,
-          "telescope_broken": false,
-          "n_tokens": 6
-        }
-      },
-      "telescope": {
-        "paris": {
-          "telescope_dev": 0.0,
-          "anchor_tv": 2.7168940708310885e-11
-        },
-        "arithmetic_digit": {
-          "telescope_dev": 0.0,
-          "anchor_tv": 2.842217780574252e-12
-        },
-        "arithmetic_space": {
-          "telescope_dev": 0.0,
-          "anchor_tv": 2.842217780574252e-12
-        }
-      },
-      "attribution": {
-        "paris": {
-          "driver": "attn",
-          "peak_layer": 17,
-          "driver_is_global": true,
-          "lead": 0.6859115078113973,
-          "challenger": 0.1407126784324646,
-          "unique": true,
-          "max_dp_attn": {
-            "layer": 17,
-            "value": 0.6859115078113973,
-            "is_global": true
+        "ko_total_17": {
+          "total": 0.08606889843940735,
+          "per_expert": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.008677959442138672,
+            "3": 0.005427002906799316,
+            "4": 0.017202645540237427,
+            "5": 0.0010643601417541504,
+            "6": 0.028955429792404175,
+            "7": 0.02474150061607361
           },
-          "max_dp_moe": {
-            "layer": 17,
-            "value": 0.1407126784324646,
-            "is_global": true
-          }
+          "p_raw": 0.5030781626701355
         },
-        "arithmetic_digit": {
-          "driver": "attn",
-          "peak_layer": 3,
-          "driver_is_global": false,
-          "lead": 0.03560145533265313,
-          "challenger": 0.03431616351008415,
-          "unique": true,
-          "max_dp_attn": {
-            "layer": 3,
-            "value": 0.03560145533265313,
-            "is_global": false
+        "ko_total_10": {
+          "total": 0.01699957251548767,
+          "per_expert": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.0,
+            "3": 7.170438766479492e-05,
+            "4": 0.0038742423057556152,
+            "5": 0.0042813122272491455,
+            "6": 0.0008716583251953125,
+            "7": 0.007900655269622803
           },
-          "max_dp_moe": {
-            "layer": 4,
-            "value": 0.03431616351008415,
-            "is_global": false
-          }
+          "p_raw": 0.5030781626701355
         },
-        "arithmetic_space": {
-          "driver": "attn",
-          "peak_layer": 11,
-          "driver_is_global": true,
-          "lead": 0.7346964441239834,
-          "challenger": 0.3051202893257141,
-          "unique": true,
-          "max_dp_attn": {
-            "layer": 11,
-            "value": 0.7346964441239834,
-            "is_global": true
-          },
-          "max_dp_moe": {
-            "layer": 13,
-            "value": 0.3051202893257141,
-            "is_global": false
-          }
-        }
+        "l17_lion": true,
+        "l17_stronger": true
       },
-      "contraction": {
-        "paris": {
-          "l_star": 17,
-          "tail_mean": 0.37637601958380806,
-          "pre_mean": 0.9702994893578922,
-          "ok": true
-        },
-        "arithmetic_digit": {
-          "l_star": 11,
-          "tail_mean": 0.21921731233596803,
-          "pre_mean": 0.9928756356239319,
-          "ok": true
-        },
-        "arithmetic_space": {
-          "l_star": 11,
-          "tail_mean": 0.21921731233596803,
-          "pre_mean": 0.9928756356239319,
-          "ok": true
-        }
-      },
-      "mla": {
-        "paris": {
-          "global_mean_tv": 0.5055739134550095,
-          "local_mean_tv": 0.1235944105799056,
-          "ok": true,
-          "in_band": true
-        },
-        "arithmetic_digit": {
-          "global_mean_tv": 0.3549436340108514,
-          "local_mean_tv": 0.18859779462491133,
-          "ok": true,
-          "in_band": true
-        },
-        "arithmetic_space": {
-          "global_mean_tv": 0.3549436340108514,
-          "local_mean_tv": 0.18859779462491133,
-          "ok": true,
-          "in_band": false
-        }
-      },
-      "purity_det": {
-        "fingerprint": true,
-        "paris": true,
-        "arithmetic_digit": true,
-        "arithmetic_space": true
+      "l11_anomaly": {
+        "tv_k47": [
+          0.007055392488837242,
+          0.021150756627321243,
+          0.02476227656006813
+        ],
+        "tv_k12": [
+          0.019435057416558266,
+          0.04474794864654541,
+          0.0
+        ],
+        "mean_k47": 0.01765614189207554,
+        "mean_k12": 0.021394335354367893,
+        "outlier_causal": false
       }
     }
   }
@@ -6445,7 +5700,7 @@ JSON: scratches/mi2_logit_lens_p4.json
 
 ==============================================================================
 ### FILE: scratches/sprachspiel_bericht.md
-### bytes: 104079   lines: 1697
+### bytes: 110682   lines: 1805
 ==============================================================================
 # Sprachspiel-Bericht: Die Wittgenstein-Maschine generiert — Regel, Wort, Mitspieler
 
@@ -8146,9 +7401,117 @@ LOG, kein Re-Decide; Roh-Felder vollständig in `mi2_logit_lens_p4.json`
 Akkommodation (Out-of-Band-Probe wird gemessen, verändert aber KEIN
 Band). Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §20.
 
+## 19. MI-3 — Kausale Interventionen: Hinreichendheit und Notwendigkeit getrennt (2026-10-26)
+
+### 19.1 Die Sonde und der Vorlauf
+
+MI-3 greift erstmals nicht nur lesend in den Routing-Träger ein: **steer_band**
+(SET-Semantik nach dem SP13-dict-Arm: `fill_(-50)` + `g[e]=+50`, NUR in den
+gegebenen Schichten) und **knockout_experts** (ADDITIV auf dem GELERNTEN
+Bias: `g[e] += -50`, Rest unverändert) — beide selbst-restaurierend mit
+`copy_` + `torch.equal`-Verifikation (EINHEIT C3). Die Reinstreue der Sonde
+ist VORGESCHALTET als eigenes Verdict (V1), nicht implizit: **mi3_intervention_
+purity PASS — fingerprint_equal=True (expert_bias + gate.weight, alle 26
+Schichten), Kontrolle-Forward canon_tv 0.0 exakt.** Jede Messung dieses
+Laufs trägt nur ihre ausdrückliche Intervention.
+
+Vorlauf-Buchung (KORREKTUR-LOG Lauf 1): die erste GPU-Ausführung lieferte
+die MESSFELDER vollständig, klassifizierte aber alles OFFEN — die evals
+buchen unter Ergebnis-Schlüsseln (purity, sufficiency, …), die Klassifikation
+prüfte Mitgliedschaft unter den registrierten Lang-Namen. Fix: RESULT_KEYS-
+Mapping. Rein klassifikatorischer Fehler; die Roh-Felder von Lauf 1 blieben
+persistent, und die Läufe 2–4 bestätigen die Feld-Felder bit-stabil.
+
+Determinismus-Anker (4 Läufe bit-identisch): resolve=[9079]; dp_attn(ℓ17)
+0.6859115078113973; dp_moe(ℓ17) 0.1407126784324646; m_raw 0.3541586399078369.
+Fünf CPU-Piloten über die ECHTEN Tensor-Helfer (R2: die Piloten führen
+apply_band_steer/apply_expert_knockout aus, keine Synonyme).
+
+### 19.2 Die Verdikt-Tabelle
+
+| Verdict | Status | Kern-Datum |
+|---|---|---|
+| mi3_intervention_purity | **PASS** | fingerprint_equal=True; control_tv=0.0 |
+| mi3_core_vs_edge_sufficiency | **OFFEN** | Premise nicht repliziert: M_raw=0.3542 ≥ tau — ΔM_full 0.0440 ≥ ΔM_core 0.0294 (ratio 0.668); ΔM_edge 0.0404 > ΔM_core |
+| mi3_domain_knockout_specificity | **FAIL** | prose-Seite hält (ko{3,7} 0.0431 > ko{0,1,4} 0.0189); code-Seite fällt (ko{0,1,4} 0.0025 < ko{3,7} 0.0066) |
+| mi3_paris_circuit_resilience | **PASS** | top1=9079 unter allen 5 Bedingungen (2 Core-KOs + 3 Presets) |
+| mi3_layer17_paris_localization | **PASS** | attn_share(17)=0.830 (P4-Datum exakt); Σ\|Δp\|(ℓ17)=0.0861 vs Σ\|Δp\|(ℓ10)=0.0170 — 5.1× |
+| mi3_prose_l11_anomaly_probe | **FAIL** | ko{4,7}(ℓ11)=0.0177 ≤ ko{1,2}(ℓ11)=0.0214 |
+
+3 PASS \| 1 OFFEN \| 2 FAIL → ROT (Falsifikatoren ausgelöst, exit 1).
+
+### 19.3 Verdichtung: die kausale Last trennt sich
+
+**(a) Hinreichendheit sitzt NICHT im Core.** Die registrierte Premise
+(M_raw < 0.01 auf dem SP13-GENERIC_PROMPT) repliziert nicht — die Digit-
+MASSE ist schon ungesteuert 0.354. Die registered OFFEN-Lane greift; die
+persistenten Δ-Daten sagen aber zusätzlich: das Digit-Öffnen über Bias-
+Steering trägt ΔM_core 0.0294 gegen ΔM_edge 0.0404 — das Edge-Band
+(Kopf-Schichten 24/25 + Setup 0..3) trägt 41% mehr. Sogar bei intakter
+Premise wäre die registered Vorhersage (Core ≥ 80%, Core > Edge strikt)
+gescheitert. Die MI-1-Core-Lesart gilt für das ROUTING-PROFIL, nicht für
+das Digit-Masse-Öffnen über den Bias-Kanal.
+
+**(b) Notwendigkeit ist kanal-spitz.** Die prose-Notwendigkeit tritt klar
+heraus: ko{3,7} verschiebt prose 0.0431 (bis 0.0785 auf "Oma erzählt")
+und schont code (0.0025). Die Umkehrung fällt: ko{0,1,4} — die MI-1-code-
+Spezialisten — verschieben code NUR 0.0025 (kaum über Null). Das MI-1-
+Profil (E4/E0/E1 als code-Träger) ist ein Routing-PROFILE-Datum, keine
+Bias-Notwendigkeit: **code-Routing ist über gate.weight getragen** — der
+Gewichts-Träger, den knockout_experts bewusst unangetastet lässt.
+
+**(c) Das ℓ17-Recall-Ereignis ist notwedig über den Bias-Kanal.** Per-
+Experten-KO in GENAU ℓ17 verschiebt p(' Paris') Σ|Δp| 0.0861; genau
+dieselben 8 KOs in ℓ10 (Local-Schicht) nur 0.0170 — 5.1×. Die Träger
+sind e6 (0.0290), e7 (0.0247), e4 (0.0172) in ℓ17 — und die Antwort ist
+dergleich robust: top1 bleibt 9079 UNTER ALLEN 5 Interventions-Bedingungen
+(ko{3,7}@Core, ko{0,1,4}@Core, drei volle Preset-Steerings). Das MI-2-P4-
+Datum (attn_share 0.829774…) reproduziert sich bit-exakt als MI-3-Messung.
+
+**(d) Die L11-Entropy-Delle ist profil-stark aber bias-neutral.** ko{4,7}
+(MI-1: E4 44.6% prose-ℓ11) stört prose in ℓ11 NUR 0.0177; die Kontrolle
+{1,2} 0.0214. Falsifikator ausgelöst: die Anomalie-Paar-Marker sind
+kein Bias-Kausal-Datum — dieselbe Grenze wie (b), mit dem Zusatz-Datenpunkt
+dass die Kontrolle {1,2} pro Text bis 0.0516 (math_logic row 7) schlägt.
+
+Der Neue Satz (MI-3): **Die kausale Last trennt sich auf zwei Träger:
+die prose-Notwendigkeit (e3/e7) und das ℓ17-Recall-Fenster (5.1× über
+ℓ10) liegen im Bias-Kanal; die code-Notwendigkeit und die L11-Anomalie
+LIEGEN NICHT im Bias-Kanal — sie tragen über gate.weight und entziehen
+sich dem Bias-Retrieb, das MI-1-Profil war Tracer-Träger, nicht Kausal-
+Träger.**
+
+### 19.4 Schichtung und Grenzen
+
+- **bias-only-Intervention:** knockout_experts greift NUR den expert_bias-
+  Kanal (+penalty) an; gate.weight bleibt unangetastet. Die Fails sind
+  GRENZEN DES BIAS-KANALS — kein Beweis der Nicht-Kausalität der Experten
+  schlechthin; der Nächste Schritt wäre Ko-Intervention auf gate.weight
+  (Neue Runde, nicht in dieser registriert).
+- **SP13-Level-Diskrepanz (Registrierungsschärfe):** die SP13-"Stumm"-Beobachtung
+  sitzt auf predict_value (greedy decode), die registrierte Premise auf
+  der Digit-MASSE — der Masse-Greedy-Gap (0.354 Masse bei einem dumm
+  decodierenden Kanal) ist ein eigenes Messdatum und bleibt OFFEN-markiert.
+- **[Datums-Zusatz]:** math_logic läuft in V3 außerhalb der registrierten
+  Dissociation (prose/code); die 9 Rows (inkl. anomal_/{kontrolle_}-Spalten)
+  bleiben persistent.
+- **Buchungen:** der Plan hatte die Sektion als §21/§22 eingetragen; die
+  echten Report-Folgen sind **§19 (sprachspiel) / §21 (laufprotokolle)** —
+  berichtigt. Der Klassifikations-Schlüssel-Bug ist im KORREKTUR-LOG der
+  Smoke gebucht (Lauf 1, 41 s, Roh persistent).
+
+P-Protokoll (MI-3-Runde): P1 — MI-1-/MI-2-Dateien unangetastet (nur
+mech_interp erweitert, kein alter Code verändert); P2 — Registrierung
+im Pre-Reg-Docstring und Planfile VOR der ersten Messung, Bänder und
+Experten-Sets sind Canon-Zitate, nie geweitet; P3 — Roh-Felder (alle
+per-Text-TVs, alle per-Experten-Σ, alle Massen) in `mi3_interventions.json`
+vor Auswertung; P4 — Klassifikation strikt nach den registrierten
+Falsifikatoren ohne Still-Fallback (die 2 FAILs stehen). Laufschrift:
+`laufprotokolle_befund_report.md` §21.
+
 ==============================================================================
 ### FILE: scratches/laufprotokolle_befund_report.md
-### bytes: 52979   lines: 855
+### bytes: 54778   lines: 886
 ==============================================================================
 # Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
 
@@ -9006,6 +8369,37 @@ Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u
 (26-Schichten-Sublayer-Ketten auf ALLEN DREI fälligen Koordinaten +
 resolve_raw + telescope/attribution/contraction/mla) in
 `mi2_logit_lens_p4.json`.
+
+## 21. MI-3 — Kausale Interventionen: 3 PASS, 1 OFFEN, 2 FAIL (2026-10-26)
+
+Die Sonde ist selbst-restaurierend und pur (V1 PASS: fingerprint_equal,
+Kontrolle-TV 0.0). Die Kausalität trennt sich:
+
+| Verdict | Status | Datum |
+|---|---|---|
+| purity | PASS | fingerprint=True, control_tv=0.0 |
+| core_vs_edge_sufficiency | OFFEN | Premise nicht repliziert: M_raw=0.3542 ≥ tau; ΔM_edge 0.0404 > ΔM_core 0.0294 |
+| domain_knockout_specificity | FAIL | prose hält (0.0431>0.0189), code fällt (0.0025<0.0066) |
+| paris_circuit_resilience | PASS | 9079 unter allen 5 Bedingungen |
+| layer17_paris_localization | PASS | attn_share 0.830; Σ\|Δp\|(17)=0.0861 vs (10)=0.0170 — 5.1× |
+| prose_l11_anomaly | FAIL | ko{4,7}=0.0177 ≤ ko{1,2}=0.0214 |
+
+Der Neue Satz: **die prose-Notwendigkeit (e3/e7) und das ℓ17-Recall-Fenster
+tragen im Bias-Kanal — die code-Notwendigkeit und die L11-Anomalie tragen
+NICHT über expert_bias, sie sind gate.weight-kausal; das MI-1-Routing-Profil
+war Tracer-Träger, nicht Kausal-Träger.** knockout_experts ist bias-only;
+die Gate-Gewichte bleiben unangetastet — die Fails sind Grenzen des
+Bias-Kanals (R1: keine neue Registrierung in dieser Runde; Ko-Intervention
+auf gate.weight wäre die nächste Runde).
+
+Run: CPU (5 PILOT, exit 2, kein JSON — P3-Schutz) → GPU Lauf 1 (41 s,
+GELB exit 2: Klassifikations-Schlüssel-Bug, Roh persistent, gebucht im
+KORREKTUR-LOG) → Läufe 2–4 (40.6–41.0 s): **ROT exit 1** mit bit-stabiler
+Feldbasis (resolve [9079]; dp_attn 0.6859115078113973; m_raw 0.3541586399078369
+×4 identisch). Ergebnis-JSON `mi3_interventions.json`, Log
+`mi3_interventions.log`; Sonde in machines/mech_interp.py (steer_band/
+knockout_experts/digit_mass/last_probs + Modul-Helfer); ausführlicher
+Befund: `sprachspiel_bericht.md` §19.
 
 ==============================================================================
 ENDE — sha256(des Konkatenats ohne dieser Zeile) notiert in 'scratches/repo2txt_machines_extension.sha256'

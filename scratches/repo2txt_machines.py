@@ -25,21 +25,24 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION MI-2-P4 — Das Sublayer-Röntgengerät, Oberflächen-Exakt-Vollierung
-# (resolve_token_ids_exact, 6/6 PASS GRÜN). Runden-Paket = (a) geändert/neu,
-# (b) AUSGEFÜHRT (das vollständige Programm samt Modul-Level-importierter
-# Maschinen-Basis: verify_machines importiert machine_base + 3 Maschinen +
-# composite + build_machine_corpus auf Modul-Ebene; lisp_parity/lisp_bridge
-# sind funktions-Level (:240/:245) und laufen in MI-2 NICHT) und (c)
-# ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das neue Runden-Set
-# ersetzen (MI-2-Lauf-3-Paket liegt in Git-History: Commits 2455aea/1b4be11).
+# GENERATION MI-3 — Kausale Interventionen (steer_band + knockout_experts;
+# 3 PASS | 1 OFFEN | 2 FAIL, exit 1 ROT): Hinreichendheit sitzt NICHT im
+# Core, prose-Notwendigkeit haelt im Bias-Kanal, code/L11 tragen NICHT
+# ueber expert_bias (gate.weight-kausal), ℓ17-Recall-Fenster 5.1x.
+# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (das vollstaendige
+# Programm samt Modul-Level-importierter Maschinen-Basis: verify_machines
+# importiert machine_base + 3 Maschinen + composite + build_machine_corpus
+# auf Modul-Ebene; lisp_parity/lisp_bridge sind funktions-Level und laufen
+# NICHT) und (c) ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das
+# neue Runden-Set ersetzen (MI-2-P4-Paket liegt in Git-History: Commits
+# d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11).
 FILES = [
-    # (a) GEÄNDERT/NEU — Smoke mit P4-Exakt-Auflösung (re-registrierte
-    #     fällige Oberflächenformen; KORREKTUR-LOG 6 Einträge)
-    "scratches/smoke_mech_interp_logit_lens.py",
-    # (b) AUSGEFÜHRT — die MI-2-Sonde (sublayer_logits unverändert aus
-    #     Commit 2455aea) und die Modul-Level-importierte Maschinen-Basis
+    # (a) GEÄNDERT/NEU — MI-3-Smoke (Prereg-6-Verdikt + KORREKTUR-LOG
+    #     Lauf-1-Buchung) und die Sonde (steer_band/knockout_experts/
+    #     digit_mass/last_probs + Modul-Helfer)
+    "scratches/smoke_mech_interp_interventions.py",
     "machines/mech_interp.py",
+    # (b) AUSGEFÜHRT — die Modul-Level-importierte Maschinen-Basis
     "machines/machine_base.py",
     "machines/goedel_machine.py",
     "machines/turing_machine.py",
@@ -47,16 +50,16 @@ FILES = [
     "machines/composite.py",
     "machines/build_machine_corpus.py",
     # (b) AUSGEFÜHRT — GPU-Kontext (_load_machines_model) und die
-    #     Argon-Modellbasis (Canon-Dateien des Sublayer-Geräts)
+    #     Argon-Modellbasis
     "machines/verify_machines.py",
     "modeling_argon.py",
     "moe_layers.py",
-    # (c) ERGEBNISSE — Run-Log + Ergebnis-JSON (P3-Roh-Felder auf allen
-    #     drei fälligen Koordinaten)
-    "scratches/mi2_logit_lens_p4_gpu.log",
-    "scratches/mi2_logit_lens_p4.json",
-    # (c) ERGEBNISSE — Berichte des Laufs (§18 Vollfassung P4,
-    #     Laufschrift §20)
+    # (c) ERGEBNISSE — Run-Log + Ergebnis-JSON (Roh-Felder: purity/
+    #     sufficiency/domain_knockout rows_9/paris/l17/l11)
+    "scratches/mi3_interventions.log",
+    "scratches/mi3_interventions.json",
+    # (c) ERGEBNISSE — Berichte des Laufs (§19 Vollfassung MI-3,
+    #     Laufschrift §21)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -98,11 +101,12 @@ def main() -> int:
         f"{SEPARATOR}\n"
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
-        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-2-P4) —\n"
+        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-3) —\n"
         " geändert + ausgeführt (Programm samt Basis und Anker) + Ergebnisse;\n"
-        " das vollständige Korpus über die Git-History (MI-2-Lauf 3: Commits\n"
-        " 2455aea/1b4be11; MI-1: Commits 67c1b5e/fc367c3; frühere kumulative\n"
-        " Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
+        " das vollständige Korpus über die Git-History (MI-3: Commits s.\n"
+        " Runden-Commit; MI-2-P4: d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11;\n"
+        " MI-1: 67c1b5e/fc367c3; frühere kumulative Fassungen: 49ecc31 =\n"
+        " 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"

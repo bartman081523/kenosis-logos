@@ -854,3 +854,34 @@ Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u
 (26-Schichten-Sublayer-Ketten auf ALLEN DREI fälligen Koordinaten +
 resolve_raw + telescope/attribution/contraction/mla) in
 `mi2_logit_lens_p4.json`.
+
+## 21. MI-3 — Kausale Interventionen: 3 PASS, 1 OFFEN, 2 FAIL (2026-10-26)
+
+Die Sonde ist selbst-restaurierend und pur (V1 PASS: fingerprint_equal,
+Kontrolle-TV 0.0). Die Kausalität trennt sich:
+
+| Verdict | Status | Datum |
+|---|---|---|
+| purity | PASS | fingerprint=True, control_tv=0.0 |
+| core_vs_edge_sufficiency | OFFEN | Premise nicht repliziert: M_raw=0.3542 ≥ tau; ΔM_edge 0.0404 > ΔM_core 0.0294 |
+| domain_knockout_specificity | FAIL | prose hält (0.0431>0.0189), code fällt (0.0025<0.0066) |
+| paris_circuit_resilience | PASS | 9079 unter allen 5 Bedingungen |
+| layer17_paris_localization | PASS | attn_share 0.830; Σ\|Δp\|(17)=0.0861 vs (10)=0.0170 — 5.1× |
+| prose_l11_anomaly | FAIL | ko{4,7}=0.0177 ≤ ko{1,2}=0.0214 |
+
+Der Neue Satz: **die prose-Notwendigkeit (e3/e7) und das ℓ17-Recall-Fenster
+tragen im Bias-Kanal — die code-Notwendigkeit und die L11-Anomalie tragen
+NICHT über expert_bias, sie sind gate.weight-kausal; das MI-1-Routing-Profil
+war Tracer-Träger, nicht Kausal-Träger.** knockout_experts ist bias-only;
+die Gate-Gewichte bleiben unangetastet — die Fails sind Grenzen des
+Bias-Kanals (R1: keine neue Registrierung in dieser Runde; Ko-Intervention
+auf gate.weight wäre die nächste Runde).
+
+Run: CPU (5 PILOT, exit 2, kein JSON — P3-Schutz) → GPU Lauf 1 (41 s,
+GELB exit 2: Klassifikations-Schlüssel-Bug, Roh persistent, gebucht im
+KORREKTUR-LOG) → Läufe 2–4 (40.6–41.0 s): **ROT exit 1** mit bit-stabiler
+Feldbasis (resolve [9079]; dp_attn 0.6859115078113973; m_raw 0.3541586399078369
+×4 identisch). Ergebnis-JSON `mi3_interventions.json`, Log
+`mi3_interventions.log`; Sonde in machines/mech_interp.py (steer_band/
+knockout_experts/digit_mass/last_probs + Modul-Helfer); ausführlicher
+Befund: `sprachspiel_bericht.md` §19.
