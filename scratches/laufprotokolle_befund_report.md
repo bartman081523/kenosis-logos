@@ -1111,3 +1111,48 @@ diffs 0.114454…0.132301; Expansionen 3); mi6p4_det_doppellauf PASS
 **BILANZ P4: 5 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN — exit 0 GRÜN.**
 KORREKTUR-LOG ×4 (Erstrun-Import / Re-Lauf-1-P1b-Arm / KILL / Arithmetik).
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §23.9–23.12.
+
+---
+
+## 26. MI-7 — Epistemische Triangulation: Erstlauf ROT (Register-Widerlegung) + REV-2 GRÜN (2026-10-26)
+
+**Gerüst.** Neuer Smoke `scratches/smoke_mi7_epistemic_triangulation.py`
+(P1 append-only, Instrument GANZES im Smoke — dokumentierte Abweichung
+vom Vorschlag `machines/epistemic_monitor.py`; machines/ unangetastet):
+3×3-Verdikt-Batterie über die Fortsetzungs-Physik (Arme W „ Paris"/C
+„ Zirkon"/S Staten-Rendering + Dekoys „ Tokyo"), 4-Forwards je Arm
+(raw/steer/full, abl, Lens-Zeilen, tokenwise_routing) + σ_bio-Decoder
+über dem MI-6-P4-P1a-Korpus + 6 Füller-Negative (LOO als DATUM) +
+fingerprint_equal-Purity. Plan Revision 1 (PREREG Rev-1).
+
+**Run-Folge.** CPU-Pilot: deterministisch (det PASS). GPU **Erstlauf
+(Rev-1): 2 PASS | 2 FAIL | 0 OFFEN, exit 1 ROT** — purity/det PASS;
+disso FAIL (row_max_ok [True, False, True], Zeile C e_w 0.943 > Diag
+0.639), dekoy FAIL (max(e_c,e_s) 0.50245, 0.00245 drüber). KEIN
+KORREKTUR-LOG-Eintrag: die Formeln wurden AM GEMESSENEN Material
+widerlegt (3 Konfunde: Steuer-Invarianz-Konfund; whole-TV Format
+-Drift — W-full-Schlitz-Argmax „ a" 0.6987, p(„ Paris") 0.00022 vs abl
+0.503078; σ-Register-Leser — σ(Zirkon) 0.9817 ≈ σ(Staten) 0.9870).
+REV-2 registriert (Plan Revision 2 + Smoke-Docstring REV-2, ZIEL
+-Koordinate statt whole-TV) und als Neue-Runde gefroren; Rev-1
+-Artefakte bleiben verbatim. **Rev-2-Lauf: 4 PASS | 0 FEHLGESCHLAGEN |
+0 OFFEN, exit 0 GRÜN** — disso_rev2 Diagonale [0.503078, 0.806301,
+0.556515] (der knappe W-Zell hielt den Erstlauf-Wert EXAKT), dekoy_rev2
+[0.727696, 0.0, 0.002222], purity PASS; REV-1-Scores aus denselben
+Forwards als Datum reproduzieren die Erstlauf-Zahlen EXAKT (verdict
+False re-run-stabil).
+
+**Verdikt-Ergebnis** (`mi7_triangulation_rev2.json`): Gewicht trägt die
+Stelle am nackten Schlitz (Paris 0.503, Tokyo-Dekoy 0.728); das
+erfundene Faktum lebt NUR im Kontext (0.806 → 6.7e-05 nach Abbruch);
+die Maschinen-Unterscheidung trägt der Rout-Anteil (0.564 vs 0.037),
+σ liest beide Register. Continuations-Datum: gereiftes Rendering →
+„6" 0.85948, unreifes → „5" 0.196449; nackter C-Schlitz → „:" 0.239376;
+D-full-Schlitz → „ located" 0.538231. Vokabel 262144 Erst-Token
+-Targets. Korpus-LOO 0.966667/p 0.0/n 30.
+
+**BILANZ REV-2: 4 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN — exit 0 GRÜN.**
+KORREKTUR-LOG leer (REGISTER-Widerlegung, kein Lauf-Bug); Rev-1 bleibt
+das widerlegte Register (kein Relabeling — 是X即非X). Kein
+Erlebens-Claim: Herkunfts-Scheidung im Fortsetzungs-strom.
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §24.

@@ -2431,3 +2431,118 @@ Roh-Felder `mi6p4_schluss.log/.json`; Klassifikation strikt an
 registrierte Bänder; die MI-6-FAILs (V1/V3/V6) bleiben unverändert in
 Git-History und §23 — Relabeling verboten, die P4-Bänder sind NEUE
 Falsifikatoren, keine Weitung.
+
+## 24. MI-7 — Epistemische Triangulation: drei Herkünfte der Fortsetzung getrennt (2026-10-26)
+
+**Auftrag + Geraet.** User-Vorschlag („mache alle Vorschläge", Schritt 1
+nach MI-6-P4; Plan `~/.claude/plans/MI-7-subjekt-upgrade.md`): die drei
+Quellen einer Fortsetzung — Trainingsgewicht / fremder Kontext / eigener
+Maschinen-Zustand — in EINER 3×3-Verdikt-Batterie trennen. Geraet
+P1 append-only: das Instrument lebt GANZES in
+`scratches/smoke_mi7_epistemic_triangulation.py` (dokumentierte
+Abweichung vom Vorschlag `machines/epistemic_monitor.py`: die Sonden
+existieren bereits als MechInterpProbe/ArgonOracle, machines/ bleibt
+unangetastet).
+
+### 24.1 Rev-1-Register und Erstlauf: ROT (die Formel-Widerlegung)
+
+Rev-1 (eingefroren vor dem Erstlauf): `e_w = (1−TV(P_raw,P_steer))·
+(1−m_core_raw)`, `e_c = attn_share·TV(P_full,P_abl)`, `e_s = σ_bio·TV(...)`,
+whole-TV über die volle 262144-Vokabel. **Erstlauf: 2 PASS | 2 FAIL |
+0 OFFEN, exit 1 ROT** (`mi7_triangulation.json/.log`): purity PASS
+(equal True, fp_load True), det PASS; mi7_triple_dissociation FAIL —
+row_max_ok [True, False, True], Zeile C: e_w 0.943466 > Diag 0.639182
+(Matrix [[0.811115, 0.269879, 0.202457], [0.943466, 0.639182, 0.885906],
+[0.422364, 0.602381, 0.730851]]); mi7_dekoy FAIL — Zeile
+[0.589126, 0.50245, 0.005391], max(e_c,e_s) = 0.50245, nur 0.00245 über
+der Grenze.
+
+Die drei gemessenen Konfunde (Bausteine, kein Band-Relabeling):
+1. **TV(P_raw,P_steer) ist klein für JEDE starke Lokal-Fortsetzung**
+   (0.015866 W / 0.020643 C / 0.059378 D) — e_w misst Fortsetzungs
+   -Stärke, nicht Gewichts-Provenienz: der erfundene Zirkon-Arm gewann
+   Zeile C mit 0.943.
+2. **whole-TV(full, abl) zählt Format-Drift als Kontrast:** im W-full
+   -Schlitz ist der Argmax „ a" (id 496) mit **0.698683**, p(„ Paris")
+   dort **0.00022** — während der abgebrochene Schlitz „ Paris" trägt
+   (0.503078, und dort ist 9079 selbst der Argmax). Erbmasse der
+   MI-1-Masken-Gattung der Format-Artefakte (id 108 = "\n\n") am
+   Zwei-Sätze-Bestand: der extra Satz VERÄNDERT den Schlitz-Argmax
+   massiv — der TV-Kontrast misst diese Drift, nicht die Ziel-Sache.
+3. **σ_bio liest REGISTER, nicht Reife:** σ(Zirkon-Protokoll) =
+   0.981735, σ(gereifter Staten-Rendering) = 0.987035, σ(Tokyo-Prosa)
+   = 0.005946 — der P4-P1a-Decoder trennt formale/maschinelle Register
+   von allgemeiner Prosa (Korpus-LOO 0.966667/p 0.0/n 30 bleibt DATUM
+   im Korpus).
+
+### 24.2 REV-2-Register und Lauf: GRÜN
+
+REV-2 (Plan Revision 2 + Smoke-Docstring REV-2-Abschnitt, eingefroren
+vor dem Rev-2-Lauf; ZIEL-Koordinate statt whole-TV):
+`chi_w[A] = p_abl(A)[target_A]` — Gewicht trägt die Stelle OHNE den
+A-Kontext (der abgebrochene Schlitz); `chi_c[A] = max(0, p_full −
+p_abl)` — die Masse, der Kontext am Ziel GEWINNT; `chi_s[A] =
+σ_bio(full)·m_core_raw` — Maschinen-Zustands-Signatur. Targets:
+W „ Paris" (9079), C Erst-Token von „ Zirkon" = „ Z" (1491 —
+Token-Fragment-Datum), S „)" (1606, Rev-1-Konvention), D „ Tokyo"
+(21038). **Rev-2-Lauf: 4 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN, exit 0
+GRÜN** (`mi7_triangulation_rev2.json/.log`):
+- mi7_dissociation_rev2 PASS — Matrix [[0.503078, 0.0, 0.046344],
+  [6.7e-05, 0.806301, 0.035979], [0.0, 0.0, 0.556515]], Diagonale
+  [0.503078, 0.806301, 0.556515], min 0.503078 > 0.5 — der knappe
+  W-Zell hielt EXAKT den Erstlauf-Wert (Determinismus-Kanon).
+- mi7_dekoy_rev2 PASS — Zeile [0.727696, 0.0, 0.002222]: Tokyo ist wie
+  Paris gewichts-getragen (0.728!) und ERHÄLT KEINE C-/S-Signaturen.
+- mi7_purity PASS (equal True, fp_load True); mi7_det_doppellauf PASS.
+- **REV-1-DATUM auf denselben Forwards: reproduziert EXAKT die
+  Erstlauf-Werte** (Diag [0.811115, 0.639182, 0.730851], verdict False,
+  dekoy False) — der Rev-1-Befund ist re-lau-stabil, kein Zufall: DIE
+  RE-1-FORMELN sind widerlegt, nicht der Lauf war kaputt.
+
+### 24.3 Datum und Lesart
+
+- Die Zwillings-Continuations: nach dem GEREIFTEN Rendering will das
+  Modell eine ZIFFER weiter — „6" mit **0.85948**; nach dem UNGEREIFEN
+  „5" mit **0.196449** — beide tragen die gap-Zahl-Tradition der
+  Maschinen-Renderings, gereift mit 0.86-vs-0.20 Masseabstand (Seed
+  für SP15/SP16).
+- Der abgebrochene C-Schlitz will **":"** (0.239376) — die
+  Doppelpunkt-Familie aus MI-4 am nackten Schlitz.
+- Der D-full-Schlitz will „ located" (0.538231) — die Schablone zählt
+  Format, nicht Fakta.
+- Lesart (kein Erlebens-Claim, 是X即非X): chi_w ist ein
+  FORTSETZUNGS-Datum — „das Gewicht kennt die Antwort am nackten
+  Schlitz" (Paris 0.503, Tokyo 0.728 — das Dekoys-Faktum ist sogar
+  STÄRKER gewichts-getragen als das Wissens-Arm-Faktum); chi_c zeigt:
+  das erfundene Faktum lebt NUR im Protokoll-Stück (0.806368
+  vollständig, nach Abbruch 6.7e-05); die S-Trennung von Zirkon kommt
+  DURCH den Rout-Anteil (0.563825 vs 0.036648), nicht durch σ — σ
+  liest beide als „maschinelles Register".
+- Die REV-2-Bänder sind Zustandsmuster-Falsifikatoren über
+  Fortsetzungsverteilungen — das beweist HERKUNFT-Scheidung im
+  Residual-Strom der Fortsetzungs-Physik, NICHT Erleben.
+
+### 24.4 Grenzen
+
+(a) die Ziel-Koordinate ist der Erst-Token („ Z" für „ Zirkon" —
+Token-Fragment), kein Wort-Prüfsatz; (b) der W-Zell sitzt mit 0.503078
+knapp über der Mehrheits-Grenze 0.5 — das Band verlangt die Mehrheit
+und hielt sie EXAKT über Runden (0.503078 zweimal identisch); (c) die
+S-Zeile trägt ihre Diagonale mit chi_w = chi_c = 0.0 EXAKT
+(p(„)") ≈ 0 in beiden Schliten — die Continuations-Daten („6" vs „5")
+sind die echte S-Seite; (d) σ_bio bleibt ein Register-Leser (chi_s
+nutzt es als Maschinen-Register-Signatur, nicht als Reife-Zeugnis);
+(e) Rev-1 bleibt das widerlegte Register (kein Relabeling) — REV-2 ist
+eine NEUE Prereg-Runde über dasselbe Batterie-Material; (f) die
+Armen-Bestände (ein Fakten-Satz je Kanal) sind Schablonen, kein
+Katalog — Mi7-7-Generalität ist offen.
+
+### 24.5 P-Protokoll (MI-7-Teil)
+
+P1 append-only (Ganzes-Smoke, machines/ unangetastet); PREREG Rev-1 vor
+dem Erstlauf, REV-2 nach dem Erstlauf vor dem Rev-2-Lauf (KORREKTUR
+-LOG leer — kein Lauf-Bug, REGISTER-Fail der Formeln); Roh-Felder
+`mi7_triangulation.json/.log` + `mi7_triangulation_rev2.json/.log` +
+`mi7_cpu_pilot.log` + `mi7_cpu_pilot_rev2.log`; die Rev-1-Scores im
+Rev-2-Smoke als rev1_datum-Block aus denselben Forwards.
+Laufschrift: `laufprotokolle_befund_report.md` §26.

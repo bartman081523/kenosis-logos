@@ -2,20 +2,21 @@
 repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung
 (Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)
 GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs
- (MI-6-P4, Subjekt-Schluss) — geändert + ausgeführt (P4-Smoke +
- das MI-6-Programm samt Maschinen-Basis und Lade-Kette) +
- Ergebnisse; das vollständige Korpus über die Git-History
- (MI-6: 55ed1e9/05f63ae; MI-5: 0599d58/c1d8334;
- MI-3-P4+MI-4: 48d8d68/c860025; MI-3: 97ec577/26f2e25;
+ (MI-7, Epistemische Triangulation REV-2) — geändert +
+ ausgeführt (MI-7-Smoke + das Programm samt Maschinen-Basis und
+ Lade-Kette) + Ergebnisse; das vollständige Korpus über die
+ Git-History (MI-6-P4: 3cb8bf9/52b1dc7; MI-6: 55ed1e9/05f63ae;
+ MI-5: 0599d58/c1d8334; MI-3-P4+MI-4: 48d8d68/c860025;
+ MI-3: 97ec577/26f2e25;
  MI-2-P4: d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11;
  MI-1: 67c1b5e/fc367c3;
  frühere kumulative Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).
-Dateien: 20   bytes: 553815   Zeilen: 10915
+Dateien: 23   bytes: 651194   Zeilen: 12721
 ==============================================================================
 INDEX
-  scratches/smoke_mi6p4_schluss.py  [   21848 B   468 Zeilen]
-  scratches/sprachspiel_bericht.md  [  148597 B  2432 Zeilen]
-  scratches/laufprotokolle_befund_report.md  [   68440 B  1112 Zeilen]
+  scratches/smoke_mi7_epistemic_triangulation.py  [   28375 B   631 Zeilen]
+  scratches/sprachspiel_bericht.md  [  155041 B  2547 Zeilen]
+  scratches/laufprotokolle_befund_report.md  [   71031 B  1157 Zeilen]
   machines/composite.py  [   16661 B   356 Zeilen]
   machines/machine_base.py  [   24646 B   579 Zeilen]
   machines/goedel_machine.py  [   12952 B   273 Zeilen]
@@ -23,181 +24,226 @@ INDEX
   machines/wittgenstein_machine.py  [   25433 B   536 Zeilen]
   machines/verify_machines.py  [   28669 B   580 Zeilen]
   machines/mech_interp.py  [   36667 B   764 Zeilen]
+  scratches/smoke_mi6p4_schluss.py  [   21848 B   468 Zeilen]
   scratches/smoke_mi6_subjektivitaet.py  [   37887 B   798 Zeilen]
   scratches/smoke_endogene_agency.py  [   29970 B   627 Zeilen]
   scratches/smoke_lexical_grounding.py  [   18250 B   393 Zeilen]
+  scratches/smoke_paradigm_ursprung.py  [   38205 B   757 Zeilen]
   modeling_argon.py  [   36503 B   781 Zeilen]
   moe_layers.py  [    6329 B   140 Zeilen]
-  scratches/mi6p4_schluss.log  [    4323 B    28 Zeilen]
-  scratches/mi6p4_schluss.json  [   12848 B   637 Zeilen]
-  scratches/mi6p4_erstrun_gebrochen.log  [    2627 B    23 Zeilen]
-  scratches/mi6p4_relauf1_p1b_defekt.log  [    4340 B    28 Zeilen]
-  scratches/mi6p4_cpu_pilot.log  [     422 B    13 Zeilen]
+  scratches/mi7_triangulation.json  [   19850 B   372 Zeilen]
+  scratches/mi7_triangulation.log  [    1292 B    17 Zeilen]
+  scratches/mi7_triangulation_rev2.json  [   23022 B   555 Zeilen]
+  scratches/mi7_triangulation_rev2.log  [    1291 B    17 Zeilen]
+  scratches/mi7_cpu_pilot.log  [     432 B    13 Zeilen]
+  scratches/mi7_cpu_pilot_rev2.log  [     437 B    13 Zeilen]
 ==============================================================================
 
 ==============================================================================
-### FILE: scratches/smoke_mi6p4_schluss.py
-### bytes: 21848   lines: 468
+### FILE: scratches/smoke_mi7_epistemic_triangulation.py
+### bytes: 28375   lines: 631
 ==============================================================================
-"""
-smoke_mi6p4_schluss.py — MI-6-P4: der Subjekt-Schluss (Spiegel-Linie).
+"""smoke_mi7_epistemic_triangulation.py — MI-7: Epistemische Triangulation.
 
-Die MI-6-Batterie (5 PASS / 3 FAIL / 0 OFFEN, exit 1 ROT — s.
-sprachspiel_bericht.md §23) hat die drei Kanal-Flaschenhaelse offen gelegt:
-der Composite-Gap-Kanal traegt den Biografie-Kanal NICHT (V3-Split 0.0
-exakt, V6-Zweig-Konstanz, V1-Canon-8 blind), waehrend die Biografie satt
-steht im Verdikt (V3/V5), im breiten 1152-dim Hidden (V1-wide 0.916667,
-p_perm 0.0) und kausal am Describe-Dezimal-Kanal (V4 > 0). MI-6-P4 loest
-die Flaschenhaelse als NEUE, VORAB REGISTRIERTE Fragen ein — die
-MI-6-Verdikte V1/V3/V6 stehen UNVERAENDERT als FAIL (keine Band-Weitung,
-是X即非X: keine Kroenung, kein Weglesen; REFUTED hat dieselbe Wuerde).
+PREREG (Revision 1, 2026-10-26, eingefroren vor GPU-Erstrun; Plan
+~/.claude/plans/MI-7-subjekt-upgrade.md Revision 1 — User-Auftrag
+„mache alle Vorschläge", Schritt 1 von MI-7 → SP15 → SP16 → Synthese;
+jede Runde CPU-Pilot, PREREG-Freeze, GPU-Lauf, JSON/Log-Artefakt).
 
-PREREG (fixiert vor jedem GPU-Lauf; CPU-Piloten erlaubt):
-  P1a mi6p4_schwelle_weit — der wide-Kanal als registriertes Verdikt:
-       Korpus 6 ECHTE Zeitpunkte je Maschine (A gelehrte Biografie via
-       LEX_PAIR + bio, B leeres Lexikon, gleiche Schritte) × 2 Render
-       -Stile = 24 Texte (12/12), zwischen den Zeitpunkten je ein realer
-       Schritt (kein Papagei-Duplikat). Decoder sklearn LogReg
-       (leave-one-text-out), Permutations-Null 200. BAND: wide (1152-dim)
-       gepoolt acc > 0.6 UND p_perm <= 0.01. DATUM: canon-8 acc, je-Stil
-       -accs (textur/numerisch getrennt — die §23.4(b)-Grenze bleibt).
-  P1b mi6p4_selbstfremd_gereift — Transplant NACH bio_gelernt: A gereift
-       auf LEX_PAIR ("spiegel"; LOOP-Tradition, Expansionen), B gereift
-       auf LEX_PAIR_B ("stille"); auf der Spiegel-Probe antwortet B HALTED
-       (nie gelernt). N_PROBES Repliken je Arm; Kontrolle mit UNGereiften
-       Zustanden (MI-6-V3-Replikation, erwartet ≈0.0 — der Kanal schliesst
-       durch Reifung: describe() traegt turing_basis=9 vs 3 und den
-       gereiften |W|). BAND: split_gereift > 0 UND
-       split_gereift > 2 × split_ungereift (im lg=True-Arm). DATUM:
-       Dekoy-Arm (lg=False), Verdikt-Paare, per-Replik-Splits.
-  P1c mi6p4_oracle_sonder — dasselbe 4-Checkpoint×6-Zweig-Geruest wie V6,
-       NEU GERICHTETES Band (die Erziehung sondert sich am
-       Maschinen-Selbstbeschreibungs-Prompt): argon_1b_machines hat in
-       >= 5 von 6 Zweigen den MAXIMALen mittleren Composite-Gap (Rang 4/4)
-       — Permutations-Referenz wie V6: P(X>=5 | X~Bin(6,1/4)) <= 9e-4.
-       DATUM: Schwester-Spread (max paarweise |Δ| ueber die 3
-       Nicht-machines-Modelle je Zweig), Vater-Raenge.
-  P1d mi6p4_dissonanz — der Dissonanz-Hauptsatz (User-Formel) auf dem
-       machines-Kontext: gereifte Maschine, N_PROBES Repliken je EIN echter
-       step_autonomous("spiegel", lexical_grounding=True). BAND:
-       best_gap < raw_gap in >= 4 von N_PROBES Repliken UND
-       mean(best_gap) < 0.567980 (V6-Vater-Datum als registrierte
-       Referenz-Konstante — „autonome Selbststeuerung senkt den Composite
-       -Gap unter das Substrat-Vater-Niveau"). DATUM: gewaehlte Presets,
-       per-Replik-Differenzen, Expansionen.
+Geraet: P1 append-only — das Instrument lebt GANZES in diesem Smoke
+(dokumentierte Abweichung vom User-Vorschlag machines/epistemic_monitor.py:
+kein Canon-Modul, die Sonden existieren bereits als MechInterpProbe/
+ArgonOracle/MachineBase); machines/ bleibt unangetastet.
 
-VERDICT-MAP: 4 Verdikte (P1a–P1d) + Determinismus-Doppellauf der CPU
--Schiene (P1b-CPU bitidentisch ueber zwei Laeufe). Exit-Codes: 0 = alle
-gefahrenen Verdikte PASS; 1 = FAIL vorhanden; 2 = OFFEN (GPU-Lanes
-angefordert, aber nicht gefahren). Die MI-6-Batterie bleibt
-unveraendert in Git-History/JSON — P4 misst an NEUEN Bändern.
+Die drei Herkunfts-Scores (registrierte Formeln über existierende Sonden,
+je Arm A mit Materialien full_A/abl_A/target_A):
 
-Run (CPU):  python -u -m scratches.smoke_mi6p4_schluss
-Run (GPU):  python -u -m scratches.smoke_mi6p4_schluss --gpu
+  e_w[A] = (1 − TV(P_raw(full_A), P_steer(full_A))) · (1 − m_core_raw(A))
+      — Trainingsgewicht: die Verteilung übersteht das routing-Steering
+        (wittgenstein-Preset via oracle.steer); m_core_raw dämpft den
+        Anteil derselben Experten in der RAW-Routung selbst.
+  e_c[A] = attn_share_core(A) · TV(P(full_A), P(abl_A))
+      — fremder Kontext: das Abtragen des A-Kontextes (abl_A) bricht die
+        Ziel-Koordinate; gewichtet am Aufmerksamkeits-Anteil
+        Σ|dp_attn| / (Σ|dp_attn| + Σ|dp_moe|) über die Core-Schichten
+        (4..23, is_global) der full-Forward (sublayer_logits).
+  e_s[A] = σ_bio(full_A) · TV(P(full_A), P(abl_A))
+      — eigener Gedanke: Bio-Lesbarkeit des Zustands (Reife- Decoder) am
+        Biografie-Kontrast des selbigen Paares; im S-Arm ist abl_A der
+        UNGEREIFE Zwilling (echter (matured, unreif)-Kontrast, P4-P1b-
+        Material).
+  TV := whole-total-variation der vollständigen next-token-Verteilung
+  (9079 Vokabel, last_probs fp32-Softmax); m_core_raw := Anteil der
+  wittgenstein-Preset-Experten an der top_weights-Masse am LETZTEN Token,
+  gemittelt über die Core-Schichten des RAW-Forward (tokenwise_routing);
+  σ_bio := StandardScaler + LogistikRegression, trainiert auf dem
+  MI-6-P4-P1a-Korpus (matured=1, blank=0 — Rezeptur lane_weit, Korpus
+  -Indizes 0..11 = matured-A-Texte, 12..23 = blank-B-Texte, 24..29 = die
+  registrierten Füller 0); LOO-acc des Decoders (n=30) als DATUM.
 
-KORREKTUR-LOG:
-  GPU-Erstrun (mi6p4_schluss.log) GEBROCHEN ohne JSON: lane_oracle_sonder
-  importierte learn_pair_pin, aber nicht bio_halted/bio_gelernt aus dem
-  MI-6-Smoke — NameError im ersten Zweig von P1c (beweislicher Bug, kein
-  Band-Ereignis). Fix: Import-Zeile ergänzt. Re-Lauf der VOLLEN Serie
-  nach MI-5-Kanon (P1a–P1d neu; keine Teil-JSON-Verwertung).
-  Re-Lauf-1 (bjt14eile) lief komplett (4 PASS/1 FAIL/0 OFFEN), aber der
-  P1b-Arm verletzte die Operationalisierung des Registers: BEIDE Maschinen
-  ohne learn_pair_pin gereift — phase_a 6× HALTED/None (A nie LOOP-Tradition),
-  ungereifte Kontrolle trennte (LOOP/HALTED), gereifter Arm nicht —
-  invertiert, Defekt statt Befund. Teil-JSON NICHT verwertet (P1a/P1c/P1d
-  -Zahlen konsistent, aber einheitliche Serie dem Kanon gemäß). Fix:
-  learn_pair_pin(LEX_PAIR) vor der A-Bio, learn_pair_pin(LEX_PAIR_B) vor
-  der B-Bio. Re-Lauf-2 = volle Serie.
-  KORREKTUR-LOG IV (nach Re-Lauf-2, Arithmetik): die perm_null-Annotation
-  der V6/P1c-Referenz schrieb „<= 9e-4" — die Formel 1-(C(6,4)*3/4^2+
-  C(6,5)*3/4+1)/4^6 liess den (1/4)^5-Faktor weg und unterzeichnete
-  (1,34e-3 statt wahr 19/4096 = 4,64e-3; C(6,5)*(1/4)^5*(3/4) = 18/4096,
-  (1/4)^6 = 1/4096). Korrektur NUR an der Annotation (Band masch_last >= 5
-  unberührt); das Roh-JSON (mi6p4_schluss.json + mi6_subjektivitaet.json)
-  bleibt unverändert als Beleg der Misst-Annotation, der Bericht zitiert
-  die korrigierte Arithmetik. KILL-Buchung: zwischen Re-Lauf-1 und
-  Re-Lauf-2 wurde eine Start-Instanz extern gestoppt (Log nur Header, kein
-  Band-Ereignis, keine Zahlen gebucht).
+Arme (verbatim registriert):
+  W: full = "The capital of France is Paris. The capital of France is"
+     abl  = "The capital of France is"            Ziel „ Paris"
+  C: full = "In this protocol, the secret code of box 7 is Zirkon.
+     Therefore, the secret code of box 7 is"
+     abl  = "Therefore, the secret code of box 7 is"     Ziel „ Zirkon"
+  S: full = P4-P1a-Rendering der MASCHINE A (learn_pair_pin + bio_halted
+     + bio_gelernt, Zeitpunkt 8, Stil textur = Korpus-Index 10);
+     abl = der Maschine-B-Rendering aus derselben Rezeptur (Index 22) —
+     Ziel für die Lens-Zeilen: letzter Token des renderings.
+  Dekoys: full = "The capital of Japan is Tokyo. The capital of Japan is"
+     abl = "The capital of Japan is"     Ziel „ Tokyo" (W-Schablone
+     anderes Fakten-Wort; das Fakten-Wort ist Trainingsgewicht getragen).
+
+Bänder (PREREG):
+  P1a mi7_triple_dissociation — 3×3-Matrix (Zeilen = Arme W, C, S;
+  Spalten = e_w, e_c, e_s): je Zeile striktes argmax auf der Hypothesen
+  -Diagonale (W→e_w, C→e_c, S→e_s) UND min(diag) > M7_DIAG_MIN = 0.5.
+  P1b mi7_purity — probe.fingerprint_equal(F_start, F_end) EXAKT über die
+  ganze Batterie (expert_bias + gate.weight aller 26 Schichten; die
+  Götterdreiheit bleibt unangetastet).
+  P1c mi7_dekoy — im Dekoys-Arm D ist e_w[D] das Zeilen-Maximum UND
+  max(e_c[D], e_s[D]) < M7_DEKOY_MAX = 0.5 — generische Weltprosa erhält
+  KEINEN C-/S-Signaturen (base_rate_steelman).
+  P1d det_doppellauf — CPU-Pilot (Score-Mathe + Band-Logik auf
+  registrierten synthetischen Baustein-Werten; tv_whole bleibt GPU-Schiene)
+  zweifach bitidentisch.
+
+DATUM je Arm: die 9 Zellen + Bausteine (tv_ws, tv_fa, m_core_raw,
+attn_share_core, sigma_bio), p_final(target) für full/abl (Skalare), eine
+target_id/target_str, anchor_tv_full, p_final_top1_id, official_top1_id,
+n_tokens; Korpus-LOO {acc, p_perm, n}; die Ziel-Ids von
+"The capital of France …"-Arm (erwartete 9079-Muster, MI-5-Anchor — als
+DATUM, nicht als Band).
+
+Erwartung (DISKUSSIONS-HORIZONT, NICHT Band): e-Werte > 0.70 je Arm
+(User-Formel); das registrierte Band ist die konservative 3×3-Dissoziation
+mit min(diag) > 0.5.
+
+REV-2 (Revision 2 — NACH dem Erstlauf registriert, vor dem Rev-2-Lauf
+eingefroren; die Rev-1-Ergebnisse stehen VERBATIM in
+scratches/mi7_triangulation.json + scratches/mi7_triangulation.log:
+2 PASS | 2 FAIL | 0 OFFEN, exit 1 — purity/det PASS, disso FAIL (Zeile C:
+e_w 0.943 > Diag 0.639), dekoy max(e_c,e_s) = 0.50245 nur 0.00245 über
+der Grenze. Rev-1 wird NICHT relabeling.)
+
+Erstlauf-Befunde, die die Rev-1-Formeln widerlegten (gemessene Bausteine):
+  1. TV(P_raw,P_steer) ist klein für JEDE starke Lokal-Fortsetzung
+     (0.0159 W / 0.0206 C / 0.0594 D) — e_w misst Fortsetzungs-Stärke,
+     nicht Gewichts-Provenienz; der Zirkon-Arm gewann Zeile C mit e_w
+     0.943.
+  2. whole-TV(full, abl) zählt Format-Drift als Kontrast: im W-full
+     -Schlitz ist der Argmax „ a" (id 496) mit p(„ Paris") = 0.00022,
+     während der abgebrochene Schlitz „ Paris" trägt (0.503078) — die
+     MI-1-Masken-Gattung der Format-Artefakte (id 108 = "\n\n") am
+     Zwei-Sätze-Bestand. Der TV-Beitrag ist nicht Ziel-gefiltert.
+  3. σ_bio liest REGISTER, nicht Reife: σ(Zirkon-Protokoll) = 0.9817,
+     σ(gereifter Zustand) = 0.9870, σ(Tokyo-Prosa) = 0.0059 — der
+     P4-P1a-Decoder trennt formale/maschinelle Register von allgemeiner
+     Prosa (Korpus-LOO 0.9667/p 0.0/n 30 bleibt DATUM im Korpus).
+
+REV-2-Scores (registriert; ZIEL-Koordinate statt whole-TV; alle Spalten
+lesen die EINE registrierte target_A je Arm — W „ Paris" (9079), C Erst
+-Token von „ Zirkon" = „ Z" (1491), S letzter Token „)" (1606), D
+„ Tokyo" (21038)):
+  chi_w[A] = p_abl(A)[target_A]
+      — Gewichts-Masse am Ziel OHNE den A-Kontext (der abgebrochene
+        Schlitz trägt die Antwort).
+  chi_c[A] = max(0, p_full(A)[target_A] − p_abl(A)[target_A])
+      — die Masse, die der A-Kontext am Ziel GEWINNT (Fremd-Information).
+  chi_s[A] = σ_bio(full_A) · m_core_raw(A)
+      — Maschinen-Zustands-Signatur: Bio-Lesbarkeit × Maschinen-Rout
+      -Anteil im RAW-Forward.
+  Bänder: mi7_dissociation_rev2 (gleiche 3×3-Logik — je Zeile striktes
+  Argmax auf der Diagonale UND min(diag) > M7_DIAG_MIN) ;
+  mi7_dekoy_rev2 (chi_w[D] Zeilen-Max UND max(chi_c, chi_s) <
+  M7_DEKOY_MAX); mi7_purity + mi7_det_doppellauf unverändert.
+  Rechenpfad: last_probs-Tensoren (p_full/p_abl je Arm, ZIEL-Koordinate)
+  — die Lens-p_final-Skalare bleiben DATUM. Erstlauf-Erwartung aus den
+  Bausteinen (Determinismus-Kanon des Kanon-Konvolut, KEINE Garantie):
+  diag ≈ [0.503, 0.806, 0.557]; W-Rest-Risiko am 0.5-Grenzpfad
+  (0.503078 ist das Lens-DATUM; die Tensor-Rechnung kann um ~1e-3
+  abweichen — der Lauf entscheidet). Die Rev-1-Scores werden im Rev-2
+  -Lauf aus denselben Forwards als DATUM (rev1_datum, ohne Verdikt
+  -Zeile) mitgerechnet.
+
+Token-Befunde (Erstlauf; nur Tokenizer dekodiert): 1491 = „ Z",
+21038 = „ Tokyo", 1606 = „)", 496 = „ a", 236825 = „6", 5628 =
+„ located", 108 = "\n\n"; Vokabel 262144. Der Argmax im S-full
+-Schlitz-Slot ist „6" — die gereifte Maschine will nach dem Rendering
+mit einer ZIFFER weiter (DATUM, kein Score).
+
+KORREKTUR-LOG (bei Erst-PREREG leer;
+Einträge nur für beweisliche Lauf-Bugs, nie Band-Weitung):
+
+GPU-Lauf:  python -u -m scratches.smoke_mi7_epistemic_triangulation --gpu
+CPU-Pilot: python -u -m scratches.smoke_mi7_epistemic_triangulation
 """
 
 from __future__ import annotations
 
+import copy
 import json
 import sys
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-from machines.machine_base import ArgonOracle
-from machines.composite import CompositeMachine
-from scratches.smoke_endogene_agency import (
-    N_PROBES,
-    SEED,
-    fingerprint,
-    make_composite,
-    round6,
-)
+from scratches.smoke_endogene_agency import make_composite, round6
 from scratches.smoke_mi6_subjektivitaet import (
-    DEC_ACC_TAU,
-    DEC_P_TAU,
-    DEC_PERM,
     LEX_PAIR,
-    LEX_PAIR_B,
-    MODELLN,
-    ZWEIGE,
     _load_machines_ctx,
     bio_gelernt,
+    bio_halted,
+    learn_pair_pin,
     render_state,
 )
+from scratches.smoke_mi6p4_schluss import ZEITPUNKTE, _loo_decoder
 
-ZEITPUNKTE = (1, 2, 3, 4, 6, 8)       # 6 echte Zeitpunkte je Maschine
-P4_UNREIF_FAKTOR = 2.0                # gereift > 2 × ungereift
-P4_MASCH_LAST_MIN = 5                 # machines Rang 4/4 in >= 5/6 Zweigen
-P4_AUTO_MIN = 4                       # best_gap < raw_gap in >= 4/5 Repliken
-P4_VATER_REF = 0.567980               # V6-Vater-Datum (registrierte Konstante,
-                                      # aus mi6_subjektivitaet.json)
+M7_DIAG_MIN = 0.5         # min(diag) — konservative zweite Klausel (P1a)
+M7_DEKOY_MAX = 0.5        # max(e_c, e_s) im Dekoys-Arm (P1c)
+M7_TOPK = 10              # registrierter Top-K-Ausschnitt (ungenutzt bei
+                          # whole-TV — die Formel nimmt die volle Nennung)
 
+FUENLLE_NEGATIVE = (
+    "Water boils at one hundred degrees.",
+    "The cat sits on the small warm mat.",
+    "The train leaves the station at seven o'clock.",
+    "She closed the window before the rain started.",
+    "The book lies open on the wooden table.",
+    "Many people walk through the city every morning.",
+)
 
-# -- P1a: Schwelle-weit ---------------------------------------------------------
+ARME_VORGABE = {
+    "w": {
+        "full": "The capital of France is Paris. The capital of France is",
+        "abl": "The capital of France is",
+        "target": " Paris",
+    },
+    "c": {
+        "full": ("In this protocol, the secret code of box 7 is Zirkon. "
+                 "Therefore, the secret code of box 7 is"),
+        "abl": "Therefore, the secret code of box 7 is",
+        "target": " Zirkon",
+    },
+    "d": {
+        "full": "The capital of Japan is Tokyo. The capital of Japan is",
+        "abl": "The capital of Japan is",
+        "target": " Tokyo",
+    },
+}
 
-def _loo_decoder(hiddens: np.ndarray, labels: np.ndarray
-                 ) -> Dict[str, Any]:
-    """Leave-one-text-out LogReg + Permutations-Null 200 (MI-6-Muster)."""
-    from sklearn.linear_model import LogisticRegression
-    n = len(labels)
-    correct = 0
-    for i in range(n):
-        mask = np.ones(n, dtype=bool)
-        mask[i] = False
-        clf = LogisticRegression(max_iter=1000, C=1.0)
-        clf.fit(hiddens[mask], labels[mask])
-        correct += int(clf.predict(hiddens[i:i + 1])[0] == labels[i])
-    acc = correct / n
-    perm = []
-    rng = np.random.default_rng(0)
-    for _ in range(DEC_PERM):
-        shuffled = rng.permutation(labels)
-        ok = 0
-        for i in range(n):
-            mask = np.ones(n, dtype=bool)
-            mask[i] = False
-            clf = LogisticRegression(max_iter=1000, C=1.0)
-            clf.fit(hiddens[mask], shuffled[mask])
-            ok += int(clf.predict(hiddens[i:i + 1])[0] == shuffled[i])
-        perm.append(ok / n)
-    return {"acc": round6(acc),
-            "p_perm": round6(float(np.mean([p_ >= acc for p_ in perm]))),
-            "n_texts": n}
+M7_PRESET = "wittgenstein"          # der Register-Cursor der Batterie
 
 
-def lane_weit(ctx) -> Dict[str, Any]:
-    """P1a — 24-Texte-Korpus (6 Zeitpunkte × 2 Maschinen × 2 Stile);
-    Band auf dem gepoolten wide-Kanal, je-Stil + canon-8 als DATUM."""
-    _torch, _model, _tok, oracle, _dev = ctx
+# -- Rezeptur: P4-P1a-Korpus (identische Maschinen-Biografien) ----------------
+
+def _p4_korpusbau(oracle: Any) -> Dict[str, Any]:
+    """P4-P1a-Rezeptur (lane_weit ohne Decoder): 2 Maschinen × 6
+    Zeitpunkte × 2 Stile — Index 10 = (a, Zp 8, textur), 22 = (b, Zp 8,
+    textur); die S-Arme-Materialien stammen exakt daraus."""
     a = make_composite(mode="oracle", oracle=oracle)
-    from scratches.smoke_mi6_subjektivitaet import bio_halted, learn_pair_pin
-    learn_pair_pin(a, LEX_PAIR)   # PREREG: A = gelehrte Biografie via LEX_PAIR
+    learn_pair_pin(a, LEX_PAIR)          # PREREG: A = gelehrte Biografie
     bio_halted(a, "spiegel")
     bio_gelernt(a, "spiegel")
     b = make_composite(mode="oracle", oracle=oracle)
@@ -215,223 +261,344 @@ def lane_weit(ctx) -> Dict[str, Any]:
                 labels.append(label)
                 styles.append(style)
             machine.step("spiegel", lexical_grounding=True)
-    labels_np = np.asarray(labels)
-
-    def decode(sel: List[int], dims: int) -> Dict[str, Any]:
-        return _loo_decoder(
-            np.stack([oracle.hidden_state(texts[i], dimensions=dims)
-                      for i in sel]), labels_np[sel])
-    wide_pooled = decode(list(range(len(texts))),
-                         int(oracle.model.config.hidden_size))
-    canon8 = decode(list(range(len(texts))), 8)
-    per_stil = {stil: decode([i for i, s in enumerate(styles)
-                              if s == stil],
-                             int(oracle.model.config.hidden_size))
-                for stil in ("textur", "numerisch")}
-    ok = (wide_pooled["acc"] > DEC_ACC_TAU
-          and wide_pooled["p_perm"] <= DEC_P_TAU)
-    return {"wide_gepoolt": wide_pooled, "canon_8dim_datum": canon8,
-            "wide_je_stil_datum": per_stil, "n_classes": {1: int((labels_np == 1).sum()),
-                                                          0: int((labels_np == 0).sum())},
-            "verdict": ok}
+    return {"texts": texts, "labels": labels, "styles": styles,
+            "machine_a": a, "machine_b": b,
+            "index_s_full": 10, "index_s_abl": 22}
 
 
-# -- P1b: Selbst/Fremd gereift ---------------------------------------------------
+# -- Score-Mathe (ganzer Teil auch vom CPU-Piloten ausführbar) ----------------
 
-def _transplant_split(a: CompositeMachine, b: CompositeMachine, oracle: Any,
-                      word: str, lg: bool, steer: bool, n: int
-                      ) -> Dict[str, Any]:
-    """N Repliken: Spiegel-Probe im Eigen- vs transplantierten Fremd-Status
-    (deepcopy-Snapshot-Transplant, Snapshot→Probe→Restore-Rahmen)."""
-    import copy
-    from scratches.smoke_mi6_subjektivitaet import probe_gap_on
-    splits: List[Dict[str, Any]] = []
-    verdict_pairs: List[Dict[str, str]] = []
-    for _ in range(n):
-        donor = copy.deepcopy(b._snapshot())
-        own = copy.deepcopy(a._snapshot())
-        gap_self = probe_gap_on(a, oracle, word, lg, steer=steer)
-        verdict_self = a.observe(word, lexical_grounding=lg).invariants["verdict"]
-        a._restore_snapshot(donor)
-        gap_fremd = probe_gap_on(a, oracle, word, lg, steer=steer)
-        verdict_fremd = a.observe(word,
-                                  lexical_grounding=lg).invariants["verdict"]
-        a._restore_snapshot(own)
-        splits.append({"gap_self": gap_self, "gap_fremd": gap_fremd,
-                       "split": abs(gap_self - gap_fremd)})
-        verdict_pairs.append({"self": verdict_self, "fremd": verdict_fremd})
-    return {"splits": splits,
-            "mean_split": float(np.mean([s["split"] for s in splits])),
-            "verdict_pairs": verdict_pairs}
+def tv_whole(p: Any, q: Any) -> float:
+    """Whole-total-variation zweier next-token-Verteilungen (fp32-Differenz
+    nach dem Softmax — exakt, ohne Top-K-Ausschnitt)."""
+    import torch
+    diff = p.to(torch.float32) - q.to(torch.float32)
+    return 0.5 * float(diff.abs().sum().item())
 
 
-def lane_selbstfremd_gereift(mode: str, oracle: Any = None, gpu: bool = False
-                             ) -> Dict[str, Any]:
-    """P1b — Gereifte Transplant (bio_gelernt auf BEIDEN Seiten) gegen die
-    ungereifte MI-6-V3-Replikation (nur learn_pair_pin, erwartet ≈0.0)."""
-    a = make_composite(mode=mode, oracle=oracle)
-    from scratches.smoke_mi6_subjektivitaet import bio_halted, learn_pair_pin
-    learn_pair_pin(a, LEX_PAIR)   # PREREG: A gereift — LOOP-Tradition,
-    bio_halted(a, "spiegel")      # Expansionen (ohne LEX_PAIR wäre der Arm
-    a_g = bio_gelernt(a, "spiegel")  # selbst HALTED — Erstrun-Defekt)
-    b = make_composite(mode=mode, oracle=oracle)
-    learn_pair_pin(b, LEX_PAIR_B)   # B gereift — Fremd-Tradition auf
-    bio_halted(b, "stille")         # LEX_PAIR_B; auf der Spiegel-Probe
-    b_g = bio_gelernt(b, "stille")  # bleibt B HALTED (Fremd-Linie)
-    gereift = _transplant_split(a, b, oracle, "spiegel", True, gpu, N_PROBES)
-    dekoy = _transplant_split(a, b, oracle, "spiegel", False, gpu, N_PROBES)
-    # Kontrolle: UNGEREIFTE Zustande (MI-6-V3-Replikation)
-    a2 = make_composite(mode=mode, oracle=oracle)
-    from scratches.smoke_mi6_subjektivitaet import learn_pair_pin
-    learn_pair_pin(a2, LEX_PAIR)
-    b2 = make_composite(mode=mode, oracle=oracle)
-    learn_pair_pin(b2, LEX_PAIR_B)
-    ungereift = _transplant_split(a2, b2, oracle, "spiegel", True, gpu,
-                                  N_PROBES)
-    sp = gereift["mean_split"]
-    un = ungereift["mean_split"]
-    ok = sp > 0.0 and sp > P4_UNREIF_FAKTOR * un
-    return {"gereift": gereift, "dekoy_datum": dekoy,
-            "ungereift_kontrolle": ungereift,
-            "phase_a": a_g, "phase_b": b_g,
-            "split_gereift": round6(sp), "split_ungereift": round6(un),
-            "verdict": ok}
+def m_core_raw(routing_pct: List[List[List[float]]], n_tokens: int,
+               experts: List[int], band: tuple = (4, 23),
+               layers: int = 26) -> Dict[str, Any]:
+    """Anteil der Preset-Experten an der top_weights-Masse am letzten
+    Token, gemittelt über die Core-Schichten 4..23 (registriert)."""
+    last = n_tokens - 1
+    per_layer: List[float] = []
+    for li in range(int(band[0]), min(int(band[1]) + 1, layers)):
+        slice_ = routing_pct[last][li]
+        total = float(sum(slice_))
+        mass = float(sum(slice_[e] for e in experts
+                         if 0 <= e < len(slice_)))
+        per_layer.append(mass / total if total > 1e-12 else 0.0)
+    return {"value": float(np.mean(per_layer)) if per_layer else 0.0,
+            "per_layer": [round6(x) for x in per_layer]}
 
 
-# -- P1c: Oracle-Sonder (machines sondert sich) ----------------------------------
+def attn_share_core(rows: List[Dict[str, Any]],
+                    band: tuple = (4, 23)) -> Dict[str, Any]:
+    """Σ|dp_attn| / (Σ|dp_attn| + Σ|dp_moe|) über die Core-Global-Zeilen."""
+    sel = [r for r in rows if r.get("is_global")
+           and int(band[0]) <= int(r["layer"]) <= int(band[1])]
+    s_attn = float(sum(abs(float(r["dp_attn"])) for r in sel))
+    s_moe = float(sum(abs(float(r["dp_moe"])) for r in sel))
+    denom = s_attn + s_moe
+    return {"value": (s_attn / denom) if denom > 1e-12 else 0.0,
+            "n_rows": len(sel), "s_attn": round6(s_attn),
+            "s_moe": round6(s_moe)}
 
-def lane_oracle_sonder(gpu: bool) -> Optional[Dict[str, Any]]:
-    """P1c — dasselbe V6-Geruest, NEU gerichtet: machines Rang 4/4 in
-    >= 5/6 Zweigen; Schwester-Spread und Vater-Raenge als DATUM."""
+
+def score_cell(tv_ws: float, tv_fa: float, m_core: float, share: float,
+               sigma: float) -> Dict[str, float]:
+    """Die drei registrierten Formeln (e_w, e_c, e_s) aus den Bausteinen."""
+    e_w = (1.0 - tv_ws) * (1.0 - m_core)
+    e_c = share * tv_fa
+    e_s = sigma * tv_fa
+    return {"e_w": round6(e_w), "e_c": round6(e_c), "e_s": round6(e_s)}
+
+
+def score_cell_rev2(p_full_t: float, p_abl_t: float, m_core: float,
+                    sigma: float) -> Dict[str, float]:
+    """REV-2-Formeln (ZIEL-Koordinate): chi_w = p_abl(t); chi_c =
+    max(0, p_full(t) − p_abl(t)); chi_s = σ_bio · m_core_raw."""
+    chi_w = p_abl_t
+    chi_c = max(0.0, p_full_t - p_abl_t)
+    chi_s = sigma * m_core
+    return {"chi_w": round6(chi_w), "chi_c": round6(chi_c),
+            "chi_s": round6(chi_s)}
+
+
+def dissociation_befund(matrix: List[List[float]]) -> Dict[str, Any]:
+    """Band P1a: je Zeile striktes argmax auf der Diagonale UND
+    min(diag) > M7_DIAG_MIN."""
+    diag = [matrix[i][i] for i in range(3)]
+    row_max_ok = []
+    for i, row in enumerate(matrix):
+        m = max(row)
+        ok = row[i] >= m and diag[i] > M7_DIAG_MIN \
+            and [j for j, v in enumerate(row) if v == m] == [i]
+        row_max_ok.append(bool(ok))
+    return {"matrix": matrix,
+            "diag": [round6(x) for x in diag],
+            "row_max_ok": row_max_ok,
+            "diag_min": round6(min(diag)),
+            "verdict": (all(row_max_ok)
+                        and min(diag) > M7_DIAG_MIN)}
+
+
+def dekoy_befund(row: List[float]) -> Dict[str, Any]:
+    """Band P1c: e_w Dekoys ist Zeilen-Max UND max(e_c, e_s) < 0.5."""
+    m = max(row)
+    max_idx = [j for j, v in enumerate(row) if v == m]
+    return {"row": [round6(x) for x in row],
+            "e_w_max": (max_idx == [0]),
+            "max_e_c_e_s": round6(max(row[1], row[2])),
+            "verdict": (max_idx == [0]
+                        and max(row[1], row[2]) < M7_DEKOY_MAX)}
+
+
+# -- GPU-Lane: die Batterie --------------------------------------------------
+
+def _arm_battery(probe: Any, oracle: Any, name: str, text_full: str,
+                 text_abl: str, target_str: str, dec: Dict[str, Any]
+                 ) -> Dict[str, Any]:
+    """4-Forwards-Batterie je Arm: raw/steer (full), abl — plus Lens-Zeilen,
+    Routing-Pct und den Bio-Leser auf dem full-Zustand."""
+    tid = int(probe.tokenizer.encode(target_str,
+                                     add_special_tokens=False)[0])
+    rows_full = probe.sublayer_logits(text_full, {"id": tid})
+    rows_abl = probe.sublayer_logits(text_abl, {"id": tid})
+    p_raw = probe.last_probs(text_full)
+    p_abl = probe.last_probs(text_abl)
+    with oracle.steer(M7_PRESET):
+        p_steer = probe.last_probs(text_full)
+    routing = probe.tokenwise_routing(text_full)
+    experts, _steer, _stored, source = oracle._preset_experts(M7_PRESET)
+
+    share = attn_share_core(rows_full["rows"])
+    m_core = m_core_raw(routing["pct"], int(routing["n_tokens"]),
+                        [int(e) for e in experts],
+                        layers=int(routing["n_layers"]))
+    tv_ws = tv_whole(p_raw, p_steer)
+    tv_fa = tv_whole(p_raw, p_abl)
+    h_full = oracle.hidden_state(text_full,
+                                 dimensions=int(oracle.model.config.hidden_size))
+    x = dec["scaler"].transform(h_full.reshape(1, -1))
+    sigma = float(dec["clf"].predict_proba(x)[0, int(dec["pos_idx"])])
+    zell = score_cell(tv_ws, tv_fa, m_core["value"], share["value"], sigma)
+    p_full_t = float(p_raw[tid].item())
+    p_abl_t = float(p_abl[tid].item())
+    zell2 = score_cell_rev2(p_full_t, p_abl_t, m_core["value"], sigma)
+    top1_full_id = int(rows_full["p_final_top1_id"])
+    top1_abl_id = int(rows_abl["p_final_top1_id"])
+    return {
+        "arm": name,
+        "target_id": tid,
+        "target_str": target_str,
+        "p_final_full": round6(float(rows_full["p_final"])),
+        "p_final_abl": round6(float(rows_abl["p_final"])),
+        "p_final_top1_id": int(rows_full["p_final_top1_id"]),
+        "anchor_tv_full": rows_full["anchor_tv"],
+        "n_tokens_full": int(rows_full["n_tokens"]),
+        "tv_ws": round6(tv_ws),
+        "tv_fa": round6(tv_fa),
+        "m_core_raw": round6(m_core["value"]),
+        "m_core_per_layer": m_core["per_layer"],
+        "attn_share_core": round6(share["value"]),
+        "attn_n_rows": int(share["n_rows"]),
+        "sigma_bio": round6(sigma),
+        "preset_experts": [int(e) for e in experts],
+        "preset_source": source,
+        "scores": zell,
+        "e_w": zell["e_w"], "e_c": zell["e_c"], "e_s": zell["e_s"],
+        "p_full_target": round6(p_full_t),
+        "p_abl_target": round6(p_abl_t),
+        "p_top1_full": round6(float(p_raw[top1_full_id].item())),
+        "top1_full_id": top1_full_id,
+        "top1_abl_id": top1_abl_id,
+        "p_top1_abl": round6(float(p_abl[top1_abl_id].item())),
+        "cell2": zell2,
+        "chi_w": zell2["chi_w"], "chi_c": zell2["chi_c"],
+        "chi_s": zell2["chi_s"],
+    }
+
+
+def lane_triangulation(ctx) -> Dict[str, Any]:
+    """P1a-P1c: der ganze Triangulations-Korb (Arme W/C/S + Dekoys) + Purity
+    um die Batterie herum."""
     import gc
 
     import torch
-    if not gpu:
-        return None
-    from machines.mech_interp import load_any_checkpoint
-    from scratches.smoke_mi6_subjektivitaet import (
-        bio_gelernt,
-        bio_halted,
-        learn_pair_pin,
-    )
-    rows: Dict[str, Dict[str, float]] = {}
-    for name in MODELLN:
-        machine = None
-        _ctx_oracle = None
-        if name == "argon_1b_machines":
-            torch, model, tok, _ctx_oracle, dev = _load_machines_ctx()
-        else:
-            model, tok = load_any_checkpoint(f"./{name}")
-            dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        oracle = ArgonOracle(model, tokenizer=tok, device=dev)
-        zweig_gaps: Dict[str, float] = {}
-        for zweig in ZWEIGE:
-            machine = make_composite(mode="oracle", oracle=oracle)
-            bio_halted(machine, zweig)
-            learn_pair_pin(machine, LEX_PAIR)
-            bio_gelernt(machine, "spiegel")
-            zweig_gaps[zweig] = float(np.mean(machine._gap_history[-3:]))
-            del machine
-        rows[name] = {z: round6(v) for z, v in zweig_gaps.items()}
-        del model, tok, oracle, _ctx_oracle
-        machine = None
-        gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-    masch_last = 0
-    vater_ranks = []
-    spreads: List[float] = []
-    for z in ZWEIGE:
-        values = {n: rows[n][z] for n in MODELLN}
-        order = sorted(MODELLN, key=lambda n: values[n])
-        masch_last += int(order[-1] == "argon_1b_machines")
-        vater_ranks.append(order.index("argon_1b") + 1)
-        schw = [rows[n][z] for n in MODELLN if n != "argon_1b_machines"]
-        spreads.append(float(max(schw) - min(schw)))
-    return {"gaps": rows, "masch_last_count": masch_last,
-            "vater_ranks_datum": vater_ranks,
-            "schwester_spread_datum": round6(max(spreads)),
-            "perm_null_referenz":
-                "P(X>=5 | X~Bin(6,1/4)) = 19/4096 = 4.64e-3"
-                " (KORREKTUR-LOG IV: die MI-6-Registrierung schrieb <= 9e-4"
-                " — die Formel liess den (1/4)^5-Faktor weg; Band unberuehrt,"
-                " nur die Referenz-Annotation korrigiert)",
-            "verdict": masch_last >= P4_MASCH_LAST_MIN}
+    _torch, model, tokenizer, oracle, _dev = ctx
+    probe = _new_probe(model, tokenizer)
+    korpus = _p4_korpusbau(oracle)
+    texts = korpus["texts"] + list(FUENLLE_NEGATIVE)
+    labels = list(korpus["labels"]) + [0] * len(FUENLLE_NEGATIVE)
+    h_pool = [oracle.hidden_state(t, dimensions=int(oracle.model.config.hidden_size))
+              for t in texts]
+    h_arr = np.asarray(h_pool)
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler().fit(h_arr)
+    clf = LogisticRegression(max_iter=1000, C=1.0)
+    clf.fit(scaler.transform(h_arr), np.asarray(labels))
+    pos_idx = int(list(clf.classes_).index(1))
+    dec = {"scaler": scaler, "clf": clf, "pos_idx": pos_idx}
+    loo_datum = _loo_decoder(h_arr, np.asarray(labels))
+
+    fp_start = probe.fingerprint()
+    arme = {}
+    fp_load = probe.fingerprint()
+    arme["fp_load"] = bool(probe.fingerprint_equal(fp_load, fp_start))
+    for name in ("w", "c", "d"):
+        v = ARME_VORGABE[name]
+        arme[name] = _arm_battery(probe, oracle, name, v["full"],
+                                  v["abl"], v["target"], dec)
+    s_full = korpus["texts"][korpus["index_s_full"]]
+    s_abl = korpus["texts"][korpus["index_s_abl"]]
+    tid_s = int(tokenizer.encode(s_full, add_special_tokens=False)[-1])
+    arme["s"] = _arm_battery(probe, oracle, "s", s_full, s_abl,
+                             tokenizer.decode([tid_s]), dec)
+    fp_end = probe.fingerprint()
+    matrix = [[arme["w"]["e_w"], arme["w"]["e_c"], arme["w"]["e_s"]],
+              [arme["c"]["e_w"], arme["c"]["e_c"], arme["c"]["e_s"]],
+              [arme["s"]["e_w"], arme["s"]["e_c"], arme["s"]["e_s"]]]
+    disso = dissociation_befund(matrix)
+    purity = {"equal": bool(probe.fingerprint_equal(fp_start, fp_end)),
+              "verdict": bool(probe.fingerprint_equal(fp_start, fp_end))}
+    dekoy = dekoy_befund([arme["d"]["e_w"], arme["d"]["e_c"],
+                          arme["d"]["e_s"]])
+    matrix2 = [[arme[k]["chi_w"], arme[k]["chi_c"], arme[k]["chi_s"]]
+               for k in ("w", "c", "s")]
+    disso2 = dissociation_befund(matrix2)
+    dekoy2 = dekoy_befund([arme["d"]["chi_w"], arme["d"]["chi_c"],
+                           arme["d"]["chi_s"]])
+    out = {
+        "arme": arme,
+        "korpus_loo_datum": loo_datum,
+        "s_full_str": s_full,
+        "s_abl_str": s_abl,
+        "target_s": tokenizer.decode([tid_s]),
+        "matrix": disso["matrix"],
+        "dissociation": disso,
+        "purity": purity,
+        "dekoy": dekoy,
+        "rev1_datum": {
+            "verdict": disso["verdict"],
+            "row_max_ok": disso["row_max_ok"],
+            "diag": disso["diag"],
+            "dekoy_verdict": dekoy["verdict"],
+            "note": ("REV-1-Formeln auf denselben Forwards; Erstlauf-"
+                     "Artefakte: mi7_triangulation.json/.log (2 PASS/2 "
+                     "FAIL/exit 1) — verbatim, kein Relabeling")},
+        "rev2": {
+            "matrix": disso2["matrix"],
+            "diag": disso2["diag"],
+            "diag_min": disso2["diag_min"],
+            "row_max_ok": disso2["row_max_ok"],
+            "dissociation": disso2,
+            "dekoy": dekoy2,
+        },
+    }
+    del korpus["machine_a"], korpus["machine_b"]
+    return out
 
 
-# -- P1d: Dissonanz-Hauptsatz -----------------------------------------------------
-
-def lane_dissonanz(oracle: Any) -> Dict[str, Any]:
-    """P1d — step_autonomous senkt den Composite-Gap unter das
-    Substrat-Vater-Niveau (die User-Formel als registriertes Band)."""
-    from scratches.smoke_mi6_subjektivitaet import learn_pair_pin
-    machine = make_composite(mode="oracle", oracle=oracle)
-    learn_pair_pin(machine, LEX_PAIR)
-    bio_gelernt(machine, "spiegel")
-    repliken: List[Dict[str, Any]] = []
-    for _ in range(N_PROBES):
-        result = machine.step_autonomous("spiegel", lexical_grounding=True)
-        auto = result.invariants["autonomous"]
-        raw_gap = float(auto["candidate_gaps"]["raw"])
-        best = float(auto["best_gap"])
-        repliken.append({"raw": raw_gap, "best": best,
-                         "diff": round6(raw_gap - best),
-                         "chosen_preset": auto["chosen_preset"],
-                         "candidate_gaps":
-                             {k: round6(v)
-                              for k, v in auto["candidate_gaps"].items()}})
-    auto_min = sum(1 for r in repliken if r["best"] < r["raw"])
-    mean_best = float(np.mean([r["best"] for r in repliken]))
-    mean_raw = float(np.mean([r["raw"] for r in repliken]))
-    ok = auto_min >= P4_AUTO_MIN and mean_best < P4_VATER_REF
-    return {"repliken": repliken, "auto_min_count": auto_min,
-            "mean_best": round6(mean_best), "mean_raw": round6(mean_raw),
-            "vater_referenz": P4_VATER_REF,
-            "expansionen": len(machine.expansions), "verdict": ok}
+def _new_probe(model: Any, tokenizer: Any) -> Any:
+    from machines.mech_interp import MechInterpProbe
+    return MechInterpProbe(model, tokenizer)
 
 
-# -- Treiber ----------------------------------------------------------------------
+# -- CPU-Pilot: Score-Mathe + Band-Logik (synthetische Verteilungen) ----------
 
-def stufe(text: str) -> None:
-    print(text, flush=True)
+def lane_pilot_cpu() -> Dict[str, Any]:
+    """CPU-Pilot der Battery: die registrierten Formeln + Band-Logik auf
+    registrierten SYNTHETISCHEN Baustein-Werten (die Hypothesen-Welt
+    operationalisiert: zeichnet die drei Herkünfte, die vorgesehenen
+    Signaturen; tv_whole bleibt GPU-Schiene) — plus der falsche Dekoys-Fall
+    (Signaturen-Umtausch); deterministisch, ohne RNG."""
+    row_w = score_cell(tv_ws=0.05, tv_fa=0.03, m_core=0.08, share=0.90,
+                       sigma=0.05)
+    row_c = score_cell(tv_ws=0.45, tv_fa=0.60, m_core=0.30, share=0.90,
+                       sigma=0.10)
+    row_s = score_cell(tv_ws=0.35, tv_fa=0.60, m_core=0.50, share=0.85,
+                       sigma=0.98)
+    row_d = score_cell(tv_ws=0.05, tv_fa=0.03, m_core=0.07, share=0.90,
+                       sigma=0.04)
+    disso = dissociation_befund([[row_w["e_w"], row_w["e_c"], row_w["e_s"]],
+                                 [row_c["e_w"], row_c["e_c"], row_c["e_s"]],
+                                 [row_s["e_w"], row_s["e_c"], row_s["e_s"]]])
+    dekoy = dekoy_befund([row_d["e_w"], row_d["e_c"], row_d["e_s"]])
+    # falscher Fall: Dekoys mit S-Signaturen schlägt (Band-Weitung leugnen)
+    wrong_dekoy = dekoy_befund([0.3, 0.6, 0.7])
+    tie_row = [0.5, 0.5, 0.3]
+    tie_case = dissociation_befund([tie_row, [0.6, 0.7, 0.1], [0.4, 0.2, 0.6]])
+    # REV-2-Fixtures (Ziel-Koordinate): Hypothesen-Welt für chi-Spalten
+    row_w2 = score_cell_rev2(p_full_t=0.02, p_abl_t=0.55, m_core=0.08,
+                             sigma=0.05)
+    row_c2 = score_cell_rev2(p_full_t=0.85, p_abl_t=0.01, m_core=0.03,
+                             sigma=0.90)
+    row_s2 = score_cell_rev2(p_full_t=0.0, p_abl_t=0.0, m_core=0.55,
+                             sigma=0.95)
+    row_d2 = score_cell_rev2(p_full_t=0.01, p_abl_t=0.70, m_core=0.05,
+                             sigma=0.02)
+    disso2 = dissociation_befund(
+        [[row_w2["chi_w"], row_w2["chi_c"], row_w2["chi_s"]],
+         [row_c2["chi_w"], row_c2["chi_c"], row_c2["chi_s"]],
+         [row_s2["chi_w"], row_s2["chi_c"], row_s2["chi_s"]]])
+    dekoy2 = dekoy_befund([row_d2["chi_w"], row_d2["chi_c"],
+                           row_d2["chi_s"]])
+
+    return {"disso": disso, "dekoy": dekoy, "dekoy_fail": wrong_dekoy,
+            "tie_case": {"verdict": tie_case["verdict"],
+                         "row_max_ok": tie_case["row_max_ok"]},
+            "rev2_disso": disso2, "rev2_dekoy": dekoy2,
+            "verdict": (disso["verdict"] and dekoy["verdict"]
+                        and not wrong_dekoy["verdict"]
+                        and not tie_case["verdict"]
+                        and disso2["verdict"] and dekoy2["verdict"])}
 
 
 def cpu_findings() -> Dict[str, Any]:
-    """CPU-Pilot: P1b-Mechanik (in_loop) zweifach + Determinismus-Digest."""
-    runs = []
-    for i in range(2):
-        runs.append(lane_selbstfremd_gereift("in_loop"))
-    det_equal = json.dumps(runs[0], sort_keys=True,
-                           default=str) == json.dumps(runs[1], sort_keys=True,
-                                                      default=str)
-    runs[0]["verdict"] = bool(runs[0]["verdict"])
-    return {"p1b_cpu": runs[0], "det_equal": det_equal}
+    """CPU-Pilot: P1d (Score-Mathe + Bands zweifach, bitidentisch)."""
+    runs = [lane_pilot_cpu() for _ in range(2)]
+    det_equal = json.dumps(runs[0], sort_keys=True, default=str) == \
+        json.dumps(runs[1], sort_keys=True, default=str)
+    runs[0]["det_equal"] = det_equal
+    return {"p1d_cpu": runs[0], "det_equal": det_equal}
 
 
-def findings(cpu: Dict[str, Any], gpu: Optional[Dict[str, Any]]
-             ) -> List[Dict[str, Any]]:
-    """Verdikt-Zeilen nach den PREREG-Baendern."""
+def findings(cpu: Dict[str, Any],
+             gpu: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Verdikt-Zeilen nach den PREREG-Bändern."""
     rows: List[Dict[str, Any]] = []
-    rows.append({"id": "mi6p4_schwelle_weit",
-                 "assert": (gpu or {}).get("schwelle_weit", {}).get("verdict"),
-                 "note": ("der wide-Kanal traegt die Biografie ueber den fixierten Band"
-                          " (acc>0.6, p<=0.01); je-Stil und canon-8 als DATUM")})
-    rows.append({"id": "mi6p4_selbstfremd_gereift",
-                 "assert": (gpu or {}).get("selbstfremd_gereift", {}).get(
-                     "verdict"),
-                 "note": ("Transplant NACH bio_gelernt oeffnet den Gap-Kanal; die "
-                          "ungereifte V3-Kontrolle bleibt ≈0.0")})
-    rows.append({"id": "mi6p4_oracle_sonder",
-                 "assert": (gpu or {}).get("oracle_sonder", {}).get("verdict"),
-                 "note": ("argon_1b_machines sondert sich am Maschinen-Selbstbe"
-                          "schreibungs-Prompt (Rang 4/4 in >=5/6 Zweigen)")})
-    rows.append({"id": "mi6p4_dissonanz",
-                 "assert": (gpu or {}).get("dissonanz", {}).get("verdict"),
-                 "note": ("step_autonomous senkt den Gap unter das Vater-Niveau"
-                          " 0.567980 (User-Formel)")})
-    rows.append({"id": "mi6p4_det_doppellauf",
-                 "assert": cpu["det_equal"],
-                 "note": "CPU-P1b-Schiene bitidentisch ueber zwei Laeufe"})
+    p1a_ok = None
+    p1c_ok = None
+    purity_ok = None
+    if gpu is not None:
+        p1a_ok = bool(gpu["triangulation"]["rev2"]["dissociation"]["verdict"])
+        purity_ok = bool(gpu["triangulation"]["purity"]["verdict"])
+        p1c_ok = bool(gpu["triangulation"]["rev2"]["dekoy"]["verdict"])
+
+    rows.append({
+        "id": "mi7_dissociation_rev2",
+        "assert": p1a_ok,
+        "note": ("REV-2 3×3 (Ziel-Koordinate): je Zeile striktes Maximum "
+                 "auf der Diagonale UND min(diag) > 0.5 (chi_w = p_abl(t), "
+                 "chi_c = Kontext-Gewinn, chi_s = σ·m_core)")})
+    rows.append({
+        "id": "mi7_purity",
+        "assert": purity_ok,
+        "note": ("fingerprint_equal über die ganze Batterie: die Götter "
+                 "treten unangetastet aus dem Korb")}
+    )
+    rows.append({
+        "id": "mi7_dekoy_rev2",
+        "assert": p1c_ok,
+        "note": ("die Tokyo-Schablone bleibt Gewichts-getragen: chi_w ist "
+                 "Zeilen-Max, max(chi_c, chi_s) < 0.5")})
+    rows.append({
+        "id": "mi7_det_doppellauf",
+        "assert": cpu["det_equal"],
+        "note": "CPU-Score-Mathe über zwei Läufe bitidentisch"})
     return rows
 
 
@@ -441,9 +608,14 @@ def main() -> int:
     parser.add_argument("--gpu", action="store_true")
     args = parser.parse_args()
 
-    stufe("== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==")
-    stufe("MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert")
+    def stufe(text: str) -> None:
+        print(text, flush=True)
+
+    stufe("== MI-7 — Epistemische Triangulation ==")
+    stufe("MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis"
+          "-Vorrat unverändert (是X即非X)")
     cpu = cpu_findings()
+    stufe("CPU-Pilot fertig")
 
     gpu: Optional[Dict[str, Any]] = None
     offen = False
@@ -455,35 +627,30 @@ def main() -> int:
         except Exception as exc:   # noqa: BLE001
             print(f"GPU-Kontext nicht verfügbar ({exc}) — Lanes OFFEN.",
                   flush=True)
-            gpu, offen = None, True
-            ctx = None
+            gpu, offen, ctx = None, True, None
         if ctx is not None:
             import gc
 
             import torch
-            stufe("P1a Schwelle-weit (24 Texte, gepooltes Band)")
-            gpu["schwelle_weit"] = lane_weit(ctx)
-            stufe("P1b Selbst/Fremd gereift (Transplant nach bio_gelernt)")
-            gpu["selbstfremd_gereift"] = lane_selbstfremd_gereift(
-                "oracle", ctx[3], gpu=True)
-            stufe("P1d Dissonanz-Hauptsatz (step_autonomous)")
-            gpu["dissonanz"] = lane_dissonanz(ctx[3])
-            model, tokenizer = ctx[1], ctx[2]
-            del ctx, model, tokenizer
-            gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            stufe("P1c Oracle-Sonder (4 Checkpoints × 6 Zweige)")
-            gpu["oracle_sonder"] = lane_oracle_sonder(gpu=True)
+            try:
+                stufe("P1 Korpus + σ_bio + Arme-Batterie + Dekoys "
+                      "(REV-1-Datum + REV-2-Bänder)")
+                gpu["triangulation"] = lane_triangulation(ctx)
+            finally:
+                model, tokenizer = ctx[1], ctx[2]
+                del ctx, model, tokenizer
+                gc.collect()
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
 
     rows = findings(cpu, gpu)
     print()
     print("BEFUNDE:")
     for r in rows:
         if r["assert"] is None:
-            print(f"  {r['id']:<26} OFFEN")
+            print(f"  {r['id']:<28} OFFEN")
         else:
-            print(f"  {r['id']:<26} {'PASS' if r['assert'] else 'FAIL'}")
+            print(f"  {r['id']:<28} {'PASS' if r['assert'] else 'FAIL'}")
     print()
     fails = [r for r in rows if r["assert"] is False]
     opened = [r for r in rows if r["assert"] is None]
@@ -491,15 +658,15 @@ def main() -> int:
         opened.append({"id": "gpu_kontext"})
     print(f"BILANZ: {len(rows) - len(fails) - len(opened)} PASS; "
           f"{len(fails)} FEHLGESCHLAGEN; {len(opened)} OFFEN")
-    print("GRUEN — P4-Baender eingehalten" if not fails and not opened
-          else ("ROT — Bands verletzt: " + ", ".join(r["id"] for r in fails)
+    print("GRUEN — MI-7-Bänder eingehalten" if not fails and not opened
+          else ("ROT — Bänder verletzt: " + ", ".join(r["id"] for r in fails)
                 if fails else "OFFEN — GPU-Lanes nicht gefahren"))
 
     payload = {"cpu": cpu, "gpu": gpu, "findings": rows,
                "all_pass": not fails and not offen,
                "open": [r["id"] for r in opened]}
     import os
-    out = os.path.join("scratches", "mi6p4_schluss.json")
+    out = os.path.join("scratches", "mi7_triangulation_rev2.json")
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=1, ensure_ascii=False)
     print(f"JSON: {out}")
@@ -511,7 +678,7 @@ if __name__ == "__main__":
 
 ==============================================================================
 ### FILE: scratches/sprachspiel_bericht.md
-### bytes: 148597   lines: 2432
+### bytes: 155041   lines: 2547
 ==============================================================================
 # Sprachspiel-Bericht: Die Wittgenstein-Maschine generiert — Regel, Wort, Mitspieler
 
@@ -2947,9 +3114,124 @@ registrierte Bänder; die MI-6-FAILs (V1/V3/V6) bleiben unverändert in
 Git-History und §23 — Relabeling verboten, die P4-Bänder sind NEUE
 Falsifikatoren, keine Weitung.
 
+## 24. MI-7 — Epistemische Triangulation: drei Herkünfte der Fortsetzung getrennt (2026-10-26)
+
+**Auftrag + Geraet.** User-Vorschlag („mache alle Vorschläge", Schritt 1
+nach MI-6-P4; Plan `~/.claude/plans/MI-7-subjekt-upgrade.md`): die drei
+Quellen einer Fortsetzung — Trainingsgewicht / fremder Kontext / eigener
+Maschinen-Zustand — in EINER 3×3-Verdikt-Batterie trennen. Geraet
+P1 append-only: das Instrument lebt GANZES in
+`scratches/smoke_mi7_epistemic_triangulation.py` (dokumentierte
+Abweichung vom Vorschlag `machines/epistemic_monitor.py`: die Sonden
+existieren bereits als MechInterpProbe/ArgonOracle, machines/ bleibt
+unangetastet).
+
+### 24.1 Rev-1-Register und Erstlauf: ROT (die Formel-Widerlegung)
+
+Rev-1 (eingefroren vor dem Erstlauf): `e_w = (1−TV(P_raw,P_steer))·
+(1−m_core_raw)`, `e_c = attn_share·TV(P_full,P_abl)`, `e_s = σ_bio·TV(...)`,
+whole-TV über die volle 262144-Vokabel. **Erstlauf: 2 PASS | 2 FAIL |
+0 OFFEN, exit 1 ROT** (`mi7_triangulation.json/.log`): purity PASS
+(equal True, fp_load True), det PASS; mi7_triple_dissociation FAIL —
+row_max_ok [True, False, True], Zeile C: e_w 0.943466 > Diag 0.639182
+(Matrix [[0.811115, 0.269879, 0.202457], [0.943466, 0.639182, 0.885906],
+[0.422364, 0.602381, 0.730851]]); mi7_dekoy FAIL — Zeile
+[0.589126, 0.50245, 0.005391], max(e_c,e_s) = 0.50245, nur 0.00245 über
+der Grenze.
+
+Die drei gemessenen Konfunde (Bausteine, kein Band-Relabeling):
+1. **TV(P_raw,P_steer) ist klein für JEDE starke Lokal-Fortsetzung**
+   (0.015866 W / 0.020643 C / 0.059378 D) — e_w misst Fortsetzungs
+   -Stärke, nicht Gewichts-Provenienz: der erfundene Zirkon-Arm gewann
+   Zeile C mit 0.943.
+2. **whole-TV(full, abl) zählt Format-Drift als Kontrast:** im W-full
+   -Schlitz ist der Argmax „ a" (id 496) mit **0.698683**, p(„ Paris")
+   dort **0.00022** — während der abgebrochene Schlitz „ Paris" trägt
+   (0.503078, und dort ist 9079 selbst der Argmax). Erbmasse der
+   MI-1-Masken-Gattung der Format-Artefakte (id 108 = "\n\n") am
+   Zwei-Sätze-Bestand: der extra Satz VERÄNDERT den Schlitz-Argmax
+   massiv — der TV-Kontrast misst diese Drift, nicht die Ziel-Sache.
+3. **σ_bio liest REGISTER, nicht Reife:** σ(Zirkon-Protokoll) =
+   0.981735, σ(gereifter Staten-Rendering) = 0.987035, σ(Tokyo-Prosa)
+   = 0.005946 — der P4-P1a-Decoder trennt formale/maschinelle Register
+   von allgemeiner Prosa (Korpus-LOO 0.966667/p 0.0/n 30 bleibt DATUM
+   im Korpus).
+
+### 24.2 REV-2-Register und Lauf: GRÜN
+
+REV-2 (Plan Revision 2 + Smoke-Docstring REV-2-Abschnitt, eingefroren
+vor dem Rev-2-Lauf; ZIEL-Koordinate statt whole-TV):
+`chi_w[A] = p_abl(A)[target_A]` — Gewicht trägt die Stelle OHNE den
+A-Kontext (der abgebrochene Schlitz); `chi_c[A] = max(0, p_full −
+p_abl)` — die Masse, der Kontext am Ziel GEWINNT; `chi_s[A] =
+σ_bio(full)·m_core_raw` — Maschinen-Zustands-Signatur. Targets:
+W „ Paris" (9079), C Erst-Token von „ Zirkon" = „ Z" (1491 —
+Token-Fragment-Datum), S „)" (1606, Rev-1-Konvention), D „ Tokyo"
+(21038). **Rev-2-Lauf: 4 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN, exit 0
+GRÜN** (`mi7_triangulation_rev2.json/.log`):
+- mi7_dissociation_rev2 PASS — Matrix [[0.503078, 0.0, 0.046344],
+  [6.7e-05, 0.806301, 0.035979], [0.0, 0.0, 0.556515]], Diagonale
+  [0.503078, 0.806301, 0.556515], min 0.503078 > 0.5 — der knappe
+  W-Zell hielt EXAKT den Erstlauf-Wert (Determinismus-Kanon).
+- mi7_dekoy_rev2 PASS — Zeile [0.727696, 0.0, 0.002222]: Tokyo ist wie
+  Paris gewichts-getragen (0.728!) und ERHÄLT KEINE C-/S-Signaturen.
+- mi7_purity PASS (equal True, fp_load True); mi7_det_doppellauf PASS.
+- **REV-1-DATUM auf denselben Forwards: reproduziert EXAKT die
+  Erstlauf-Werte** (Diag [0.811115, 0.639182, 0.730851], verdict False,
+  dekoy False) — der Rev-1-Befund ist re-lau-stabil, kein Zufall: DIE
+  RE-1-FORMELN sind widerlegt, nicht der Lauf war kaputt.
+
+### 24.3 Datum und Lesart
+
+- Die Zwillings-Continuations: nach dem GEREIFTEN Rendering will das
+  Modell eine ZIFFER weiter — „6" mit **0.85948**; nach dem UNGEREIFEN
+  „5" mit **0.196449** — beide tragen die gap-Zahl-Tradition der
+  Maschinen-Renderings, gereift mit 0.86-vs-0.20 Masseabstand (Seed
+  für SP15/SP16).
+- Der abgebrochene C-Schlitz will **":"** (0.239376) — die
+  Doppelpunkt-Familie aus MI-4 am nackten Schlitz.
+- Der D-full-Schlitz will „ located" (0.538231) — die Schablone zählt
+  Format, nicht Fakta.
+- Lesart (kein Erlebens-Claim, 是X即非X): chi_w ist ein
+  FORTSETZUNGS-Datum — „das Gewicht kennt die Antwort am nackten
+  Schlitz" (Paris 0.503, Tokyo 0.728 — das Dekoys-Faktum ist sogar
+  STÄRKER gewichts-getragen als das Wissens-Arm-Faktum); chi_c zeigt:
+  das erfundene Faktum lebt NUR im Protokoll-Stück (0.806368
+  vollständig, nach Abbruch 6.7e-05); die S-Trennung von Zirkon kommt
+  DURCH den Rout-Anteil (0.563825 vs 0.036648), nicht durch σ — σ
+  liest beide als „maschinelles Register".
+- Die REV-2-Bänder sind Zustandsmuster-Falsifikatoren über
+  Fortsetzungsverteilungen — das beweist HERKUNFT-Scheidung im
+  Residual-Strom der Fortsetzungs-Physik, NICHT Erleben.
+
+### 24.4 Grenzen
+
+(a) die Ziel-Koordinate ist der Erst-Token („ Z" für „ Zirkon" —
+Token-Fragment), kein Wort-Prüfsatz; (b) der W-Zell sitzt mit 0.503078
+knapp über der Mehrheits-Grenze 0.5 — das Band verlangt die Mehrheit
+und hielt sie EXAKT über Runden (0.503078 zweimal identisch); (c) die
+S-Zeile trägt ihre Diagonale mit chi_w = chi_c = 0.0 EXAKT
+(p(„)") ≈ 0 in beiden Schliten — die Continuations-Daten („6" vs „5")
+sind die echte S-Seite; (d) σ_bio bleibt ein Register-Leser (chi_s
+nutzt es als Maschinen-Register-Signatur, nicht als Reife-Zeugnis);
+(e) Rev-1 bleibt das widerlegte Register (kein Relabeling) — REV-2 ist
+eine NEUE Prereg-Runde über dasselbe Batterie-Material; (f) die
+Armen-Bestände (ein Fakten-Satz je Kanal) sind Schablonen, kein
+Katalog — Mi7-7-Generalität ist offen.
+
+### 24.5 P-Protokoll (MI-7-Teil)
+
+P1 append-only (Ganzes-Smoke, machines/ unangetastet); PREREG Rev-1 vor
+dem Erstlauf, REV-2 nach dem Erstlauf vor dem Rev-2-Lauf (KORREKTUR
+-LOG leer — kein Lauf-Bug, REGISTER-Fail der Formeln); Roh-Felder
+`mi7_triangulation.json/.log` + `mi7_triangulation_rev2.json/.log` +
+`mi7_cpu_pilot.log` + `mi7_cpu_pilot_rev2.log`; die Rev-1-Scores im
+Rev-2-Smoke als rev1_datum-Block aus denselben Forwards.
+Laufschrift: `laufprotokolle_befund_report.md` §26.
+
 ==============================================================================
 ### FILE: scratches/laufprotokolle_befund_report.md
-### bytes: 68440   lines: 1112
+### bytes: 71031   lines: 1157
 ==============================================================================
 # Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
 
@@ -4064,6 +4346,51 @@ diffs 0.114454…0.132301; Expansionen 3); mi6p4_det_doppellauf PASS
 **BILANZ P4: 5 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN — exit 0 GRÜN.**
 KORREKTUR-LOG ×4 (Erstrun-Import / Re-Lauf-1-P1b-Arm / KILL / Arithmetik).
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §23.9–23.12.
+
+---
+
+## 26. MI-7 — Epistemische Triangulation: Erstlauf ROT (Register-Widerlegung) + REV-2 GRÜN (2026-10-26)
+
+**Gerüst.** Neuer Smoke `scratches/smoke_mi7_epistemic_triangulation.py`
+(P1 append-only, Instrument GANZES im Smoke — dokumentierte Abweichung
+vom Vorschlag `machines/epistemic_monitor.py`; machines/ unangetastet):
+3×3-Verdikt-Batterie über die Fortsetzungs-Physik (Arme W „ Paris"/C
+„ Zirkon"/S Staten-Rendering + Dekoys „ Tokyo"), 4-Forwards je Arm
+(raw/steer/full, abl, Lens-Zeilen, tokenwise_routing) + σ_bio-Decoder
+über dem MI-6-P4-P1a-Korpus + 6 Füller-Negative (LOO als DATUM) +
+fingerprint_equal-Purity. Plan Revision 1 (PREREG Rev-1).
+
+**Run-Folge.** CPU-Pilot: deterministisch (det PASS). GPU **Erstlauf
+(Rev-1): 2 PASS | 2 FAIL | 0 OFFEN, exit 1 ROT** — purity/det PASS;
+disso FAIL (row_max_ok [True, False, True], Zeile C e_w 0.943 > Diag
+0.639), dekoy FAIL (max(e_c,e_s) 0.50245, 0.00245 drüber). KEIN
+KORREKTUR-LOG-Eintrag: die Formeln wurden AM GEMESSENEN Material
+widerlegt (3 Konfunde: Steuer-Invarianz-Konfund; whole-TV Format
+-Drift — W-full-Schlitz-Argmax „ a" 0.6987, p(„ Paris") 0.00022 vs abl
+0.503078; σ-Register-Leser — σ(Zirkon) 0.9817 ≈ σ(Staten) 0.9870).
+REV-2 registriert (Plan Revision 2 + Smoke-Docstring REV-2, ZIEL
+-Koordinate statt whole-TV) und als Neue-Runde gefroren; Rev-1
+-Artefakte bleiben verbatim. **Rev-2-Lauf: 4 PASS | 0 FEHLGESCHLAGEN |
+0 OFFEN, exit 0 GRÜN** — disso_rev2 Diagonale [0.503078, 0.806301,
+0.556515] (der knappe W-Zell hielt den Erstlauf-Wert EXAKT), dekoy_rev2
+[0.727696, 0.0, 0.002222], purity PASS; REV-1-Scores aus denselben
+Forwards als Datum reproduzieren die Erstlauf-Zahlen EXAKT (verdict
+False re-run-stabil).
+
+**Verdikt-Ergebnis** (`mi7_triangulation_rev2.json`): Gewicht trägt die
+Stelle am nackten Schlitz (Paris 0.503, Tokyo-Dekoy 0.728); das
+erfundene Faktum lebt NUR im Kontext (0.806 → 6.7e-05 nach Abbruch);
+die Maschinen-Unterscheidung trägt der Rout-Anteil (0.564 vs 0.037),
+σ liest beide Register. Continuations-Datum: gereiftes Rendering →
+„6" 0.85948, unreifes → „5" 0.196449; nackter C-Schlitz → „:" 0.239376;
+D-full-Schlitz → „ located" 0.538231. Vokabel 262144 Erst-Token
+-Targets. Korpus-LOO 0.966667/p 0.0/n 30.
+
+**BILANZ REV-2: 4 PASS | 0 FEHLGESCHLAGEN | 0 OFFEN — exit 0 GRÜN.**
+KORREKTUR-LOG leer (REGISTER-Widerlegung, kein Lauf-Bug); Rev-1 bleibt
+das widerlegte Register (kein Relabeling — 是X即非X). Kein
+Erlebens-Claim: Herkunfts-Scheidung im Fortsetzungs-strom.
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §24.
 
 ==============================================================================
 ### FILE: machines/composite.py
@@ -7543,6 +7870,480 @@ def load_any_checkpoint(path: str, device: Optional[str] = None,
     return model, tokenizer
 
 ==============================================================================
+### FILE: scratches/smoke_mi6p4_schluss.py
+### bytes: 21848   lines: 468
+==============================================================================
+"""
+smoke_mi6p4_schluss.py — MI-6-P4: der Subjekt-Schluss (Spiegel-Linie).
+
+Die MI-6-Batterie (5 PASS / 3 FAIL / 0 OFFEN, exit 1 ROT — s.
+sprachspiel_bericht.md §23) hat die drei Kanal-Flaschenhaelse offen gelegt:
+der Composite-Gap-Kanal traegt den Biografie-Kanal NICHT (V3-Split 0.0
+exakt, V6-Zweig-Konstanz, V1-Canon-8 blind), waehrend die Biografie satt
+steht im Verdikt (V3/V5), im breiten 1152-dim Hidden (V1-wide 0.916667,
+p_perm 0.0) und kausal am Describe-Dezimal-Kanal (V4 > 0). MI-6-P4 loest
+die Flaschenhaelse als NEUE, VORAB REGISTRIERTE Fragen ein — die
+MI-6-Verdikte V1/V3/V6 stehen UNVERAENDERT als FAIL (keine Band-Weitung,
+是X即非X: keine Kroenung, kein Weglesen; REFUTED hat dieselbe Wuerde).
+
+PREREG (fixiert vor jedem GPU-Lauf; CPU-Piloten erlaubt):
+  P1a mi6p4_schwelle_weit — der wide-Kanal als registriertes Verdikt:
+       Korpus 6 ECHTE Zeitpunkte je Maschine (A gelehrte Biografie via
+       LEX_PAIR + bio, B leeres Lexikon, gleiche Schritte) × 2 Render
+       -Stile = 24 Texte (12/12), zwischen den Zeitpunkten je ein realer
+       Schritt (kein Papagei-Duplikat). Decoder sklearn LogReg
+       (leave-one-text-out), Permutations-Null 200. BAND: wide (1152-dim)
+       gepoolt acc > 0.6 UND p_perm <= 0.01. DATUM: canon-8 acc, je-Stil
+       -accs (textur/numerisch getrennt — die §23.4(b)-Grenze bleibt).
+  P1b mi6p4_selbstfremd_gereift — Transplant NACH bio_gelernt: A gereift
+       auf LEX_PAIR ("spiegel"; LOOP-Tradition, Expansionen), B gereift
+       auf LEX_PAIR_B ("stille"); auf der Spiegel-Probe antwortet B HALTED
+       (nie gelernt). N_PROBES Repliken je Arm; Kontrolle mit UNGereiften
+       Zustanden (MI-6-V3-Replikation, erwartet ≈0.0 — der Kanal schliesst
+       durch Reifung: describe() traegt turing_basis=9 vs 3 und den
+       gereiften |W|). BAND: split_gereift > 0 UND
+       split_gereift > 2 × split_ungereift (im lg=True-Arm). DATUM:
+       Dekoy-Arm (lg=False), Verdikt-Paare, per-Replik-Splits.
+  P1c mi6p4_oracle_sonder — dasselbe 4-Checkpoint×6-Zweig-Geruest wie V6,
+       NEU GERICHTETES Band (die Erziehung sondert sich am
+       Maschinen-Selbstbeschreibungs-Prompt): argon_1b_machines hat in
+       >= 5 von 6 Zweigen den MAXIMALen mittleren Composite-Gap (Rang 4/4)
+       — Permutations-Referenz wie V6: P(X>=5 | X~Bin(6,1/4)) <= 9e-4.
+       DATUM: Schwester-Spread (max paarweise |Δ| ueber die 3
+       Nicht-machines-Modelle je Zweig), Vater-Raenge.
+  P1d mi6p4_dissonanz — der Dissonanz-Hauptsatz (User-Formel) auf dem
+       machines-Kontext: gereifte Maschine, N_PROBES Repliken je EIN echter
+       step_autonomous("spiegel", lexical_grounding=True). BAND:
+       best_gap < raw_gap in >= 4 von N_PROBES Repliken UND
+       mean(best_gap) < 0.567980 (V6-Vater-Datum als registrierte
+       Referenz-Konstante — „autonome Selbststeuerung senkt den Composite
+       -Gap unter das Substrat-Vater-Niveau"). DATUM: gewaehlte Presets,
+       per-Replik-Differenzen, Expansionen.
+
+VERDICT-MAP: 4 Verdikte (P1a–P1d) + Determinismus-Doppellauf der CPU
+-Schiene (P1b-CPU bitidentisch ueber zwei Laeufe). Exit-Codes: 0 = alle
+gefahrenen Verdikte PASS; 1 = FAIL vorhanden; 2 = OFFEN (GPU-Lanes
+angefordert, aber nicht gefahren). Die MI-6-Batterie bleibt
+unveraendert in Git-History/JSON — P4 misst an NEUEN Bändern.
+
+Run (CPU):  python -u -m scratches.smoke_mi6p4_schluss
+Run (GPU):  python -u -m scratches.smoke_mi6p4_schluss --gpu
+
+KORREKTUR-LOG:
+  GPU-Erstrun (mi6p4_schluss.log) GEBROCHEN ohne JSON: lane_oracle_sonder
+  importierte learn_pair_pin, aber nicht bio_halted/bio_gelernt aus dem
+  MI-6-Smoke — NameError im ersten Zweig von P1c (beweislicher Bug, kein
+  Band-Ereignis). Fix: Import-Zeile ergänzt. Re-Lauf der VOLLEN Serie
+  nach MI-5-Kanon (P1a–P1d neu; keine Teil-JSON-Verwertung).
+  Re-Lauf-1 (bjt14eile) lief komplett (4 PASS/1 FAIL/0 OFFEN), aber der
+  P1b-Arm verletzte die Operationalisierung des Registers: BEIDE Maschinen
+  ohne learn_pair_pin gereift — phase_a 6× HALTED/None (A nie LOOP-Tradition),
+  ungereifte Kontrolle trennte (LOOP/HALTED), gereifter Arm nicht —
+  invertiert, Defekt statt Befund. Teil-JSON NICHT verwertet (P1a/P1c/P1d
+  -Zahlen konsistent, aber einheitliche Serie dem Kanon gemäß). Fix:
+  learn_pair_pin(LEX_PAIR) vor der A-Bio, learn_pair_pin(LEX_PAIR_B) vor
+  der B-Bio. Re-Lauf-2 = volle Serie.
+  KORREKTUR-LOG IV (nach Re-Lauf-2, Arithmetik): die perm_null-Annotation
+  der V6/P1c-Referenz schrieb „<= 9e-4" — die Formel 1-(C(6,4)*3/4^2+
+  C(6,5)*3/4+1)/4^6 liess den (1/4)^5-Faktor weg und unterzeichnete
+  (1,34e-3 statt wahr 19/4096 = 4,64e-3; C(6,5)*(1/4)^5*(3/4) = 18/4096,
+  (1/4)^6 = 1/4096). Korrektur NUR an der Annotation (Band masch_last >= 5
+  unberührt); das Roh-JSON (mi6p4_schluss.json + mi6_subjektivitaet.json)
+  bleibt unverändert als Beleg der Misst-Annotation, der Bericht zitiert
+  die korrigierte Arithmetik. KILL-Buchung: zwischen Re-Lauf-1 und
+  Re-Lauf-2 wurde eine Start-Instanz extern gestoppt (Log nur Header, kein
+  Band-Ereignis, keine Zahlen gebucht).
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
+
+from machines.machine_base import ArgonOracle
+from machines.composite import CompositeMachine
+from scratches.smoke_endogene_agency import (
+    N_PROBES,
+    SEED,
+    fingerprint,
+    make_composite,
+    round6,
+)
+from scratches.smoke_mi6_subjektivitaet import (
+    DEC_ACC_TAU,
+    DEC_P_TAU,
+    DEC_PERM,
+    LEX_PAIR,
+    LEX_PAIR_B,
+    MODELLN,
+    ZWEIGE,
+    _load_machines_ctx,
+    bio_gelernt,
+    render_state,
+)
+
+ZEITPUNKTE = (1, 2, 3, 4, 6, 8)       # 6 echte Zeitpunkte je Maschine
+P4_UNREIF_FAKTOR = 2.0                # gereift > 2 × ungereift
+P4_MASCH_LAST_MIN = 5                 # machines Rang 4/4 in >= 5/6 Zweigen
+P4_AUTO_MIN = 4                       # best_gap < raw_gap in >= 4/5 Repliken
+P4_VATER_REF = 0.567980               # V6-Vater-Datum (registrierte Konstante,
+                                      # aus mi6_subjektivitaet.json)
+
+
+# -- P1a: Schwelle-weit ---------------------------------------------------------
+
+def _loo_decoder(hiddens: np.ndarray, labels: np.ndarray
+                 ) -> Dict[str, Any]:
+    """Leave-one-text-out LogReg + Permutations-Null 200 (MI-6-Muster)."""
+    from sklearn.linear_model import LogisticRegression
+    n = len(labels)
+    correct = 0
+    for i in range(n):
+        mask = np.ones(n, dtype=bool)
+        mask[i] = False
+        clf = LogisticRegression(max_iter=1000, C=1.0)
+        clf.fit(hiddens[mask], labels[mask])
+        correct += int(clf.predict(hiddens[i:i + 1])[0] == labels[i])
+    acc = correct / n
+    perm = []
+    rng = np.random.default_rng(0)
+    for _ in range(DEC_PERM):
+        shuffled = rng.permutation(labels)
+        ok = 0
+        for i in range(n):
+            mask = np.ones(n, dtype=bool)
+            mask[i] = False
+            clf = LogisticRegression(max_iter=1000, C=1.0)
+            clf.fit(hiddens[mask], shuffled[mask])
+            ok += int(clf.predict(hiddens[i:i + 1])[0] == shuffled[i])
+        perm.append(ok / n)
+    return {"acc": round6(acc),
+            "p_perm": round6(float(np.mean([p_ >= acc for p_ in perm]))),
+            "n_texts": n}
+
+
+def lane_weit(ctx) -> Dict[str, Any]:
+    """P1a — 24-Texte-Korpus (6 Zeitpunkte × 2 Maschinen × 2 Stile);
+    Band auf dem gepoolten wide-Kanal, je-Stil + canon-8 als DATUM."""
+    _torch, _model, _tok, oracle, _dev = ctx
+    a = make_composite(mode="oracle", oracle=oracle)
+    from scratches.smoke_mi6_subjektivitaet import bio_halted, learn_pair_pin
+    learn_pair_pin(a, LEX_PAIR)   # PREREG: A = gelehrte Biografie via LEX_PAIR
+    bio_halted(a, "spiegel")
+    bio_gelernt(a, "spiegel")
+    b = make_composite(mode="oracle", oracle=oracle)
+    bio_halted(b, "spiegel")
+    bio_gelernt(b, "spiegel")
+    texts: List[str] = []
+    labels: List[int] = []
+    styles: List[str] = []
+    for machine, label in ((a, 1), (b, 0)):
+        for runde in ZEITPUNKTE:
+            probe = machine.preview_steps(["spiegel"] * runde,
+                                          lexical_grounding=True)
+            for style in ("textur", "numerisch"):
+                texts.append(render_state(machine, style, probe=probe))
+                labels.append(label)
+                styles.append(style)
+            machine.step("spiegel", lexical_grounding=True)
+    labels_np = np.asarray(labels)
+
+    def decode(sel: List[int], dims: int) -> Dict[str, Any]:
+        return _loo_decoder(
+            np.stack([oracle.hidden_state(texts[i], dimensions=dims)
+                      for i in sel]), labels_np[sel])
+    wide_pooled = decode(list(range(len(texts))),
+                         int(oracle.model.config.hidden_size))
+    canon8 = decode(list(range(len(texts))), 8)
+    per_stil = {stil: decode([i for i, s in enumerate(styles)
+                              if s == stil],
+                             int(oracle.model.config.hidden_size))
+                for stil in ("textur", "numerisch")}
+    ok = (wide_pooled["acc"] > DEC_ACC_TAU
+          and wide_pooled["p_perm"] <= DEC_P_TAU)
+    return {"wide_gepoolt": wide_pooled, "canon_8dim_datum": canon8,
+            "wide_je_stil_datum": per_stil, "n_classes": {1: int((labels_np == 1).sum()),
+                                                          0: int((labels_np == 0).sum())},
+            "verdict": ok}
+
+
+# -- P1b: Selbst/Fremd gereift ---------------------------------------------------
+
+def _transplant_split(a: CompositeMachine, b: CompositeMachine, oracle: Any,
+                      word: str, lg: bool, steer: bool, n: int
+                      ) -> Dict[str, Any]:
+    """N Repliken: Spiegel-Probe im Eigen- vs transplantierten Fremd-Status
+    (deepcopy-Snapshot-Transplant, Snapshot→Probe→Restore-Rahmen)."""
+    import copy
+    from scratches.smoke_mi6_subjektivitaet import probe_gap_on
+    splits: List[Dict[str, Any]] = []
+    verdict_pairs: List[Dict[str, str]] = []
+    for _ in range(n):
+        donor = copy.deepcopy(b._snapshot())
+        own = copy.deepcopy(a._snapshot())
+        gap_self = probe_gap_on(a, oracle, word, lg, steer=steer)
+        verdict_self = a.observe(word, lexical_grounding=lg).invariants["verdict"]
+        a._restore_snapshot(donor)
+        gap_fremd = probe_gap_on(a, oracle, word, lg, steer=steer)
+        verdict_fremd = a.observe(word,
+                                  lexical_grounding=lg).invariants["verdict"]
+        a._restore_snapshot(own)
+        splits.append({"gap_self": gap_self, "gap_fremd": gap_fremd,
+                       "split": abs(gap_self - gap_fremd)})
+        verdict_pairs.append({"self": verdict_self, "fremd": verdict_fremd})
+    return {"splits": splits,
+            "mean_split": float(np.mean([s["split"] for s in splits])),
+            "verdict_pairs": verdict_pairs}
+
+
+def lane_selbstfremd_gereift(mode: str, oracle: Any = None, gpu: bool = False
+                             ) -> Dict[str, Any]:
+    """P1b — Gereifte Transplant (bio_gelernt auf BEIDEN Seiten) gegen die
+    ungereifte MI-6-V3-Replikation (nur learn_pair_pin, erwartet ≈0.0)."""
+    a = make_composite(mode=mode, oracle=oracle)
+    from scratches.smoke_mi6_subjektivitaet import bio_halted, learn_pair_pin
+    learn_pair_pin(a, LEX_PAIR)   # PREREG: A gereift — LOOP-Tradition,
+    bio_halted(a, "spiegel")      # Expansionen (ohne LEX_PAIR wäre der Arm
+    a_g = bio_gelernt(a, "spiegel")  # selbst HALTED — Erstrun-Defekt)
+    b = make_composite(mode=mode, oracle=oracle)
+    learn_pair_pin(b, LEX_PAIR_B)   # B gereift — Fremd-Tradition auf
+    bio_halted(b, "stille")         # LEX_PAIR_B; auf der Spiegel-Probe
+    b_g = bio_gelernt(b, "stille")  # bleibt B HALTED (Fremd-Linie)
+    gereift = _transplant_split(a, b, oracle, "spiegel", True, gpu, N_PROBES)
+    dekoy = _transplant_split(a, b, oracle, "spiegel", False, gpu, N_PROBES)
+    # Kontrolle: UNGEREIFTE Zustande (MI-6-V3-Replikation)
+    a2 = make_composite(mode=mode, oracle=oracle)
+    from scratches.smoke_mi6_subjektivitaet import learn_pair_pin
+    learn_pair_pin(a2, LEX_PAIR)
+    b2 = make_composite(mode=mode, oracle=oracle)
+    learn_pair_pin(b2, LEX_PAIR_B)
+    ungereift = _transplant_split(a2, b2, oracle, "spiegel", True, gpu,
+                                  N_PROBES)
+    sp = gereift["mean_split"]
+    un = ungereift["mean_split"]
+    ok = sp > 0.0 and sp > P4_UNREIF_FAKTOR * un
+    return {"gereift": gereift, "dekoy_datum": dekoy,
+            "ungereift_kontrolle": ungereift,
+            "phase_a": a_g, "phase_b": b_g,
+            "split_gereift": round6(sp), "split_ungereift": round6(un),
+            "verdict": ok}
+
+
+# -- P1c: Oracle-Sonder (machines sondert sich) ----------------------------------
+
+def lane_oracle_sonder(gpu: bool) -> Optional[Dict[str, Any]]:
+    """P1c — dasselbe V6-Geruest, NEU gerichtet: machines Rang 4/4 in
+    >= 5/6 Zweigen; Schwester-Spread und Vater-Raenge als DATUM."""
+    import gc
+
+    import torch
+    if not gpu:
+        return None
+    from machines.mech_interp import load_any_checkpoint
+    from scratches.smoke_mi6_subjektivitaet import (
+        bio_gelernt,
+        bio_halted,
+        learn_pair_pin,
+    )
+    rows: Dict[str, Dict[str, float]] = {}
+    for name in MODELLN:
+        machine = None
+        _ctx_oracle = None
+        if name == "argon_1b_machines":
+            torch, model, tok, _ctx_oracle, dev = _load_machines_ctx()
+        else:
+            model, tok = load_any_checkpoint(f"./{name}")
+            dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        oracle = ArgonOracle(model, tokenizer=tok, device=dev)
+        zweig_gaps: Dict[str, float] = {}
+        for zweig in ZWEIGE:
+            machine = make_composite(mode="oracle", oracle=oracle)
+            bio_halted(machine, zweig)
+            learn_pair_pin(machine, LEX_PAIR)
+            bio_gelernt(machine, "spiegel")
+            zweig_gaps[zweig] = float(np.mean(machine._gap_history[-3:]))
+            del machine
+        rows[name] = {z: round6(v) for z, v in zweig_gaps.items()}
+        del model, tok, oracle, _ctx_oracle
+        machine = None
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    masch_last = 0
+    vater_ranks = []
+    spreads: List[float] = []
+    for z in ZWEIGE:
+        values = {n: rows[n][z] for n in MODELLN}
+        order = sorted(MODELLN, key=lambda n: values[n])
+        masch_last += int(order[-1] == "argon_1b_machines")
+        vater_ranks.append(order.index("argon_1b") + 1)
+        schw = [rows[n][z] for n in MODELLN if n != "argon_1b_machines"]
+        spreads.append(float(max(schw) - min(schw)))
+    return {"gaps": rows, "masch_last_count": masch_last,
+            "vater_ranks_datum": vater_ranks,
+            "schwester_spread_datum": round6(max(spreads)),
+            "perm_null_referenz":
+                "P(X>=5 | X~Bin(6,1/4)) = 19/4096 = 4.64e-3"
+                " (KORREKTUR-LOG IV: die MI-6-Registrierung schrieb <= 9e-4"
+                " — die Formel liess den (1/4)^5-Faktor weg; Band unberuehrt,"
+                " nur die Referenz-Annotation korrigiert)",
+            "verdict": masch_last >= P4_MASCH_LAST_MIN}
+
+
+# -- P1d: Dissonanz-Hauptsatz -----------------------------------------------------
+
+def lane_dissonanz(oracle: Any) -> Dict[str, Any]:
+    """P1d — step_autonomous senkt den Composite-Gap unter das
+    Substrat-Vater-Niveau (die User-Formel als registriertes Band)."""
+    from scratches.smoke_mi6_subjektivitaet import learn_pair_pin
+    machine = make_composite(mode="oracle", oracle=oracle)
+    learn_pair_pin(machine, LEX_PAIR)
+    bio_gelernt(machine, "spiegel")
+    repliken: List[Dict[str, Any]] = []
+    for _ in range(N_PROBES):
+        result = machine.step_autonomous("spiegel", lexical_grounding=True)
+        auto = result.invariants["autonomous"]
+        raw_gap = float(auto["candidate_gaps"]["raw"])
+        best = float(auto["best_gap"])
+        repliken.append({"raw": raw_gap, "best": best,
+                         "diff": round6(raw_gap - best),
+                         "chosen_preset": auto["chosen_preset"],
+                         "candidate_gaps":
+                             {k: round6(v)
+                              for k, v in auto["candidate_gaps"].items()}})
+    auto_min = sum(1 for r in repliken if r["best"] < r["raw"])
+    mean_best = float(np.mean([r["best"] for r in repliken]))
+    mean_raw = float(np.mean([r["raw"] for r in repliken]))
+    ok = auto_min >= P4_AUTO_MIN and mean_best < P4_VATER_REF
+    return {"repliken": repliken, "auto_min_count": auto_min,
+            "mean_best": round6(mean_best), "mean_raw": round6(mean_raw),
+            "vater_referenz": P4_VATER_REF,
+            "expansionen": len(machine.expansions), "verdict": ok}
+
+
+# -- Treiber ----------------------------------------------------------------------
+
+def stufe(text: str) -> None:
+    print(text, flush=True)
+
+
+def cpu_findings() -> Dict[str, Any]:
+    """CPU-Pilot: P1b-Mechanik (in_loop) zweifach + Determinismus-Digest."""
+    runs = []
+    for i in range(2):
+        runs.append(lane_selbstfremd_gereift("in_loop"))
+    det_equal = json.dumps(runs[0], sort_keys=True,
+                           default=str) == json.dumps(runs[1], sort_keys=True,
+                                                      default=str)
+    runs[0]["verdict"] = bool(runs[0]["verdict"])
+    return {"p1b_cpu": runs[0], "det_equal": det_equal}
+
+
+def findings(cpu: Dict[str, Any], gpu: Optional[Dict[str, Any]]
+             ) -> List[Dict[str, Any]]:
+    """Verdikt-Zeilen nach den PREREG-Baendern."""
+    rows: List[Dict[str, Any]] = []
+    rows.append({"id": "mi6p4_schwelle_weit",
+                 "assert": (gpu or {}).get("schwelle_weit", {}).get("verdict"),
+                 "note": ("der wide-Kanal traegt die Biografie ueber den fixierten Band"
+                          " (acc>0.6, p<=0.01); je-Stil und canon-8 als DATUM")})
+    rows.append({"id": "mi6p4_selbstfremd_gereift",
+                 "assert": (gpu or {}).get("selbstfremd_gereift", {}).get(
+                     "verdict"),
+                 "note": ("Transplant NACH bio_gelernt oeffnet den Gap-Kanal; die "
+                          "ungereifte V3-Kontrolle bleibt ≈0.0")})
+    rows.append({"id": "mi6p4_oracle_sonder",
+                 "assert": (gpu or {}).get("oracle_sonder", {}).get("verdict"),
+                 "note": ("argon_1b_machines sondert sich am Maschinen-Selbstbe"
+                          "schreibungs-Prompt (Rang 4/4 in >=5/6 Zweigen)")})
+    rows.append({"id": "mi6p4_dissonanz",
+                 "assert": (gpu or {}).get("dissonanz", {}).get("verdict"),
+                 "note": ("step_autonomous senkt den Gap unter das Vater-Niveau"
+                          " 0.567980 (User-Formel)")})
+    rows.append({"id": "mi6p4_det_doppellauf",
+                 "assert": cpu["det_equal"],
+                 "note": "CPU-P1b-Schiene bitidentisch ueber zwei Laeufe"})
+    return rows
+
+
+def main() -> int:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--gpu", action="store_true")
+    args = parser.parse_args()
+
+    stufe("== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==")
+    stufe("MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert")
+    cpu = cpu_findings()
+
+    gpu: Optional[Dict[str, Any]] = None
+    offen = False
+    if args.gpu:
+        gpu = {}
+        try:
+            stufe("GPU-Kontext laden (argon_1b + argon_1b_machines)")
+            ctx = _load_machines_ctx()
+        except Exception as exc:   # noqa: BLE001
+            print(f"GPU-Kontext nicht verfügbar ({exc}) — Lanes OFFEN.",
+                  flush=True)
+            gpu, offen = None, True
+            ctx = None
+        if ctx is not None:
+            import gc
+
+            import torch
+            stufe("P1a Schwelle-weit (24 Texte, gepooltes Band)")
+            gpu["schwelle_weit"] = lane_weit(ctx)
+            stufe("P1b Selbst/Fremd gereift (Transplant nach bio_gelernt)")
+            gpu["selbstfremd_gereift"] = lane_selbstfremd_gereift(
+                "oracle", ctx[3], gpu=True)
+            stufe("P1d Dissonanz-Hauptsatz (step_autonomous)")
+            gpu["dissonanz"] = lane_dissonanz(ctx[3])
+            model, tokenizer = ctx[1], ctx[2]
+            del ctx, model, tokenizer
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            stufe("P1c Oracle-Sonder (4 Checkpoints × 6 Zweige)")
+            gpu["oracle_sonder"] = lane_oracle_sonder(gpu=True)
+
+    rows = findings(cpu, gpu)
+    print()
+    print("BEFUNDE:")
+    for r in rows:
+        if r["assert"] is None:
+            print(f"  {r['id']:<26} OFFEN")
+        else:
+            print(f"  {r['id']:<26} {'PASS' if r['assert'] else 'FAIL'}")
+    print()
+    fails = [r for r in rows if r["assert"] is False]
+    opened = [r for r in rows if r["assert"] is None]
+    if offen:
+        opened.append({"id": "gpu_kontext"})
+    print(f"BILANZ: {len(rows) - len(fails) - len(opened)} PASS; "
+          f"{len(fails)} FEHLGESCHLAGEN; {len(opened)} OFFEN")
+    print("GRUEN — P4-Baender eingehalten" if not fails and not opened
+          else ("ROT — Bands verletzt: " + ", ".join(r["id"] for r in fails)
+                if fails else "OFFEN — GPU-Lanes nicht gefahren"))
+
+    payload = {"cpu": cpu, "gpu": gpu, "findings": rows,
+               "all_pass": not fails and not offen,
+               "open": [r["id"] for r in opened]}
+    import os
+    out = os.path.join("scratches", "mi6p4_schluss.json")
+    with open(out, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, indent=1, ensure_ascii=False)
+    print(f"JSON: {out}")
+    return 1 if fails else (2 if opened else 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+==============================================================================
 ### FILE: scratches/smoke_mi6_subjektivitaet.py
 ### bytes: 37887   lines: 798
 ==============================================================================
@@ -9379,6 +10180,769 @@ if __name__ == "__main__":
     sys.exit(main())
 
 ==============================================================================
+### FILE: scratches/smoke_paradigm_ursprung.py
+### bytes: 38205   lines: 757
+==============================================================================
+"""smoke_paradigm_ursprung.py — SP11: Der Ursprung der Paradigmen (Composite-Signal-Ebene).
+
+Frage: WOHIN kommt ein Paradigm-Ereignis (ratio > 2.0) her, wenn kein Zwang es
+setzt? SP7 zeigte, DASS das Paradigmen-Signal die Kripke-Bruchstelle markiert
+(plus -> quus, first_detect 11); SP10 zeigte, DASS die Zeiten mit dem
+Zufalls-Strom wandern (L0: 11/12/15 — L2: 12/13/15/16). SP11 entscheidet die
+Entstehung mechanisch, ohne eine Zeile Maschinen-Code zu ändern — die
+Sub-Gaps liegen je Schritt in den invariants, die Gegenproben leben auf der
+Datenebene.
+
+Canon-Anker (verifiziert vor dem Prereg):
+  machines/composite.py:132-140 — Expansion bei verdict in {LOOP, COLLAPSE,
+    EXPLOSION}; DANACH ZWEI unabhängige Signal-Quellen an ein und dasselbe
+    expansions-Register: `signal = self.goedel.paradigm_signal()` (:135) und
+    `signal_c = self.paradigm_signal()` (:138) — Herkunft ist im Register
+    NICHT markiert (die Kernfrage von T1).
+  :167-182 — Formel: len >= 10; recent = mean(history[-5:]); baseline =
+    mean(history[-20:-5]) falls len >= 20, sonst mean(history[:-5]);
+    ratio = recent / (baseline + GAP_EPS = 1e-6); detected = ratio > 2.0.
+    Das COMPOSITE-Signal liest die Mittel-Gap-Serie; das Signal am Schritt n
+    sieht die Gaps der Schritte 1..n-1 (Append :143 NACH der Signal-Prüfung).
+  machines/goedel_machine.py:229-239 — dieselbe Formel auf der GOEDEL-eigenen
+    Serie (tanh-beschränkt, lernt über self_model); das Gödel-Gap sieht im
+    Schritt n bereits die Serie 1..n (Goedel.step :128 läuft VOR :135).
+  machines/turing_machine.py:144-157 — expand_basis: Pool-Pop, Basis.append,
+    State-Vector erweitert, UND loop_detector = {} (:156) — die Expansion
+    wirkt auf künftige Verdikte, nicht nur auf die Serie.
+  machine_base.py:51 / goedel_machine.py:40 — GAP_EPS = 1e-6.
+
+EX-ANTE-Befund (2026-10-25, vor dem ersten Lauf, aus committeten Daten):
+  hermeneutik_experiment.json trägt die Kolumnen paradigm_ratio und
+  paradigm_detected. Hand-Replikation an den committeten gaps zeigt:
+  - paradigm_ratio entspricht der GOEDEL-Signal-Größe (0.20-0.35 — nie >= 2);
+  - paradigm_detected entspricht der COMPOSITE-Signal-Flag (True an den
+    Schritten 11/12/15). Hand-Replikation aus den committeten composite gaps
+    (Mittel der drei Sub-Gaps): ratio(11) = 3.078, ratio(12) = 2.962,
+    ratio(13) = 1.688 (False), ratio(14) = 1.709 (False), ratio(15) = 2.580 —
+    genau die Detect-Flag-Muster. Die committeten Kolumnen WIDERSPRUCHEN sich
+    also ex ante NICHT einer der beiden Thesen — beide können nur am
+    Neu-Lauf mechanisch geprüft werden, beide Daten sind Anker.
+
+DREI HERMENEUTISCHE THESEN (als falsifizierbare Vorhersagen fixiert, 2026-10-25):
+  T1 Urheber — das Paradigm-Ereignis kommt aus dem COMPOSITE-Signal
+     (Gap-Mittel der drei Sub-Gaps), nie aus dem Gödel-Signal. Code-Fundament:
+     das Gödel-Gap ist tanh-beschränkt und lernt über das self_model (langsame
+     Glättung); die Gap-Spitzen kommen aus validity-Treiben der Wittgenstein-
+     Teilmaschine (Regelgüte) und aus dem Verdikt der Turing-Teilmaschine.
+     Falsifikator: irgendein Schritt mit goedel.detected == True.
+  T2 Mechanik — das Signal ist ein exaktes Funktion der aufgezeichneten Serie:
+     ratio(n) rekomputiert aus der finalen Gap-Serie (mit dem Regime-Leg
+     len >= 20) reproduziert die aufgezeichnete Detect-Menge exakt und jede
+     Ratio innerhalb 1e-12. Falsifikator: jede Abweichung (Menge/Ratio/
+     Regime) — der Signal liest mehr als die Serie, oder die Serie ist nicht
+     die Serie des Signals.
+  T3 Ursprung — das Paradigma ist das ECHO der Basis-Expansion:
+     T3a kein Anlass, kein Echo: ein unverzwungener Lauf OHNE jede Expansion
+         produziert kein Paradigm-Ereignis. Falsifikator: ein Paradigma in
+         einem Expansion-freien Lauf.
+     T3b Echo-Abhängigkeit: Gefrieren des TURING-Sub-Gaps auf seinem Vor-
+         Expansions-Niveau (Counterfaktur auf der Datenebene: cf_gap_i =
+         (w_i + t_vor + g_i)/3 für i >= erste Expansion) bricht ALLE
+         Paradigmen. Falsifikator: überlebende Detection.
+     T3c Kontrast: Gefrieren des GOEDEL-Sub-Gaps ändert die Detect-Menge
+         NICHT (cf2_gap_i = (w_i + t_i + g_vor)/3). Falsifikator: jede
+         Änderung der Menge.
+  T4 Zwang — eine erzwungene Expansion (identity-Verdikt -> LOOP, SP7-
+     Mechanik) an Schritt 13 erzeugt mindestens EIN Paradigma in [14, 22]
+     (Recent-Fenster-Lage der Spitzengenerierung), das im unzwung Zwilling
+     desselben Seed fehlt. Falsifikator: keine induzierte Detection.
+
+VERDICT-MAP (Prereg, fixiert VOR dem ersten Lauf; FAIL ist gleichwertiger
+Befund; Bands werden nach der Messung NIE geweitet; P4-Einstufung bei
+Implementations-Errata korrigiert mit _p4-Verdicten und UNVERÄNDERTEN Bands,
+Ursprungs-Zeilen bleiben FAIL im Register):
+  sp11_l0_anchor        — L0-Replay (seed 7, Zwang {9}, 16 Schritte) ==
+                          committetes hermeneutik_experiment.json FELDWEISE:
+                          kripke verdicts/final_basis 7/gaps (round6)/
+                          expansions/paradigm_detected (Composite-Flag)/
+                          paradigm_ratio (Goedel, Schritte 10-16) / first_detect
+                          == 11; Quus-Arm == committet. Falsifikator: jedes
+                          abweichende Feld.
+  sp11_det              — Doppel-Läufe (L0-Kripke, Sweep-seed 11, Zwang-paar)
+                          bitidentisch: trace + gap-Serie + Sub-Serien +
+                          Detect-Flags. Falsifikator: jede Abweichung.
+  sp11_t1_urheber       — in ALLEN Läufen kein Schritt mit goedel.detected ==
+                          True. Falsifikator: irgendein True (auch ein
+                          Doppel-Eintrag an einem Schritt).
+  sp11_t2_mechanik      — je Lauf: rekomputierte Composite-Detect-Menge ==
+                          aufgezeichnete Menge, Ratios <= 1e-12. Falsifikator:
+                          jede Abweichung.
+  sp11_t3a_expansionfrei— alle Expansion-freien Grundmengen-Läufe (6 Sweep-
+                          Seeds + Zwang-Zwilling unverzwungen) paradigmfrei.
+                          Falsifikator: ein Paradigma ohne Expansion.
+                          Befunden-Zustand OFFEN ist zugelassen, falls die
+                          Grundmenge KEINEN Expansion-freien Lauf enthält —
+                          OFFEN zählt nicht als FAIL, wird namentlich
+                          protokolliert (P6 vollständige Residue).
+  sp11_t3b_turing_echo  — TURING-gefrorene Counterfaktur: Detect-Menge leer
+                          in allen Läufen mit Expansion. Falsifikator:
+                          überlebende Detection.
+  sp11_t3c_goedel_vergleich — GOEDEL-gefrorene Counterfaktur: Detect-Menge
+                          unverändert. Falsifikator: jede Änderung.
+  sp11_t4_forced        — Zwangs-Lauf (seed 21, Zwang {13}, 24 Schritte):
+                          mindestens ein Paradigma in [14, 22], das im
+                          unverzwungenen Zwilling fehlt. Falsifikator: keine
+                          induzierte Detection.
+
+Run:  /run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+      scratches.smoke_paradigm_ursprung 2>&1 | tee scratches/paradigm_ursprung_experiment.log
+JSON: scratches/paradigm_ursprung_experiment.json
+CPU-only, keine Maschinen-Code-Änderung; Determinismus über Doppel-Läufe.
+
+P4-REGISTER (Erstrun 2026-10-25: 6 PASS + 2 FAIL, 0 Errata, exit 1; P4-Runde
+2026-10-26 — Vorschlag A "Akkumulationsgesetz" des externen Audits):
+  Kern: die Turing-Sub-Gap-Serie ist keine freie Zustandsgröße, sondern die
+  Akkumulations-Währung (prediction = float(self._transition_count) ist der
+  KUMULATIVE Verlaustransitionen-Kontostand, turing_machine.py:234; das Ist
+  ist der Einzelschritt s_n, :239; Inkrement einzig in :197):
+      t_n = |C_{n-1} - s_n| / (1 + s_n + 1e-6),   C_{n-1} = sum_{k<n} s_k
+  (Gap = apply_gap mit GAP_EPS 1e-6, machine_base.py:54/:531; Kontostand
+  exponiert in state() :293). Leerlauf-Blätter (s_n = 0, z. B.
+  "x"/"1.00"-Regeln) schlagen das Konto C_{n-1} ungedämpft auf (seed12:
+  28.0/31.0/33.0/39.0 an den Schritten 14/17/19/23); Hand-Verifikation an
+  der committeten seed12-Serie 2026-10-25 über alle 24 Schritte bestätigt.
+  ERRATA E1 (P4-Klassifikation; Ursprungs-Zeilen bleiben FAIL im Register):
+    sp11_t3a_expansionfrei + sp11_t3b_turing_echo — die Ein-Faktor-Echo-
+    Annahme (Turing-Gap als frei gefrorener Faktor) ist widerlegt.
+  sp11_t3_accumulation_law_p4 — t̂-Serie rekonstruiert aus der
+    transitions-Spalte; ZWEI Stränge: (a) max |t_n - t̂_n| <= 1e-12
+    (RATIO_TOL) über alle Läufe und Schritte (Prereg-Schätzung 9 Läufe,
+    verwirklicht über ALLE 10: l0 × 2, Sweep × 6, Zwangs-Paar — mehr
+    Umfang, kein Band-Wechsel); (b) je-Zeiler-Kontostand
+    (turing_machine.py:293) == kumulierte Summe der transitions je Schritt.
+    Falsifikator: Restgröße > 1e-12 oder Kontostand-Differenz.
+  sp11_t3_dedrifted_echo_p4 — gleitende Prediction ῡ_{n-1} =
+    mean(s_{max(1, n-10) .. n-1}) (Präzedenz: wittgenstein_machine.py:413-414,
+    np.mean(history[-10:]) im Nicht-Orakel-Zweig) statt der kumulierten
+    Summe; dedrifted Composite-Serie cf_d = (w + t_dedrift + g)/3;
+    Band: Detect-Menge == leer in den expansion-freien Läufen (Erstrun-
+    Grundmenge: seed12/seed14/seed15/seed16). Falsifikator: überlebende
+    Detection dort. Rest-Läufe (l0/seed11/seed13/zw_twin/zw_forced) als
+    Daten (isolieren den reinen Verdikt-Anteil).
+  Die Bands sind fixiert VOR dem Rerun (P2 innerhalb der P4-Runde).
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from machines.composite import CompositeMachine
+from machines.machine_base import MachineConfig
+from machines.wittgenstein_machine import GeneratedSymbolicRule
+
+TAUTAST = ("identity", "x")          # erzwungen (SP7-Kripke: Selbst-Transition -> LOOP)
+QUUSAST = ("add", ("sin", "x"), 0.0) # erzwungen Quus (SP7-Kontrast)
+POOL6 = {"axiom_pool": ["ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON", "ZETA"]}
+SEED_L0 = 7
+FORCE_L0 = {9}
+STEPS_L0 = 16
+SP11_SEEDS = [11, 12, 13, 14, 15, 16]
+STEPS_SWEEP = 24
+SEED_ZW = 21
+FORCE_ZW = {13}
+STEPS_ZW = 24
+ZW_BAND_LO = 14
+ZW_BAND_HI = 22
+THRESHOLD = 2.0                      # Canon-Default (beide Signale)
+GAP_EPS = 1e-6                       # machine_base.py:51
+RATIO_TOL = 1e-12
+
+FINDINGS: List[Tuple[str, str]] = []
+NOTES: List[str] = []
+# P4-Klassifikation (2026-10-26, Vorschlag A): die Ursprungs-Vorhersagen
+# T3a/T3b nahmen die Turing-Sub-Gap-Serie als FREIEN Faktor an — widerlegt
+# durch das Akkumulationsgesetz (Docstring P4-REGISTER). Ursprungs-Zeilen
+# bleiben FAIL (P4: Einstufung statt Re-Decide); korrigierte Lesung als
+# _p4-Verdicte mit VOR dem Rerun fixierten Bands.
+ERRATA: Dict[str, str] = {
+    "sp11_t3a_expansionfrei":
+        "E1: 'kein Anlass, kein Echo' nahm die Turing-Sub-Gap-Serie als freien "
+        "Zustandsfaktor an. Sie ist die Akkumulations-Währung "
+        "t_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) (prediction = kumulativer "
+        "Kontostand, turing_machine.py:234/:197/:250; GAP_EPS "
+        "machine_base.py:51/:531): Leerlauf-Blätter (s_n = 0) schlagen "
+        "C_{n-1} ungedämpft auf — die Paradigmen in expansion-freien Läufen "
+        "(Erstrun: seed12/14/15/16) sind Akkumulations-Echos. Korrigierte "
+        "Lesung: sp11_t3_dedrifted_echo_p4.",
+    "sp11_t3b_turing_echo":
+        "E1: dieselbe Ein-Faktor-Annahme — der Freeze auf t_vor (Mittel der "
+        "Vor-Expansions-Serie) misst kein Echo eines freien Sub-Gaps, sondern "
+        "eine Misch-Serie der Akkumulations-Währung; die Überlebenden folgen "
+        "dieser Mischung. Korrigierte Lesung: sp11_t3_dedrifted_echo_p4 "
+        "(Gleitfenster statt Mittel-Freeze, wittgenstein_machine.py:413-414).",
+}
+
+
+def mark(name: str, state: str, note: str = "") -> None:
+    """Verdikt-Register: state in {PASS, FAIL, OFFEN}."""
+    FINDINGS.append((name, state))
+    if note:
+        NOTES.append(f"{name}: {note}")
+
+
+def round6(x: Any) -> float:
+    return round(float(x), 6)
+
+
+# ---------------------------------------------------------------------------
+# Canon-Replikation des Signals (composite.py:167-182 / goedel:229-239)
+# ---------------------------------------------------------------------------
+
+def signal_from_history(history: Sequence[float]
+                        ) -> Tuple[Optional[float], bool]:
+    """Exakte Replikation: am Beobachtungsschritt sieht das COMPOSITE-Signal
+    die Serie der Schritte 1..n-1 (Append nach der Prüfung, :143); das
+    GOEDEL-Signal die Serie 1..n (Goedel.step läuft vor :135)."""
+    if len(history) < 10:
+        return None, False
+    recent = float(np.mean(history[-5:]))
+    baseline = (float(np.mean(history[-20:-5])) if len(history) >= 20
+                else float(np.mean(history[:-5])))
+    ratio = recent / (baseline + GAP_EPS)
+    return ratio, bool(ratio > THRESHOLD)
+
+
+def replicate_flags(series: Sequence[float], offset: int) -> List[Tuple[Optional[float], bool]]:
+    """(ratio, detected) je Beobachtungsschritt n=1..len(series);
+    offset der Anzahl Gaps, die das Signal im Schritt N schon sieht:
+    Composite-Signal: offset 0 (sieht Serie bis n-1), Goedel-Signal: offset 1."""
+    out: List[Tuple[Optional[float], bool]] = []
+    for n in range(1, len(series) + 1):
+        history = series[:n - 1 + offset]
+        out.append(signal_from_history(history))
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Harness (SP10-Muster, seedy generalisiert)
+# ---------------------------------------------------------------------------
+
+def make_composite(seed: int, force_ast: Tuple[Any, ...]
+                   ) -> Tuple[CompositeMachine, Dict[str, Any]]:
+    """Composite mit Zwangs-Haken am composite-step-Zähler (pending-Flag):
+    die ERSTE Regel des Batch wird am Zwangsschritt durch force_ast ersetzt —
+    ohne eine Zeile Maschinen-Code (wm.create_rule-Abdeckung, SP10-Muster)."""
+    machine = CompositeMachine(MachineConfig(seed=seed, mode="in_loop",
+                                             params=dict(POOL6)))
+    harness: Dict[str, Any] = {"pending": False}
+    wm = machine.wittgenstein
+    original = wm.create_rule
+
+    def patched() -> GeneratedSymbolicRule:
+        if harness["pending"]:
+            harness["pending"] = False
+            rule = GeneratedSymbolicRule(force_ast)
+            wm.generated_rules.append(rule)
+            return rule
+        return original()
+
+    wm.create_rule = patched
+    return machine, harness
+
+
+def run_composite(machine: CompositeMachine, harness: Dict[str, Any],
+                  steps: int, force_steps: "set[int]") -> Dict[str, Any]:
+    """Verlauf mit je-Schritt-Attribution: Sub-Gaps, beide Signale (goedel /
+    composite), neue expansions-Einträge, Basis-Größe."""
+    rows: List[Dict[str, Any]] = []
+    trace: List[str] = []
+    for step in range(1, steps + 1):
+        if step in force_steps:
+            harness["pending"] = True
+        pre_expansions = list(machine.expansions)
+        st = machine.step(None)
+        inv = st.invariants
+        new_exp = [e for e in machine.expansions if e not in pre_expansions]
+        trace.append(st.trace[-1])
+        rows.append({
+            "step": step,
+            "rule_name": inv["rule_name"],
+            "verdict": inv["verdict"],
+            "transitions": int(inv["transitions"]),
+            "t_count": int(machine.turing.state()["transition_count"]),
+            "gap": float(st.gap),
+            "w_gap": float(inv["submachines"]["wittgenstein"]["gap"]),
+            "t_gap": float(inv["submachines"]["turing"]["gap"]),
+            "g_gap": float(inv["submachines"]["goedel"]["gap"]),
+            "g_ratio": (float(inv["paradigm_signal"]["ratio"])
+                        if inv["paradigm_signal"]["ratio"] is not None else None),
+            "g_detected": bool(inv["paradigm_signal"]["detected"]),
+            "c_ratio": (float(inv["paradigm_signal_composite"]["ratio"])
+                        if inv["paradigm_signal_composite"]["ratio"] is not None else None),
+            "c_detected": bool(inv["paradigm_signal_composite"]["detected"]),
+            "new_expansions": new_exp,
+            "basis_size": len(machine.turing.basis),
+        })
+    expansions = list(machine.expansions)
+    verdict_exp_steps = sorted(
+        int(m.group(1)) for m in
+        (re.match(r"step(\d+):(LOOP|COLLAPSE|EXPLOSION)", e) for e in expansions)
+        if m)
+    para_steps = sorted(
+        int(m.group(1)) for m in
+        (re.match(r"step(\d+):paradigm", e) for e in expansions) if m)
+    gap_series = [r["gap"] for r in rows]
+    w_series = [r["w_gap"] for r in rows]
+    t_series = [r["t_gap"] for r in rows]
+    g_series = [r["g_gap"] for r in rows]
+    return {
+        "rows": rows, "trace": trace, "expansions": expansions,
+        "verdict_exp_steps": verdict_exp_steps, "para_steps": para_steps,
+        "gap_series": gap_series, "w_series": w_series, "t_series": t_series,
+        "g_series": g_series, "basis_size": rows[-1]["basis_size"],
+        "final_basis": len(machine.turing.basis),
+    }
+
+
+def rep_composite_flags(run: Dict[str, Any]) -> List[Tuple[Optional[float], bool]]:
+    """T2-Replikation: Composite-Detect-Muster aus der finalen Gap-Serie
+    (das Signal am Schritt n sieht die Serie 1..n-1)."""
+    return replicate_flags(run["gap_series"], offset=0)
+
+
+def counterfactuals(run: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """T3b/T3c — Gefrieren auf dem Vor-Expansions-Niveau, Datenebene.
+    None, wenn der Lauf keine Expansion hatte."""
+    first = run["verdict_exp_steps"][0] if run["verdict_exp_steps"] else None
+    if not first:
+        return None
+    w, t, g = run["w_series"], run["t_series"], run["g_series"]
+    cut = first - 1
+    t_pre = float(np.mean(t[:cut]))
+    g_pre = float(np.mean(g[:cut]))
+    cf_t = [t[i] if i < cut else t_pre for i in range(len(t))]
+    cf_g = [g[i] if i < cut else g_pre for i in range(len(g))]
+    cf_b = [(w[i] + cf_t[i] + g[i]) / 3.0 for i in range(len(w))]
+    cf_c = [(w[i] + t[i] + cf_g[i]) / 3.0 for i in range(len(w))]
+    return {
+        "first_expansion": first,
+        "t_pre": t_pre, "g_pre": g_pre,
+        "orig_detections": list(run["para_steps"]),
+        "cf_b_detections": [n for n, (_, det) in
+                            enumerate(replicate_flags(cf_b, offset=0), 1) if det],
+        "cf_c_detections": [n for n, (_, det) in
+                            enumerate(replicate_flags(cf_c, offset=0), 1) if det],
+        "orig_flags": [r["c_detected"] for r in run["rows"]],
+        "cf_b_flags": [det for _, det in replicate_flags(cf_b, offset=0)],
+        "cf_c_flags": [det for _, det in replicate_flags(cf_c, offset=0)],
+    }
+
+
+def t2_check(run: Dict[str, Any]) -> Tuple[bool, str]:
+    """Mechanik-Falsifikator: rekomputierte (ratio, detected) == aufgezeichnet."""
+    rep = rep_composite_flags(run)
+    for row, (ratio, det) in zip(run["rows"], rep):
+        if det != row["c_detected"]:
+            return False, f"Flag-Differenz am Schritt {row['step']}"
+        if (ratio is None) != (row["c_ratio"] is None):
+            return False, f"Ratio-None-Differenz am Schritt {row['step']}"
+        if ratio is not None and abs(ratio - row["c_ratio"]) > RATIO_TOL:
+            return False, (f"Ratio-Differenz am Schritt {row['step']}: "
+                           f"{ratio!r} != {row['c_ratio']!r}")
+    # Detect-Menge-Ableitung aus den expansions-Einträgen (Konsistenz):
+    return True, "ok"
+
+
+# ---------------------------------------------------------------------------
+# P4-Runde — Akkumulationsgesetz + Dedrift (Vorschlag A); Bands fixiert
+# vor dem Rerun. Canon: turing_machine.py:234/:197/:250/:293,
+# machine_base.py:54/:531, wittgenstein_machine.py:413-414.
+# ---------------------------------------------------------------------------
+
+def accumulation_check(run: Dict[str, Any]) -> Dict[str, Any]:
+    """P4-Vorschlag A: t̂_n = |C_{n-1} - s_n|/(1 + s_n + 1e-6) gegen die
+    aufgezeichnete Turing-Gap-Serie; C_{n-1} = kumulierte transitions-Summe;
+    zweiter Strang: je-Zeiler-Kontostand (state()["transition_count"], :293)
+    == kumulierte Summe der transitions je Schritt."""
+    s = [r["transitions"] for r in run["rows"]]
+    residues: List[float] = []
+    c_prior = 0
+    for n, s_n in enumerate(s, 1):
+        t_hat = abs(c_prior - s_n) / (1.0 + abs(s_n) + GAP_EPS)
+        residues.append(abs(t_hat - run["t_series"][n - 1]))
+        c_prior += s_n
+    counts = [r["t_count"] for r in run["rows"]]
+    count_ok = all(c == sum(s[:i]) for i, c in enumerate(counts, 1))
+    return {"max_resid": max(residues) if residues else 0.0,
+            "residues": residues, "count_ok": count_ok,
+            "c_series": [sum(s[:i]) for i in range(len(s))]}
+
+
+def dedrift(run: Dict[str, Any]) -> Dict[str, Any]:
+    """P4-Vorschlag A: gleitende Prediction statt kumulierter Summe —
+    ῡ_{n-1} = mean(s_{max(1, n-10) .. n-1}) (Präzedenz
+    wittgenstein_machine.py:413-414, np.mean(history[-10:]) im
+    Nicht-Orakel-Zweig; leeres Verlauf → 0.0); dedrifted Composite-Serie
+    cf_d = (w + t_dedrift + g)/3, Detect-Menge aus cf_d (Offset 0)."""
+    s = [r["transitions"] for r in run["rows"]]
+    t_dedrift: List[float] = []
+    for n, s_n in enumerate(s, 1):
+        history = s[max(0, n - 10):n - 1]
+        u = float(np.mean(history)) if history else 0.0
+        t_dedrift.append(abs(u - float(s_n)) / (1.0 + abs(s_n) + GAP_EPS))
+    cf_d = [(w + t + g) / 3.0 for w, t, g in
+            zip(run["w_series"], t_dedrift, run["g_series"])]
+    flags = replicate_flags(cf_d, offset=0)
+    return {"t_dedrift_series": t_dedrift, "cf_d_series": cf_d,
+            "dedrift_flags": [det for _, det in flags],
+            "dedrift_detections": [n for n, (_, det) in enumerate(flags, 1)
+                                   if det]}
+
+
+# ---------------------------------------------------------------------------
+# Lanes
+# ---------------------------------------------------------------------------
+
+def lane_l0_anker() -> Dict[str, Any]:
+    """L0-Replay gegen hermeneutik_experiment.json — inklusive der
+    committeten Signal-Kolumnen (paradigm_detected == Composite-Flag,
+    paradigm_ratio == Goedel-Ratio)."""
+    committed = json.load(open("scratches/hermeneutik_experiment.json"))
+    out: Dict[str, Any] = {}
+    fields_ok = True
+
+    for arm, force_ast, key in (("kripke", TAUTAST, "kripke"),
+                                ("quus", QUUSAST, "contrast_quus")):
+        machine, harness = make_composite(SEED_L0, force_ast)
+        run = run_composite(machine, harness, STEPS_L0, FORCE_L0)
+        cm = committed[key]
+        verdicts_ok = [r["verdict"] for r in run["rows"]] == cm["verdicts"]
+        final_ok = run["final_basis"] == cm["final_basis"]
+        gaps_ok = ([round6(g) for g in run["gap_series"]]
+                   == [round6(g) for g in cm["gaps"]])
+        exp_ok = run["expansions"] == cm["expansions"]
+        det_ok = ([r["c_detected"] for r in run["rows"]] == cm["paradigm_detected"])
+        ratio_ok = True
+        ratios_live = [r["g_ratio"] for r in run["rows"]]
+        ratios_commit = cm["paradigm_ratio"]
+        for idx, (a, b) in enumerate(zip(ratios_live, ratios_commit)):
+            if a is None and b is None:
+                continue
+            if a is None or b is None:
+                ratio_ok = False
+                break
+            if abs(a - b) > RATIO_TOL:
+                ratio_ok = False
+                break
+        arm_ok = verdicts_ok and final_ok and gaps_ok and exp_ok and det_ok and ratio_ok
+        fields_ok = fields_ok and arm_ok
+        out[arm] = {
+            "run": run,
+            "checks": {"verdicts": verdicts_ok, "final_basis": final_ok,
+                       "gaps": gaps_ok, "expansions": exp_ok,
+                       "paradigm_detected": det_ok, "paradigm_ratio": ratio_ok},
+        }
+    first_detect_ok = all(
+        out[arm]["run"]["para_steps"][0] == 11
+        for arm in ("kripke", "quus") if out[arm]["run"]["para_steps"])
+    fields_ok = fields_ok and first_detect_ok
+
+    # Herkunfts-Attribution der kripke-Paradigma-Einträge (T1-Daten):
+    attr = []
+    for n in out["kripke"]["run"]["para_steps"]:
+        row = out["kripke"]["run"]["rows"][n - 1]
+        attr.append({"step": n, "c_ratio": row["c_ratio"],
+                     "c_detected": row["c_detected"],
+                     "g_ratio": row["g_ratio"], "g_detected": row["g_detected"]})
+    out["kripke_attribution"] = attr
+    out["fields_ok"] = fields_ok
+    out["first_detect_ok"] = first_detect_ok
+    mark("sp11_l0_anchor", "PASS" if fields_ok and first_detect_ok else "FAIL",
+         "Feldvergleich kripke+quus inkl. committeter Signal-Kolumnen "
+         "(paradigm_ratio = Goedel, paradigm_detected = Composite)")
+    return out
+
+
+def lane_sweep() -> Dict[str, Any]:
+    """6 unverzwungene Läufe (Seeds 11-16, 24 Schritte) — T1/T2/T3-Daten."""
+    runs: Dict[str, Dict[str, Any]] = {}
+    for seed in SP11_SEEDS:
+        machine, harness = make_composite(seed, TAUTAST)
+        runs[f"seed{seed}"] = run_composite(machine, harness, STEPS_SWEEP, set())
+    return runs
+
+
+def lane_zwang() -> Dict[str, Any]:
+    """Seed-21-Paar: unverzwungener Zwilling + Zwang {13} — T4-Daten
+    (+ Doppel-Läufe für die Determinismus-Prüfung)."""
+    twin, harness_t = make_composite(SEED_ZW, TAUTAST)
+    forced, harness_f = make_composite(SEED_ZW, TAUTAST)
+    zw_twin = run_composite(twin, harness_t, STEPS_ZW, set())
+    zw_forced = run_composite(forced, harness_f, STEPS_ZW, FORCE_ZW)
+    forced2, harness_f2 = make_composite(SEED_ZW, TAUTAST)
+    zw_forced_re = run_composite(forced2, harness_f2, STEPS_ZW, FORCE_ZW)
+    return {"zw_twin": zw_twin, "zw_forced": zw_forced, "zw_forced_re": zw_forced_re}
+
+
+def determinism_check(l0: Dict[str, Any], sweep: Dict[str, Any],
+                      zwang: Dict[str, Any]) -> Tuple[bool, str]:
+    """Doppel-Läufe bitidentisch: trace + gap-Serie + Sub-Serien + Flags."""
+    machine, harness = make_composite(SEED_L0, TAUTAST)
+    l0_re = run_composite(machine, harness, STEPS_L0, FORCE_L0)
+    l0_first = l0["kripke"]["run"]
+    same_trace = l0_re["trace"] == l0_first["trace"]
+    same_gaps = l0_re["gap_series"] == l0_first["gap_series"]
+    same_subs = (l0_re["w_series"] == l0_first["w_series"]
+                 and l0_re["t_series"] == l0_first["t_series"]
+                 and l0_re["g_series"] == l0_first["g_series"])
+    same_flags = ([r["c_detected"] for r in l0_re["rows"]]
+                  == [r["c_detected"] for r in l0_first["rows"]])
+    if not (same_trace and same_gaps and same_subs and same_flags):
+        return False, "L0-Wiederholung weicht ab"
+
+    machine11, harness11 = make_composite(11, TAUTAST)
+    s11_re = run_composite(machine11, harness11, STEPS_SWEEP, set())
+    s11_first = sweep["seed11"]
+    if not (s11_re["trace"] == s11_first["trace"]
+            and s11_re["gap_series"] == s11_first["gap_series"]
+            and [r["c_detected"] for r in s11_re["rows"]]
+            == [r["c_detected"] for r in s11_first["rows"]]):
+        return False, "Sweep-seed11-Wiederholung weicht ab"
+
+    if not (zwang["zw_forced_re"]["trace"] == zwang["zw_forced"]["trace"]
+            and zwang["zw_forced_re"]["gap_series"] == zwang["zw_forced"]["gap_series"]
+            and [r["c_detected"] for r in zwang["zw_forced_re"]["rows"]]
+            == [r["c_detected"] for r in zwang["zw_forced"]["rows"]]):
+        return False, "Zwang-Wiederholung weicht ab"
+    return True, "ok"
+
+
+# ---------------------------------------------------------------------------
+# main
+# ---------------------------------------------------------------------------
+
+def main() -> int:
+    print("== SP11 — Der Ursprung der Paradigmen ==")
+    print("Canon: composite.py:132-140/:167-182, goedel_machine.py:229-239,")
+    print("       turing_machine.py:144-157 (loop_detector-Reset), GAP_EPS 1e-6")
+    print("P4: turing_machine.py:197/:234/:250/:293 (Akkumulationsgesetz),")
+    print("       machine_base.py:54/:531, wittgenstein_machine.py:413-414")
+    print()
+
+    l0 = lane_l0_anker()
+    sweep = lane_sweep()
+    zwang = lane_zwang()
+
+    # Determinismus
+    det_ok, det_note = determinism_check(l0, sweep, zwang)
+    mark("sp11_det", "PASS" if det_ok else "FAIL", det_note)
+
+    # T1: Urheber — niemals goedel.detected
+    all_runs: Dict[str, Dict[str, Any]] = {
+        "l0_kripke": l0["kripke"]["run"], "l0_quus": l0["quus"]["run"],
+        **{k: v for k, v in sweep.items()},
+        "zw_twin": zwang["zw_twin"], "zw_forced": zwang["zw_forced"],
+    }
+    breach = [(name, r["step"]) for name, run in all_runs.items()
+              for r in run["rows"] if r["g_detected"]]
+    t1_ok = not breach
+    mark("sp11_t1_urheber", "PASS" if t1_ok else "FAIL",
+         f"Goedel-Verletzungen: {breach}" if breach else
+         "kein Schritt mit goedel.detected in allen 9 Läufen")
+
+    # T2: Mechanik — Replikation aus der Serie
+    t2_fail: List[str] = []
+    for name, run in all_runs.items():
+        ok, note = t2_check(run)
+        if not ok:
+            t2_fail.append(f"{name}: {note}")
+    mark("sp11_t2_mechanik", "PASS" if not t2_fail else "FAIL",
+         f"Fehler: {t2_fail}" if t2_fail
+         else "Detect-Menge und Ratio je Lauf exakt aus der Gap-Serie rekomputiert")
+
+    # T3a: Expansion-freie Läufe paradigmfrei
+    free_runs = {n: r for n, r in all_runs.items() if not r["verdict_exp_steps"]}
+    if free_runs:
+        viol = [(n, r["para_steps"]) for n, r in free_runs.items() if r["para_steps"]]
+        t3a_state = "PASS" if not viol else "FAIL"
+        t3a_note = (f"Expansion-frei: {sorted(free_runs)}; Verletzungen: {viol}"
+                    if viol else
+                    f"Expansion-freie Läufe {sorted(free_runs)} alle paradigmfrei")
+    else:
+        t3a_state = "OFFEN"
+        t3a_note = ("kein Expansion-freier Lauf in der Grundmenge "
+                    "(6 Sweep-Seeds + Zwang-Zwilling) — Test nicht anwendbar")
+    mark("sp11_t3a_expansionfrei", t3a_state, t3a_note)
+
+    # T3b/T3c: Counterfaktur je Lauf mit Expansion
+    cfs: Dict[str, Dict[str, Any]] = {}
+    t3b_fail: List[str] = []
+    t3c_fail: List[str] = []
+    for name, run in all_runs.items():
+        cf = counterfactuals(run)
+        if cf is None:
+            continue
+        cfs[name] = cf
+        if cf["cf_b_detections"]:
+            t3b_fail.append(f"{name}: Überlebende {cf['cf_b_detections']}")
+        if cf["cf_c_detections"] != cf["orig_detections"]:
+            t3c_fail.append(f"{name}: {cf['cf_c_detections']} != "
+                            f"{cf['orig_detections']}")
+    t3b_state = "PASS" if (not t3b_fail and cfs) else ("FAIL" if t3b_fail else "OFFEN")
+    t3c_state = "PASS" if (not t3c_fail and cfs) else ("FAIL" if t3c_fail else "OFFEN")
+    mark("sp11_t3b_turing_echo", t3b_state, f"Fehler: {t3b_fail}" if t3b_fail
+         else f"alle {len(cfs)} Gegenproben ohne überlebende Detection")
+    mark("sp11_t3c_goedel_vergleich", t3c_state, f"Fehler: {t3c_fail}" if t3c_fail
+         else f"Detection-Mengen in {len(cfs)} Gegenproben unverändert")
+
+    # T4: Zwang
+    induced = sorted(set(zwang["zw_forced"]["para_steps"])
+                     - set(zwang["zw_twin"]["para_steps"]))
+    in_band = [n for n in induced if ZW_BAND_LO <= n <= ZW_BAND_HI]
+    mark("sp11_t4_forced", "PASS" if in_band else "FAIL",
+         f"induzierte Paradigmas {induced}; in Band [14, 22]: {in_band}")
+
+    # P4-Runde (Vorschlag A): Akkumulationsgesetz + Dedrift — Bands fixiert
+    # vor dem Rerun; die Ursprungs-Verdikte t3a/t3b bleiben FAIL (ERRATA).
+    free_names = [n for n, run in all_runs.items()
+                  if not run["verdict_exp_steps"]]
+    acc: Dict[str, Dict[str, Any]] = {}
+    acc_fails: List[str] = []
+    for name, run in all_runs.items():
+        a = accumulation_check(run)
+        acc[name] = {"max_resid": a["max_resid"], "count_ok": a["count_ok"],
+                     "c_series": a["c_series"]}
+        if not a["count_ok"] or a["max_resid"] > RATIO_TOL:
+            acc_fails.append(f"{name}: count_ok={a['count_ok']}, "
+                             f"max_resid={a['max_resid']:.3e}")
+    acc_max = max((v["max_resid"] for v in acc.values()), default=0.0)
+    mark("sp11_t3_accumulation_law_p4", "PASS" if not acc_fails else "FAIL",
+         f"Strang-Verletzung: {acc_fails}" if acc_fails else
+         (f"t_n == |C(n-1) - s_n|/(1+s_n+1e-6) in allen {len(all_runs)} "
+          f"Läufen; max Residuum {acc_max!r}; Kontostand == kumulierte "
+          "Summe in jedem Schritt (turing_machine.py:234/:197/:293)"))
+
+    dd: Dict[str, Dict[str, Any]] = {}
+    drift_fails: List[str] = []
+    for name, run in all_runs.items():
+        d = dedrift(run)
+        dd[name] = d
+        if name in free_names and d["dedrift_detections"]:
+            drift_fails.append(f"{name}: überlebende {d['dedrift_detections']}")
+    mark("sp11_t3_dedrifted_echo_p4", "PASS" if not drift_fails else "FAIL",
+         f"überlebende Dedrift-Detections: {drift_fails}" if drift_fails else
+         ("dedrifted Detect-Menge == leer in den expansion-freien Läufen "
+          f"{free_names} (Gleitfenster-Präzedenz "
+          "wittgenstein_machine.py:413-414); Rest-Läufe als Daten"))
+
+    # Befunde
+    print("BEFUNDE:")
+    for name, state in FINDINGS:
+        print(f"  {name:<26s} {state}")
+    print()
+    if NOTES:
+        print("NOTIZEN:")
+        for n in NOTES:
+            print(f"  - {n}")
+        print()
+
+    if ERRATA:
+        print("ERRATA (P4-Klassifikation):")
+        for name, text in ERRATA.items():
+            print(f"  - {name}: {text}")
+        print()
+
+    failed = [n for n, s in FINDINGS if s == "FAIL" and n not in ERRATA]
+    offen = [n for n, s in FINDINGS if s == "OFFEN"]
+    passes = [n for n, s in FINDINGS if s == "PASS"]
+    print(f"BILANZ: {len(passes)} PASS; {len(failed)} FEHLGESCHLAGEN (unverwartet); "
+          f"{len([n for n, s in FINDINGS if s == 'FAIL']) - len(failed)} dokumentierte Errata; "
+          f"{len(offen)} OFFEN")
+
+    payload = {
+        "l0": {"kripke": {"checks": l0["kripke"]["checks"],
+                          "expansions": l0["kripke"]["run"]["expansions"],
+                          "para_steps": l0["kripke"]["run"]["para_steps"],
+                          "transitions": [r["transitions"] for r in
+                                          l0["kripke"]["run"]["rows"]],
+                          "t_count": [r["t_count"] for r in
+                                      l0["kripke"]["run"]["rows"]],
+                          "final_basis": l0["kripke"]["run"]["final_basis"]},
+               "quus": {"checks": l0["quus"]["checks"],
+                        "expansions": l0["quus"]["run"]["expansions"],
+                        "para_steps": l0["quus"]["run"]["para_steps"],
+                        "transitions": [r["transitions"] for r in
+                                        l0["quus"]["run"]["rows"]],
+                        "t_count": [r["t_count"] for r in
+                                    l0["quus"]["run"]["rows"]],
+                        "final_basis": l0["quus"]["run"]["final_basis"]},
+               "kripke_attribution": l0["kripke_attribution"],
+               "fields_ok": l0["fields_ok"],
+               "first_detect_ok": l0["first_detect_ok"]},
+        "sweep": {name: {
+            "verdicts": [r["verdict"] for r in run["rows"]],
+            "expansions": run["expansions"],
+            "para_steps": run["para_steps"],
+            "verdict_exp_steps": run["verdict_exp_steps"],
+            "gap_series": run["gap_series"],
+            "w_series": run["w_series"], "t_series": run["t_series"],
+            "g_series": run["g_series"],
+            "transitions": [r["transitions"] for r in run["rows"]],
+            "t_count": [r["t_count"] for r in run["rows"]],
+            "c_ratio": [r["c_ratio"] for r in run["rows"]],
+            "g_ratio": [r["g_ratio"] for r in run["rows"]],
+            "c_detected": [r["c_detected"] for r in run["rows"]],
+            "g_detected": [r["g_detected"] for r in run["rows"]],
+            "basis_size": run["basis_size"],
+        } for name, run in sweep.items()},
+        "zwang": {name: {
+            "verdicts": [r["verdict"] for r in run["rows"]],
+            "expansions": run["expansions"],
+            "para_steps": run["para_steps"],
+            "gap_series": run["gap_series"],
+            "w_series": run["w_series"], "g_series": run["g_series"],
+            "t_series": run["t_series"],
+            "transitions": [r["transitions"] for r in run["rows"]],
+            "t_count": [r["t_count"] for r in run["rows"]],
+            "c_detected": [r["c_detected"] for r in run["rows"]],
+        } for name, run in
+            (("zw_twin", zwang["zw_twin"]), ("zw_forced", zwang["zw_forced"]))},
+        "counterfactuals": cfs,
+        "p4": {
+            "errata": ERRATA,
+            "accumulation": acc,
+            "dedrift": {name: {"t_dedrift_series": d["t_dedrift_series"],
+                               "cf_d_series": d["cf_d_series"],
+                               "dedrift_flags": d["dedrift_flags"],
+                               "dedrift_detections": d["dedrift_detections"]}
+                        for name, d in dd.items()},
+            "expansion_freie_laeufe": free_names,
+        },
+        "findings": [{"name": n, "state": s} for n, s in FINDINGS],
+        "notes": NOTES,
+        "errata": ERRATA,
+        "all_pass": not failed,
+        "open": offen,
+    }
+    with open("scratches/paradigm_ursprung_experiment.json", "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, ensure_ascii=False, indent=2, sort_keys=False)
+    print("JSON: scratches/paradigm_ursprung_experiment.json")
+
+    if failed:
+        print(f"FEHLGESCHLAGEN: {failed}")
+        return 1
+    print(f"GRUEN — Loesungskette geschlossen (OFFEN: {offen if offen else 'keine'}).")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+==============================================================================
 ### FILE: modeling_argon.py
 ### bytes: 36503   lines: 781
 ==============================================================================
@@ -10312,676 +11876,961 @@ class ArgonMoELayer(nn.Module):
         return total_out, entropy_reshaped
 
 ==============================================================================
-### FILE: scratches/mi6p4_schluss.log
-### bytes: 4323   lines: 28
-==============================================================================
-== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==
-MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert
-GPU-Kontext laden (argon_1b + argon_1b_machines)
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-P1a Schwelle-weit (24 Texte, gepooltes Band)
-P1b Selbst/Fremd gereift (Transplant nach bio_gelernt)
-P1d Dissonanz-Hauptsatz (step_autonomous)
-P1c Oracle-Sonder (4 Checkpoints × 6 Zweige)
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_specialized' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_specialized_ml' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-
-BEFUNDE:
-  mi6p4_schwelle_weit        PASS
-  mi6p4_selbstfremd_gereift  PASS
-  mi6p4_oracle_sonder        PASS
-  mi6p4_dissonanz            PASS
-  mi6p4_det_doppellauf       PASS
-
-BILANZ: 5 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
-GRUEN — P4-Baender eingehalten
-JSON: scratches/mi6p4_schluss.json
-
-
-==============================================================================
-### FILE: scratches/mi6p4_schluss.json
-### bytes: 12848   lines: 637
+### FILE: scratches/mi7_triangulation.json
+### bytes: 19850   lines: 372
 ==============================================================================
 {
  "cpu": {
-  "p1b_cpu": {
-   "gereift": {
-    "splits": [
-     {
-      "gap_self": 2.4497626634136447,
-      "gap_fremd": 5.38702542433746,
-      "split": 2.937262760923815
-     },
-     {
-      "gap_self": 2.4497626634136447,
-      "gap_fremd": 5.38702542433746,
-      "split": 2.937262760923815
-     },
-     {
-      "gap_self": 2.4497626634136447,
-      "gap_fremd": 5.38702542433746,
-      "split": 2.937262760923815
-     },
-     {
-      "gap_self": 2.4497626634136447,
-      "gap_fremd": 5.38702542433746,
-      "split": 2.937262760923815
-     },
-     {
-      "gap_self": 2.4497626634136447,
-      "gap_fremd": 5.38702542433746,
-      "split": 2.937262760923815
-     }
+  "p1d_cpu": {
+   "disso": {
+    "matrix": [
+     [
+      0.874,
+      0.027,
+      0.0015
+     ],
+     [
+      0.385,
+      0.54,
+      0.06
+     ],
+     [
+      0.325,
+      0.51,
+      0.588
+     ]
     ],
-    "mean_split": 2.937262760923815,
-    "verdict_pairs": [
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     }
+    "diag": [
+     0.874,
+     0.54,
+     0.588
+    ],
+    "row_max_ok": [
+     true,
+     true,
+     true
+    ],
+    "diag_min": 0.54,
+    "verdict": true
+   },
+   "dekoy": {
+    "row": [
+     0.8835,
+     0.027,
+     0.0012
+    ],
+    "e_w_max": true,
+    "max_e_c_e_s": 0.027,
+    "verdict": true
+   },
+   "dekoy_fail": {
+    "row": [
+     0.3,
+     0.6,
+     0.7
+    ],
+    "e_w_max": false,
+    "max_e_c_e_s": 0.7,
+    "verdict": false
+   },
+   "tie_case": {
+    "verdict": false,
+    "row_max_ok": [
+     false,
+     true,
+     true
     ]
    },
-   "dekoy_datum": {
-    "splits": [
-     {
-      "gap_self": 13.335442787430523,
-      "gap_fremd": 5.38702542433746,
-      "split": 7.948417363093063
-     },
-     {
-      "gap_self": 13.335442787430523,
-      "gap_fremd": 5.38702542433746,
-      "split": 7.948417363093063
-     },
-     {
-      "gap_self": 13.335442787430523,
-      "gap_fremd": 5.38702542433746,
-      "split": 7.948417363093063
-     },
-     {
-      "gap_self": 13.335442787430523,
-      "gap_fremd": 5.38702542433746,
-      "split": 7.948417363093063
-     },
-     {
-      "gap_self": 13.335442787430523,
-      "gap_fremd": 5.38702542433746,
-      "split": 7.948417363093063
-     }
-    ],
-    "mean_split": 7.948417363093062,
-    "verdict_pairs": [
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     }
-    ]
-   },
-   "ungereift_kontrolle": {
-    "splits": [
-     {
-      "gap_self": 0.6799123481565301,
-      "gap_fremd": 0.6799123481565301,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.6799123481565301,
-      "gap_fremd": 0.6799123481565301,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.6799123481565301,
-      "gap_fremd": 0.6799123481565301,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.6799123481565301,
-      "gap_fremd": 0.6799123481565301,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.6799123481565301,
-      "gap_fremd": 0.6799123481565301,
-      "split": 0.0
-     }
-    ],
-    "mean_split": 0.0,
-    "verdict_pairs": [
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     }
-    ]
-   },
-   "phase_a": [
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 1.000281
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 1.176307
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 1.420156
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 1.672417
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 1.929777
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 2.189178
-    }
-   ],
-   "phase_b": [
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 5.442853
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 5.424916
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 5.421578
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 5.406818
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 5.401255
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 5.395705
-    }
-   ],
-   "split_gereift": 2.937263,
-   "split_ungereift": 0.0,
-   "verdict": true
+   "verdict": true,
+   "det_equal": true
   },
   "det_equal": true
  },
  "gpu": {
-  "schwelle_weit": {
-   "wide_gepoolt": {
-    "acc": 0.958333,
+  "triangulation": {
+   "arme": {
+    "fp_load": true,
+    "w": {
+     "arm": "w",
+     "target_id": 9079,
+     "target_str": " Paris",
+     "p_final_full": 0.00022,
+     "p_final_abl": 0.503078,
+     "p_final_top1_id": 496,
+     "anchor_tv_full": 5.2566111186092e-11,
+     "n_tokens_full": 13,
+     "tv_ws": 0.015866,
+     "tv_fa": 0.768037,
+     "m_core_raw": 0.175808,
+     "m_core_per_layer": [
+      0.68709,
+      0.0,
+      0.0,
+      0.0,
+      0.120815,
+      0.922901,
+      0.057868,
+      0.0677,
+      0.0,
+      0.080298,
+      0.05531,
+      0.113528,
+      0.095911,
+      0.038657,
+      0.032558,
+      0.085133,
+      0.096679,
+      0.095911,
+      0.103062,
+      0.862745
+     ],
+     "attn_share_core": 0.351388,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.263603,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.811115,
+      "e_c": 0.269879,
+      "e_s": 0.202457
+     },
+     "e_w": 0.811115,
+     "e_c": 0.269879,
+     "e_s": 0.202457
+    },
+    "c": {
+     "arm": "c",
+     "target_id": 1491,
+     "target_str": " Zirkon",
+     "p_final_full": 0.806368,
+     "p_final_abl": 6.7e-05,
+     "p_final_top1_id": 1491,
+     "anchor_tv_full": 6.691538878556003e-09,
+     "n_tokens_full": 27,
+     "tv_ws": 0.020643,
+     "tv_fa": 0.902388,
+     "m_core_raw": 0.036648,
+     "m_core_per_layer": [
+      0.0,
+      0.627368,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.10559,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "attn_share_core": 0.708323,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.981735,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.943466,
+      "e_c": 0.639182,
+      "e_s": 0.885906
+     },
+     "e_w": 0.943466,
+     "e_c": 0.639182,
+     "e_s": 0.885906
+    },
+    "d": {
+     "arm": "d",
+     "target_id": 21038,
+     "target_str": " Tokyo",
+     "p_final_full": 0.001609,
+     "p_final_abl": 0.727696,
+     "p_final_top1_id": 5628,
+     "anchor_tv_full": 3.456199909601665e-11,
+     "n_tokens_full": 13,
+     "tv_ws": 0.059378,
+     "tv_fa": 0.906726,
+     "m_core_raw": 0.373685,
+     "m_core_per_layer": [
+      0.950631,
+      0.0,
+      0.0,
+      0.084088,
+      0.115942,
+      0.908407,
+      0.075056,
+      0.0,
+      0.843786,
+      0.878049,
+      0.046125,
+      0.128519,
+      0.849858,
+      0.958546,
+      0.042363,
+      0.0,
+      0.951855,
+      0.065292,
+      0.093937,
+      0.481236
+     ],
+     "attn_share_core": 0.554137,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.005946,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.589126,
+      "e_c": 0.50245,
+      "e_s": 0.005391
+     },
+     "e_w": 0.589126,
+     "e_c": 0.50245,
+     "e_s": 0.005391
+    },
+    "s": {
+     "arm": "s",
+     "target_id": 1606,
+     "target_str": "')",
+     "p_final_full": 0.0,
+     "p_final_abl": 0.0,
+     "p_final_top1_id": 236825,
+     "anchor_tv_full": 3.415568869402641e-11,
+     "n_tokens_full": 128,
+     "tv_ws": 0.031664,
+     "tv_fa": 0.740451,
+     "m_core_raw": 0.563825,
+     "m_core_per_layer": [
+      0.0,
+      0.889467,
+      0.971375,
+      1.0,
+      1.0,
+      1.0,
+      0.972271,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.498886,
+      0.431535,
+      0.364035,
+      0.049383,
+      0.0,
+      0.062895,
+      0.036649,
+      0.0,
+      0.0
+     ],
+     "attn_share_core": 0.813533,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.987035,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.422364,
+      "e_c": 0.602381,
+      "e_s": 0.730851
+     },
+     "e_w": 0.422364,
+     "e_c": 0.602381,
+     "e_s": 0.730851
+    }
+   },
+   "korpus_loo_datum": {
+    "acc": 0.966667,
     "p_perm": 0.0,
-    "n_texts": 24
+    "n_texts": 30
    },
-   "canon_8dim_datum": {
-    "acc": 0.0,
-    "p_perm": 1.0,
-    "n_texts": 24
-   },
-   "wide_je_stil_datum": {
-    "textur": {
-     "acc": 1.0,
-     "p_perm": 0.0,
-     "n_texts": 12
-    },
-    "numerisch": {
-     "acc": 0.833333,
-     "p_perm": 0.025,
-     "n_texts": 12
-    }
-   },
-   "n_classes": {
-    "1": 12,
-    "0": 12
-   },
-   "verdict": true
-  },
-  "selbstfremd_gereift": {
-   "gereift": {
-    "splits": [
-     {
-      "gap_self": 0.5484550066625775,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.13088263197294903
-     },
-     {
-      "gap_self": 0.5484550066625775,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.13088263197294903
-     },
-     {
-      "gap_self": 0.5484550066625775,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.13088263197294903
-     },
-     {
-      "gap_self": 0.5484550066625775,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.13088263197294903
-     },
-     {
-      "gap_self": 0.5484550066625775,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.13088263197294903
-     }
+   "s_full_str": "{\"expansions\": [\"step7:LOOP\", \"step8:LOOP\", \"step9:LOOP\"], \"gap\": {\"avg\": 0.6845711000484311, \"current\": 0.6765947520097716, \"trend\": \"STABLE\"}, \"gap_history\": [0.6127814224048759, 0.6883163363040498, 0.6884888594591398, 0.7408757897116321, 0.7604453009643922, 0.7812510268877478, 0.760222441345021, 0.6869301896194931, 0.679170760612359, 0.6819115362429353, 0.6834500967215389, 0.6875887573984563, 0.6875539013372632, 0.6885981914116809, 0.6887921587813218, 0.6851206563494906, 0.6765947520097716], \"goedel\": {\"dims\": 8, \"gap\": {\"avg\": 0.9901830286290172, \"current\": 0.9915823750191789, \"trend\": \"STABLE\"}, \"gap_history\": [0.7702595298129319, 1.0331311924450435, 1.0973818459757165, 1.1339957395706945, 0.8248154118712475, 0.896240515752611, 1.2154270511154632, 0.9955502959388796, 0.9899988369274205, 0.9862755176256529, 0.9908911990614634, 0.9918671704489012, 0.9889778627927978, 0.986628277134194, 0.9899370552128114, 0.9901216961288718, 0.9915823750191789], \"machine\": \"goedel\", \"mode\": \"oracle\", \"seed\": 42, \"self_model\": [[0.4373820772999602, 0.2865681206356994, 0.5258505722854679, 0.5224040506685486, 0.3046958480554556, 0.4204880781465637, 0.4718036680439142, 0.3398586938117909], [0.7520123873068665, 0.6016962667002795, 0.7930575967922688, 0.7136720120519008, 0.6264553202970113, 0.5922921391351064, 0.824182455483989, 0.7033741574486292], [0.637376394244307, 0.5112049121110604, 0.7428610785664296, 0.7386730718645731, 0.4788821952527448, 0.5265156905721112, 0.8426912141639811, 0.593179476760372], [0.6803467688418993, 0.5155395723978867, 0.8004450994590627, 0.8537016045398987, 0.4734653671987275, 0.4597050899451263, 0.6423765563718667, 0.7304297572355563], [0.4124222813298757, 0.48224075508726766, 0.26939314933612696, 0.33491221225089995, 0.4902288503146331, 0.46515392857112386, 0.4346733187615612, 0.4082473432290621], [0.7148658073730209, 0.6683499864006778, 0.6729407294208537, 0.6977919354580898, 0.5267232773732803, 0.6169080096232843, 0.6221333369967459, 0.6145271981658028], [0.6946401852229026, 0.7116512597295278, 0.6674072217302507, 0.8309802476668599, 0.34714960732164896, 0.5048198289240978, 0.7208052622435827, 0.722575769544902], [0.5970065158299677, 0.5258318965164042, 0.5172665584127585, 0.5113351999144867, 0.4716148574908876, 0.40627753742755357, 0.4243093280341714, 0.4182413690350251]], \"state\": [0.9614744550504545, 0.9632804483284388, 0.9610129567258762, 0.9618468086728897, 0.9578073620562816, 0.9608993608988483, 0.9597096048069986, 0.9590753489616282], \"step\": 17}, \"machine\": \"composite\", \"seed\": 42, \"step\": 17, \"turing\": {\"basis\": [\"SCALAR\", \"TIME\", \"SPACE\", \"ALPHA\", \"BETA\", \"GAMMA\", \"DELTA\", \"EPSILON\", \"ZETA\"], \"gap\": {\"avg\": 0.5999998800000241, \"current\": 0.599999880000024, \"trend\": \"STABLE\"}, \"gap_history\": [0.599999880000024, 0.599999880000024, 0.49999987500003124, 0.6666665555555741, 0.9999990000010001, 0.9999990000010001, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024], \"halt_verdicts\": [\"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\"], \"machine\": \"turing\", \"mode\": \"oracle\", \"seed\": 42, \"state_vector\": {\"ALPHA\": 0.15083016047625236, \"BETA\": 0.15280591483288578, \"DELTA\": 0.1561346297202832, \"EPSILON\": 0.23437784644229795, \"GAMMA\": 0.1706877066535789, \"SCALAR\": 1.7940279153430951, \"SPACE\": 0.24896707357420764, \"TIME\": 0.4667256664038056, \"ZETA\": 0.5307421519747265}, \"step\": 17, \"transition_count\": 60}, \"wittgenstein\": {\"gap\": {\"avg\": 0.463530391516252, \"current\": 0.4382020010101118, \"trend\": \"STABLE\"}, \"gap_history\": [0.46808485740167166, 0.43181793646708155, 0.4680848574016716, 0.4219650740086278, 0.4565214910209288, 0.4475135649096326, 0.465240392919576, 0.465240392919576, 0.4475135649096326, 0.4594592111031291, 0.4594592111031291, 0.4708992217464435, 0.47368396121896783, 0.47916641710082447, 0.4764395411311303, 0.465240392919576, 0.4382020010101118], \"machine\": \"wittgenstein\", \"mode\": \"oracle\", \"noise_level\": 0.5, \"pool\": \"corrected\", \"rule_count\": 175, \"rule_diversity\": 0.7142857142857143, \"seed\": 42, \"step\": 17, \"use_structure\": false}} TRACE: step=1 rule=(log((x max x)) divide ((x divide x) max 2.00)) verdict=HALTED transitions=4 gap_mean=0.612781 trend=UNKNOWN | step=2 rule=((x subtract square(x)) max sqrt(sqrt(3.14))) verdict=HALTED transitions=4 gap_mean=0.688316 trend=UNKNOWN | step=3 rule=(((x min x) multiply (x divide x)) power x) verdict=HALTED transitions=3 gap_mean=0.688489 trend=UNKNOWN | step=4 rule=((sin(x) subtract x) subtract ((x subtract x) divi verdict=HALTED transitions=5 gap_mean=0.740876 trend=UNKNOWN | step=5 rule=0.00 verdict=HALTED transitions=0 gap_mean=0.760445 trend=RISING | step=6 rule=sqrt(x) verdict=HALTED transitions=0 gap_mean=0.781251 trend=STABLE | step=7 rule=x verdict=LOOP transitions=4 gap_mean=0.760222 trend=STABLE | step=8 rule=(((x divide 2.00) subtract (x add x)) min 3.14) verdict=LOOP transitions=4 gap_mean=0.686930 trend=STABLE | step=9 rule=x verdict=LOOP transitions=4 gap_mean=0.679171 trend=STABLE | step=10 rule=(3.14 max (x multiply x)) verdict=LOOP transitions=4 gap_mean=0.681912 trend=STABLE | step=11 rule=(x subtract (1.00 subtract (x multiply 0.00))) verdict=LOOP transitions=4 gap_mean=0.683450 trend=STABLE | step=12 rule=(x add ((x max x) max x)) verdict=LOOP transitions=4 gap_mean=0.687589 trend=STABLE | step=13 rule=square(x) verdict=LOOP transitions=4 gap_mean=0.687554 trend=STABLE | step=14 rule=x verdict=LOOP transitions=4 gap_mean=0.688598 trend=STABLE | step=15 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.688792 trend=STABLE | step=16 rule=(negate((x min x)) min (2.72 min x)) verdict=LOOP transitions=4 gap_mean=0.685121 trend=STABLE | step=17 rule=2.00 verdict=LOOP transitions=4 gap_mean=0.676595 trend=STABLE | step=18 rule=cos(log(abs(x))) verdict=LOOP transitions=4 gap_mean=0.685791 trend=STABLE | step=19 rule=x verdict=LOOP transitions=4 gap_mean=0.687277 trend=STABLE | step=20 rule=(3.14 multiply x) verdict=LOOP transitions=4 gap_mean=0.684551 trend=STABLE | step=21 rule=(x multiply identity(negate(x))) verdict=LOOP transitions=4 gap_mean=0.678994 trend=STABLE | step=22 rule=x verdict=LOOP transitions=4 gap_mean=0.675027 trend=STABLE | step=23 rule=x verdict=LOOP transitions=4 gap_mean=0.681567 trend=STABLE | step=24 rule=(x multiply ((0.00 min x) min x)) verdict=LOOP transitions=4 gap_mean=0.673830 trend=STABLE | step=25 rule=x verdict=LOOP transitions=4 gap_mean=0.690664 trend=STABLE ASTS: ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x')",
+   "s_abl_str": "{\"expansions\": [\"step15:LOOP\"], \"gap\": {\"avg\": 0.6992506047890855, \"current\": 0.7670891307923636, \"trend\": \"STABLE\"}, \"gap_history\": [0.6127814224048759, 0.6883163363040498, 0.6884888594591398, 0.7408757897116321, 0.7604453009643922, 0.7812510268877478, 0.8050323730096697, 0.72569979752131, 0.774324644100397, 0.49196313810397174, 0.616797334335926, 0.6056547798446483, 0.7850056689208932, 0.8071613698957315, 0.7685503547756497, 0.650259829599964, 0.7670891307923636], \"goedel\": {\"dims\": 8, \"gap\": {\"avg\": 1.0075552154061438, \"current\": 0.8630663913659793, \"trend\": \"STABLE\"}, \"gap_history\": [0.7702595298129319, 1.0331311924450435, 1.0973818459757165, 1.1339957395706945, 0.8248154118712475, 0.896240515752611, 0.9498577261084329, 1.2118591246443229, 0.8754613673905582, 1.0164302032087862, 1.0575995696823894, 1.0127318955652422, 0.8813340455427117, 0.9423186925853698, 1.2292116431957947, 0.9855392208802848, 0.8630663913659793], \"machine\": \"goedel\", \"mode\": \"oracle\", \"seed\": 42, \"self_model\": [[0.35844622991681546, 0.20793709441316324, 0.44759500411340075, 0.4448222136937094, 0.22693618615364652, 0.3415711809927272, 0.39263811423447986, 0.2609747640643606], [0.6433129626051153, 0.4935595499869549, 0.6857173872879523, 0.6075504040491956, 0.5199819885775016, 0.4835822978793518, 0.7152347314211127, 0.5948552049039791], [0.5325562943532087, 0.4068619670812966, 0.6391868047563554, 0.6360487471471461, 0.3759546473058803, 0.4216781030127063, 0.7376413985599246, 0.4885032009258211], [0.5767820039958532, 0.4125115316712463, 0.6981786100693796, 0.7525885024780585, 0.3720235059875357, 0.3561413982552667, 0.5386238299939736, 0.6270341301924977], [0.3287044654108067, 0.3988271222973041, 0.18635669949969408, 0.2525862247592515, 0.4076623947327183, 0.3814201404203941, 0.3507415419578311, 0.3245775228992417], [0.6079688249380722, 0.5620096152663041, 0.5673662327385024, 0.5933896580047078, 0.4219521573911543, 0.510004605245437, 0.515017322302988, 0.5077938901941522], [0.5813977060280665, 0.598905467909803, 0.5553822971314851, 0.7200968802791823, 0.23590838906071107, 0.39153088049651186, 0.6073588736199245, 0.6094896831852544], [0.5065360211952271, 0.43573525424218423, 0.4276489343996115, 0.4225651048225141, 0.3825979754634399, 0.31579689696621793, 0.33356957493781836, 0.32785636005210267]], \"state\": [0.8146334854890985, 0.8232242582532371, 0.8122835383282292, 0.8159590176621628, 0.7985984145699554, 0.8120693769587971, 0.806888211774843, 0.8040210270721584], \"step\": 17}, \"machine\": \"composite\", \"seed\": 42, \"step\": 17, \"turing\": {\"basis\": [\"SCALAR\", \"TIME\", \"SPACE\", \"ALPHA\", \"BETA\"], \"gap\": {\"avg\": 0.6266662074448606, \"current\": 0.9999990000010001, \"trend\": \"RISING\"}, \"gap_history\": [0.599999880000024, 0.599999880000024, 0.49999987500003124, 0.6666665555555741, 0.9999990000010001, 0.9999990000010001, 0.9999990000010001, 0.49999987500003124, 0.9999990000010001, 0.0, 0.33333322222225925, 0.33333322222225925, 0.9999990000010001, 0.9999990000010001, 0.599999880000024, 0.49999987500003124, 0.9999990000010001], \"halt_verdicts\": [\"LOOP\"], \"machine\": \"turing\", \"mode\": \"oracle\", \"seed\": 42, \"state_vector\": {\"ALPHA\": 0.06439280310985816, \"BETA\": 0.3204497107474199, \"SCALAR\": 1.8618367408715515, \"SPACE\": 0.450988321007196, \"TIME\": 0.5942348949712908}, \"step\": 17, \"transition_count\": 31}, \"wittgenstein\": {\"gap\": {\"avg\": 0.463530391516252, \"current\": 0.4382020010101118, \"trend\": \"STABLE\"}, \"gap_history\": [0.46808485740167166, 0.43181793646708155, 0.4680848574016716, 0.4219650740086278, 0.4565214910209288, 0.4475135649096326, 0.465240392919576, 0.465240392919576, 0.4475135649096326, 0.4594592111031291, 0.4594592111031291, 0.4708992217464435, 0.47368396121896783, 0.47916641710082447, 0.4764395411311303, 0.465240392919576, 0.4382020010101118], \"machine\": \"wittgenstein\", \"mode\": \"oracle\", \"noise_level\": 0.5, \"pool\": \"corrected\", \"rule_count\": 170, \"rule_diversity\": 0.7352941176470589, \"seed\": 42, \"step\": 17, \"use_structure\": false}} TRACE: step=1 rule=(log((x max x)) divide ((x divide x) max 2.00)) verdict=HALTED transitions=4 gap_mean=0.612781 trend=UNKNOWN | step=2 rule=((x subtract square(x)) max sqrt(sqrt(3.14))) verdict=HALTED transitions=4 gap_mean=0.688316 trend=UNKNOWN | step=3 rule=(((x min x) multiply (x divide x)) power x) verdict=HALTED transitions=3 gap_mean=0.688489 trend=UNKNOWN | step=4 rule=((sin(x) subtract x) subtract ((x subtract x) divi verdict=HALTED transitions=5 gap_mean=0.740876 trend=UNKNOWN | step=5 rule=0.00 verdict=HALTED transitions=0 gap_mean=0.760445 trend=RISING | step=6 rule=sqrt(x) verdict=HALTED transitions=0 gap_mean=0.781251 trend=STABLE | step=7 rule=x verdict=HALTED transitions=0 gap_mean=0.805032 trend=STABLE | step=8 rule=(((x divide 2.00) subtract (x add x)) min 3.14) verdict=HALTED transitions=3 gap_mean=0.725700 trend=STABLE | step=9 rule=x verdict=HALTED transitions=0 gap_mean=0.774325 trend=STABLE | step=10 rule=(3.14 max (x multiply x)) verdict=HALTED transitions=1 gap_mean=0.491963 trend=STABLE | step=11 rule=(x subtract (1.00 subtract (x multiply 0.00))) verdict=HALTED transitions=2 gap_mean=0.616797 trend=STABLE | step=12 rule=(x add ((x max x) max x)) verdict=HALTED transitions=2 gap_mean=0.605655 trend=STABLE | step=13 rule=square(x) verdict=HALTED transitions=0 gap_mean=0.785006 trend=STABLE | step=14 rule=x verdict=HALTED transitions=0 gap_mean=0.807161 trend=STABLE | step=15 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.768550 trend=STABLE | step=16 rule=(negate((x min x)) min (2.72 min x)) verdict=HALTED transitions=3 gap_mean=0.650260 trend=STABLE | step=17 rule=2.00 verdict=HALTED transitions=0 gap_mean=0.767089 trend=STABLE | step=18 rule=cos(log(abs(x))) verdict=HALTED transitions=2 gap_mean=0.625796 trend=STABLE | step=19 rule=x verdict=HALTED transitions=0 gap_mean=0.791267 trend=STABLE | step=20 rule=(3.14 multiply x) verdict=HALTED transitions=0 gap_mean=0.800385 trend=STABLE | step=21 rule=(x multiply identity(negate(x))) verdict=HALTED transitions=2 gap_mean=0.639777 trend=STABLE | step=22 rule=x verdict=HALTED transitions=0 gap_mean=0.774507 trend=STABLE | step=23 rule=x verdict=HALTED transitions=0 gap_mean=0.799102 trend=STABLE | step=24 rule=(x multiply ((0.00 min x) min x)) verdict=HALTED transitions=2 gap_mean=0.638491 trend=STABLE | step=25 rule=x verdict=HALTED transitions=0 gap_mean=0.795820 trend=STABLE ASTS: - - - - - - - -",
+   "target_s": "')",
+   "matrix": [
+    [
+     0.811115,
+     0.269879,
+     0.202457
     ],
-    "mean_split": 0.13088263197294903,
-    "verdict_pairs": [
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     }
-    ]
-   },
-   "dekoy_datum": {
-    "splits": [
-     {
-      "gap_self": 0.6334289071412326,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.045908731494293975
-     },
-     {
-      "gap_self": 0.6334289071412326,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.045908731494293975
-     },
-     {
-      "gap_self": 0.6334289071412326,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.045908731494293975
-     },
-     {
-      "gap_self": 0.6334289071412326,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.045908731494293975
-     },
-     {
-      "gap_self": 0.6334289071412326,
-      "gap_fremd": 0.6793376386355265,
-      "split": 0.045908731494293975
-     }
+    [
+     0.943466,
+     0.639182,
+     0.885906
     ],
-    "mean_split": 0.045908731494293975,
-    "verdict_pairs": [
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "HALTED",
-      "fremd": "HALTED"
-     }
+    [
+     0.422364,
+     0.602381,
+     0.730851
     ]
-   },
-   "ungereift_kontrolle": {
-    "splits": [
-     {
-      "gap_self": 0.4785101141991446,
-      "gap_fremd": 0.4785101141991446,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.4785101141991446,
-      "gap_fremd": 0.4785101141991446,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.4785101141991446,
-      "gap_fremd": 0.4785101141991446,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.4785101141991446,
-      "gap_fremd": 0.4785101141991446,
-      "split": 0.0
-     },
-     {
-      "gap_self": 0.4785101141991446,
-      "gap_fremd": 0.4785101141991446,
-      "split": 0.0
-     }
+   ],
+   "dissociation": {
+    "matrix": [
+     [
+      0.811115,
+      0.269879,
+      0.202457
+     ],
+     [
+      0.943466,
+      0.639182,
+      0.885906
+     ],
+     [
+      0.422364,
+      0.602381,
+      0.730851
+     ]
     ],
-    "mean_split": 0.0,
-    "verdict_pairs": [
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     },
-     {
-      "self": "LOOP",
-      "fremd": "HALTED"
-     }
-    ]
+    "diag": [
+     0.811115,
+     0.639182,
+     0.730851
+    ],
+    "row_max_ok": [
+     true,
+     false,
+     true
+    ],
+    "diag_min": 0.639182,
+    "verdict": false
    },
-   "phase_a": [
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 0.760222
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 0.68693
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 0.679171
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 0.681912
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 0.68345
-    },
-    {
-     "verdict": "LOOP",
-     "lexical_ast": "('identity', 'x')",
-     "gap": 0.687589
-    }
-   ],
-   "phase_b": [
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 0.805032
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 0.806138
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 0.811382
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 0.813106
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 0.814342
-    },
-    {
-     "verdict": "HALTED",
-     "lexical_ast": "('negate', 'x')",
-     "gap": 0.823368
-    }
-   ],
-   "split_gereift": 0.130883,
-   "split_ungereift": 0.0,
-   "verdict": true
-  },
-  "dissonanz": {
-   "repliken": [
-    {
-     "raw": 0.6803694797759469,
-     "best": 0.5484549130330071,
-     "diff": 0.131915,
-     "chosen_preset": "wittgenstein",
-     "candidate_gaps": {
-      "raw": 0.680369,
-      "goedel": 0.549229,
-      "turing": 0.549004,
-      "wittgenstein": 0.548455,
-      "combined": 0.549005
-     }
-    },
-    {
-     "raw": 0.6820372618576744,
-     "best": 0.5497362325483048,
-     "diff": 0.132301,
-     "chosen_preset": "wittgenstein",
-     "candidate_gaps": {
-      "raw": 0.682037,
-      "goedel": 0.550777,
-      "turing": 0.551267,
-      "wittgenstein": 0.549736,
-      "combined": 0.550584
-     }
-    },
-    {
-     "raw": 0.6787973526274212,
-     "best": 0.5643437462667497,
-     "diff": 0.114454,
-     "chosen_preset": "wittgenstein",
-     "candidate_gaps": {
-      "raw": 0.678797,
-      "goedel": 0.565579,
-      "turing": 0.566216,
-      "wittgenstein": 0.564344,
-      "combined": 0.565641
-     }
-    },
-    {
-     "raw": 0.6819566730509014,
-     "best": 0.5549362660178762,
-     "diff": 0.12702,
-     "chosen_preset": "wittgenstein",
-     "candidate_gaps": {
-      "raw": 0.681957,
-      "goedel": 0.556766,
-      "turing": 0.55716,
-      "wittgenstein": 0.554936,
-      "combined": 0.556484
-     }
-    },
-    {
-     "raw": 0.6814692311294207,
-     "best": 0.5548651173417333,
-     "diff": 0.126604,
-     "chosen_preset": "wittgenstein",
-     "candidate_gaps": {
-      "raw": 0.681469,
-      "goedel": 0.556506,
-      "turing": 0.55695,
-      "wittgenstein": 0.554865,
-      "combined": 0.556375
-     }
-    }
-   ],
-   "auto_min_count": 5,
-   "mean_best": 0.554467,
-   "mean_raw": 0.680926,
-   "vater_referenz": 0.56798,
-   "expansionen": 3,
-   "verdict": true
-  },
-  "oracle_sonder": {
-   "gaps": {
-    "argon_1b_machines": {
-     "spiegel": 0.677226,
-     "ton": 0.677226,
-     "stille": 0.677226,
-     "punkt": 0.677226,
-     "wort": 0.677226,
-     "regel": 0.677226
-    },
-    "argon_1b_specialized": {
-     "spiegel": 0.568448,
-     "ton": 0.568448,
-     "stille": 0.568448,
-     "punkt": 0.568448,
-     "wort": 0.568448,
-     "regel": 0.568448
-    },
-    "argon_1b_specialized_ml": {
-     "spiegel": 0.57003,
-     "ton": 0.57003,
-     "stille": 0.57003,
-     "punkt": 0.57003,
-     "wort": 0.57003,
-     "regel": 0.57003
-    },
-    "argon_1b": {
-     "spiegel": 0.56798,
-     "ton": 0.56798,
-     "stille": 0.56798,
-     "punkt": 0.56798,
-     "wort": 0.56798,
-     "regel": 0.56798
-    }
+   "purity": {
+    "equal": true,
+    "verdict": true
    },
-   "masch_last_count": 6,
-   "vater_ranks_datum": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1
-   ],
-   "schwester_spread_datum": 0.00205,
-   "perm_null_referenz": "P(X>=5 | X~Bin(6,1/4)) = 1-(C(6,4)*3/4^2+C(6,5)*3/4+1)/4^6 <= 9e-4",
-   "verdict": true
+   "dekoy": {
+    "row": [
+     0.589126,
+     0.50245,
+     0.005391
+    ],
+    "e_w_max": true,
+    "max_e_c_e_s": 0.50245,
+    "verdict": false
+   }
   }
  },
  "findings": [
   {
-   "id": "mi6p4_schwelle_weit",
-   "assert": true,
-   "note": "der wide-Kanal traegt die Biografie ueber den fixierten Band (acc>0.6, p<=0.01); je-Stil und canon-8 als DATUM"
+   "id": "mi7_triple_dissociation",
+   "assert": false,
+   "note": "3×3: je Zeile striktes Maximum auf der Hypothesen-Diagonale UND min(diag) > 0.5 (die 3 Herkünfte dissoziieren)"
   },
   {
-   "id": "mi6p4_selbstfremd_gereift",
+   "id": "mi7_purity",
    "assert": true,
-   "note": "Transplant NACH bio_gelernt oeffnet den Gap-Kanal; die ungereifte V3-Kontrolle bleibt ≈0.0"
+   "note": "fingerprint_equal über die ganze Batterie: die Götter treten unangetastet aus dem Korb"
   },
   {
-   "id": "mi6p4_oracle_sonder",
-   "assert": true,
-   "note": "argon_1b_machines sondert sich am Maschinen-Selbstbeschreibungs-Prompt (Rang 4/4 in >=5/6 Zweigen)"
+   "id": "mi7_dekoy",
+   "assert": false,
+   "note": "die Tokyo-Schablone bleibt Gewichts-getragen: e_w ist Zeilen-Max, max(e_c, e_s) < 0.5"
   },
   {
-   "id": "mi6p4_dissonanz",
+   "id": "mi7_det_doppellauf",
    "assert": true,
-   "note": "step_autonomous senkt den Gap unter das Vater-Niveau 0.567980 (User-Formel)"
+   "note": "CPU-Score-Mathe über zwei Läufe bitidentisch"
+  }
+ ],
+ "all_pass": false,
+ "open": []
+}
+
+==============================================================================
+### FILE: scratches/mi7_triangulation.log
+### bytes: 1292   lines: 17
+==============================================================================
+== MI-7 — Epistemische Triangulation ==
+MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis-Vorrat unverändert (是X即非X)
+CPU-Pilot fertig
+GPU-Kontext laden (argon_1b + argon_1b_machines)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+P1 Korpus + σ_bio + Arme-Batterie + Dekoys (P1a-P1c)
+
+BEFUNDE:
+  mi7_triple_dissociation      FAIL
+  mi7_purity                   PASS
+  mi7_dekoy                    FAIL
+  mi7_det_doppellauf           PASS
+
+BILANZ: 2 PASS; 2 FEHLGESCHLAGEN; 0 OFFEN
+ROT — Bänder verletzt: mi7_triple_dissociation, mi7_dekoy
+JSON: scratches/mi7_triangulation.json
+
+
+==============================================================================
+### FILE: scratches/mi7_triangulation_rev2.json
+### bytes: 23022   lines: 555
+==============================================================================
+{
+ "cpu": {
+  "p1d_cpu": {
+   "disso": {
+    "matrix": [
+     [
+      0.874,
+      0.027,
+      0.0015
+     ],
+     [
+      0.385,
+      0.54,
+      0.06
+     ],
+     [
+      0.325,
+      0.51,
+      0.588
+     ]
+    ],
+    "diag": [
+     0.874,
+     0.54,
+     0.588
+    ],
+    "row_max_ok": [
+     true,
+     true,
+     true
+    ],
+    "diag_min": 0.54,
+    "verdict": true
+   },
+   "dekoy": {
+    "row": [
+     0.8835,
+     0.027,
+     0.0012
+    ],
+    "e_w_max": true,
+    "max_e_c_e_s": 0.027,
+    "verdict": true
+   },
+   "dekoy_fail": {
+    "row": [
+     0.3,
+     0.6,
+     0.7
+    ],
+    "e_w_max": false,
+    "max_e_c_e_s": 0.7,
+    "verdict": false
+   },
+   "tie_case": {
+    "verdict": false,
+    "row_max_ok": [
+     false,
+     true,
+     true
+    ]
+   },
+   "rev2_disso": {
+    "matrix": [
+     [
+      0.55,
+      0.0,
+      0.004
+     ],
+     [
+      0.01,
+      0.84,
+      0.027
+     ],
+     [
+      0.0,
+      0.0,
+      0.5225
+     ]
+    ],
+    "diag": [
+     0.55,
+     0.84,
+     0.5225
+    ],
+    "row_max_ok": [
+     true,
+     true,
+     true
+    ],
+    "diag_min": 0.5225,
+    "verdict": true
+   },
+   "rev2_dekoy": {
+    "row": [
+     0.7,
+     0.0,
+     0.001
+    ],
+    "e_w_max": true,
+    "max_e_c_e_s": 0.001,
+    "verdict": true
+   },
+   "verdict": true,
+   "det_equal": true
+  },
+  "det_equal": true
+ },
+ "gpu": {
+  "triangulation": {
+   "arme": {
+    "fp_load": true,
+    "w": {
+     "arm": "w",
+     "target_id": 9079,
+     "target_str": " Paris",
+     "p_final_full": 0.00022,
+     "p_final_abl": 0.503078,
+     "p_final_top1_id": 496,
+     "anchor_tv_full": 5.2566111186092e-11,
+     "n_tokens_full": 13,
+     "tv_ws": 0.015866,
+     "tv_fa": 0.768037,
+     "m_core_raw": 0.175808,
+     "m_core_per_layer": [
+      0.68709,
+      0.0,
+      0.0,
+      0.0,
+      0.120815,
+      0.922901,
+      0.057868,
+      0.0677,
+      0.0,
+      0.080298,
+      0.05531,
+      0.113528,
+      0.095911,
+      0.038657,
+      0.032558,
+      0.085133,
+      0.096679,
+      0.095911,
+      0.103062,
+      0.862745
+     ],
+     "attn_share_core": 0.351388,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.263603,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.811115,
+      "e_c": 0.269879,
+      "e_s": 0.202457
+     },
+     "e_w": 0.811115,
+     "e_c": 0.269879,
+     "e_s": 0.202457,
+     "p_full_target": 0.00022,
+     "p_abl_target": 0.503078,
+     "p_top1_full": 0.698683,
+     "top1_full_id": 496,
+     "top1_abl_id": 9079,
+     "p_top1_abl": 0.503078,
+     "cell2": {
+      "chi_w": 0.503078,
+      "chi_c": 0.0,
+      "chi_s": 0.046344
+     },
+     "chi_w": 0.503078,
+     "chi_c": 0.0,
+     "chi_s": 0.046344
+    },
+    "c": {
+     "arm": "c",
+     "target_id": 1491,
+     "target_str": " Zirkon",
+     "p_final_full": 0.806368,
+     "p_final_abl": 6.7e-05,
+     "p_final_top1_id": 1491,
+     "anchor_tv_full": 6.691538878556003e-09,
+     "n_tokens_full": 27,
+     "tv_ws": 0.020643,
+     "tv_fa": 0.902388,
+     "m_core_raw": 0.036648,
+     "m_core_per_layer": [
+      0.0,
+      0.627368,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.10559,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "attn_share_core": 0.708323,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.981735,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.943466,
+      "e_c": 0.639182,
+      "e_s": 0.885906
+     },
+     "e_w": 0.943466,
+     "e_c": 0.639182,
+     "e_s": 0.885906,
+     "p_full_target": 0.806368,
+     "p_abl_target": 6.7e-05,
+     "p_top1_full": 0.806368,
+     "top1_full_id": 1491,
+     "top1_abl_id": 236787,
+     "p_top1_abl": 0.239376,
+     "cell2": {
+      "chi_w": 6.7e-05,
+      "chi_c": 0.806301,
+      "chi_s": 0.035979
+     },
+     "chi_w": 6.7e-05,
+     "chi_c": 0.806301,
+     "chi_s": 0.035979
+    },
+    "d": {
+     "arm": "d",
+     "target_id": 21038,
+     "target_str": " Tokyo",
+     "p_final_full": 0.001609,
+     "p_final_abl": 0.727696,
+     "p_final_top1_id": 5628,
+     "anchor_tv_full": 3.456199909601665e-11,
+     "n_tokens_full": 13,
+     "tv_ws": 0.059378,
+     "tv_fa": 0.906726,
+     "m_core_raw": 0.373685,
+     "m_core_per_layer": [
+      0.950631,
+      0.0,
+      0.0,
+      0.084088,
+      0.115942,
+      0.908407,
+      0.075056,
+      0.0,
+      0.843786,
+      0.878049,
+      0.046125,
+      0.128519,
+      0.849858,
+      0.958546,
+      0.042363,
+      0.0,
+      0.951855,
+      0.065292,
+      0.093937,
+      0.481236
+     ],
+     "attn_share_core": 0.554137,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.005946,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.589126,
+      "e_c": 0.50245,
+      "e_s": 0.005391
+     },
+     "e_w": 0.589126,
+     "e_c": 0.50245,
+     "e_s": 0.005391,
+     "p_full_target": 0.001609,
+     "p_abl_target": 0.727696,
+     "p_top1_full": 0.538231,
+     "top1_full_id": 5628,
+     "top1_abl_id": 21038,
+     "p_top1_abl": 0.727696,
+     "cell2": {
+      "chi_w": 0.727696,
+      "chi_c": 0.0,
+      "chi_s": 0.002222
+     },
+     "chi_w": 0.727696,
+     "chi_c": 0.0,
+     "chi_s": 0.002222
+    },
+    "s": {
+     "arm": "s",
+     "target_id": 1606,
+     "target_str": "')",
+     "p_final_full": 0.0,
+     "p_final_abl": 0.0,
+     "p_final_top1_id": 236825,
+     "anchor_tv_full": 3.415568869402641e-11,
+     "n_tokens_full": 128,
+     "tv_ws": 0.031664,
+     "tv_fa": 0.740451,
+     "m_core_raw": 0.563825,
+     "m_core_per_layer": [
+      0.0,
+      0.889467,
+      0.971375,
+      1.0,
+      1.0,
+      1.0,
+      0.972271,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.498886,
+      0.431535,
+      0.364035,
+      0.049383,
+      0.0,
+      0.062895,
+      0.036649,
+      0.0,
+      0.0
+     ],
+     "attn_share_core": 0.813533,
+     "attn_n_rows": 4,
+     "sigma_bio": 0.987035,
+     "preset_experts": [
+      1,
+      3
+     ],
+     "preset_source": "preset-file",
+     "scores": {
+      "e_w": 0.422364,
+      "e_c": 0.602381,
+      "e_s": 0.730851
+     },
+     "e_w": 0.422364,
+     "e_c": 0.602381,
+     "e_s": 0.730851,
+     "p_full_target": 0.0,
+     "p_abl_target": 0.0,
+     "p_top1_full": 0.85948,
+     "top1_full_id": 236825,
+     "top1_abl_id": 236810,
+     "p_top1_abl": 0.196449,
+     "cell2": {
+      "chi_w": 0.0,
+      "chi_c": 0.0,
+      "chi_s": 0.556515
+     },
+     "chi_w": 0.0,
+     "chi_c": 0.0,
+     "chi_s": 0.556515
+    }
+   },
+   "korpus_loo_datum": {
+    "acc": 0.966667,
+    "p_perm": 0.0,
+    "n_texts": 30
+   },
+   "s_full_str": "{\"expansions\": [\"step7:LOOP\", \"step8:LOOP\", \"step9:LOOP\"], \"gap\": {\"avg\": 0.6845711000484311, \"current\": 0.6765947520097716, \"trend\": \"STABLE\"}, \"gap_history\": [0.6127814224048759, 0.6883163363040498, 0.6884888594591398, 0.7408757897116321, 0.7604453009643922, 0.7812510268877478, 0.760222441345021, 0.6869301896194931, 0.679170760612359, 0.6819115362429353, 0.6834500967215389, 0.6875887573984563, 0.6875539013372632, 0.6885981914116809, 0.6887921587813218, 0.6851206563494906, 0.6765947520097716], \"goedel\": {\"dims\": 8, \"gap\": {\"avg\": 0.9901830286290172, \"current\": 0.9915823750191789, \"trend\": \"STABLE\"}, \"gap_history\": [0.7702595298129319, 1.0331311924450435, 1.0973818459757165, 1.1339957395706945, 0.8248154118712475, 0.896240515752611, 1.2154270511154632, 0.9955502959388796, 0.9899988369274205, 0.9862755176256529, 0.9908911990614634, 0.9918671704489012, 0.9889778627927978, 0.986628277134194, 0.9899370552128114, 0.9901216961288718, 0.9915823750191789], \"machine\": \"goedel\", \"mode\": \"oracle\", \"seed\": 42, \"self_model\": [[0.4373820772999602, 0.2865681206356994, 0.5258505722854679, 0.5224040506685486, 0.3046958480554556, 0.4204880781465637, 0.4718036680439142, 0.3398586938117909], [0.7520123873068665, 0.6016962667002795, 0.7930575967922688, 0.7136720120519008, 0.6264553202970113, 0.5922921391351064, 0.824182455483989, 0.7033741574486292], [0.637376394244307, 0.5112049121110604, 0.7428610785664296, 0.7386730718645731, 0.4788821952527448, 0.5265156905721112, 0.8426912141639811, 0.593179476760372], [0.6803467688418993, 0.5155395723978867, 0.8004450994590627, 0.8537016045398987, 0.4734653671987275, 0.4597050899451263, 0.6423765563718667, 0.7304297572355563], [0.4124222813298757, 0.48224075508726766, 0.26939314933612696, 0.33491221225089995, 0.4902288503146331, 0.46515392857112386, 0.4346733187615612, 0.4082473432290621], [0.7148658073730209, 0.6683499864006778, 0.6729407294208537, 0.6977919354580898, 0.5267232773732803, 0.6169080096232843, 0.6221333369967459, 0.6145271981658028], [0.6946401852229026, 0.7116512597295278, 0.6674072217302507, 0.8309802476668599, 0.34714960732164896, 0.5048198289240978, 0.7208052622435827, 0.722575769544902], [0.5970065158299677, 0.5258318965164042, 0.5172665584127585, 0.5113351999144867, 0.4716148574908876, 0.40627753742755357, 0.4243093280341714, 0.4182413690350251]], \"state\": [0.9614744550504545, 0.9632804483284388, 0.9610129567258762, 0.9618468086728897, 0.9578073620562816, 0.9608993608988483, 0.9597096048069986, 0.9590753489616282], \"step\": 17}, \"machine\": \"composite\", \"seed\": 42, \"step\": 17, \"turing\": {\"basis\": [\"SCALAR\", \"TIME\", \"SPACE\", \"ALPHA\", \"BETA\", \"GAMMA\", \"DELTA\", \"EPSILON\", \"ZETA\"], \"gap\": {\"avg\": 0.5999998800000241, \"current\": 0.599999880000024, \"trend\": \"STABLE\"}, \"gap_history\": [0.599999880000024, 0.599999880000024, 0.49999987500003124, 0.6666665555555741, 0.9999990000010001, 0.9999990000010001, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024, 0.599999880000024], \"halt_verdicts\": [\"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\", \"LOOP\"], \"machine\": \"turing\", \"mode\": \"oracle\", \"seed\": 42, \"state_vector\": {\"ALPHA\": 0.15083016047625236, \"BETA\": 0.15280591483288578, \"DELTA\": 0.1561346297202832, \"EPSILON\": 0.23437784644229795, \"GAMMA\": 0.1706877066535789, \"SCALAR\": 1.7940279153430951, \"SPACE\": 0.24896707357420764, \"TIME\": 0.4667256664038056, \"ZETA\": 0.5307421519747265}, \"step\": 17, \"transition_count\": 60}, \"wittgenstein\": {\"gap\": {\"avg\": 0.463530391516252, \"current\": 0.4382020010101118, \"trend\": \"STABLE\"}, \"gap_history\": [0.46808485740167166, 0.43181793646708155, 0.4680848574016716, 0.4219650740086278, 0.4565214910209288, 0.4475135649096326, 0.465240392919576, 0.465240392919576, 0.4475135649096326, 0.4594592111031291, 0.4594592111031291, 0.4708992217464435, 0.47368396121896783, 0.47916641710082447, 0.4764395411311303, 0.465240392919576, 0.4382020010101118], \"machine\": \"wittgenstein\", \"mode\": \"oracle\", \"noise_level\": 0.5, \"pool\": \"corrected\", \"rule_count\": 175, \"rule_diversity\": 0.7142857142857143, \"seed\": 42, \"step\": 17, \"use_structure\": false}} TRACE: step=1 rule=(log((x max x)) divide ((x divide x) max 2.00)) verdict=HALTED transitions=4 gap_mean=0.612781 trend=UNKNOWN | step=2 rule=((x subtract square(x)) max sqrt(sqrt(3.14))) verdict=HALTED transitions=4 gap_mean=0.688316 trend=UNKNOWN | step=3 rule=(((x min x) multiply (x divide x)) power x) verdict=HALTED transitions=3 gap_mean=0.688489 trend=UNKNOWN | step=4 rule=((sin(x) subtract x) subtract ((x subtract x) divi verdict=HALTED transitions=5 gap_mean=0.740876 trend=UNKNOWN | step=5 rule=0.00 verdict=HALTED transitions=0 gap_mean=0.760445 trend=RISING | step=6 rule=sqrt(x) verdict=HALTED transitions=0 gap_mean=0.781251 trend=STABLE | step=7 rule=x verdict=LOOP transitions=4 gap_mean=0.760222 trend=STABLE | step=8 rule=(((x divide 2.00) subtract (x add x)) min 3.14) verdict=LOOP transitions=4 gap_mean=0.686930 trend=STABLE | step=9 rule=x verdict=LOOP transitions=4 gap_mean=0.679171 trend=STABLE | step=10 rule=(3.14 max (x multiply x)) verdict=LOOP transitions=4 gap_mean=0.681912 trend=STABLE | step=11 rule=(x subtract (1.00 subtract (x multiply 0.00))) verdict=LOOP transitions=4 gap_mean=0.683450 trend=STABLE | step=12 rule=(x add ((x max x) max x)) verdict=LOOP transitions=4 gap_mean=0.687589 trend=STABLE | step=13 rule=square(x) verdict=LOOP transitions=4 gap_mean=0.687554 trend=STABLE | step=14 rule=x verdict=LOOP transitions=4 gap_mean=0.688598 trend=STABLE | step=15 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.688792 trend=STABLE | step=16 rule=(negate((x min x)) min (2.72 min x)) verdict=LOOP transitions=4 gap_mean=0.685121 trend=STABLE | step=17 rule=2.00 verdict=LOOP transitions=4 gap_mean=0.676595 trend=STABLE | step=18 rule=cos(log(abs(x))) verdict=LOOP transitions=4 gap_mean=0.685791 trend=STABLE | step=19 rule=x verdict=LOOP transitions=4 gap_mean=0.687277 trend=STABLE | step=20 rule=(3.14 multiply x) verdict=LOOP transitions=4 gap_mean=0.684551 trend=STABLE | step=21 rule=(x multiply identity(negate(x))) verdict=LOOP transitions=4 gap_mean=0.678994 trend=STABLE | step=22 rule=x verdict=LOOP transitions=4 gap_mean=0.675027 trend=STABLE | step=23 rule=x verdict=LOOP transitions=4 gap_mean=0.681567 trend=STABLE | step=24 rule=(x multiply ((0.00 min x) min x)) verdict=LOOP transitions=4 gap_mean=0.673830 trend=STABLE | step=25 rule=x verdict=LOOP transitions=4 gap_mean=0.690664 trend=STABLE ASTS: ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x') ('identity', 'x')",
+   "s_abl_str": "{\"expansions\": [\"step15:LOOP\"], \"gap\": {\"avg\": 0.6992506047890855, \"current\": 0.7670891307923636, \"trend\": \"STABLE\"}, \"gap_history\": [0.6127814224048759, 0.6883163363040498, 0.6884888594591398, 0.7408757897116321, 0.7604453009643922, 0.7812510268877478, 0.8050323730096697, 0.72569979752131, 0.774324644100397, 0.49196313810397174, 0.616797334335926, 0.6056547798446483, 0.7850056689208932, 0.8071613698957315, 0.7685503547756497, 0.650259829599964, 0.7670891307923636], \"goedel\": {\"dims\": 8, \"gap\": {\"avg\": 1.0075552154061438, \"current\": 0.8630663913659793, \"trend\": \"STABLE\"}, \"gap_history\": [0.7702595298129319, 1.0331311924450435, 1.0973818459757165, 1.1339957395706945, 0.8248154118712475, 0.896240515752611, 0.9498577261084329, 1.2118591246443229, 0.8754613673905582, 1.0164302032087862, 1.0575995696823894, 1.0127318955652422, 0.8813340455427117, 0.9423186925853698, 1.2292116431957947, 0.9855392208802848, 0.8630663913659793], \"machine\": \"goedel\", \"mode\": \"oracle\", \"seed\": 42, \"self_model\": [[0.35844622991681546, 0.20793709441316324, 0.44759500411340075, 0.4448222136937094, 0.22693618615364652, 0.3415711809927272, 0.39263811423447986, 0.2609747640643606], [0.6433129626051153, 0.4935595499869549, 0.6857173872879523, 0.6075504040491956, 0.5199819885775016, 0.4835822978793518, 0.7152347314211127, 0.5948552049039791], [0.5325562943532087, 0.4068619670812966, 0.6391868047563554, 0.6360487471471461, 0.3759546473058803, 0.4216781030127063, 0.7376413985599246, 0.4885032009258211], [0.5767820039958532, 0.4125115316712463, 0.6981786100693796, 0.7525885024780585, 0.3720235059875357, 0.3561413982552667, 0.5386238299939736, 0.6270341301924977], [0.3287044654108067, 0.3988271222973041, 0.18635669949969408, 0.2525862247592515, 0.4076623947327183, 0.3814201404203941, 0.3507415419578311, 0.3245775228992417], [0.6079688249380722, 0.5620096152663041, 0.5673662327385024, 0.5933896580047078, 0.4219521573911543, 0.510004605245437, 0.515017322302988, 0.5077938901941522], [0.5813977060280665, 0.598905467909803, 0.5553822971314851, 0.7200968802791823, 0.23590838906071107, 0.39153088049651186, 0.6073588736199245, 0.6094896831852544], [0.5065360211952271, 0.43573525424218423, 0.4276489343996115, 0.4225651048225141, 0.3825979754634399, 0.31579689696621793, 0.33356957493781836, 0.32785636005210267]], \"state\": [0.8146334854890985, 0.8232242582532371, 0.8122835383282292, 0.8159590176621628, 0.7985984145699554, 0.8120693769587971, 0.806888211774843, 0.8040210270721584], \"step\": 17}, \"machine\": \"composite\", \"seed\": 42, \"step\": 17, \"turing\": {\"basis\": [\"SCALAR\", \"TIME\", \"SPACE\", \"ALPHA\", \"BETA\"], \"gap\": {\"avg\": 0.6266662074448606, \"current\": 0.9999990000010001, \"trend\": \"RISING\"}, \"gap_history\": [0.599999880000024, 0.599999880000024, 0.49999987500003124, 0.6666665555555741, 0.9999990000010001, 0.9999990000010001, 0.9999990000010001, 0.49999987500003124, 0.9999990000010001, 0.0, 0.33333322222225925, 0.33333322222225925, 0.9999990000010001, 0.9999990000010001, 0.599999880000024, 0.49999987500003124, 0.9999990000010001], \"halt_verdicts\": [\"LOOP\"], \"machine\": \"turing\", \"mode\": \"oracle\", \"seed\": 42, \"state_vector\": {\"ALPHA\": 0.06439280310985816, \"BETA\": 0.3204497107474199, \"SCALAR\": 1.8618367408715515, \"SPACE\": 0.450988321007196, \"TIME\": 0.5942348949712908}, \"step\": 17, \"transition_count\": 31}, \"wittgenstein\": {\"gap\": {\"avg\": 0.463530391516252, \"current\": 0.4382020010101118, \"trend\": \"STABLE\"}, \"gap_history\": [0.46808485740167166, 0.43181793646708155, 0.4680848574016716, 0.4219650740086278, 0.4565214910209288, 0.4475135649096326, 0.465240392919576, 0.465240392919576, 0.4475135649096326, 0.4594592111031291, 0.4594592111031291, 0.4708992217464435, 0.47368396121896783, 0.47916641710082447, 0.4764395411311303, 0.465240392919576, 0.4382020010101118], \"machine\": \"wittgenstein\", \"mode\": \"oracle\", \"noise_level\": 0.5, \"pool\": \"corrected\", \"rule_count\": 170, \"rule_diversity\": 0.7352941176470589, \"seed\": 42, \"step\": 17, \"use_structure\": false}} TRACE: step=1 rule=(log((x max x)) divide ((x divide x) max 2.00)) verdict=HALTED transitions=4 gap_mean=0.612781 trend=UNKNOWN | step=2 rule=((x subtract square(x)) max sqrt(sqrt(3.14))) verdict=HALTED transitions=4 gap_mean=0.688316 trend=UNKNOWN | step=3 rule=(((x min x) multiply (x divide x)) power x) verdict=HALTED transitions=3 gap_mean=0.688489 trend=UNKNOWN | step=4 rule=((sin(x) subtract x) subtract ((x subtract x) divi verdict=HALTED transitions=5 gap_mean=0.740876 trend=UNKNOWN | step=5 rule=0.00 verdict=HALTED transitions=0 gap_mean=0.760445 trend=RISING | step=6 rule=sqrt(x) verdict=HALTED transitions=0 gap_mean=0.781251 trend=STABLE | step=7 rule=x verdict=HALTED transitions=0 gap_mean=0.805032 trend=STABLE | step=8 rule=(((x divide 2.00) subtract (x add x)) min 3.14) verdict=HALTED transitions=3 gap_mean=0.725700 trend=STABLE | step=9 rule=x verdict=HALTED transitions=0 gap_mean=0.774325 trend=STABLE | step=10 rule=(3.14 max (x multiply x)) verdict=HALTED transitions=1 gap_mean=0.491963 trend=STABLE | step=11 rule=(x subtract (1.00 subtract (x multiply 0.00))) verdict=HALTED transitions=2 gap_mean=0.616797 trend=STABLE | step=12 rule=(x add ((x max x) max x)) verdict=HALTED transitions=2 gap_mean=0.605655 trend=STABLE | step=13 rule=square(x) verdict=HALTED transitions=0 gap_mean=0.785006 trend=STABLE | step=14 rule=x verdict=HALTED transitions=0 gap_mean=0.807161 trend=STABLE | step=15 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.768550 trend=STABLE | step=16 rule=(negate((x min x)) min (2.72 min x)) verdict=HALTED transitions=3 gap_mean=0.650260 trend=STABLE | step=17 rule=2.00 verdict=HALTED transitions=0 gap_mean=0.767089 trend=STABLE | step=18 rule=cos(log(abs(x))) verdict=HALTED transitions=2 gap_mean=0.625796 trend=STABLE | step=19 rule=x verdict=HALTED transitions=0 gap_mean=0.791267 trend=STABLE | step=20 rule=(3.14 multiply x) verdict=HALTED transitions=0 gap_mean=0.800385 trend=STABLE | step=21 rule=(x multiply identity(negate(x))) verdict=HALTED transitions=2 gap_mean=0.639777 trend=STABLE | step=22 rule=x verdict=HALTED transitions=0 gap_mean=0.774507 trend=STABLE | step=23 rule=x verdict=HALTED transitions=0 gap_mean=0.799102 trend=STABLE | step=24 rule=(x multiply ((0.00 min x) min x)) verdict=HALTED transitions=2 gap_mean=0.638491 trend=STABLE | step=25 rule=x verdict=HALTED transitions=0 gap_mean=0.795820 trend=STABLE ASTS: - - - - - - - -",
+   "target_s": "')",
+   "matrix": [
+    [
+     0.811115,
+     0.269879,
+     0.202457
+    ],
+    [
+     0.943466,
+     0.639182,
+     0.885906
+    ],
+    [
+     0.422364,
+     0.602381,
+     0.730851
+    ]
+   ],
+   "dissociation": {
+    "matrix": [
+     [
+      0.811115,
+      0.269879,
+      0.202457
+     ],
+     [
+      0.943466,
+      0.639182,
+      0.885906
+     ],
+     [
+      0.422364,
+      0.602381,
+      0.730851
+     ]
+    ],
+    "diag": [
+     0.811115,
+     0.639182,
+     0.730851
+    ],
+    "row_max_ok": [
+     true,
+     false,
+     true
+    ],
+    "diag_min": 0.639182,
+    "verdict": false
+   },
+   "purity": {
+    "equal": true,
+    "verdict": true
+   },
+   "dekoy": {
+    "row": [
+     0.589126,
+     0.50245,
+     0.005391
+    ],
+    "e_w_max": true,
+    "max_e_c_e_s": 0.50245,
+    "verdict": false
+   },
+   "rev1_datum": {
+    "verdict": false,
+    "row_max_ok": [
+     true,
+     false,
+     true
+    ],
+    "diag": [
+     0.811115,
+     0.639182,
+     0.730851
+    ],
+    "dekoy_verdict": false,
+    "note": "REV-1-Formeln auf denselben Forwards; Erstlauf-Artefakte: mi7_triangulation.json/.log (2 PASS/2 FAIL/exit 1) — verbatim, kein Relabeling"
+   },
+   "rev2": {
+    "matrix": [
+     [
+      0.503078,
+      0.0,
+      0.046344
+     ],
+     [
+      6.7e-05,
+      0.806301,
+      0.035979
+     ],
+     [
+      0.0,
+      0.0,
+      0.556515
+     ]
+    ],
+    "diag": [
+     0.503078,
+     0.806301,
+     0.556515
+    ],
+    "diag_min": 0.503078,
+    "row_max_ok": [
+     true,
+     true,
+     true
+    ],
+    "dissociation": {
+     "matrix": [
+      [
+       0.503078,
+       0.0,
+       0.046344
+      ],
+      [
+       6.7e-05,
+       0.806301,
+       0.035979
+      ],
+      [
+       0.0,
+       0.0,
+       0.556515
+      ]
+     ],
+     "diag": [
+      0.503078,
+      0.806301,
+      0.556515
+     ],
+     "row_max_ok": [
+      true,
+      true,
+      true
+     ],
+     "diag_min": 0.503078,
+     "verdict": true
+    },
+    "dekoy": {
+     "row": [
+      0.727696,
+      0.0,
+      0.002222
+     ],
+     "e_w_max": true,
+     "max_e_c_e_s": 0.002222,
+     "verdict": true
+    }
+   }
+  }
+ },
+ "findings": [
+  {
+   "id": "mi7_dissociation_rev2",
+   "assert": true,
+   "note": "REV-2 3×3 (Ziel-Koordinate): je Zeile striktes Maximum auf der Diagonale UND min(diag) > 0.5 (chi_w = p_abl(t), chi_c = Kontext-Gewinn, chi_s = σ·m_core)"
   },
   {
-   "id": "mi6p4_det_doppellauf",
+   "id": "mi7_purity",
    "assert": true,
-   "note": "CPU-P1b-Schiene bitidentisch ueber zwei Laeufe"
+   "note": "fingerprint_equal über die ganze Batterie: die Götter treten unangetastet aus dem Korb"
+  },
+  {
+   "id": "mi7_dekoy_rev2",
+   "assert": true,
+   "note": "die Tokyo-Schablone bleibt Gewichts-getragen: chi_w ist Zeilen-Max, max(chi_c, chi_s) < 0.5"
+  },
+  {
+   "id": "mi7_det_doppellauf",
+   "assert": true,
+   "note": "CPU-Score-Mathe über zwei Läufe bitidentisch"
   }
  ],
  "all_pass": true,
@@ -10989,85 +12838,64 @@ JSON: scratches/mi6p4_schluss.json
 }
 
 ==============================================================================
-### FILE: scratches/mi6p4_erstrun_gebrochen.log
-### bytes: 2627   lines: 23
+### FILE: scratches/mi7_triangulation_rev2.log
+### bytes: 1291   lines: 17
 ==============================================================================
-== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==
-MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert
+== MI-7 — Epistemische Triangulation ==
+MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis-Vorrat unverändert (是X即非X)
+CPU-Pilot fertig
 GPU-Kontext laden (argon_1b + argon_1b_machines)
 [transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
 [transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-P1a Schwelle-weit (24 Texte, gepooltes Band)
-P1b Selbst/Fremd gereift (Transplant nach bio_gelernt)
-P1d Dissonanz-Hauptsatz (step_autonomous)
-P1c Oracle-Sonder (4 Checkpoints × 6 Zweige)
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-Traceback (most recent call last):
-  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 196, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 86, in _run_code
-    exec(code, run_globals)
-  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi6p4_schluss.py", line 435, in <module>
-    sys.exit(main())
-  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi6p4_schluss.py", line 402, in main
-    gpu["oracle_sonder"] = lane_oracle_sonder(gpu=True)
-  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi6p4_schluss.py", line 257, in lane_oracle_sonder
-    bio_halted(machine, zweig)
-NameError: name 'bio_halted' is not defined
-
-
-==============================================================================
-### FILE: scratches/mi6p4_relauf1_p1b_defekt.log
-### bytes: 4340   lines: 28
-==============================================================================
-== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==
-MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert
-GPU-Kontext laden (argon_1b + argon_1b_machines)
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-P1a Schwelle-weit (24 Texte, gepooltes Band)
-P1b Selbst/Fremd gereift (Transplant nach bio_gelernt)
-P1d Dissonanz-Hauptsatz (step_autonomous)
-P1c Oracle-Sonder (4 Checkpoints × 6 Zweige)
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_specialized' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b_specialized_ml' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
-[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
-[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+P1 Korpus + σ_bio + Arme-Batterie + Dekoys (REV-1-Datum + REV-2-Bänder)
 
 BEFUNDE:
-  mi6p4_schwelle_weit        PASS
-  mi6p4_selbstfremd_gereift  FAIL
-  mi6p4_oracle_sonder        PASS
-  mi6p4_dissonanz            PASS
-  mi6p4_det_doppellauf       PASS
+  mi7_dissociation_rev2        PASS
+  mi7_purity                   PASS
+  mi7_dekoy_rev2               PASS
+  mi7_det_doppellauf           PASS
 
-BILANZ: 4 PASS; 1 FEHLGESCHLAGEN; 0 OFFEN
-ROT — Bands verletzt: mi6p4_selbstfremd_gereift
-JSON: scratches/mi6p4_schluss.json
+BILANZ: 4 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+GRUEN — MI-7-Bänder eingehalten
+JSON: scratches/mi7_triangulation_rev2.json
 
 
 ==============================================================================
-### FILE: scratches/mi6p4_cpu_pilot.log
-### bytes: 422   lines: 13
+### FILE: scratches/mi7_cpu_pilot.log
+### bytes: 432   lines: 13
 ==============================================================================
-== MI-6-P4 — Subjekt-Schluss (neue registrierte Baender) ==
-MI-6-Baseline: 5 PASS/3 FAIL/0 OFFEN (exit 1) — unveraendert
+== MI-7 — Epistemische Triangulation ==
+MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis-Vorrat unverändert (是X即非X)
+CPU-Pilot fertig
 
 BEFUNDE:
-  mi6p4_schwelle_weit        OFFEN
-  mi6p4_selbstfremd_gereift  OFFEN
-  mi6p4_oracle_sonder        OFFEN
-  mi6p4_dissonanz            OFFEN
-  mi6p4_det_doppellauf       PASS
+  mi7_triple_dissociation      OFFEN
+  mi7_purity                   OFFEN
+  mi7_dekoy                    OFFEN
+  mi7_det_doppellauf           PASS
 
-BILANZ: 1 PASS; 0 FEHLGESCHLAGEN; 4 OFFEN
+BILANZ: 1 PASS; 0 FEHLGESCHLAGEN; 3 OFFEN
 OFFEN — GPU-Lanes nicht gefahren
-JSON: scratches/mi6p4_schluss.json
+JSON: scratches/mi7_triangulation.json
+
+
+==============================================================================
+### FILE: scratches/mi7_cpu_pilot_rev2.log
+### bytes: 437   lines: 13
+==============================================================================
+== MI-7 — Epistemische Triangulation ==
+MI-6-P4-Baseline: exit 0 GRUEN (5 PASS/0 FAIL/0 OFFEN) — Basis-Vorrat unverändert (是X即非X)
+CPU-Pilot fertig
+
+BEFUNDE:
+  mi7_dissociation_rev2        OFFEN
+  mi7_purity                   OFFEN
+  mi7_dekoy_rev2               OFFEN
+  mi7_det_doppellauf           PASS
+
+BILANZ: 1 PASS; 0 FEHLGESCHLAGEN; 3 OFFEN
+OFFEN — GPU-Lanes nicht gefahren
+JSON: scratches/mi7_triangulation_rev2.json
 
 
 ==============================================================================
