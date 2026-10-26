@@ -25,23 +25,26 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION MI-3 — Kausale Interventionen (steer_band + knockout_experts;
-# 3 PASS | 1 OFFEN | 2 FAIL, exit 1 ROT): Hinreichendheit sitzt NICHT im
-# Core, prose-Notwendigkeit haelt im Bias-Kanal, code/L11 tragen NICHT
-# ueber expert_bias (gate.weight-kausal), ℓ17-Recall-Fenster 5.1x.
+# GENERATION MI-3-P4 + MI-4 — Argmax-Gate/Sequenz-TV/Capacity-Gate-Schild
+# (5 PASS | 1 OFFEN | 3 FAIL, exit 1 ROT) + Token-Level Circuit Tracing
+# (2 PASS GRÜN, exit 0): der Stummkanal ist Argmax-Ebene, die Domänen-
+# Notwendigkeit sitzt tokenweise am Subspace, das Entropy-Gate ist ein
+# echter, aber nicht absoluter Prosa-Schirm.
 # Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (das vollstaendige
 # Programm samt Modul-Level-importierter Maschinen-Basis: verify_machines
 # importiert machine_base + 3 Maschinen + composite + build_machine_corpus
 # auf Modul-Ebene; lisp_parity/lisp_bridge sind funktions-Level und laufen
 # NICHT) und (c) ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das
-# neue Runden-Set ersetzen (MI-2-P4-Paket liegt in Git-History: Commits
-# d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11).
+# neue Runden-Set ersetzen (MI-3-Paket liegt in Git-History: Commits
+# 97ec577/26f2e25; MI-2-P4: d1fc355/cb46509).
 FILES = [
-    # (a) GEÄNDERT/NEU — MI-3-Smoke (Prereg-6-Verdikt + KORREKTUR-LOG
-    #     Lauf-1-Buchung) und die Sonde (steer_band/knockout_experts/
-    #     digit_mass/last_probs + Modul-Helfer)
+    # (a) GEÄNDERT/NEU — MI-3-Smoke mit P4-Erweiterung (V7-V9 Re-Reg +
+    #     KORREKTUR-LOG: Lauf-1-Klassifikations-Bug + P4-CE-Gather-Bug),
+    #     die Sonde mit MI-4-Zugängen (token_probs/tokenwise_routing/
+    #     assemble_pct) und die neue MI-4-Circuit-Trace-Smoke
     "scratches/smoke_mech_interp_interventions.py",
     "machines/mech_interp.py",
+    "scratches/smoke_mech_interp_circuit_trace.py",
     # (b) AUSGEFÜHRT — die Modul-Level-importierte Maschinen-Basis
     "machines/machine_base.py",
     "machines/goedel_machine.py",
@@ -50,16 +53,20 @@ FILES = [
     "machines/composite.py",
     "machines/build_machine_corpus.py",
     # (b) AUSGEFÜHRT — GPU-Kontext (_load_machines_model) und die
-    #     Argon-Modellbasis
+    #     Argon-Modellbasis (moe_layers Router-Canon ist der Anker der
+    #     P4-Verdikte)
     "machines/verify_machines.py",
     "modeling_argon.py",
     "moe_layers.py",
-    # (c) ERGEBNISSE — Run-Log + Ergebnis-JSON (Roh-Felder: purity/
-    #     sufficiency/domain_knockout rows_9/paris/l17/l11)
-    "scratches/mi3_interventions.log",
-    "scratches/mi3_interventions.json",
-    # (c) ERGEBNISSE — Berichte des Laufs (§19 Vollfassung MI-3,
-    #     Laufschrift §21)
+    # (c) ERGEBNISSE — MI-3-P4: Run-Log + Ergebnis-JSON (Roh-Felder:
+    #     9 Verdikte inkl. argmax_gap/seq-TVs/l11-Gates; Baseline
+    #     mi3_interventions.json bleibt in Git-History) — MI-4:
+    #     pct/ent-Voll-Bahn + SEQ-TV-Profile
+    "scratches/mi3_interventions_p4.log",
+    "scratches/mi3_interventions_p4.json",
+    "scratches/mi4_circuit_trace.log",
+    "scratches/mi4_circuit_trace.json",
+    # (c) ERGEBNISSE — Berichte des Laufs (§20+§21, Laufschrift §22+§23)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -101,12 +108,12 @@ def main() -> int:
         f"{SEPARATOR}\n"
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
-        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (MI-3) —\n"
-        " geändert + ausgeführt (Programm samt Basis und Anker) + Ergebnisse;\n"
-        " das vollständige Korpus über die Git-History (MI-3: Commits s.\n"
-        " Runden-Commit; MI-2-P4: d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11;\n"
-        " MI-1: 67c1b5e/fc367c3; frühere kumulative Fassungen: 49ecc31 =\n"
-        " 88 Dateien, 2f61402 = 84).\n"
+        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs\n"
+        " (MI-3-P4 + MI-4) — geändert + ausgeführt (Programm samt Basis\n"
+        " und Anker) + Ergebnisse; das vollständige Korpus über die\n"
+        " Git-History (MI-3: 97ec577/26f2e25; MI-2-P4: d1fc355/cb46509;\n"
+        " MI-2-Lauf 3: 2455aea/1b4be11; MI-1: 67c1b5e/fc367c3; frühere\n"
+        " kumulative Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"

@@ -1804,3 +1804,171 @@ per-Text-TVs, alle per-Experten-Σ, alle Massen) in `mi3_interventions.json`
 vor Auswertung; P4 — Klassifikation strikt nach den registrierten
 Falsifikatoren ohne Still-Fallback (die 2 FAILs stehen). Laufschrift:
 `laufprotokolle_befund_report.md` §21.
+
+## 20. MI-3-P4 — Argmax-Gate, Sequenz-TV und das Capacity-Gate-Schild (2026-10-26)
+
+Anlass: das User-Audit nach MI-3 leitet aus den Roh-Daten und dem Router-Canon
+(`moe_layers.py:56-93`) ab, dass die 2 FAILs und 1 OFFEN **kein Zufall, sondern
+MoE-Mechanik** sind. Die drei Gründe wurden im Canon verifiziert, danach als
+drei neue Verdikte RE-REGISTRIERT (P2-muster wie SP9-SP13/MI-2-P4; die
+sechs MI-3-Basisverdikte stehen unverändert im Register) und als
+smoke-Erweiterung gemessen.
+
+### 20.1 Der Canon-Befund (verifiziert, moe_layers.py:56-93)
+
+1. `biased_scores = scores + expert_bias` → topk; `top_weights` werden aus den
+   **RAW-Sigmoid-Scores** geholt (:80), bei base_k>1 Expert-2 ×0.15
+   (:79-84), dann Re-Norm auf Summe 1 (:86) — Ersatz-Experten bekommen volle
+   Amplitude; ein KO löscht nicht, es verlagert.
+2. `capacity_gate = clamp(H/ln 8, 0.25, 1.0)` (:85-88): bei H=0.3149 →
+   0.1514 → auf den FLOOR 0.25 geklemmt. `low_entropy_mask` (H<1.8, :79-84)
+   dämpft Expert-2 zusätzlich ×0.15.
+3. `last_probs` liest nur das **letzte Token**; die Code-Texte enden an
+   `\n`-bestimmter Stelle (tv 0.0025) — der KO-Effekt existiert dort
+   distributionell, aber argumentlos an der Argmax-Ebene.
+
+### 20.2 Re-Registrierung (V7-V9) und KORREKTUR
+
+- V7 `mi3_argmax_gate_opening_p4` — der SP3-Stummkanal ist ein
+  Argmax-Schwellen-Phänomen. (a) raw-top1 am GENERIC_PROMPT kein Ziffern-Token
+  + `pred_value='unknown'`; (b) Voll-Steering ({1,3}, dict-Arm) flippt top1
+  auf Ziffern; (c) ΔM>0 für full/core/edge; (d) gap_core < gap_raw strikt.
+- V8 `mi3_sequence_loss_dissociation_p4` — das MI-3-V3-FAIL war ein
+  Last-Token-Phänomen: SEQ-TV über **alle Positionen t=1..T-2** (teacher
+  forced, [T,V]-Softmax), KO im CORE-Band: (a) code ko{0,1,4} > ko{3,7}
+  strikt; (b) prose ko{3,7} > ko{0,1,4} strikt. Datums-Zusatz: ΔCE je
+  Zustand.
+- V9 `mi3_l11_capacity_gate_shield_p4` — das MI-3-V6-FAIL ist das
+  Capacity-Gate-Schild: (a) mean-H(ℓ11) < 1.8 je prose-Text (low-entropy-
+  Regime aktiv); (b) mean-capacity_gate(ℓ11) ≤ 0.30 je prose-Text
+  (deep-damped; exakte Canon-Formel inkl. Floor). Datums-Zusatz: per-Token-
+  Gates + Code/Math-Kontrolle.
+- KORREKTUR-LOG: P4-Lauf 1 (GPU, 44 s) brach im CE-Gather — `torch.gather`
+  verlangt Index gleicher Dimension wie Input (`ids[0,1:T]` 1-D auf
+  [T-1,V]); Fix `unsqueeze(1)` (Index [T-1,1] → view(-1)). BROKEN-Buchung,
+  kein stiller Fallback; die 6 anderen Verdikte des Laufs blieben gültig
+  (Roh persistent), P4-Lauf 2 = voller Re-Lauf über alle 9.
+
+### 20.3 Verdikts-Tabelle (GPU-Lauf 2, 46.2 s, exit 1 ROT)
+
+5 PASS | 1 OFFEN | 3 FAIL — die MI-3-Basisverdikte replizieren bit-identisch
+(Determinismus-Anker dp_attn 0.6859115078113973, dp_moe 0.1407126784324646,
+m_raw 0.3541586399078369 IDENT mit der MI-3-Baseline-JSON — beide Läufe sind
+auf demselben Pfad exakt reproduziert). Die drei P4-Verdikte:
+
+- **V7 PASS** — `raw_top1='\n\n'`, `pred_value_raw='unknown'`; unter
+  Voll-Steering top1 `'1'` (`pred_value_full=10`). M_digit war IMMER da:
+  p('1')=0.3189 gegen top1 0.3613 (Gap 0.0425); unter Steering Gap→0.0000
+  (core/edge/full je 0.0 — top1 IST die '1'). Edge-Flip als Datums-Zusatz.
+- **V8 PASS** (beide Richtungen strikt) — SEQ-TV-Mittel: code ko_code
+  **0.0229** vs ko_prose 0.0109 (2.1×); prose ko_prose **0.0380** vs
+  ko_code 0.0312 (1.23×). ΔCE-Datum: code +0.0331 (own) / −0.0126 (cross);
+  prose +0.0909 (own) / +0.0936 (cross) — die CE-Linse zeigt auf prose
+  eine leichte Gegen-Asymmetrie (cross-KO trifft das richtige Token minimal
+  stärker); gebucht als [Datums-Zusatz], kein Band geweitet.
+- **V9 FAIL** (registrierte Grenze) — prose mean-H 0.167/0.200/**0.639**
+  (alle < 1.8 → (a) erfüllt), mean-gate 0.277/0.289/**0.377** → (b) ≤0.30
+  verletzt am prose-Text 3 („Oma erzählt … Garten“, floor_frac 0.63).
+  Code-Kontrolle: H 1.15-1.28, gate 0.5515-0.6186, floor_frac ≈ 0-0.03;
+  Math: H 1.38-1.78, gate 0.6646-0.8549, floor_frac 0.0.
+
+### 20.4 Verdichtung
+
+(a) **Der Stummkanal war eine Argmax-Brille.** SP3-„unknown“ behauptete nie
+digit-Masse-Freiheit (M_raw=0.3542 mit '1' bei 0.3189) — nur Argmax-
+Verdecktheit durch ein Format-Token (`'\n\n'`). Ein 0.04-Gap genügt; der
+Bias hebt '1' exakt über die Schwelle.
+(b) **Die Notwendigkeit war überall, nur am Last-Token vernebelt.** Die
+Domänen-Doppel-Dissoziation hält über die ganze Sequenz in BEIDEN
+Richtungen — das MI-3-V3-“FAIL“ ist als Messartefakt entlarvt, die
+code-Notwendigkeit ist real und token-distributionell (ko_code 0.0229
+vs 0.0109).
+(c) **Das Schild ist echt, aber mit Loch.** Der Gradient mean-gate prose
+(0.28-0.38) → code (0.55-0.62) → math (0.66-0.85) ist direkt der
+Capacity-Gate-Mechanismus: das Gate öffnet mit der Domänen-Entropie. Das
+MI-3-V6-„FAIL“ (ko{4,7} ≤ ko{1,2}) war kein Beweis fehlender kausaler
+Last — es war das Schild im Einsatz, das E4-Ausreißer an Prosa dämpft
+(floor_frac 0.63-0.96). Die ≤0.30-Grenze war als deep-damped-Zone
+registriert; prose-3 (meanH 0.639) liegt bei 0.377 drüber — Daten sind
+Daten, die Grenze steht.
+
+**Der Neue Satz:** Der Stummkanal war eine Argmax-Brille, die code-
+Notwendigkeit war immer da und nur am `\n`-Last-Token verdeckt, und das
+Entropy-Gate ist ein echter, aber nicht absoluter Prosa-Schirm —
+Kausalität trennt sich nicht mehr in „bias-kausal vs gate-kausal“,
+sondern: der Bias trägt die Schwelle, das Gate trägt die Schildstärke,
+und beides ist tokenweise messbar.
+
+### 20.5 Grenzen
+
+V8-prose-Seite ist schmal (0.0380 vs 0.0312) — strikt an der
+Registrierung, aber kein Freibrief. V9-(b) nutzt bewusst ≤0.30 statt
+==0.25; prose-3 fällt daraus als Datum. Die ΔCE-Linse ist
+out-of-Predicate. Laufschrift: `laufprotokolle_befund_report.md` §22.
+
+## 21. MI-4 — Token-Level Circuit Tracing: die Umschaltung läuft, nicht der Text (2026-10-26)
+
+Instrument-Erweiterung (additiv, machines/mech_interp.py): `token_probs`
+([T,V] fp32-Softmax, offizieller Kopf-Pfad), `tokenwise_routing`
+(Forward-Hooks auf allen 26 Gates; Canon-Rückgabe
+(top_indices, top_weights, router_ent)) → `assemble_pct` zu
+**pct[T][26][8]** (top_weights inkl. capacity_gate + 0.15-Dämpfung exakt
+canon moe_layers.py:80-92) und **ent[T][26]**. R2-Piloten fahren
+`assemble_pct` direkt am Stub (echte Assembly-Formel): Reihenfolge-Egalität,
+Unvollständigkeit→ValueError, exakte Zellen, fp32-tolerante Band-Grenzen
+(KORREKTUR der Pilot-Toleranzen 1e-9→1e-6 auf fp32-Grenzfällen — keine
+Formel-Änderung).
+
+Registrierte Chimären (User-Audit 1:1) und t_switch (= gemeinsame
+Token-Praefixlaenge ids(text) vs ids(prefix), Plan-Risiko 2 —
+**Boundary exakt am Doppelpunkt**: das Umschalt-Token ist `' def'` bzw.
+`' Für'`):
+
+- CHIMERA_PROSE_CODE = „Der warme Sommerwind wehte über den See, während
+  das Programm lief: def quicksort(arr): return [x for x in arr]“ —
+  t_switch = 16/30.
+- CHIMERA_PROSE_MATH = „Oma erzählte im alten Garten ihre Geschichte,
+  doch plötzlich galt: Für alle n in N gilt sum_{k=1}^n k = n(n+1)/2.“ —
+  t_switch = 15/38.
+
+Verdikts (GPU-Lauf 1, 29.8 s, exit 0 **GRÜN**, 2 PASS):
+
+- **mi4_tokenwise_subspace_switch PASS** (je Text a∧b∧c) — im CORE-Band
+  4..23: Code-Chimär share{3,7} 0.3498→0.0774 (−4.5×), share{0,1,4}
+  0.0335→**0.5392** (×16), mean-ent 0.8805→**1.3463** — die
+  Audit-Vorhersage (0.9→1.35) trifft exakt. Math-Chimär: 0.4274→0.1894 /
+  0.0646→0.2034 / ent 1.1910→1.6113.
+- **mi4_tokenwise_domain_dissociation PASS** (je Text a∧b) — SEQ-TV
+  (t=1..T-2) im CORE-Band, Halften an t_switch: Code-Chimär prose-H ko{3,7}
+  0.0230 > ko{0,1,4} 0.0195; code-H ko{0,1,4} 0.0263 > ko{3,7} 0.0260
+  (schmal, strikt); Math-Chimär: prose-H 0.0604 > 0.0401; code-H 0.0392 >
+  0.0353.
+
+### 21.1 Verdichtung
+
+Die Router-Landschaft wechselt **tokenweise, nicht textweise**: vor der
+Umschaltstelle tragen die Prosa-Experten {3,7} und der Router sitzt am
+Capacity-Gate-Floor (H 0.88/1.19), nach der Stelle wechseln die
+Feld-Massen zu {0,1,4} und das Gate öffnet (ent →1.35/1.61). Mit MI-3-P4
+zusammen: die Domänen-Notwendigkeit sitzt tokenweise am Subspace — ein
+Text ist keine Domäne, sondern eine Trajektorie durchs Expertengitter,
+und t_switch liest man am Gate direkt ab (pct/ent-Voll-Bahn persistent in
+`mi4_circuit_trace.json`, routing: (30,26,8)/(38,26,8)).
+
+**Der Neue Satz:** Der Text ist die Spur im Oszillographen — die Umschaltung
+läuft nicht zwischen Texten, sondern zwischen Token-Positionen, und die
+Doppel-Dissoziation reist mit: die Hälften eines EINZIGEN Satzes verhalten
+sich wie zwei Domänen.
+
+### 21.2 P-Protokoll (MI-3-P4 + MI-4-Runde)
+
+P1 — kein alter Code gelöscht, MI-3-JSON `mi3_interventions.json` bleibt
+Baseline (unangetastete Roh-Daten: dp_attn 0.6859115078113973 IDENT);
+P2 — V7-V9 und die 2 MI-4-Verdikte im Pre-Reg vor der Messung
+registriert (Audit-getriebene Re-Registrierung wie SP9-SP13); P3 —
+Roh-Felder voll persistent (SEQ-TV-Profile, per-Token-ent_l11, pct/ent
+volles [T][26][8]); P4 — Klassifikation strikt an den registrierten
+Falsifikatoren (V9 steht FAIL, die 0.30-Grenze wird nicht geweitet;
+OFFEN≠PASS; Laufschrift §23). Grenzen: Code-Chimär-Hälfte schmalstes
+Datum (0.0263 vs 0.0260); pct-JSON ~470 KB je Text ist bewusst
+vollbestandig (T1).

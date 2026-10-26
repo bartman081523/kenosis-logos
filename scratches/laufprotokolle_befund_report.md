@@ -885,3 +885,49 @@ Feldbasis (resolve [9079]; dp_attn 0.6859115078113973; m_raw 0.3541586399078369
 `mi3_interventions.log`; Sonde in machines/mech_interp.py (steer_band/
 knockout_experts/digit_mass/last_probs + Modul-Helfer); ausführlicher
 Befund: `sprachspiel_bericht.md` §19.
+
+## 22. MI-3-P4 — Argmax-Gate, Sequenz-TV, Capacity-Gate-Schild: 5 PASS, 1 OFFEN, 3 FAIL (2026-10-26)
+
+User-Audit-Anlass: die 2 MI-3-FAILs + 1 OFFEN als MoE-Mechanik entzaubert
+(moe_layers.py:56-93 — RAW-Score-Gather + Re-Norm :80-86, capacity_gate
+clamp(H/ln8, .25, 1.0) :85-88, low_entropy ×0.15 :79-84, Last-Token-
+Phänomen). Drei RE-REGISTRIERTE P4-Verdikte als smoke-Erweiterung der
+MI-3-Smoke (Basis-Verdikte unverändert im Register).
+
+Run: CPU (7 PILOT, exit 2, kein JSON) → GPU Lauf 1 (44 s, V8 BROKEN:
+CE-Gather 1-D-Index — Fix unsqueeze(1), KORREKTUR-LOG gebucht, restliche
+8 Verdikte gültig persistent) → GPU Lauf 2 (46.2 s): **ROT exit 1** —
+5 PASS (purity, paris, l17, **argmax_gate**, **sequence_dissociation**)
+| 1 OFFEN (sufficiency-Premise M_raw=0.3542 ≥ tau) | 3 FAIL
+(domain_knockout, l11_anomaly, **shield**: prose-3 mean-gate 0.377 >
+0.30). Determinismus-Anker vs MI-3-Baseline: dp_attn 0.6859115078113973,
+dp_moe 0.1407126784324646, m_raw 0.3541586399078369 — IDENT.
+Kern-Daten: V7 top1 `'\n\n'`→unknown / `'1'` unter Steuerung, Gap
+0.0425→0.0000; V8 SEQ-TV code ko_code 0.0229 > ko_prose 0.0109, prose
+ko_prose 0.0380 > ko_code 0.0312 (beide strikt; ΔCE-Zusatz code
++0.0331/−0.0126); V9 mean-H prose 0.167/0.200/0.639 (<1.8 ∀), mean-gate
+0.277/0.289/0.377, gate-Gradient code 0.55-0.62 → math 0.66-0.85.
+Ergebnis-JSON `mi3_interventions_p4.json` + `.log` (Baseline
+`mi3_interventions.json` unangetastet, P1/P3); ausführlicher Befund:
+`sprachspiel_bericht.md` §20.
+
+## 23. MI-4 — Token-Level Circuit Tracing: 2 PASS GRÜN (2026-10-26)
+
+Neue Sonden-Zugänge machines/mech_interp.py (additiv): token_probs
+([T,V] fp32), tokenwise_routing (26 Gate-Hooks →
+assemble_pct: pct[T][26][8] inkl. capacity_gate + 0.15, ent[T][26]).
+Neue Smoke `scratches/smoke_mech_interp_circuit_trace.py` (2 registrierte
+Verdikte, Chimären 1:1 aus dem Audit, t_switch = gemeinsame Token-
+Präfixlänge, 5 R2-Piloten direkt über assemble_pct).
+
+Run: CPU (5 PILOT, exit 2 — KORREKTUR-LOG: Pilot-Toleranzen 1e-9→1e-6 auf
+fp32-Grenzfällen 0.4/1.8, keine Formel-Änderung) → GPU Lauf 1 (29.8 s):
+**GRÜN exit 0** — mi4_tokenwise_subspace_switch PASS (Code-Chimär ts=16/30,
+Boundary `' def'`: share{3,7} 0.3498→0.0774, share{0,1,4} 0.0335→0.5392,
+ent 0.8805→1.3463 exakt wie Audit-Vorhersage 0.9→1.35; Math-Chimär ts=15/38,
+`' Für'`: 0.4274→0.1894 / 0.0646→0.2034 / ent 1.1910→1.6113) und
+mi4_tokenwise_domain_dissociation PASS (SEQ-TV-Hälften: prose-H ko{3,7} >
+ko{0,1,4} und code-H ko{0,1,4} > ko{3,7} je BEIDEN Texte — Code-Hälfte des
+Code-Chimärs schmal: 0.0263 vs 0.0260). Voll-Persistence: pct/ent (30,26,8)
++ (38,26,8) in `mi4_circuit_trace.json` + `.log`; ausführlicher Befund:
+`sprachspiel_bericht.md` §21.
