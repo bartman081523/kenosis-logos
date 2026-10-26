@@ -455,8 +455,9 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   (Prereg-Docstring, 6 Verdikte + OFFEN-Regel, P2-Freeze; Konstanten über
   die kommittete SP12-Quelle importiert); Konkatenat
   `scratches/repo2txt_machines_extension.txt` — seit SP13 im
-  GENERATIONEN-REGIME (nur die Dateien des letzten Laufs — User-Vorgabe
-  2026-10-26): SP13-Set 9 Dateien, 226778 B, sha 6b7846cb...;
+  GENERATIONEN-REGIME (Runden-Paket — geändert + AUSGEFÜHRT samt
+  Maschinen-Basis und gelesener Anker + ERGEBNISSE; User-Vorgabe
+  2026-10-26): SP13-Set 16 Dateien, 417675 B, sha 823ee2e1...;
   Vollkorpus über die Git-History (49ecc31 = 88 Dateien, 2f61402 = 84).
 
 ---

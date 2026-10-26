@@ -2,10 +2,13 @@
 repo2txt_machines.py — baut einen Ein-Datei-Konkatenat für den Transfer in
 andere Kontexte (repo2txt-Stil, ein Datei-Header pro Block).
 
-Generationen-Regime (User-Vorgabe 2026-10-26): FILES enthält NUR die Dateien,
-die im letzten Spielzug (Lauf) geändert wurden — jedesmal ersetzt, nicht
+Generationen-Regime (User-Vorgabe 2026-10-26): FILES enthält NUR das
+Runden-Paket des letzten Spielzugs — (a) die Dateien, die im Lauf GEÄNDERT
+wurden, (b) die Dateien, die der Programmlauf AUSGEFÜHRT hat (das ganze
+Programm samt importierter Maschinen-Basis und der gelesenen Anker-Daten)
+und (c) seine ERGEBNISSE (Run-Logs, JSON, Berichte). Jedesmal ERSETZT, nie
 kumulativ; sonst wird das Konkatenat zu groß. Das vollständige Korpus liegt
-über die Git-History (frühere Generationen: SP13 davor kumulativ — Commits
+über die Git-History (frühere Generationen: kumulative Fassungen — Commits
 49ecc31 [sha 6ad22d85..., 88 Dateien] und 2f61402 [sha 47ebee46..., 84
 Dateien] usw.).
 
@@ -22,20 +25,33 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION SP13 — Endogene Agency (die Maschine wählt ihren Subspace selbst):
-# jede Datei, die im SP13-Lauf geändert oder neu entstanden ist.
+# GENERATION SP13 — Endogene Agency (die Maschine wählt ihren Subspace selbst).
+# Runden-Paket = (a) geändert, (b) AUSGEFÜHRT (das vollständige Programm samt
+# seiner importierten Basis und der gelesenen Anker) und (c) ERGEBNISSE.
 # Nach jedem SP-Runde-Lauf: dieses Set durch das neue Runden-Set ersetzen.
 FILES = [
-    # Maschinen-Edits des Laufs
-    "machines/composite.py",
+    # (b) AUSGEFÜHRT — die Maschinen-Basis des Laufs
+    "machines/machine_base.py",
+    "machines/goedel_machine.py",
     "machines/turing_machine.py",
     "machines/wittgenstein_machine.py",
-    # Experiment-Artefakte des Laufs (Skript, beide Runs, JSON)
+    "machines/composite.py",
+    # (b) AUSGEFÜHRT — GPU-Kontext (_load_machines_model)
+    "machines/verify_machines.py",
+    # (a) GEÄNDERT — SP13-Maschinen-Edits innerhalb obiger Module;
+    #     Prereg-Docstring (P2-Freeze)
     "scratches/smoke_endogene_agency.py",
+    # (b) AUSGEFÜHRT — importierte Anker-Lanes (SP11/SP12, L0 + Zwilling)
+    "scratches/smoke_paradigm_ursprung.py",
+    "scratches/smoke_lexical_grounding.py",
+    # (b) GELESENE BASIS — kommittete Anker-Daten, die die Lanes lesen
+    "scratches/hermeneutik_experiment.json",
+    "scratches/lexical_grounding_experiment.json",
+    # (c) ERGEBNISSE — beide Run-Logs + Ergebnis-JSON
     "scratches/endogene_agency_experiment.log",
     "scratches/endogene_agency_gpu.log",
     "scratches/endogene_agency_experiment.json",
-    # Berichte des Laufs (Vollfassung §15, Laufschrift §17)
+    # (c) ERGEBNISSE — Berichte des Laufs (Vollfassung §15, Laufschrift §17)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -77,8 +93,9 @@ def main() -> int:
         f"{SEPARATOR}\n"
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
-        "GENERATIONEN-REGIME: nur die Dateien des letzten Laufs (SP13); das\n"
-        " vollständige Korpus über die Git-History (49ecc31 = 88 Dateien, 2f61402 = 84).\n"
+        "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs (SP13) —\n"
+        " geändert + ausgeführt (Programm samt Basis und Anker) + Ergebnisse;\n"
+        " das vollständige Korpus über die Git-History (49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"
