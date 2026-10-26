@@ -931,3 +931,57 @@ ko{0,1,4} und code-H ko{0,1,4} > ko{3,7} je BEIDEN Texte — Code-Hälfte des
 Code-Chimärs schmal: 0.0263 vs 0.0260). Voll-Persistence: pct/ent (30,26,8)
 + (38,26,8) in `mi4_circuit_trace.json` + `.log`; ausführlicher Befund:
 `sprachspiel_bericht.md` §21.
+
+---
+
+## 24. MI-5 — Cross-Model-MI (gemma-3-1b-it + 3 Argon-Schwestern), 2026-10-26
+
+Scout zuerst (Instrument-Zuerst, S1/S2): `scratches/scout_gemma_structure.py`
+(exit 0, keine Messung) — Gemma3ForCausalLM, vocab 262144, 26 Schichten,
+kein .moe/kein Softcapping, Hook-Formen (1,T,1152) bf16, residualer Canon
+(transformers modeling_gemma3.py:415-434: h_mid = h_in +
+post_attention_layernorm(attn_out) — dieselbe residual-Familie wie
+modeling_argon.py:345). Darauf gebaut: Sonde-Erweiterung machines/
+mech_interp.py (rein additiv, 164/1): `is_moe_model` (Strukturwächter),
+`load_any_checkpoint` (STRICT-Lader der drei Schwester-Checkpoints, OHNE
+router_diff), `sublayer_logits_dense` (dense-arm, Guards wie MI-2, kein
+stiller Fallback).
+
+Neue Smoke `scratches/smoke_mech_interp_cross_models.py` — 6 registrierte
+Verdikte (V1 routing_shift TV-Floor 0.01, V2 paris_recall alle 4, V3
+dense_parent_argmax 0.05/0.10, V4 crystallization 4-von-6, V5 gate_entropy
+gap 0.01, V6 l17_share 0.5) + [Datums-Zusatz] (m_digit-Serie, Chimären
+JEDE Schwester, dense-arm-telescope, bias_std_26, strukturelle OFFEN-Buchung
+auf gemma), 6 R2-Piloten (canon_tv-Axiome, crystal-Finder, layer_bands,
+gate-clamp, moe-guard, resolver-Contract). MI-1-Subset-Canon = je Text[0]
+der 6 Domänen.
+
+Run-Folge:
+  CPU (6/6 PILOT nach Pilot-Korrektur — gate-clamp-INPUT 0.3→0.15·ln8:
+  der Floor gilt unter 0.25, canon-Ausgang H=0.3149 —, exit 2 GELB)
+  GPU Lauf 1 (GEBROCHEN, exit 1 — assemble_pct kannon = reine LISTEN
+    pct[T][L][E]/ent[T][L], Smoke nutzte Tensor-Zugriff `ent[:,11]`/
+    `.tolist()` → TypeError auf argon_1b; KEIN JSON geschrieben, kein
+    stiller Fallback; gebrochene Buchung im KORREKTUR-LOG des Smoke)
+  GPU Lauf 2 (~5 min): **4 PASS | 2 FAIL | 0 OFFEN — exit 1 ROT**
+
+Verdikt-Ergebnis (alle Zahlen aus mi5_cross_models.json, 523 KB):
+  V1 PASS — mean-TV specialized/ml = 0.5183/0.5170, per-Text-MAXIMUM
+    auf prose (0.621/0.603) — die Router-Spezialisierung bewegt den
+    prose-Kanal am stärksten; V2 PASS — paris_id 9079 IDENT auf ALLEN
+    vier Modellen inkl. gemma (Vokabel-Erbe GPU-seitig), top1 == 9079
+    raw überall; V3 FAIL — gemma top1 `'\n\n'` id 108 (Format-Token ✓),
+    aber p('1') 5.9e-06, M_digit 1.2e-05, Faktor ~30000 unter machines-
+    Masse; V4 PASS — star 6/6 je Modell definiert (gemma
+    24/24/23/15/18/14, Argon-Drei IDENT 24/23/23/14/16/15, anchor_tv
+    0.0 überall); V5 FAIL(2/3) — argon_1b H≈2.06 (≈ln 8, Uniform, gap
+    0.0092 < 0.01), specialized/ml gap 0.813/0.623 → Schild LERNprodukt;
+    V6 PASS — share_attn(ℓ17) 0.8259/0.8434/0.8284 (machines 0.830).
+Datums-Zusatz: m_digit-Serie 0.0 überall (machines-Exklusiv 0.354);
+bias_std_26 GPU = Disk-Scout exakt (specialized L0/L17 0.0737/0.0713,
+mean 0.0724; ml mean 0.0775; argon_1b ALL-ZERO); Chimären t_switch
+16/15 IDENT über alle Schwestern; dense-arm telescope intakt —
+gemma Paris-Träger ℓ17 MLP-dominant (dp_attn 0.2205 vs dp_mlp 0.7139,
+share 0.236) gegen Argon-Linie Attention-dominant (0.83) — Träger-
+Verlagerung durch den MoE-Upcycling, ein Architektur-Datum.
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §22.

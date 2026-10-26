@@ -25,48 +25,39 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION MI-3-P4 + MI-4 — Argmax-Gate/Sequenz-TV/Capacity-Gate-Schild
-# (5 PASS | 1 OFFEN | 3 FAIL, exit 1 ROT) + Token-Level Circuit Tracing
-# (2 PASS GRÜN, exit 0): der Stummkanal ist Argmax-Ebene, die Domänen-
-# Notwendigkeit sitzt tokenweise am Subspace, das Entropy-Gate ist ein
-# echter, aber nicht absoluter Prosa-Schirm.
-# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (das vollstaendige
-# Programm samt Modul-Level-importierter Maschinen-Basis: verify_machines
-# importiert machine_base + 3 Maschinen + composite + build_machine_corpus
-# auf Modul-Ebene; lisp_parity/lisp_bridge sind funktions-Level und laufen
-# NICHT) und (c) ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das
-# neue Runden-Set ersetzen (MI-3-Paket liegt in Git-History: Commits
-# 97ec577/26f2e25; MI-2-P4: d1fc355/cb46509).
+# GENERATION MI-5 — Cross-Model-MI (gemma-3-1b-it + 3 Argon-Schwestern):
+# 4 PASS | 2 FAIL | 0 OFFEN, exit 1 ROT. Substrat-Vererbung (Vokabel 9079,
+# Paris-Recall, ℓ17-Attention-Träger 0.83, Kristallisation, anchor_tv 0)
+# gegen Charakter-Erziehung (M_digit = machines-Exklusiv; Prosa-Schild =
+# Lernprodukt, Bias-Zero-Vater beweist die Kontrafaktik); die Router-
+# Spezialisierung bewegt den prose-Kanal am stärksten (TV 0.621/0.603).
+# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (Sonde + Smoke + Scout
+# + die Argon-Modellbasis, die load_any_checkpoint funktions-Level
+# zieht: modeling_argon -> moe_layers; verify_machines laeuft NICHT,
+# lisp-Kanal laeuft NICHT) und (c) ERGEBNISSE. Nach jedem Runde-Lauf:
+# dieses Set durch das neue Runden-Set ersetzen (MI-3-P4+MI-4-Paket liegt
+# in Git-History: Commits 48d8d68/c860025; MI-3: 97ec577/26f2e25;
+# MI-2-P4: d1fc355/cb46509).
 FILES = [
-    # (a) GEÄNDERT/NEU — MI-3-Smoke mit P4-Erweiterung (V7-V9 Re-Reg +
-    #     KORREKTUR-LOG: Lauf-1-Klassifikations-Bug + P4-CE-Gather-Bug),
-    #     die Sonde mit MI-4-Zugängen (token_probs/tokenwise_routing/
-    #     assemble_pct) und die neue MI-4-Circuit-Trace-Smoke
-    "scratches/smoke_mech_interp_interventions.py",
+    # (a) GEÄNDERT/NEU — Sonde mit MI-5-Zugängen (is_moe_model/
+    #     load_any_checkpoint STRICT/sublayer_logits_dense), der neue
+    #     Cross-Model-Smoke (6 Verdikte + Datums-Zusatz, 6 Piloten) und
+    #     der Instrument-Scout (gemma-Struktur, KEINE Messung)
     "machines/mech_interp.py",
-    "scratches/smoke_mech_interp_circuit_trace.py",
-    # (b) AUSGEFÜHRT — die Modul-Level-importierte Maschinen-Basis
-    "machines/machine_base.py",
-    "machines/goedel_machine.py",
-    "machines/turing_machine.py",
-    "machines/wittgenstein_machine.py",
-    "machines/composite.py",
-    "machines/build_machine_corpus.py",
-    # (b) AUSGEFÜHRT — GPU-Kontext (_load_machines_model) und die
-    #     Argon-Modellbasis (moe_layers Router-Canon ist der Anker der
-    #     P4-Verdikte)
-    "machines/verify_machines.py",
+    "scratches/smoke_mech_interp_cross_models.py",
+    "scratches/scout_gemma_structure.py",
+    # (b) AUSGEFÜHRT — die via load_any_checkpoint funktions-Level
+    #     gezogene Argon-Modellbasis (ArgonConfig/Forward + Router-Canon,
+    #     Anker der Batterie-Felder)
     "modeling_argon.py",
     "moe_layers.py",
-    # (c) ERGEBNISSE — MI-3-P4: Run-Log + Ergebnis-JSON (Roh-Felder:
-    #     9 Verdikte inkl. argmax_gap/seq-TVs/l11-Gates; Baseline
-    #     mi3_interventions.json bleibt in Git-History) — MI-4:
-    #     pct/ent-Voll-Bahn + SEQ-TV-Profile
-    "scratches/mi3_interventions_p4.log",
-    "scratches/mi3_interventions_p4.json",
-    "scratches/mi4_circuit_trace.log",
-    "scratches/mi4_circuit_trace.json",
-    # (c) ERGEBNISSE — Berichte des Laufs (§20+§21, Laufschrift §22+§23)
+    # (c) ERGEBNISSE — MI-5: Run-Log + Ergebnis-JSON (Roh-Felder:
+    #     routing_pct 6×[26×8] je Schwester, bias_std_26, ent_l11,
+    #     l17/dense-Fields, Chimären-Voll-Bahnen, star-Trajektorien,
+    #     6 Verdikte; MI-1..MI-4-JSONs bleiben in Git-History)
+    "scratches/mi5_cross_models.log",
+    "scratches/mi5_cross_models.json",
+    # (c) ERGEBNISSE — Berichte des Laufs (§22, Laufschrift §24)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -109,11 +100,12 @@ def main() -> int:
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
         "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs\n"
-        " (MI-3-P4 + MI-4) — geändert + ausgeführt (Programm samt Basis\n"
-        " und Anker) + Ergebnisse; das vollständige Korpus über die\n"
-        " Git-History (MI-3: 97ec577/26f2e25; MI-2-P4: d1fc355/cb46509;\n"
-        " MI-2-Lauf 3: 2455aea/1b4be11; MI-1: 67c1b5e/fc367c3; frühere\n"
-        " kumulative Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
+        " (MI-5) — geändert + ausgeführt (Sonde, Smoke, Scout, Argon-Basis)\n"
+        " + Ergebnisse; das vollständige Korpus über die Git-History\n"
+        " (MI-3-P4+MI-4: 48d8d68/c860025; MI-3: 97ec577/26f2e25;\n"
+        " MI-2-P4: d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11;\n"
+        " MI-1: 67c1b5e/fc367c3; frühere kumulative Fassungen:\n"
+        " 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"

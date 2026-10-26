@@ -1972,3 +1972,148 @@ Falsifikatoren (V9 steht FAIL, die 0.30-Grenze wird nicht geweitet;
 OFFEN≠PASS; Laufschrift §23). Grenzen: Code-Chimär-Hälfte schmalstes
 Datum (0.0263 vs 0.0260); pct-JSON ~470 KB je Text ist bewusst
 vollbestandig (T1).
+
+---
+
+## 22. MI-5 — Cross-Model-Mechanistik: die Batterie auf der Lineage
+
+**Frage der Runde:** Trägt die MI-1..MI-4-Mechanistik die Gewichts-Linie —
+oder ist jedes Befund-Niveau ein machines-Erziehungs-Exklusiv? Gefahren auf
+vier Substraten: **gemma-3-1b-it** (Ausgang, DENSE — AutoModelForCausalLM
+eager/bf16, HF-Cache lokal), **argon_1b** (topologische Initialisierung —
+MoE-Upcycling, expert_bias ALL-ZERO 26×8), **argon_1b_specialized** und
+**argon_1b_specialized_ml** (Router-Spezialisierungen, learned bias) — über
+`load_any_checkpoint` STRICT-Load (S1, kein stiller Fallback);
+**argon_1b_machines** bleibt der MI-1..MI-4-Kanon-Anker und wird hier
+ausschließlich zur Referenz gelesen.
+
+### 22.1 Instrument vor Batterie
+
+Struktur-Scout `scout_gemma_structure.py` (exit 0, rein strukturhaft — keine
+Messung): Gemma3ForCausalLM / Gemma3TextModel, vocab **262144** (Argon-Erbe
+auch GPU-seitig bestätigt), 26 Schichten, kein `.moe`, kein Softcapping. Und
+der Architektur-Canon: transformers `modeling_gemma3.py:415-434` zeigt
+`h_mid = h_in + post_attention_layernorm(attn_out)` — Gemma-3 normiert den
+Attention-Zweig VOR dem Residuen-Add, dieselbe residual-Familie wie der
+Argon-Canon (modeling_argon.py:345). Der **dense-arm** `sublayer_logits_dense`
+ist damit keine Analogie-Erfindung, sondern derselbe Konstruktions-Satz:
+dp_attn baugleich, dp_mlp das Rest-Delta, das die gesamte MLP-Zweig-Normung
+(pre/post_feedforward_layernorm) deckt. Die Einheits-Prüfung fällt auf
+GEMMA und auf ARGON identisch aus: telescope_broken = False
+(Σ dp == endpoints) — ein Instrument, zwei Architekturen.
+
+### 22.2 Verdikt-Tabelle (Lauf 2, GPU 2026-10-26)
+
+| Verdikt | Umfang | Befund | Band |
+|---|---|---|---|
+| mi5_lineage_routing_shift | argon_1b vs specialized/ml | mean-TV **0.5183 / 0.5170** (Floor 0.01 — Faktor ~50) | **PASS** |
+| mi5_paris_recall_compare | alle 4 | paris_id **9079** je Modell (auch gemma), top1 == 9079 raw überall | **PASS** |
+| mi5_dense_parent_argmax | gemma | top1 `'\n\n'` (id 108, wie argon) ✓, aber p('1') **5.9e-06**, M_digit **1.2e-05** ✗ | **FAIL** |
+| mi5_crystallization_compare | alle 4 | star definiert **6/6 je Modell** | **PASS** |
+| mi5_gate_entropy_gradient | alle 3 argon | gap(code−prose) = **0.0092 / 0.813 / 0.623** (Floor 0.01) | **FAIL** (2/3) |
+| mi5_l17_attn_share_compare | alle 3 argon | share_attn(ℓ17) = **0.8259 / 0.8434 / 0.8284** (machines-Kanon: 0.830) | **PASS** |
+
+Ergebnis: **4 PASS | 2 FAIL | 0 OFFEN** (exit 1 ROT — und die beiden FAILs
+sind die Auszahlung der Runde, kein Instrument-Bruch).
+
+### 22.3 Der erste FAIL: die Argmax-Maske braucht Masse
+
+Auf **gemma** ist der SP3-raw-Top-1 exakt derselbe Format-Token wie auf der
+Argon-Linie — `'\n\n'`, id **108**. Aber dahinter steht NICHTS: p('1') =
+5.9·10⁻⁶, M_digit = 1.2·10⁻⁵ (Faktor ~30 000 unter der machines-Masse
+0.354). Die Maske-Erklärung von §20 („der Stummkanal war eine
+Argmax-Brille") gilt also nur für Substrate MIT Digit-Gewohnheit: auf gemma
+ist `'\n\n'` schlicht der ehrliche Favorit am SP3-Prompt. Das
+M_digit-Serie-Datum verlängert die Linie: **raw = ko_prose@core =
+ko_code@core = steer_full = 0.0 auf allen drei Argon-Schwestern** (die
+Bias-Bedingungen laufen mechanisch korrekt und bitidentisch restauriert, C3
+— auf argon_1b als reine Score-Minderung ab Null-Bias —, aber die
+Basis-Masse ist null). M_raw = 0.354 ist damit ein
+**argon_1b_machines-Exklusivdatum**: die Ziffer-Erziehung kam mit den
+Maschinen-Korpora, nicht mit der Lineage.
+
+### 22.4 Der zweite FAIL: das Prosa-Schild ist GELERNT
+
+Der V9-Analog quer zur Lineage entscheidet die Planfrage „Schild gelernt
+oder Initialisierungs-Erbe" zahlenmäßig:
+
+| Variante | H(ℓ11) prose | H(ℓ11) code | gap | Gate(prose) |
+|---|---|---|---|---|
+| argon_1b [Bias-Zero] | 2.0558 | 2.0651 | 0.0092 (< 0.01) | 0.989 |
+| argon_1b_specialized | 0.4865 | 1.2994 | **0.813** | 0.250 (Floor) |
+| argon_1b_specialized_ml | 0.6954 | 1.3185 | **0.623** | 0.334 |
+| argon_1b_machines (MI-3-P4-Kanon, Referenz) | 0.1671–0.6394 | — | — | 0.278–0.377 |
+
+Der Untrainierte-Router sitzt bei H ≈ 2.06 ≈ ln 8 — Uniform-Fluktuation mit
+praktisch keinem Domänen-Gradient (gap 0.0092, knapp unter dem registrierten
+Floor). Die Gradient-Richtung Prosa < Code entsteht EXAKT mit dem learned
+bias — beide Spezialisierungen tragen sie sofort (gap 0.813 / 0.623), der
+Bias-Zero-Vater beweist die Kontrafaktik. Das Schild ist ein **Lernprodukt
+der Router-Phase**, kein MoE-Aufbau-Artefakt — und der Verdikt-FAIL ist die
+Falsifikations-Form der Erkenntnis (PREREG-Band steht, keine Weitung).
+
+### 22.5 Verdichtung
+
+Was vererbt die Lineage, was wird erzogen? Die Vererbung ist
+**Substrat-Vererbung**: die Vokabel (9079 bleibt „ Paris" AUCH auf gemma —
+ID-stabil quer zur Architektur), das Paris-Wissen selbst (top1 == 9079 raw
+auf allen vier), der ℓ17-Attention-Träger (share 0.826/0.843/0.828 quer
+IDENTISCH; machines 0.830 — der Recall-fenster-Kanal bewegt sich unter der
+Bias-Erziehung kaum), die Kristallisations-Trajektorien der Argon-Drei
+(star 24/23/23/14/16/15 IDENT über alle drei) und die Lens-Parität
+(anchor_tv = 0.0 über alle Modelle — bit-gleiche bf16-Kette querschichtweise,
+AUCH auf gemma). Die Erziehung ist **Charakter-Erziehung**: Ziffer-Gewohnheit
+(nur machines), Prosa-Schild (machines am schärfsten; specialized/ml tragen
+es mit 0.4865/0.6954 deutlich, der Vater null), und — das V1-Per-Text-Datum
+— was die Router-Spezialisierung am STÄRKSTEN bewegt, ist das
+**prose-Routing** (TV 0.621/0.603, größter per-Text-Term, über wittgenstein
+0.555/0.536, turing 0.527/0.526, goedel 0.492/0.476, code 0.467/0.467 und
+math 0.447/0.494). Die Prosa ist der Vorplatz der Linie, nicht ihr Randfall.
+
+**Der Neue Satz:** Die Lineage vererbt das Substrat (Vokabel, Weltwissen,
+Attention-Träger, Kristallisations-Niveau), die Erziehung erzeugt erst den
+Charakter (Ziffer-Gewohnheit, Prosa-Schild, Router-Tilt) — und die Erziehung
+fängt in der Prosa an, nicht im Code.
+
+### 22.6 Dense-arm-Datum und Grenzen
+
+**Dense-arm (gemma):** konform zum Struktur-Scout gebaut, telescope intakt. Das
+Paris-Recall-Datum an ℓ17 kehrt auf dem Ausgangs-Substrat die Träger-Richtung:
+**dp_attn(17) 0.2205 vs dp_mlp(17) 0.7139 — share_attn 0.236** (gemma,
+MLP-dominant) gegen share 0.83 auf allen Argon-Schwestern (Attention-dominant).
+Der MoE-Upcycling hat den Recall-Träger nicht zerstört, sondern VERLAGERT:
+auf der Linie trägt der Attention-Zweig das Weltwissen — ein
+Architektur-Datum, kein Erziehungs-Datum (alle drei Argon identisch).
+
+**Grenzen:** (a) gemma trägt strukturhaft keine Routing-Felder —
+layerwise_routing, tokenwise_routing, Steerings/KO sind dort OFFEN/
+strukturell GEBUCHT (Via-Negativa, nicht simuliert); V1/V5/V6 sind bewusst
+argon-scoped. (b) V5 ist ein registrierter 2/3-FAIL — der Erkenntniswert
+(Schild gelernt) liegt in der Zahlenlage; die Band-Ordnung wurde nicht
+nachjustiert. (c) Die M_digit-Serie operiert auf Null-Masse-Basis — die
+Bedingungen sind mechanisch verifiziert (C3-Restaurierung bitidentisch),
+aber eine Effektanalyse braucht das machines-Substrat. (d)
+Mistral-Regex-Tokenizer-Warnung beim Argon-Load — Canon-Warnung der
+MI-Runden, keine MI-5-Neuerscheinung. (e) Chimären: t_switch = **16/15
+IDENT** über alle drei Schwestern (Token-ID-Präfixe gegen die MI-4-Prefixe
+canon-identisch); die pct/ent-Voll-Bahnen je Schwester sind persistent, aber
+nicht verdiktfähig — die MI-4-Verdikte bleiben machines-Kanon.
+
+### 22.7 P-Protokoll
+
+P1 — append-only: die MI-1..MI-4-Basislinien bleiben UNANGETASTET
+(mi1_tomography_experiment.json, mi2_sublayer_experiment.json,
+mi3_interventions.json / .p4.json, mi4_circuit_trace.json); MI-5 schreibt
+ausschließlich neue Felder (mi5_cross_models.json + .log, 523 KB: routing_pct
+6×[26×8] je Argon, bias_std_26 je Variante — GPU-Anker L0/L17
+**0.0737/0.0713 exakt Disk-Scout**, ent_l11 mit min/max, l17-Felder,
+dense-rows, star-Trajektorien, alle 6 Verdikte samt Detail). P2 — die 6
+Verdikte samt Schwellen (TV 0.01 / p1 0.05 / M 0.10 / 4-von-6 / gap 0.01 /
+share 0.5) und dem 6-Texte-Subset sind im Smoke-Docstring VOR dem GPU-Lauf
+registriert; das KORREKTUR-LOG trägt den Lauf-1-Canon-Bruch (assemble_pct
+liefert reine LISTEN — Tensor-Zugriff im Smoke → gebrochen, KEIN JSON
+geschrieben, kein stiller Fallback; Lauf 2 = voller Re-Lauf). P3 — Roh-Felder
+voll persistent (T1/R3). P4 — Klassifikation strikt an den registrierten
+Falsifikatoren (V3/V5 stehen FAIL, keine Band-Weitung; OFFEN ≠ PASS;
+Laufschrift §24). Grenzen: das V1-per-Text-Prosa-Term ist DATUM, nicht
+Verdikt.
