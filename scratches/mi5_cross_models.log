@@ -1,0 +1,33 @@
+[MI-5] lade gemma3_1b_it …
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights:  52%|█████▏    | 178/340 [00:00<00:00, 1779.93it/s]Loading weights: 100%|██████████| 340/340 [00:00<00:00, 1752.71it/s]
+[MI-5] gemma3_1b_it: moe=False layers=26 experts=8
+[MI-5] lade argon_1b …
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[MI-5] argon_1b: moe=True layers=26 experts=8
+[MI-5] lade argon_1b_specialized …
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_specialized' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[MI-5] argon_1b_specialized: moe=True layers=26 experts=8
+[MI-5] lade argon_1b_specialized_ml …
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_specialized_ml' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[MI-5] argon_1b_specialized_ml: moe=True layers=26 experts=8
+PILOT: pilot_canon_tv_axioms — tv_same=0.00e+00 sym=True perm=True range=True
+PILOT: pilot_crystal_finder — const=4 late=10 osc=None
+PILOT: pilot_layer_bands_26 — edge=[0, 1, 2, 3, 24, 25] core_first=4 core_last=23
+PILOT: pilot_gate_clamp — floor 0.15·ln8, linear 0.5·ln8, cap 9.0·ln8 (moe_layers.py:85-88)
+PILOT: pilot_moe_guard — moe->True dense->False broken->False
+PILOT: pilot_resolver_contract — unique=[9079] mehr_token_verworfen leere_treffer=[]
+PASS: mi5_lineage_routing_shift
+PASS: mi5_paris_recall_compare
+FAIL: mi5_dense_parent_argmax
+PASS: mi5_crystallization_compare
+FAIL: mi5_gate_entropy_gradient
+PASS: mi5_l17_attn_share_compare
+4 PASS | 2 FAIL | 0 OFFEN
+JSON: scratches/mi5_cross_models.json
+
+=== SUMMARY ===
+PILOT 6/6 PILOT | VERDIKTE 4 PASS | 2 FAIL | 0 OFFEN

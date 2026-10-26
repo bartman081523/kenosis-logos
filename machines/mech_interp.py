@@ -500,6 +500,125 @@ class MechInterpProbe:
                 "Captures — Gerät-Bruch, kein stiller Fallback.")
         return assemble_pct(collected, self.n_experts, L)
 
+    # -- MI-5: Dense-arm (gemma-3-1b-it) ------------------------------------
+    @torch.no_grad()
+    def sublayer_logits_dense(
+        self, text: str, answer_target: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Dense-Sublayer-Lens für gemma-3-1b-it (MI-5-Instrument; die
+        KONDITION der Plansektion „dense-arm" ist erfüllt: Struktur-Scout
+        scratches/scout_gemma_structure.py, exit 0 — Gemma3ForCausalLM,
+        26 Schichten, input_layernorm/post_attention_layernorm vorhanden,
+        Hook-Formen (1,T,1152) bf16, kein Softcapping).
+
+        Konstruktion exakt am Gemma3-Decoder-Forward (transformers
+        models/gemma3/modeling_gemma3.py:415-434):
+            h_mid(l) = h_in(l) + post_attention_layernorm(attn_out)    (:426)
+            h_out(l) = h_mid(l) + post_ffn_norm(mlp(pre_ffn_norm(h_mid)))
+        — dieselbe residual-Familie wie der Argon-Canon (modeling_argon.py:
+        345), weshalb dp_attn identisch konstruierbar ist. dp_mlp ist das
+        Rest-Delta p_out − p_mid und deckt die komplette MLP-Zweig-Normung.
+        Capture: Layer-Pre-Hook (h_in) + post_attention_layernorm-Hook
+        (normiertes attn, exakt MI-2-Muster) + Layer-Output-Hook (h_out,
+        MI-1-Muster) + Emb-Hook. P je sublayer über den offiziellen Kopf-
+        Pfad norm -> lm_head; Softmax auf fp32-Streu (EINHEIT S3)."""
+        L = self.n_layers
+        h_out_all: List[torch.Tensor] = []      # h_out(l) fuer l = -1..L-1
+        h_in_all: List[torch.Tensor] = []       # h_in(l) l = 0..L-1 (pre-hook)
+        normed_attn: List[Optional[torch.Tensor]] = [None] * L
+
+        def _norm_hook(li: int):
+            def hook_fn(_module, _inp, out):
+                normed_attn[li] = out.detach()
+            return hook_fn
+
+        handles = [self.model.model.layers[idx].register_forward_pre_hook(
+            lambda _m, args: h_in_all.append(args[0].detach()))
+            for idx in range(L)]
+        handles += [self.model.model.layers[idx].register_forward_hook(
+            lambda _m, _i, o: _store_layer(h_out_all, _out_layer(o)))
+            for idx in range(L)]
+        handles.append(self.model.model.embed_tokens.register_forward_hook(
+            lambda _m, _i, o: _store_layer(h_out_all, o.detach(), first=True)))
+        handles += [self.model.model.layers[idx].post_attention_layernorm
+                    .register_forward_hook(_norm_hook(idx)) for idx in range(L)]
+        official_logits = None
+        ids = None
+        try:
+            ids = self._encode(text)
+            outputs = self.model(ids)
+            official_logits = outputs.logits[0, -1].detach()
+        finally:
+            for handle in handles:
+                handle.remove()
+
+        if any(v is None for v in normed_attn):
+            raise RuntimeError(
+                "sublayer_logits_dense: post_attention_layernorm-Hook fehlte "
+                f"({sum(v is None for v in normed_attn)} Schichten) — "
+                "Gerät-Bruch, kein stiller Fallback.")
+        if len(h_out_all) != L + 1:
+            raise RuntimeError(
+                f"sublayer_logits_dense: {len(h_out_all)} statt {L + 1} "
+                "h_out-Captures — Gerät-Bruch, kein stiller Fallback.")
+        if len(h_in_all) != L:
+            raise RuntimeError(
+                f"sublayer_logits_dense: {len(h_in_all)} statt {L} h_in-"
+                "Captures — Gerät-Bruch, kein stiller Fallback.")
+
+        norm_mod = self.model.model.norm   # Gemma3RMSNorm (Scout-Fakt)
+        head = self.model.lm_head
+
+        def _lens(h: torch.Tensor) -> torch.Tensor:
+            # Offizieller Kopf-Pfad der Gemma3-Kette (kein Softcapping —
+            # config-Werte None, Scout-Fakt), Softmax über fp32-Streu:
+            logits = head(norm_mod(h[0, -1]))
+            return torch.softmax(logits.float(), dim=-1)
+
+        target_id = int(answer_target["id"])
+        official_p = torch.softmax(official_logits.float(), dim=-1)
+        p_final = _lens(h_out_all[-1])
+        p_emb = _lens(h_out_all[0])
+
+        rows: List[Dict[str, Any]] = []
+        for li in range(L):
+            h_mid = h_in_all[li] + normed_attn[li]      # exakt gemma3:426
+            p_in = _lens(h_in_all[li])                  # P(h_in(l))
+            p_mid = _lens(h_mid)                        # P(h_mid(l))
+            p_out = _lens(h_out_all[li + 1])            # P(h_out(l))
+            top1_out_id = int(torch.argmax(p_out).item())
+            rows.append({
+                "layer": li,
+                "p_in": float(p_in[target_id].item()),
+                "p_mid": float(p_mid[target_id].item()),
+                "p_out": float(p_out[target_id].item()),
+                "dp_attn": float(p_mid[target_id].item() - p_in[target_id].item()),
+                "dp_mlp": float(p_out[target_id].item() - p_mid[target_id].item()),
+                "tv_in_mid": canon_tv(p_in, p_mid),
+                "gap_out_tv": canon_tv(p_out, p_final),
+                "top1_out_id": top1_out_id,
+                "top1_out_str": self.tokenizer.decode(
+                    [top1_out_id], skip_special_tokens=True),
+                "top1_out_prob": float(p_out[top1_out_id].item()),
+            })
+
+        telescope = sum(r["dp_attn"] + r["dp_mlp"] for r in rows)
+        endpoints = float(p_final[target_id].item() - p_emb[target_id].item())
+        return {
+            "rows": rows,
+            "target_id": target_id,
+            "target_str": answer_target.get("str", ""),
+            "p_emb": float(p_emb[target_id].item()),
+            "p_final": float(p_final[target_id].item()),
+            "p_final_top1_id": int(torch.argmax(p_final).item()),
+            "official_top1_id": int(torch.argmax(official_p).item()),
+            "anchor_tv": canon_tv(p_final, official_p),
+            "telescope_target": telescope,
+            "endpoints_target": endpoints,
+            "telescope_broken": bool(abs(telescope - endpoints) > 1e-6),
+            "n_tokens": int(ids.shape[1]),
+        }
+
 
 CRYSTAL_MIN_TAIL = 2  # Registrierung: stabiler TAIL >= 2 Schichten gilt als Fenster
 
@@ -600,3 +719,47 @@ def _store_layer(store: List[torch.Tensor], h: torch.Tensor,
         store.insert(0, h)
     else:
         store.append(h)
+
+
+# == MI-5: Cross-Model-Zugänge (gemma-3-1b-it + Argon-Schwestern) ==========
+
+def is_moe_model(model: Any) -> bool:
+    """MI-5-Strukturwächter (Guards statt Simulation, Via-Negativa): True,
+    wenn Decoder-Schicht 0 ein .moe trägt (Argon-Linie: 26 × {gate,
+    experts_per_tok 2}); False auf DENSE-Modellen (gemma-3-1b-it — kein
+    .moe, Scout-Fakt). Was strukturell fehlt, wird nicht simuliert; der
+    Smoke bucht solche Felder OFFEN/strukturell."""
+    try:
+        layers = model.model.layers
+        return bool(len(layers) > 0 and hasattr(layers[0], "moe"))
+    except AttributeError:
+        return False
+
+
+def load_any_checkpoint(path: str, device: Optional[str] = None,
+                        ) -> Tuple[Any, Any]:
+    """MI-5 Voll-Checkpoint-Lader im Canon-Muster von verify_machines.py:
+    339-356 (ArgonConfig(**cfg) -> ArgonForConditionalGeneration bf16 ->
+    load_state_dict -> AutoTokenizer, pad_token-Canon), OHNE router_diff —
+    die Schwester-Checkpoints tragen den kompletten Zustand (single
+    model.safetensors je 4.8 G). STRICT-Load (EINHEIT S1): fehlende oder
+    unerwartete Keys → RuntimeError, kein stiller Fallback. device-Canon:
+    'cuda' wenn verfügbar, sonst 'cpu'."""
+    import json as _json
+    import os as _os
+    from safetensors.torch import load_file as _load_file
+    from transformers import AutoTokenizer as _AutoTokenizer
+    from modeling_argon import ArgonConfig, ArgonForConditionalGeneration
+
+    dev = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    with open(_os.path.join(path, "config.json")) as handle:
+        cfg_dict = _json.load(handle)
+    config = ArgonConfig(**cfg_dict)
+    model = ArgonForConditionalGeneration(config).to(dtype=torch.bfloat16,
+                                                     device=dev)
+    state = _load_file(_os.path.join(path, "model.safetensors"))
+    model.load_state_dict(state, strict=True)
+    tokenizer = _AutoTokenizer.from_pretrained(path)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    return model, tokenizer
