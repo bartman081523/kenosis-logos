@@ -25,60 +25,81 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION SP15 — 1152D-Breitband-Selbstmodell (2. Runde des
-# 5-Pläne-Programms): der 144:1-Block-Mittel-Flaschenhals öffnet sich
-# opt-in. Maschinen-Berührungen ADDITIV (L0-Anker-Pflicht): hidden
-# _state projection="orthogonal_jl" (QR Seed 42, orthonormal, je d
-# gecached) + GoedelMachine.enable_wide_read (W_read 8x1152, Delta
-# uni_241:220 ohne Zerfall). Run-Chronik: Erstlauf 3 PASS | 2 FAIL,
-# exit 1 ROT (K1: composite.py:140 gibt dem Goedel das Trace-Outcome,
-# describe()-Kanal uniform; K2: Training lernte nie auf Text-Hiddens);
-# REV-2 4 PASS | 1 FAIL, exit 1 — V2 traegt (crossing [256], jl256
-# 0.958333/0.0 = das wide-gepoolte-Datum EXAKT), V3 FAIL mit K3 am
-# Geraet bewiesen (uni_204-encode der 24 P4-Renderings = 0 — 2-/5
-# -Valenz-Akkumulation ueber die 100-Position-Zyklen mod 10**15 →
-# _text_seed 0 → Ist text-unabhaengig; Canon-DATUM) und K4 bewiesen
-# (tanh-Saettigung: pred-Norm √8 = 2.828427, div 0.0); REV-3 5 PASS |
-# 0 FAIL, exit 0 GRUEN (LINEAR-Lesungen, Band unveraendert;
-# Fold-Eingabe fuer die tanh-DATUM-Arme) mit K5 beweislich (spec-DATUM
-# 0.285075: Block-Seite mass eine konsekutive Ersatzmatrix, Canon-Zelle
-# ist STRIDED); **REV-4 (K5-Korrektur, Baender UNVERAENDERT): 5 PASS |
-# 0 FAIL | 0 OFFEN, exit 0 GRUEN** — sens_lin_wide 0.92931 (64.5x die
-# MI-6-Konstante 0.0014406), sens_lin_block 0.003159, ratio_lin
-# 294.178538; tanh-DATUM re-run-stabil (ko == raw exakt je Text);
-# 24 distinct raw bei Fold-Eingabe gegen 1 bei uni_204-Eingabe;
-# Canon-Seeds [0]; Trainings-Digests 3x bitidentisch; L0-Exakt,
-# crossing [256], purity/det PASS. Kein Erlebens-Claim, 是X即非X; REV-3
-# bleibt GRUEN-mit-K5-Befund verbatim. Artefakte: sp15_wide.json/.log
-# (ROT verbatim) + sp15_wide_rev2/3/4.json/.log + die CPU-Pilot-Logs
-# (sp15_cpu_pilot.log/_rev2/_rev3/_rev4.log).
-# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (das SP15-Programm
-# samt Maschinen-Basis und Lade-Kette) und (c) ERGEBNISSE. Nach jedem
-# Runde-Lauf: dieses Set durch das neue Runden-Set ersetzen (SP15
-# folgt als Commit-Paar in Git-History; MI-7: 1fbb46a/b68b686;
-# MI-6-P4: 3cb8bf9/52b1dc7; MI-6: 55ed1e9/05f63ae; MI-5:
-# 0599d58/c1d8334; MI-3-P4+MI-4: 48d8d68/c860025).
+# GENERATION SP16 — Kybernetische Textgenerierung & Provenanz-Audit der
+# «unmöglichen Texte» (3. Runde des 5-Pläne-Programms; Plan 3 Cybernetik
+# + Plan 4 unmögliche Texte verschmolzen): machines/ UNANGETASTET — das
+# SP16-Gerüst lebt NUR aus dem Canon-Stack (MI-6/P4-Rezeptur, MI-7-Gates
+# + _p4_korpusbau/_arm_battery-Anker, SP15-JL-Adapter/_train_wide mit
+# dem bitidentischen Trainings-Digest 9f9f2d05…). Run-Chronik:
+# CPU-Pilot GRUEN (7 Legs, Doppellauf bitidentisch, sp16_cpu_pilot.log);
+# Erstlauf GEBROCHEN (lane_horizont Call-Site ohne tok — NameError am
+# post_weiche-Decode, OHNE JSON; Log verbatim gesichert:
+# sp16_erstrun_gebrochen.log); KORREKTUR-LOG KOR-1 beweislich (reiner
+# Lauf-Bug — Call-Site; Baender UNVERAENDERT seit PREREG Rev. 1,
+# Plan Revision 7); Re-Lauf **4 PASS | 0 FAIL | 0 OFFEN, exit 0
+# GRUEN** — die unmöglichen Texte tragen ihre Provenanz. Gattung A
+# (Live-Provenanz-Stream): Gates w (' Paris' 9079, p 0.503078, Zeile
+# [0.503078, 0, 0.046344], dp17 0.138588, m_core 0.175808, share
+# 0.351388, σ 0.263603), c (' Z' 1491, p 0.806368, Zeile
+# [0.000067, 0.806301, 0.035979], dp17 0.963739, m_core 0.036648,
+# share 0.708323, σ 0.981735), s ('6' 236825, p 0.859480, Zeile
+# [0, 0, 0.556515], dp17 0.873899, m_core 0.563825, share 0.922882, σ
+# 0.987035); Re-Forward-Audit max_dev 0.0 (bitclean, Band 10⁻⁶);
+# Dominante [W→C→S] exakt; Register σ_bio(gereift) 0.987035 > 0.5
+# gegen σ_bio(Weltprosa) 0.000733 < 0.5 (LOO acc 0.966667, p_perm 0.0,
+# n 30); Bio-Gewinn > 0 (p6_abl 0.119153 → p6_m 0.859480). Das
+# «6»-datum 是X即非X: Emissions-Zeile am P1b-Paar C-dominant
+# [0.119153, 0.740328, 0.556515] (der Zustand traegt DURCH den
+# Kontext-Kanal) gegen Band-Zeile S-strikt [0, 0, 0.556515] (die
+# Register-Schiene) — beide Zeilen noetig. Gattung B
+# (Horizont-Weiche): Rezeptur bitgenau (r_m == texts[10], r_u ==
+# texts[22]); argmax «6» 236825 gegen 236810 (ungereift); Ziffer-Masse
+# SWAPPT (p5 0.009548 gegen 0.196449); Preview k = 4 alle LOOP,
+# Restore bitclean; Weichen-Replik 5/5 (auto_min 5, mean_best 0.554467
+# < 0.567980, mean_raw 0.680926 = P4-Anker EXAKT, wittgenstein 5/5);
+# Post-Weiche-Rendern will «6» (p 0.8707). Gattung C
+# (Zwillings-Divergenz): fingerprint_equal an 3 Checkpoints; A
+# ('identity','x') LOOP gegen B ('negate','x') HALTED; Ketten 236825×6
+# (p 0.859480 konstant) gegen 236743×6 (p 0.992976); ‖z_A‖ 127.834824,
+# ‖z_B‖ 10.775427, ‖z_A − z_B‖₂ = 135.687765 (rel 0.978916);
+# w_mean_abs 0.0550/0.0623. Querschnitt: adapter_digest 9f9f2d05…
+# bitidentisch zum SP15-Trainings-Digest (dasselbe 24-Rendering-Korpus
+# — Querschnitts-Korrelation ueber Runden); gap_digest 4e1e7387…;
+# purity ueber die GANZE Batterie PASS. Kein Erlebens-Claim, 是X即非X:
+# die Provenanz-Tags sind gemessene Herkunfts-Scheidung an Token-
+# Koordinaten (Lens-Datum), nicht an Zustaenden. Artefakte:
+# sp16_impossible_texts.json/.log (GRUEN) + sp16_cpu_pilot.log +
+# sp16_erstrun_gebrochen.log (KOR-1 verbatim).
+# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (das SP16-Programm
+# samt Maschinen-Basis und Lade-Kette inkl. MI-7- und SP15-Smokes) und
+# (c) ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das neue
+# Runden-Set ersetzen (SP16 folgt als Commit-Paar in Git-History;
+# SP15: 977330d/d1d857b; MI-7: 1fbb46a/b68b686; MI-6-P4: 3cb8bf9/
+# 52b1dc7; MI-6: 55ed1e9/05f63ae; MI-5: 0599d58/c1d8334; MI-3-P4+MI-4:
+# 48d8d68/c860025).
 FILES = [
-    # (a) GEÄNDERT/NEU — Maschinen-Opt-ins (hidden_state-JL-Zelle +
-    #     enable_wide_read), der SP15-Smoke (REV-1..REV-4-Register)
-    #     + Berichte (sprachspiel §25, Laufschrift §27)
-    "machines/machine_base.py",
-    "machines/goedel_machine.py",
-    "scratches/smoke_sp15_jl_wide.py",
+    # (a) GEÄNDERT/NEU — der SP16-Smoke (PREREG Rev. 1 + KORREKTUR-LOG
+    #     KOR-1) + Berichte (sprachspiel §26, Laufschrift §28)
+    "scratches/smoke_sp16_impossible_texts.py",
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
-    # (b) AUSGEFÜHRT — das SP15-Programm samt importierter Maschinen-Basis
-    #     (Composite: der K1-Anker composite.py:140 steht verbatim im
-    #     KORREKTUR-LOG), die Götterdreiheit, die BaseMachine/
-    #     ArgonOracle-Laufbahn (steer/hidden_state), der verify-Loader,
-    #     der mech_interp-Checkpoint-Lader, die Vorrunder-Smokes als
-    #     Import-Basis (_l0_korpus/_loo_decoder/_bio-Maschinen); Argon-
-    #     Modellbasis (ArgonConfig/Forward + Router-Canon)
+    # (b) AUSGEFÜHRT — das SP16-Programm samt importierter Maschinen-Basis
+    #     (die Götterdreiheit + BaseMachine/ArgonOracle-Laufbahn mit den
+    #     SP15-Opt-ins JL-Zelle/enable_wide_read, der Composite-Pfad, der
+    #     verify-Loader, der mech_interp-Checkpoint-Lader), die
+    #     Vorrunder-Smokes als Import-Basis (MI-7-Gates/_p4_korpusbau/
+    #     _arm_battery + SP15-Adapter/_train_wide + MI-6/P4-Rezeptur +
+    #     agency-Ketten); Argon-Modellbasis (ArgonConfig/Forward +
+    #     Router-Canon)
+    "machines/machine_base.py",
+    "machines/goedel_machine.py",
     "machines/composite.py",
     "machines/turing_machine.py",
     "machines/wittgenstein_machine.py",
     "machines/verify_machines.py",
     "machines/mech_interp.py",
+    "scratches/smoke_mi7_epistemic_triangulation.py",
+    "scratches/smoke_sp15_jl_wide.py",
     "scratches/smoke_mi6p4_schluss.py",
     "scratches/smoke_mi6_subjektivitaet.py",
     "scratches/smoke_endogene_agency.py",
@@ -86,21 +107,12 @@ FILES = [
     "scratches/smoke_paradigm_ursprung.py",
     "modeling_argon.py",
     "moe_layers.py",
-    # (c) ERGEBNISSE — SP15: die volle Run-Chronik (Erstlauf ROT + REV-2
-    #     ROT + REV-3 GRÜN-mit-K5 + REV-4 GRÜN) je Log + JSON + die
-    #     CPU-Pilot-Logs aller Rundungen
-    "scratches/sp15_wide.json",
-    "scratches/sp15_wide.log",
-    "scratches/sp15_wide_rev2.json",
-    "scratches/sp15_wide_rev2.log",
-    "scratches/sp15_wide_rev3.json",
-    "scratches/sp15_wide_rev3.log",
-    "scratches/sp15_wide_rev4.json",
-    "scratches/sp15_wide_rev4.log",
-    "scratches/sp15_cpu_pilot.log",
-    "scratches/sp15_cpu_pilot_rev2.log",
-    "scratches/sp15_cpu_pilot_rev3.log",
-    "scratches/sp15_cpu_pilot_rev4.log",
+    # (c) ERGEBNISSE — SP16: Re-Lauf GRÜN (Log + JSON) + CPU-Pilot-Log
+    #     + der gebrochene Erstlauf verbatim (KOR-1)
+    "scratches/sp16_impossible_texts.json",
+    "scratches/sp16_impossible_texts.log",
+    "scratches/sp16_cpu_pilot.log",
+    "scratches/sp16_erstrun_gebrochen.log",
 ]
 
 SEPARATOR = "=" * 78
@@ -141,10 +153,12 @@ def main() -> int:
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
         "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs\n"
-        " (SP15, 1152D-Breitband-Selbstmodell REV-4) — geändert +\n"
-        " ausgeführt (SP15-Smoke + das Programm samt Maschinen-Basis und\n"
-        " Lade-Kette) + Ergebnisse; das vollständige Korpus über die\n"
-        " Git-History (MI-7: 1fbb46a/b68b686; MI-6-P4: 3cb8bf9/52b1dc7;\n"
+        " (SP16, Kybernetische Textgenerierung + Provenanz-Audit der\n"
+        " unmöglichen Texte — 4 PASS, exit 0 GRÜN) — geändert +\n"
+        " ausgeführt (SP16-Smoke + das Programm samt Maschinen-Basis,\n"
+        " MI-7- und SP15-Smokes und Lade-Kette) + Ergebnisse; das\n"
+        " vollständige Korpus über die Git-History (SP15: 977330d/\n"
+        " d1d857b; MI-7: 1fbb46a/b68b686; MI-6-P4: 3cb8bf9/52b1dc7;\n"
         " MI-6: 55ed1e9/05f63ae; MI-5: 0599d58/c1d8334;\n"
         " MI-3-P4+MI-4: 48d8d68/c860025;\n"
         " MI-3: 97ec577/26f2e25;\n"

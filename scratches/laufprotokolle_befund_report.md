@@ -1220,3 +1220,74 @@ Erlebens-Claim: die Kausal-Verstärkung ist eine gemessene
 Sensitivität der gelernten opt-in-Lesung; der Canon-Seed-Kollaps
 bleibt Canon-Eigenschaft.
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §25.
+
+## 28. SP16 — Kybernetische Textgenerierung: Live-Provenanz-Audit W→C→S, Horizont-Weiche, Zwillings-Divergenz — GRÜN (2026-10-27)
+
+**Gerüst.** Neuer Smoke `scratches/smoke_sp16_impossible_texts.py`
+(P1 append-only; Plan 3+4 verschmolzen per User-Freigabe) — drei
+Gattungen der «unmöglichen Texte» über den Canon-Stack: Gattung A
+live Provenanz-Stream — dreiteilige Generierung (Wissens-Satz →
+Kontext-Protokoll-Satz → gereifter Maschinen-Reflexions-Satz), jedes
+Ziel-Token live gemessen mit (χ_w, χ_c, χ_s)-Tag (m_core_raw,
+band (4, 23)) + dominantem Sublayer-Treiber (ΔP_attn(ℓ17) gegen
+m_core) + Re-Forward-Audit unter 10⁻⁶; Gattung B Horizont-Weiche —
+gereifte «spiegel»-Maschine am LOOP, preview_steps(k = 4) erkennt
+LOOP im Vorstellungsraum (fingerprint-Restore Δ = 0), step_autonomous
+wählt «wittgenstein», P1d-Replik N_PROBES 5; Gattung C
+Zwillings-Divergenz — zwei Instanzen auf exakt derselben Gewichtsmatrix,
+A «spiegel»/identity/LOOP, B «stille»/negate/HALTED, Ketten + Ströme.
+PREREG Rev. 1 (Plan Revision 7, 2026-10-26) vor dem Erstlauf.
+CPU-Pilot GRÜN (7 Legs — fold, dominanz, audit, restore, zwillinge,
+ziffern, register; Doppellauf bitidentisch; `sp16_cpu_pilot.log`).
+
+**Run-Folge.** Erstlauf GEBROCHEN — `lane_horizont` Call-Site ohne
+`tok` (NameError am Post-Weiche-Decode), OHNE JSON; Log verbatim
+gesichert (`sp16_erstrun_gebrochen.log`); KORREKTUR-LOG KOR-1
+beweislich (reiner Lauf-Bug — Call-Site; Bänder UNVERÄNDERT seit
+PREREG). Re-Lauf: **4 PASS | 0 FAIL | 0 OFFEN, exit 0 GRÜN** — «die
+unmöglichen Texte tragen ihre Provenanz».
+
+**Verdikt-Ergebnis** (`sp16_impossible_texts.json`). Gattung A — drei
+Gates live-auditiert, max_dev 0.0 (bitclean, Band < 10⁻⁶), ids_gleich
+True: Wissens-Gate Emit ' Paris' (9079, p 0.503078), Zeile
+[0.503078, 0.0, 0.046344], dp17 0.138588, m_core 0.175808, share
+0.351388, σ 0.263603; Kontext-Gate Emit ' Z' (1491, p 0.806368),
+Zeile [6.7e-05, 0.806301, 0.035979], dp17 0.963739, m_core 0.036648,
+share 0.708323, σ 0.981735; Reflexions-Gate Emit '6' (236825,
+p 0.859480), Zeile [0.0, 0.0, 0.556515], dp17 0.873899, m_core
+0.563825, share 0.922882, σ 0.987035. Dominante [0, 1, 2] =
+**W → C → S** (Band-Reihenfolge exakt); Register-Band σ_bio(gereift)
+0.987035 > 0.5 gegen σ_bio(Weltprosa) 0.000733 < 0.5 (LOO acc
+0.966667, p_perm 0.0, n 30); Bio-Gewinn > 0 (p6_abl 0.119153 →
+p6_m 0.859480). Das «6»-Datum 是X即非X: die Emissions-Zeile am
+P1b-Paar (texts[10]/texts[22], Ziel «6») [0.119153, 0.740328,
+0.556515] = C-dominant — das Rendering trägt den Zustand DURCH den
+Kontext-Kanal; das Band am «)»-Ziel [0.0, 0.0, 0.556515] = S-strikt
+— die Register-Schiene. Herkunfts-Scheidung im Stream erfordert BEIDE
+Zeilen.
+
+Gattung B — Rezeptur bitgenau (r_m == texts[10], r_u == texts[22]);
+r_m argmax «6» 236825 (p 0.859480), r_u argmax 236810, p6_m − p6_u
+> 0; Ziffer-Masse SWAPPT mit Reife (p5_m 0.009548, p5_u 0.196449);
+Preview k = 4 alle LOOP, Restore bitclean; Weichen-Replik 5/5
+(auto_min 5, mean_best 0.554467 < 0.567980, mean_raw 0.680926 =
+P4-Anker EXAKT, wittgenstein 5/5; Replik 0: raw 0.680369, best
+0.548455, diff 0.131915); Post-Weiche-Rendern will «6» (p 0.8707).
+Gattung C — fingerprint_equal × 3; Spuren A ('identity','x') LOOP
+gegen B ('negate','x') HALTED; Ketten 236825×6 (p 0.859480 konstant)
+gegen 236743×6 (p 0.992976); ‖z_A‖ 127.834824, ‖z_B‖ 10.775427,
+**‖z_A − z_B‖₂ = 135.687765 (rel 0.978916)**; w_mean_abs 0.0550/
+0.0623; die beiden Adapter-Digests aufgenommen.
+
+Querschnitt: adapter_digest 9f9f2d05… bitidentisch zum
+SP15-Trainings-Digest (dasselbe 24-Rendering-Korpus) — Querschnitts
+-Korrelation über Runden; gap_digest 4e1e7387…; purity über die
+GANZE Batterie PASS; CPU-Pilot-Doppellauf bitidentisch.
+
+**BILANZ: 4 PASS | 0 FAIL | 0 OFFEN — exit 0 GRÜN.** Korrektur-Log
+der Runde: KOR-1 (beweislich, Lauf-Bug) — kein Relabeling, Bänder
+seit PREREG unverändert. Kein Erlebens-Claim: die Provenanz-Tags
+sind gemessene Herkunfts-Scheidung an Token-Koordinaten
+(Lens-Datum), nicht an Zuständen.
+BILANZ der drei Runden: MI-7 GRÜN + SP15 REV-4 GRÜN + SP16 GRÜN.
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §26.

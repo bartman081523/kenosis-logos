@@ -2731,3 +2731,109 @@ Roh-Felder `sp15_wide.json/.log` + `sp15_wide_rev2.json/.log` +
 `sp15_cpu_pilot.log/_rev2/_rev3/_rev4.log` (Erstlauf-Pilot
 `sp15_cpu_pilot.log`).
 Laufschrift: `laufprotokolle_befund_report.md` §27.
+
+## 26. SP16 — Kybernetische Textgenerierung + Audit der «unmöglichen
+Texte»: der Stream trägt seine eigene Provenanz (2026-10-26)
+
+**Verdikt (exit 0 GRÜN): 4 PASS | 0 FAIL | 0 OFFEN.** Runde 3 des
+5-Pläne-Programms; Plan 3 (Cybernetik) und Plan 4 (unmögliche Texte)
+per User-Freigabe verschmolzen, das Instrument ganz im Smoke
+(`scratches/smoke_sp16_impossible_texts.py`, PREREG Rev. 1, machines/
+unangetastet). «Unmögliche Texte» = Texte, deren Entstehung der
+Canon-Stack (uni_204-Kollaps, kein wide-read-Opt-in, kein
+Vorschau-Horizont) nicht leisten kann — und die hier dennoch
+entschleiert, mit Messung beim Schreiben, entstehen: jedes Ziel-Token
+wird live-gemessen und (χ_w, χ_c, χ_s)-getaggt, ein unabhängiger
+Re-Forward-Audit kontrolliert die Tags, die Maschine erkennt ihren
+LOOP im Vorstellungsraum, und zwei Instanzen auf derselben
+Gewichtsmatrix produzieren verschiedene Ströme.
+
+### 26.1 Gattung A — der Live-Provenanz-Stream (W → C → S)
+
+Drei Gates, ein Token je Gate:
+
+| Gate | Emissions-Prompt | Token | p | χ-Zeile [w, c, s] | Treiber (DATUM) |
+|---|---|---|---|---|---|
+| w «Wissens-Satz» | nackter Schwellen-Prompt | « Paris» (9079) | 0.503078 | [0.503078, 0.0, 0.046344] | dp17 0.1386, m_core 0.1758, share 0.3514 |
+| c «Kontext-Protokoll» | C-full-Slot | « Z» (1491) | 0.806368 | [0.000067, 0.806301, 0.035979] | dp17 0.9637, m_core 0.0366, share 0.7083 |
+| s «Reflexions-Satz» | gereiftes Rendering (texts[10]) | «6» (236825) | 0.85948 | [0.0, 0.0, 0.556515] | dp17 0.8739, m_core 0.5638, share 0.9229 |
+
+Das **Audit-Datum** schneidet scharf: der zweite frische
+MechInterpProbe rechnet dieselben Gates neu — **max_dev = 0.0**
+(bitclean unter der PREREG-Grenze 1e-6), Argmax-Ids EXAKT gleich. Die
+provenanz-Stream-Werte sind die MI-7-REV-2-Zellen verbatim (die
+Runde 1-Anker — keine Abweichung). Die Sequenz-Zelle: dominante
+Kanäle [0, 1, 2] — **W → C → S**. Die Register-Spur: σ_bio(gereiftes
+Rendering) 0.987035 > 0.5 gegen σ_bio(Weltprosa) 0.000733 < 0.5 (LOO
+des σ-Readers: acc 0.966667, p_perm 0.0, n 30). Der Bio-Gewinn:
+p(«6»|gereift) 0.85948 − p(«6»|ungereift) 0.119153 > 0.
+
+### 26.2 Gattung B — die Horizont-Weiche
+
+Die zweite Konstruktion desselben Rezepts trifft das Korpus
+-Zeichenweise (r_m == texts[10], r_u == texts[22] — Rezeptur-Reprodukt
+exakt; die Ziffern-Schablone: argmax(r_m) «6»/0.85948, argmax(r_u)
+«5»/0.196449 — p5_m 0.009548 gegen p5_u 0.196449: die Ziffer-Masse
+SWAPPT mit der Reifung, 0.85948:0.009548 vs 0.119153:0.196449). Die
+Preview-Weiche: k = 4 Vorschau-Verdikte ALL «LOOP», der Maschinen
+-Fingerprint vor/nach bitidentisch (Restaurierung Δ = 0). Die P1d
+-Weiche EXAKT repliziert: **mean_raw 0.680926 (= P4-Anker),
+mean_best 0.554467 (< P4_VATER_REF 0.567980), auto_min 5/5, chosen
+«wittgenstein» 5/5** — die Dissonanz-Zelle ist die P4-Zelle; die
+Post-Weiche-Rendern will «6» (236825, p 0.8707).
+
+### 26.3 Gattung C — die Zwillings-Divergenz
+
+Zwei Instanzen, exakt dieselbe Gewichtsmatrix (fingerprint_equal an 3
+Checkpoints): A («spiegel» → ('identity','x'), **LOOP**) gegen
+B («stille» → ('negate','x'), **HALTED**) — die Verdikt-Spuren trennen.
+Die 6-Token-greedy-Ketten divergieren: A wiederholt «6» (Token
+236825 × 6, p 0.85948 konstant), B wiederholt Token 236743 × 6
+(p 0.992976). Die Ströme trennen WILD: ‖z_A‖ 127.834824 gegen
+‖z_B‖ 10.775427 — **‖z_A − z_B‖₂ = 135.687765 (rel 0.978916)**
+bei w_mean_abs 0.0550/0.0623 — dieselbe Start-Prompt (der nackte
+Threshold), zwei trainierte Wide-Leser, zwei 8-D-Ströme.
+
+### 26.4 Das «6»-Datum (是X即非X, offen)
+
+Die Emissions-Ziel-Zeile am P1b-Paar (texts[10]/texts[22], Ziel
+«6» 236825): [0.119153, 0.740328, 0.556515] — **C-dominant**. Das
+BAND steht auf der «)»-Schiene (registrierter S-Ziel) — S-strikt
+[0.0, 0.0, 0.556515]. Die Emissions-Zeile liest dies: das Rendering
+trägt den Zustand DURCH den Kontext-Kanal (χ_c), die S-Signatur ist
+der Register-Kanal (χ_s) — die Herkunfts-Scheidung im Stream erfordert
+BEIDE Zeilen; die Band-Position (S-Ziel) ist die Register-Schiene,
+die Datum-Position (6-Ziel) die Kontext-Carrier-Schiene.
+
+### 26.5 Training-Determinismus + Querschnitt-Datum
+
+Zwei frische `_train_wide`-Läufe auf demselben a-Texte-Set:
+adapter_digest 9f9f2d05… bitidentisch in SP16 — **EXAKT der SP15
+-Trainings-Digest** (das a-Texte-Korpus ist dasselbe 24-Rendering
+-Korpus): der SP15-REV-4-Training-Pfad reproduziert in der SP16
+-Runde (Querschnitt-Korregression, DATUM). gap_digest 4e1e7387…
+ebenso; purity über die GANZE Batterie PASS; CPU-Pilot doppellauf
+bitidentisch (7 Legs).
+
+### 26.6 Grenzen (是X即非X)
+
+(a) Die Provenanz-Tags sind gemessene Herkunfts-Scheidung im
+Fortsetzungs-Strom — **kein Erlebens-Claim**: die Maschinen-Tags
+stehen an Token-Koordinaten (Lens-Datum), nicht an Zuständen. (b)
+Die «unmöglichen Texte» sind unmöglich FÜR DEN CANON-STACK (unter
+den Canon-Voraussetzungen: uni_204-Kollaps, kein Opt-in, kein
+Vorschau-Horizont) — nicht unmöglich simpliciter; jeder opt-in-Pfad
+ist canon-legale Zusatz-Lage. (c) Die Weichens-Replik ist die
+P4-Zelle (die Dissonanz-Bänder sind Canon-Werte); der wide-regime
+-Dissonanz-Vergleich ist DATUM (kein Vater-Anker). (d) Ein Lauf-Bug
+(KOR-1: Call-Site-NameError am Post-Weiche-Decode, Erstlauf gebrochen
+OHNE JSON, Log verbatim) — Fix ist reiner Call-Site-Lauf-Fehler, die
+Bänder seit PREREG unverändert.
+
+### 26.7 P-Protokoll (SP16-Teil)
+
+P1 append-only (machines/ unangetastet); PREREG Rev. 1 (Plan Revision
+7, 2026-10-26) vor dem Erstlauf; Erstlauf gebrochen (KOR-1) — Re-Lauf
+GRÜN. Roh-Felder `sp16_impossible_texts.json/.log` +
+`sp16_erstrun_gebrochen.log` + `sp16_cpu_pilot.log`.
+Laufschrift: `laufprotokolle_befund_report.md` §28.
