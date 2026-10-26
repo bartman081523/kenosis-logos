@@ -118,6 +118,11 @@ FILES: List[str] = [
     "scratches/smoke_lexical_grounding.py",
     "scratches/lexical_grounding_experiment.log",
     "scratches/lexical_grounding_experiment.json",
+    # -- SP13 Endogene Agency (kontrafaktisches Probehandeln, autonome Wahl) -----
+    "scratches/smoke_endogene_agency.py",
+    "scratches/endogene_agency_experiment.log",
+    "scratches/endogene_agency_gpu.log",
+    "scratches/endogene_agency_experiment.json",
 ]
 
 SEPARATOR = "=" * 78

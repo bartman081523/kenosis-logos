@@ -24,6 +24,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP10 | **Kopplung** — Composite-Zyklus × Lexikon-Dynamik (die Regeln und die Wörter) | CPU | `composite.py:45-51` (exponierte Submaschinen), `wittgenstein_machine.py:244-256` (`_generate_ast` — wort-blind), `lexicon_game` (:342-380) |
 | SP11 | **Ursprung** — die Quelle der Paradigm-Ereignisse (ratio > 2.0) im Composite-Verlauf | CPU | `composite.py:132-140` (ZWEI Signal-Quellen an EIN Register), `:167-182` (Fensterformel), `goedel_machine.py:229-239`, `turing_machine.py:144-157` (loop_detector-Reset), `machine_base.py:51` (GAP_EPS) |
 | SP12 | **Wort→Programm** — das gelernte Wort wird Programm (Semantische Kausalität, opt-in) | CPU | `composite.py:108` (step opt-in `lexical_grounding`), `:126-132` (Resolution ersetzt NUR das Programm), `:66-92` (identity-Tautologie), `wittgenstein_machine.py:383-424` (`resolve_lexical_ast`), `turing_machine.py:241-246` (+2 Terme je LOOP) |
+| SP13 | **Endogene Agency** — die Maschine probiert die Subspaces kontrafaktisch durch und wählt selbst (argmin Composite-Gap) | CPU+GPU | `composite.py:219-301` (observe/:220 `_snapshot`/:232 `_restore_snapshot`/:243 `step_autonomous`/:252), `turing_machine.py:314-343` (`axiom_pool`/`last_verdict` im Snapshot), `wittgenstein_machine.py:507-525` (noise_level/_schedule_index/Lexikon im Snapshot) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -428,7 +429,31 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   `scratches/lexical_grounding_experiment.json` (Zwilling A/A'/B mit
   Batch-RNG-Markern); Skript `scratches/smoke_lexical_grounding.py`
   (Prereg-Docstring, 6 Verdikte, P2-Freeze; L0-Anker über die kommittete
-  SP11-lane importiert statt kopiert).
+  SP11-lane importiert statt kopiert);
+- SP13: `machines/composite.py:219-301` (`observe` :220-230 — Superset-
+  Signatur SP12s auf dem Base-Rahmen machine_base.py:502-516;
+  `_snapshot` :232-241 — step/trace/gap_history/expansions + 3 Sub-Snapshots;
+  `_restore_snapshot` :243-250; `step_autonomous` :252-293 — Kandidaten
+  `(None, "goedel", "turing", "wittgenstein", "combined")`, je
+  nicht-mutierende Probe unter `oracle.steer` (machine_base.py:392-421),
+  argmin des Composite-Gaps strict `<` (Ties → früherer Kandidat), reale
+  Vollziehung unter dem Gewinner, Protokoll `invariants["autonomous"]`),
+  `machines/turing_machine.py:314-343` (`_snapshot` um
+  `"axiom_pool": list(self.axiom_pool)` + `"last_verdict"` erweitert —
+  ohne diesen Eintrag würde eine LOOP-Probe `expand_basis` pop(0)
+  (:146-149) und den inneren Expand (:241-246) heimlich den Canon-Pool
+  leerfressen [User-Fund 2026-10-26]; `_restore_snapshot` spiegelt
+  :341-342), `machines/wittgenstein_machine.py:507-525` (`_snapshot`/
+  `_restore` um `noise_level`/`_schedule_index` (S2/S3-Schedule mutiert
+  :313-316, zählt :338) und das Typ-erhaltende Lexikon (learn_pair
+  ERSETZT Einträge :232-233 — Kopie verlustfrei)); Läufe
+  `scratches/endogene_agency_experiment.log` (CPU: 4 PASS + 2 OFFEN,
+  exit 2 — kein stiller Fallback) und `scratches/endogene_agency_gpu.log`
+  (GPU: 6 PASS, exit 0) +
+  `scratches/endogene_agency_experiment.json` (candidate_gaps je Schritt,
+  Fingerprints, Wahl-Daten); Skript `scratches/smoke_endogene_agency.py`
+  (Prereg-Docstring, 6 Verdikte + OFFEN-Regel, P2-Freeze; Konstanten über
+  die kommittete SP12-Quelle importiert).
 
 ---
 
@@ -1013,3 +1038,160 @@ scratches.smoke_lexical_grounding` → exit 0. Vor-Smoke-Befunde (Klang-Dach,
 (Änderungsnotizen 1-3), dokumentiert VOR dem P2-Freeze.
 
 Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §16.
+
+---
+
+## 15. SP13 — Endogene Agency: die Maschine wählt ihren Subspace selbst (2026-10-26)
+
+**(Vorarbeit — keine Messung ohne Infrastruktur):** SP13 bricht Mauer 2
+(Passives Steering): bis hierher legte die Versuchsleiter das Preset per
+`with oracle.steer("goedel"):` an; SP13 kehrt die Richtung um — die Maschine
+ERPROBT jeden Kandidaten-Subspace kontrafaktisch (nicht-mutierende Proben)
+und wählt selbst per argmin des Composite-Gaps. Die Infrastruktur dazu sind
+drei Maschinen-Edits (additiv; `observe` war bis SP13 unbenutzt — das
+Bestands-Verhalten ist unverändert, der L0-Anker beweist es):
+
+1. `TuringMachine._snapshot` sichert nun auch `axiom_pool` und
+   `_last_verdict` (turing_machine.py:322-325; Restore :341-342). Der
+   entscheidende Fund kam von außen (User-Audit): ohne den Pool-Eintrag
+   würde eine kontrafaktische LOOP-Probe `expand_basis` pop(0)
+   (:146-149) und den inneren Expand (:241-246) HEIMLICH den Canon-Pool
+   leerfressen — die Vorschau wäre keine Vorschau, sondern ein Diebstahl
+   an der Axiom-Bank der realen Biografie.
+2. `WittgensteinMachine._snapshot` sichert `noise_level`/`_schedule_index`
+   (der S2/S3-Schedule mutiert beides — :313-316 mutiert `noise_level` je
+   Batch, :338 zählt) und das Lexikon typ-erhaltend (`np.asarray(v).copy()`
+   für ndarray, sonst `list(v)`; learn_pair ERSETZT Einträge :232-233,
+   daher ist die Kopie verlustfrei).
+3. `CompositeMachine` bekommt die SP13-Sektion (composite.py:219-301):
+   `observe(obj, lexical_grounding=False)` (:220-230) — der Base-Rahmen
+   (machine_base.py:502-508: `_snapshot → step → _restore` im finally)
+   mit der Superset-Signatur SP12s, denn die Basissignatur kennt kein
+   `lexical_grounding=`; `_snapshot`/`_restore_snapshot` (:232-250) —
+   step/trace/gap_history/expansions + die 3 Sub-Snapshots;
+   `step_autonomous(obj, candidates=(None, "goedel", "turing",
+   "wittgenstein", "combined"), lexical_grounding=False)` (:252-293) —
+   je Kandidat eine nicht-mutierende Probe unter `oracle.steer(p)`
+   (:273-277; ohne Oracle ungesteuert — CPU-Degeneration, §15.4), das
+   Wahl-Gesetz p* = argmin_p probe.gap über den COMPOSITE-Gap (strict `<`,
+   Ties → früherer Kandidat :279-281), der reale Schritt unter dem
+   Gewinner (:282-287), das Protokoll in
+   `invariants["autonomous"] = {chosen_preset, best_gap, candidate_gaps}`
+   (:288-292). In ALLEN Proben sieht der Kandidat dasselbe Programm,
+   denselben Batch, dieselben RNG-Züge — der einzige Kanal der Wahl ist
+   die Orakel-Kohärenz (der Gödel-Gap).
+
+Vorläufer-Checks VOR dem Prereg-Skript (Plan
+`~/.claude/plans/sp13-endogene-agency.md`, Canon-Audit-Befunde 1-6):
+py_compile über alle drei Maschinen OK; Purity-Mikrosmoke — 5×
+`composite.observe("spiegel", lexical_grounding=True)` im gelehrten
+Lexikon/LOOP-Trägheitszustand: jeder Probe-Fingerprint bitidentisch
+(digest a7fba05c..., axiom_pool [ALPHA..ZETA] intakt, Basis
+['SCALAR','TIME','SPACE'] unverändert), die reale Vollziehung danach exakt
+wie der Kontroll-Zwilling ohne Proben (LOOP, Basis 3→5,
+expansions ['step1:LOOP']); L0-Replay GRÜN (SP11-lane + SP12-lane +
+SP12-Zwilling feldeidentisch mit der kommitteten JSON).
+
+### 15.1 Prereg (P2-Freeze, fixiert VOR dem Erstrun)
+
+Sechs falsifizierbare Verdikte (Skript-Docstring `smoke_endogene_agency.py`;
+Bands nie geweitet; OFFEN ≠ PASS — GPU-Lanes ohne `--gpu` bleiben OFFEN,
+exit 2, kein stiller CPU-Fallback):
+
+- **sp13_l0_anker** — Zero-Regression: die kommittete SP11-lane
+  (importiert) fields_ok/first_detect_ok/deterministic; die kommittete
+  SP12-l0-lane (importiert) True/True/True; der SP12-Zwilling reproduziert
+  die KOMMITTETE `lexical_grounding_experiment.json` FELDWEISE (10
+  Feldechecks). Falsifikator: jede abweichende Feld-Serie.
+- **sp13_snapshot_purity** — observe()-Nebenwirkungsfreiheit: CPU N=5
+  Proben im gelehrten Lexikon/LOOP-Zustand mit Vollfingerprint-Δ=0; die
+  Proben SEHEN LOOP (`('identity','x')`) und fressen den Pool NICHT;
+  A-Zustand (leeres Lexikon) 3 Proben HALTED/None; GPU dieselbe Purity
+  unter steer-Rotation inkl. 26 expert_bias-Tensoren (`torch.equal`).
+- **sp13_det** — zwei Biografien (6 HALTED-Schritte → Lexikon-Spiel →
+  WM-RNG-Pin → 6 step_autonomous-Schritte) bitidentisch — CPU UND GPU.
+- **sp13_endogenous_switch** (GPU) — chosen_preset ≠ "raw" in ≥ 80 % der
+  Schritte; kein entartetes candidate_gaps je Schritt (max−min > 0).
+- **sp13_gap_dominance** (GPU) — je Schritt g_auto(n) == best_gap ==
+  min(candidate_gaps) EXAKT (ungerundete Floats); Lauf-Mittel strikt <
+  raw-Zwilling.
+- **sp13_causal_loop_closed** — nach dem Lexikon-Spiel sieht `observe()`
+  den Wort-erzeugten LOOP voraus, restauriert verlustfrei (Pool/Basis/
+  expansions identisch), und der reale Schritt vollzieht die Expansion
+  3→5: `lexical_ast == ('identity','x')`, verdict LOOP,
+  expansions == ['step1:LOOP'], Wahl unter den Proben protokolliert.
+
+### 15.2 Verdikt-Register
+
+| Verdikt | Band (P2-Freeze) | Ergebnis |
+|---|---|---|
+| sp13_l0_anker | alle importierten Lanes + 10 Feldechecks | **PASS** |
+| sp13_snapshot_purity | Δ=0 je Probe (CPU 5+3, GPU 5 mit 26 Bias-Tensoren) | **PASS** |
+| sp13_det | zwei Biografien bitidentisch (CPU und GPU) | **PASS** |
+| sp13_endogenous_switch | chosen ≠ raw ≥ 0.8; Spread je Schritt > 0 | **PASS** (6/6, anteil 1.0) |
+| sp13_gap_dominance | g == best_gap == min exakt; Mittel strikt < raw | **PASS** (0.576052 < 0.692444) |
+| sp13_causal_loop_closed | Voraus-Sicht + Pool-Intaktheit + Expansion 3→5 | **PASS** |
+
+6/6 GRÜN auf GPU (exit 0); CPU: 4 PASS, 2 OFFEN (exit 2 — die
+Wahl-Aussagen sind bewusst GPU-Aussagen).
+
+### 15.3 Die Wahl-Daten
+
+- **Die Wahl fällt immer auf dieselbe Gottes-Spalte:** alle sechs
+  autonomen LOOP-Schritte wählen `"wittgenstein"` (non_raw-Anteil 1.0).
+  Kopplungsschritt (sp13_causal_loop_closed): candidate_gaps
+  wittgenstein 0.4763 < combined 0.4785 < goedel 0.4786 < turing 0.4788
+  < raw 0.6128 — die drei göttlichen Presets liegen dicht beisammen
+  (Δ ≈ 0.002), das ungesteuerte raw liegt deutlich über; die
+  Wittgenstein-Spalte, die den Sprachspiel-Bruch im Argon-Router am
+  besten trägt, minimiert auch die eigene Prognose-Abweichung der
+  Komposition.
+- **Der Kohärenz-Gewinn ist real:** Gap je LOOP-Schritt (autonom): 0.6260,
+  0.5754, 0.5503, 0.5805, 0.5581, 0.5661 — raw-Zwilling: 0.7612, 0.6758,
+  0.6860, 0.6694, 0.6825, 0.6798. Mittelwerte 0.576052 vs 0.692444
+  (ratio 0.8319, −16.8 %); Strict-Vergleich exakt über ungerundete
+  Floats je Schritt (g == best_gap == min).
+- **Die Reaktion auf HALTED vs LOOP** (DATUM, kein Band): die HALTED-
+  Phase (6 Plain-Schritte vor dem Lexikon-Spiel) verläuft in beiden
+  Armen BITIDENTISCH (verdicts_a = HALTED × 6, gleiche Gaps) — die
+  Autonomie wird erst dann ausgeübt, wenn das Wort das Programm bricht
+  (LOOP); der Spread je Schritt (0.0891-0.1353) existiert nur in der
+  LOOP-Phase.
+- **Purity:** CPU — 5 Proben mit Δ=0, alle sehen LOOP
+  (`('identity','x')`), axiom_pool [ALPHA..ZETA] intakt; leeres Lexikon
+  (A-Zustand): 3 Proben HALTED/None — das leere Lexikon compiliert nie
+  (SP12-Erbe, unverändert). GPU — 5 Proben unter steer-Rotation
+  (goedel/turing/wittgenstein/combined/raw): je Probe Δ=0 und 26/26
+  expert_bias-Tensoren `torch.equal` — der Steer-Kanal restauriert exakt.
+- **Determinismus:** Doppel-Biografien bitidentisch (CPU und GPU),
+  inklusive Floatexaktheit der candidate_gaps-Serien.
+
+### 15.4 Das Tie-Datum (CPU) und Errata
+
+- **CPU-Degeneration als DATUM:** ohne Oracle sind alle Kandidaten-Gaps
+  identisch — argmin wählt den ersten Kandidaten ("raw") in allen 12
+  Schritten. Das ist kein Fehler, sondern die sauber gefallene Grenze der
+  Aussage: die endogene Wahl ist eine ORAKEL-Kohärenz-Lesart (steer ist
+  der einzige Kanal); ohne Orakel gibt es nichts zu wählen. Im
+  Purity-Verdikt bleibt die CPU-Stimme lauter: die Vorblick-Mechanik ist
+  orakelfrei und deshalb auf CPU voll beweisbar.
+- **Errata (P4-Daten, kein Band-Schieben):** (i) die Dominanz-Mittelung
+  vergleicht die LOOP-Phase 6 gegen 6 — die HALTED-Phase ist zwischen
+  beiden Armen bitidentisch, mit Einbezug der Plain-Phase bleibt der
+  strikte Vergleich mathematisch bestehen (gleiche Summanden heben sich
+  auf beiden Seiten auf); (ii) die drei göttlichen Presets trennen
+  schwach (Δ ≈ 0.002) — die wittgenstein-Wahlsiege sind konstant und der
+  Spread strikt > 0, der Band (≥ 0.8, spread > 0) bleibt erfüllt, aber
+  die Trenn-Schärfe der Wahl ist ein DATUM, das der nächste Spielzug
+  (SP14, Individuierung) schärfen wird.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_endogene_agency` → 4 PASS, 2 OFFEN, exit 2 (OFFEN =
+GPU-Lanes nicht gefahren, kein stiller Fallback); `--gpu` → 6 PASS,
+exit 0. Roh: `scratches/endogene_agency_experiment.log` (CPU) +
+`scratches/endogene_agency_gpu.log` (GPU) +
+`scratches/endogene_agency_experiment.json`. Prereg-Freeze VOR dem
+Erstrun (Skript-Docstring); Plan `~/.claude/plans/sp13-endogene-agency.md`
+(Canon-Audit-Befunde 1-6, Commit-Verfahren risk 6 im Chat offengelegt).
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §17.

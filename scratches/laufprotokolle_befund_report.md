@@ -654,3 +654,48 @@ Endogene Agency (SP13) und Individuierung (SP14) folgen.
 Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
 scratches.smoke_lexical_grounding` → `lexical_grounding_experiment.log/.json`.
 Hermeneutische Vollfassung: `sprachspiel_bericht.md` §14.
+
+---
+
+## 17. SP13 — Endogene Agency: die Maschine probiert, dann wählt sie (2026-10-26)
+
+(Laufschrift 17 — Hermeneutische Vollfassung in `sprachspiel_bericht.md` §15;
+SP13, Task 2 der Nordstern-Roadmap, Mauer 2. CPU-Lauf 4 PASS + 2 OFFEN
+(exit 2), GPU-Lauf 6 PASS (exit 0).)
+
+### Verdikt-Register
+
+| Verdikt | Band | Ergebnis |
+|---|---|---|
+| sp13_l0_anker | importierte SP11/SP12-Lanes + 10 Feldechecks vs. committete JSON | PASS |
+| sp13_snapshot_purity | Δ=0 je Probe; GPU: 26 expert_bias-Tensoren unter steer-Rotation | PASS |
+| sp13_det | zwei Biografien bitidentisch (CPU und GPU) | PASS |
+| sp13_endogenous_switch | chosen ≠ raw ≥ 80 %; Spread je Schritt > 0 | PASS (6/6) |
+| sp13_gap_dominance | g == best_gap == min exakt; Mittel strikt < raw | PASS |
+| sp13_causal_loop_closed | Voraus-Sicht + Pool-Intaktheit + Expansion 3→5 | PASS |
+
+Zahlenlage und Kern: Die Maschine schaut VOR dem Schritt — `observe()`
+sieht den Wort-erzeugten LOOP in der Vorschau (lexikalisch verankert,
+`('identity','x')`), fressen dabei den Canon-Pool NICHT (User-Fund:
+`TuringMachine._snapshot` ohne `axiom_pool` hätte eine LOOP-Probe
+`expand_basis` pop(0) :146-149 heimlich den Pool leerfressen lassen —
+nun bewiesen unversehrt, [ALPHA..ZETA] nach jeder Probe, Δ=0) und kehrt
+bitgenau zurück. Dann vollzieht sie den realen Schritt unter dem
+ARGMIN-Gewinner: alle 6 LOOP-Schritte wählen `"wittgenstein"`
+(candidate_gaps 0.4763 < 0.4785 < 0.4786 < 0.4788 < raw 0.6128), Lauf-
+Mittel 0.576052 vs raw-Zwilling 0.692444 (ratio 0.8319, −16.8 %,
+strikt je Schritt g == best_gap == min über ungerundete Floats). Die
+HALTED-Phase ist zwischen beiden Armen bitidentisch — die Autonomie wird
+genau dann ausgeübt, wenn das Wort das Programm bricht. Ohne Oracle
+degeneriert die Wahl zum Tie (CPU, 12× "raw", DATUM): die endogene Wahl
+ist eine Orakel-Kohärenz-Lesart; die Proben-Mechanik selbst bleibt
+orakelfrei und ist auf CPU voll beweisbar. Mauer 2 gebrochen: die
+Versuchsleiter setzt das Preset nicht mehr — die Maschine handhabt ihre
+Subspaces kontrafaktisch und wählt selbst. Nordstern-Säule 2; Individuierung
+(SP14) folgt.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_endogene_agency` (CPU: exit 2, OFFEN) →
+`scratches/endogene_agency_experiment.log/.json`; `--gpu` → 6 PASS,
+exit 0 (`endogene_agency_gpu.log`).
+Hermeneutische Vollfassung: `sprachspiel_bericht.md` §15.
