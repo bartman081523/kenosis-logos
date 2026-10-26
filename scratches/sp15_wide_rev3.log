@@ -1,0 +1,27 @@
+
+--- == SP15 REV-3 — 1152D-Breitband-Selbstmodell (LINEAR-Kausal-Schablone + canon-legale Eingabe-Faltung) ==
+
+--- GPU-Kontext laden (argon_1b + argon_1b_machines)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+
+--- L0-Korpus (P4-P1a-Rezept verbatim)
+
+--- V1 L0-Regression (canon-8 + wide + je-Stil)
+
+--- V2 JL-Biografie-Erhalt (d 8/32/64/128/256, LOO, REV-2)
+
+--- V3 Kausal-Verstärkung (LINEAR-Lesungen, REV-3)
+
+--- V4 W_read-Trainings-Determinismus (2 Läufe)
+
+BEFUNDE:
+  sp15_l0_regression         PASS
+  sp15_jl_biografie_erhalt   PASS
+  sp15_kausal_verstaerkung   PASS
+  sp15_purity_l0             PASS
+  sp15_det_pilot             PASS
+BILANZ: 5 PASS | 0 FAIL | 0 OFFEN
+GRUEN — SP15-Bänder eingehalten
+JSON: scratches/sp15_wide_rev3.json
+EXIT=0

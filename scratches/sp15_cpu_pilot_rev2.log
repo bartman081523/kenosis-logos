@@ -1,0 +1,12 @@
+
+--- == SP15 REV-2 — 1152D-Breitband-Selbstmodell (JL-Tragkanal-Suche + korrigierte V3-Schablone) ==
+
+BEFUNDE:
+  sp15_l0_regression         OFFEN
+  sp15_jl_biografie_erhalt   OFFEN
+  sp15_kausal_verstaerkung   OFFEN
+  sp15_purity_l0             OFFEN
+  sp15_det_pilot             PASS
+BILANZ: 1 PASS | 0 FAIL | 4 OFFEN
+OFFEN — GPU-Lanes nicht gefahren
+JSON: scratches/sp15_wide_rev2.json

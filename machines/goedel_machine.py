@@ -25,6 +25,14 @@ Canon-Mechanik (dokumentiert, nicht neu erfunden):
 Oracle-Mode ("oracle"): Argon predet das symbolische Ist — das externe
 Selbstmodell verallgemeinert uni_241 (Plan: „Oracle-Mode verallgemeinert
 uni_241"). In-loop bleibt die klassische tanh(W @ state)-Selbstvorhersage.
+
+SP15-Opt-in (additiv; Default-Pfad byte-verhalten): ``enable_wide_read()``
+stellt die Oracle-Vorhersage auf das volle Width-Lesen über einen
+Delta-Adapter (uni_241:220-Familie, KEIN Zerfall):
+    prediction = tanh(W_read @ h_1152)
+    W_read    += 0.05 · outer(err, h_1152)
+Der Flaschenhals (block-mean 144:1 in machine_base.hidden_state) wird
+nicht berührt; ohne Opt-in läuft exakt der Canon-Oracle-Pfad.
 """
 
 from __future__ import annotations
@@ -130,7 +138,30 @@ class GoedelMachine(BaseMachine):
         self._trace = []
         self._gap_history = []
         self.input_log: List[Dict[str, Any]] = []
+        if getattr(self, "wide_read", False):
+            self.wide_read_adapter = np.zeros_like(self.wide_read_adapter)
         return {"state": self.state_vec.tolist(), "seed": seed}
+
+    # -- Opt-in: 1152D-Breitband-Lesen (SP15, additive) -----------------------
+    def enable_wide_read(self) -> Dict[str, Any]:
+        """
+        SP15 (opt-in; ohne Aufruf läuft der Canon-Pfad unangetastet): die
+        Oracle-Vorhersage liest den vollen Hidden-Vektor (hidden_size,
+        block-mean-Identitäts-Schiene d=hidden) über einen
+        Delta-Adapter W_read ∈ R^{dims×hidden}, initial 0, aktualisiert
+        schrittweise nach der uni_241:220-Familie
+        (W_read += 0.05·outer(err, h_wide), KEIN Zerfall — registriert);
+        snapshot/restore-Kreislauf führt den Adapter (Proben bleiben
+        bitgenau). reset() stellt den Adapter auf 0 und behält den Opt-in.
+        """
+        if self.oracle is None:
+            raise ValueError("enable_wide_read: erfordert den Oracle-Modus.")
+        self._wide_hs = int(self.oracle.model.config.hidden_size)
+        self.wide_read = True
+        self.wide_read_adapter = np.zeros((self.dims, self._wide_hs),
+                                          dtype=np.float64)
+        self.last_wide_hidden: Optional[np.ndarray] = None
+        return {"hidden": self._wide_hs, "dims": self.dims}
 
     # -- Intern -----------------------------------------------------------------
     def _text_seed(self, text: str) -> int:
@@ -160,14 +191,23 @@ class GoedelMachine(BaseMachine):
         raise TypeError(f"input: nicht unterstützter Typ {type(obj)!r}")
 
     def _prediction(self, text: Optional[str]) -> Tuple[np.ndarray, Dict[str, Any]]:
-        """in_loop: tanh(W @ state); oracle: tanh(Argon-Hidden gefaltet)."""
+        """in_loop: tanh(W @ state); oracle: tanh(Argon-Hidden gefaltet);
+        mit Opt-in: tanh(W_read @ h_wide) über den vollen Stream (SP15)."""
         meta: Dict[str, Any] = {}
         if self.mode == "oracle" and self.oracle is not None:
             prompt = text if text else self.describe()
+            if getattr(self, "wide_read", False):
+                hidden = self.oracle.hidden_state(
+                    prompt, dimensions=self._wide_hs)
+                self.last_wide_hidden = np.asarray(hidden, dtype=np.float64)
+                prediction = np.tanh(self.wide_read_adapter @ self.last_wide_hidden)
+                meta["oracle"] = "wide_read"
+                return prediction, meta
             hidden = self.oracle.hidden_state(prompt, dimensions=self.dims)
             prediction = np.tanh(hidden)                            # Canon-Tanh uni_241:155
             meta["oracle"] = "hidden_state"
             return prediction, meta
+        self.last_wide_hidden = None
         prediction = np.tanh(self.self_model @ self.state_vec)
         meta["oracle"] = None
         return prediction, meta
@@ -190,6 +230,9 @@ class GoedelMachine(BaseMachine):
         err = actual - prediction
         self.self_model += 0.05 * np.outer(err, self.state_vec)  # uni_241:220
         self.self_model *= 0.99                                  # uni_241:221
+        if getattr(self, "wide_read", False) and \
+                self.last_wide_hidden is not None:               # SP15-Delta-Regel
+            self.wide_read_adapter += 0.05 * np.outer(err, self.last_wide_hidden)
         self.state_vec = actual
 
         self._step_index += 1
@@ -207,7 +250,7 @@ class GoedelMachine(BaseMachine):
 
     def state(self) -> Dict[str, Any]:
         gap = self.gap()
-        return {
+        out: Dict[str, Any] = {
             "machine": self.MACHINE_NAME,
             "mode": self.mode,
             "dims": self.dims,
@@ -218,6 +261,11 @@ class GoedelMachine(BaseMachine):
             "gap_history": list(self._gap_history),
             "seed": self.config.seed,
         }
+        if getattr(self, "wide_read", False):                    # SP15 (opt-in)
+            out["wide_read"] = {
+                "hidden": int(self._wide_hs),
+                "w_mean_abs": float(np.mean(np.abs(self.wide_read_adapter)))}
+        return out
 
     def describe(self) -> str:
         gap = self.gap()
@@ -254,12 +302,16 @@ class GoedelMachine(BaseMachine):
 
     # -- Observations-Schicht -------------------------------------------------
     def _snapshot(self) -> Dict[str, Any]:
-        return {"state_vec": self.state_vec.copy(),
-                "self_model": self.self_model.copy(),
-                "step": self._step_index, "trace": list(self._trace),
-                "gap_history": list(self._gap_history),
-                "input_log": list(self.input_log),
-                "rng_state": self._rng.bit_generator.state}
+        snap: Dict[str, Any] = {"state_vec": self.state_vec.copy(),
+                                "self_model": self.self_model.copy(),
+                                "step": self._step_index,
+                                "trace": list(self._trace),
+                                "gap_history": list(self._gap_history),
+                                "input_log": list(self.input_log),
+                                "rng_state": self._rng.bit_generator.state}
+        if getattr(self, "wide_read", False):                    # SP15 (opt-in)
+            snap["wide_read_adapter"] = self.wide_read_adapter.copy()
+        return snap
 
     def _restore_snapshot(self, snapshot: Dict[str, Any]) -> None:
         self.state_vec = snapshot["state_vec"]
@@ -269,6 +321,8 @@ class GoedelMachine(BaseMachine):
         self._gap_history = snapshot["gap_history"]
         self.input_log = snapshot["input_log"]
         self._rng.bit_generator.state = snapshot["rng_state"]
+        if "wide_read_adapter" in snapshot:                      # SP15 (opt-in)
+            self.wide_read_adapter = snapshot["wide_read_adapter"]
 
     def gap_record(self) -> GapRecord:
         return self.gap()

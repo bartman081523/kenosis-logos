@@ -1,0 +1,434 @@
+{
+ "cpu": {
+  "det_equal": true,
+  "verdict": true,
+  "pilot": {
+   "jl": {
+    "jl8": {
+     "acc": 0.166667,
+     "p_perm": 0.455,
+     "n_texts": 6,
+     "ortho_max": 6.661338147750939e-16,
+     "no_expand": true
+    },
+    "jl32": {
+     "acc": 0.833333,
+     "p_perm": 0.095,
+     "n_texts": 6,
+     "ortho_max": 6.661338147750939e-16,
+     "no_expand": true
+    },
+    "jl64": {
+     "acc": 1.0,
+     "p_perm": 0.095,
+     "n_texts": 6,
+     "ortho_max": 7.771561172376096e-16,
+     "no_expand": true
+    }
+   },
+   "blind": {
+    "acc": 0.0,
+    "p_perm": 1.0,
+    "n_texts": 6
+   },
+   "knock": {
+    "pass_wide": {
+     "sens": 0.67,
+     "over_min": true
+    },
+    "pass_block": {
+     "sens": 0.0004,
+     "over_min": false
+    },
+    "ratio": 1675.0,
+    "fail_wide": {
+     "sens": 0.004,
+     "over_min": false
+    }
+   },
+   "verdict": true,
+   "det_equal": true
+  }
+ },
+ "gpu": {
+  "korpus": {
+   "n": 24,
+   "n_classes": {
+    "1": 12,
+    "0": 12
+   },
+   "erst_text": "{\"expansions\": [\"step7:LOOP\", \"step8:LOOP\", \"step9:LOOP\"], \"gap\""
+  },
+  "l0": {
+   "wide_gepoolt": {
+    "acc": 0.958333,
+    "p_perm": 0.0,
+    "n_texts": 24
+   },
+   "canon_8": {
+    "acc": 0.0,
+    "p_perm": 1.0,
+    "n_texts": 24
+   },
+   "je_stil": {
+    "textur": {
+     "acc": 1.0,
+     "p_perm": 0.0,
+     "n_texts": 12
+    },
+    "numerisch": {
+     "acc": 0.833333,
+     "p_perm": 0.025,
+     "n_texts": 12
+    }
+   },
+   "verdict": true
+  },
+  "jl": {
+   "decode": {
+    "jl8": {
+     "acc": 0.625,
+     "p_perm": 0.24,
+     "n_texts": 24,
+     "ortho_max": 6.661338147750939e-16,
+     "no_expand": true
+    },
+    "jl32": {
+     "acc": 0.708333,
+     "p_perm": 0.04,
+     "n_texts": 24,
+     "ortho_max": 6.661338147750939e-16,
+     "no_expand": true
+    },
+    "jl64": {
+     "acc": 0.791667,
+     "p_perm": 0.005,
+     "n_texts": 24,
+     "ortho_max": 8.881784197001252e-16,
+     "no_expand": true
+    }
+   },
+   "carry_ok": false,
+   "contrast_ok": true,
+   "top_d": 64,
+   "verdict": false
+  },
+  "kausal": {
+   "sens_wide": 0.151203,
+   "sens_block": 0.139691,
+   "ratio": 1.08241,
+   "ko_experts": [
+    1,
+    3
+   ],
+   "penalty": -50.0,
+   "layers": "alle",
+   "restore_wide": true,
+   "restore_block": true,
+   "ko_min": 0.014406,
+   "ratio_min": 10.0,
+   "datum_mi6_kausal": 0.0014406,
+   "train_datum": {
+    "hidden": 1152,
+    "dims": 8,
+    "w_mean_abs": 0.05717873945724551,
+    "adapter_digest": "e098a604399af8a127c2f8b641a8df28a2b31d270d05c53c9b14c31eed6322d1",
+    "gap_digest": "a9b1bc57c5eb3c55000d557a1661b04d91e26462fea076bf6a93505d1066b426"
+   },
+   "proben_wide": [
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    },
+    {
+     "raw": 0.579049,
+     "ko": 0.427846,
+     "div": 0.151203
+    }
+   ],
+   "proben_block": [
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    },
+    {
+     "raw": 0.772557,
+     "ko": 0.632866,
+     "div": 0.139691
+    }
+   ],
+   "verdict": false
+  },
+  "train_det": {
+   "d1": {
+    "hidden": 1152,
+    "dims": 8,
+    "w_mean_abs": 0.05717873945724551,
+    "adapter_digest": "e098a604399af8a127c2f8b641a8df28a2b31d270d05c53c9b14c31eed6322d1",
+    "gap_digest": "a9b1bc57c5eb3c55000d557a1661b04d91e26462fea076bf6a93505d1066b426"
+   },
+   "d2": {
+    "hidden": 1152,
+    "dims": 8,
+    "w_mean_abs": 0.05717873945724551,
+    "adapter_digest": "e098a604399af8a127c2f8b641a8df28a2b31d270d05c53c9b14c31eed6322d1",
+    "gap_digest": "a9b1bc57c5eb3c55000d557a1661b04d91e26462fea076bf6a93505d1066b426"
+   },
+   "verdict": true
+  },
+  "purity": {
+   "verdict": true
+  }
+ },
+ "findings": [
+  {
+   "id": "sp15_l0_regression",
+   "assert": true,
+   "note": "L0-Anker: P4-P1a-Rezept reproduziert die P4-Zahlen EXAKT auf dem unberrührten Default-Pfad (wide 0.958333/0.0, canon-8 0.0/1.0, textur 1.0, numerisch 0.833333/0.025)"
+  },
+  {
+   "id": "sp15_jl_biografie_erhalt",
+   "assert": false,
+   "note": "JL-Tragkanal d=64: LOO-Bio acc > 0.85 UND p ≤ 0.01; Non-Expansion je d; Kontrast canon-8 < 0.05; jl8/jl32 als Dilutions-DATUM (Register-Revision V2′, aus dem CPU-Piloten, vor dem Lauf)"
+  },
+  {
+   "id": "sp15_kausal_verstaerkung",
+   "assert": false,
+   "note": "wide-read-Notwendigkeit: sens_wide ≥ 0.014406 (10× MI-6 0.0014406) UND ratio wide/block ≥ 10; knockout [1,3] −50 ADDITIV, alle Schichten"
+  },
+  {
+   "id": "sp15_purity_l0",
+   "assert": true,
+   "note": "fingerprint_equal über die Batterie + W_read-Trainings-Determinismus (2 Läufe, Adapter-Digest + Gap-History-Digest)"
+  },
+  {
+   "id": "sp15_det_pilot",
+   "assert": true,
+   "note": "CPU-Pilot doppellauf bitidentisch (V5)"
+  }
+ ],
+ "all_pass": false,
+ "open": []
+}

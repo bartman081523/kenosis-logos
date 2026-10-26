@@ -333,15 +333,24 @@ class ArgonOracle:
         return float(torch.stack(collector["entropies"]).mean().item())
 
     @torch.no_grad()
-    def hidden_state(self, text: str, dimensions: Optional[int] = None) -> np.ndarray:
+    def hidden_state(self, text: str, dimensions: Optional[int] = None,
+                     projection: Optional[str] = None,
+                     proj_dim: Optional[int] = None) -> np.ndarray:
         """
         Finaler Hidden-State (Hook an ``model.model.norm``, modeling_argon.py:615),
         Sequenz gemittelt und deterministisch auf ``dimensions`` (Default: die
         Maschinen-Dimension, 8) zusammengefallen: gemitteltes (hidden,) wird als
         (hidden/8, 8)-Streifen gemittelt — dokumentierte Reduktion, kein
         Canon-Anspruch.
+
+        Opt-in ``projection="orthogonal_jl"`` (SP15, additive; der Default-Pfad
+        bleibt verhalten): statt des 144:1-Flaschenhalses läuft der gemittelte
+        Wide-Vektor (hidden,) direkt durch eine orthogonale Johnson-Lindenstrauss
+        -Rotation ``P_JL @ h ∈ R^{proj_dim}`` — Zeilen orthonormal aus der
+        QR einer Seed-42 standard_normal((hidden, proj_dim))-Matrix (reduced,
+        gecached je proj_dim). Andere Werte als "orthogonal_jl" werden
+        exakt verworfen.
         """
-        d = int(dimensions) if dimensions else 8
         captured: List[torch.Tensor] = []
 
         def hook(_module, _inp, out):
@@ -357,10 +366,42 @@ class ArgonOracle:
         if not captured:
             raise RuntimeError("ArgonOracle.hidden_state: norm-Hook feuerte nicht.")
         pooled = captured[0].float().mean(dim=1).reshape(-1)  # (hidden,)
+        if projection == "orthogonal_jl":
+            wide = pooled.cpu().numpy().astype(np.float64)
+            return self.orthogonal_jl(wide,
+                                      int(proj_dim) if proj_dim else 8)
+        if projection is not None:
+            raise ValueError(
+                f"hidden_state: unbekannte projection {projection!r} — "
+                "nur None (Flaschenhals, Canon) oder 'orthogonal_jl' (SP15).")
+        d = int(dimensions) if dimensions else 8
         if pooled.numel() % d != 0:
             raise ValueError(
                 f"hidden_state: hidden={pooled.numel()} teilt nicht auf {d}.")
         return pooled.reshape(-1, d).mean(axis=0).cpu().numpy().astype(np.float64)
+
+    def orthogonal_jl(self, wide: np.ndarray, proj_dim: int) -> np.ndarray:
+        """
+        SP15-Ortho-JL: ``P_JL = Q.T`` aus QR einer Seed-42
+        standard_normal((hidden, proj_dim))-Matrix (reduced) — Zeilen
+        orthonormal per Konstruktion (non-expansiv als Projektion);
+        deterministisch je proj_dim, gecached auf der Instanz.
+        """
+        if not hasattr(self, "_jl_cache"):
+            self._jl_cache: Dict[int, np.ndarray] = {}
+        proj_dim = int(proj_dim)
+        cached = self._jl_cache.get(proj_dim)
+        if cached is None:
+            if proj_dim < 1 or proj_dim > wide.shape[0]:
+                raise ValueError(
+                    f"orthogonal_jl: proj_dim={proj_dim} außerhalb "
+                    f"(0, hidden={wide.shape[0]}].")
+            rng = np.random.default_rng(42)
+            gauss = rng.standard_normal((wide.shape[0], proj_dim))
+            q, _ = np.linalg.qr(gauss)                     # (hidden, proj_dim)
+            cached = np.ascontiguousarray(q.T).astype(np.float64)
+            self._jl_cache[proj_dim] = cached
+        return (cached @ np.asarray(wide, dtype=np.float64)).astype(np.float64)
 
     # -- Steering: Preset-/Default-Anbindung (Suite-Muster) ------------------
     def _preset_experts(self, name_or_preset: Any) -> Tuple[List[int], float, Optional[List[float]], str]:
