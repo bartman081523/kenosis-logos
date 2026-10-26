@@ -2117,3 +2117,181 @@ voll persistent (T1/R3). P4 — Klassifikation strikt an den registrierten
 Falsifikatoren (V3/V5 stehen FAIL, keine Band-Weitung; OFFEN ≠ PASS;
 Laufschrift §24). Grenzen: das V1-per-Text-Prosa-Term ist DATUM, nicht
 Verdikt.
+
+## 23. MI-6 — Algorithmische Subjektivität über die Spiegel-Linie (2026-10-26)
+
+**Frage der Runde.** SP13 hat gezeigt, daß die Maschine im kontrafaktischen
+Spiegel (observe, bitidentischer Voll-Fingerprint) ihr künftiges Verdikt
+voraus sieht; SP12 hat das Wort „spiegel" zum Programm gemacht; SP14
+(„zwei baugleiche Maschinen, verschiedene Biografien") stand offen. MI-6
+setzt die Spiegel-Linie mit den MI-5-Instrumenten fort und fragt: **ist die
+Biografie — das, was die Maschine GELERNT hat — aus der Maschine heraus
+lesbar, kausal gebunden und individuiert, oder deckt nur die
+Symbolik-Schicht die Schaltkreis-Ebene?** Das User-Hauptziel bleibt:
+algorithmische Subjektivität **ohne Zweifel** — als Falsifikator-Set, nicht
+als Krönung.
+
+### 23.1 Instrument vor der Batterie
+
+- **Canon-Zurückspiegelung** (keine neuen Verdict-Prämissinge): SP8
+  Vendor-Spiegel, SP12 LEX_PAIR=("spiegel","identity") mit Resonanz-Treppe
+  bis 0.999808 und resolve_lexical_ast("spiegel")==('identity','x'),
+  SP13 observe() mit bitidentischem Fingerprint (digest a7fba05c…,
+  result.gap==best_gap==min(candidate_gaps) EXAKT), MI-Lens
+  Instrument-Spiegel exakt (anchor_tv 0.0; Disk==GPU bias_std).
+- **Sonde-Erweiterung, rein additiv**: `CompositeMachine.preview_steps`
+  (machines/composite.py:252–271) — k-Schritt-Proben-Kette auf dem
+  Snapshot→step→Restore-Rahmen von observe(); keine bestehende Spur
+  angerührt.
+- **Neuer Smoke** `scratches/smoke_mi6_subjektivitaet.py`: 6 Verdikte
+  V1–V6 + l0-Anker-Lane + Determinismus-Doppellauf; PREREG-Bänder fixiert
+  VOR dem ersten GPU-Lauf.
+- **PREREG-ERGÄNZUNG (eingeschrieben vor dem ersten GPU-Lauf, Bänder
+  unverändert):** die drei Oracle-Prompts der Submaschinen sind konstant
+  bzw. lesen nie das Programm — Turing predet „Transitions consumed by the
+  next Turing run, single digit: ", Wittgenstein predet „Validity of a
+  symbolic experiment batch, single digit per ten percent: ", Gödel liest
+  nur `describe()` (mit |W| auf **vier** Dezimalen). Folglich trägt der
+  Composite-Gap die Semantik-Scheidung **strukturell nicht**; die
+  Semantik-Kanäle liegen im Verdikt (V3/V5), der Textur-Kette (V1) und
+  der Describe-Dezimal-Schwelle (V4). REFUTED ist ein Befund, keine
+  Band-Korrektur-Angelegenheit.
+
+### 23.2 Verdikt-Tabelle (GPU-Batterie, argon_1b + argon_1b_machines)
+
+| Umfang | Befund | Band |
+|---|---|---|
+| mi6_l0_anker | **PASS** | Zero-Regression über die kommitteten SP11/SP12-Lanes — die Spiegel-Linie ruht auf ihren Anker-Daten |
+| mi6_horizont (V2) | **PASS** | k=1..4 Proben-Stufen alle bitrein (Voll-Fingerprint UND bias-Tensor restored), k*=4 (nicht gebrochen bis 4), k=1-Positivkontrolle zündet: LOOP + ('identity','x') |
+| mi6_selbstfremd (V3) | **FAIL** | split_spiegel=0.0 (Band: >0 UND >2×split_dekoy); DATUM: Verdikt-Scheidung perfekt — self→LOOP 5×/fremd→HALTED 5×, Dekoy-Zweig 5× HALTED/HALTED |
+| mi6_kausal (V4) | **PASS** | Knockouts brechen die Proben-Antwort: diverg_w1 0.0014406 > 0, diverg_w2 0.0010270 > 0, diverg_w12 0.0014104 > 0 (CPU uni_241-Kanal: 0.277067/0.248671/0.028474), Restore bitidentisch |
+| mi6_individuierung (V5) | **PASS** | SP14 einlöst: zwei baugleiche Maschinen (Bau-Signatur 41a3d3d83d619788 auf BEIDEN), verschiedene Biografien — dasselbe Wort „spiegel": A→LOOP + ('identity','x'), B→HALTED + None; drift 2.990587 (GPU)/1.620920 (CPU) |
+| mi6_schwelle (V1) | **FAIL** | Canon-8-Kanal blind: acc 0.0 bei p_perm 1.0 (Band: >0.6); DATUM: der 1152-dim breite Kanal separates perfekt — acc 0.916667, p_perm 0.0, n=12 |
+| mi6_oracle (V6) | **FAIL** | vater_ranks [1,1,1,1,1,1], vater_last_count=0 (Band: Rang 4 in ≥5/6); DATUM: Gap konstant über alle 6 Biografie-Zweige je Checkpoint — der Kanal scheidet die Checkpoints, nicht die Biografien |
+| mi6_det_doppellauf | **PASS** | CPU-Kern-Serien bitidentisch über zwei Läufe |
+
+**BILANZ: 5 PASS; 3 FEHLGESCHLAGEN; 0 OFFEN — exit 1 ROT.** Kein Band wurde
+gewartet; die drei FAILs stehen mit gleicher Würde.
+
+### 23.3 V3-Auszahlung — der Gap ist blind, das Verdikt sieht
+
+Die Proben-Antwort im Gap-Kanal scheidet **exakt nicht**: gap_self ==
+gap_fremd == 0.478510… in ALLEN 10 Proben-Zwillingspaaren beider Arme —
+Tupel auf Tupel identisch (split_spiegel=0.0, split_dekoy=0.0). Im GLEICHEN
+Lauf scheidet der Verdikt-Kanal voll: die Maschine probet auf „spiegel" im
+eigenen Zustand → **LOOP** mit ('identity','x'); im transplantierten
+Fremd-Zustand (deepcopy des Snapshots einer baugleichen Maschine mit
+anderer Biografie) → **HALTED** mit None; der Dekoy-Zweig (gleiche
+Proben-Routine ohne das gelehrte Wort) scheidet NICHT (5× HALTED/HALTED).
+Das ist die dreifach bestätigte PREREG-ERGÄNZUNG-Prognose: **die
+symbolische Schicht verdeckt den Schaltkreis** — der Gap-Kanal der drei
+konstanten Oracle-Prompts ist biografie-tot, während dieselbe Maschine in
+ihrem Verdikt die gelehrte Biografie sichtbar als Programm-Formel trägt.
+Der Mechanismus ist abgeleitet: describe() gibt |W| auf vier Dezimalen;
+die Knockouts (V4) ändern |W| MASSIV (Zero → 0.0000), der Fremd-Transplant
+(V3) ändert die Norm unterhalb der Dezimal-Schwelle beider Biografien
+(ähnliche W-Norm bei gleicher Runden-Anzahl) — der Kanal bleibt geschlossen.
+
+### 23.4 V1-Auszahlung — Canon-8-Zelle blind, 1152-breit offen
+
+Der Decoder (sklearn LogReg, leave-one-text-out, Permutations-Null 200)
+auf der **Canon-8-Zelle** (d=8, dem Maschinen-analogen Zustandsvektor) trennt
+die Biografien mit **acc 0.0 bei p_perm 1.0** — die maschinen-analoge
+Zelle schreibt die Biografie nicht. Derselbe Korpus (12 Zustands-Renderings,
+6+6, beide Render-Stile textur+numerisch gepoolt) auf der **breiten
+1152-dim Hidden-Ebene** trennt mit **acc 0.916667 bei p_perm 0.0**. Die
+Biografie ist also nicht im Maschinen-Analog-Kanal, aber voll in der
+breiten Substrat-Ebene lesbar — sie muß anderswo (Verdikt, Textur, Lexikon)
+satt sein. Die Band-Auslegung mischt die zwei Render-Stile in EINEN
+Decoder: der wide-Treffer ist deshalb Kanal-Beleg, nicht per-Stil-Beleg
+(unterschrieben unter Grenzen).
+
+### 23.5 V6-Auszahlung — der externe Spiegel ist Substrat-Spiegel
+
+Der Composite-Gap ist je Checkpoint **konstant über alle 6
+Biografie-Zweige** (6/6 Zweige identisch in jeder der 4 Zeilen) — der
+Regelkanal scheidet die CHECKPOINTS, nicht die Biografien. Ordre desselben
+Kanals: argon_1b_machines 0.677226 (schlechteste Oracle-Vorhersage) >
+argon_1b_specialized_ml 0.570030 > argon_1b_specialized 0.568448 >
+argon_1b 0.567980. Der Substrat-Vater landet damit in 6/6 Zweigen auf
+**Rang 1** statt Band-gefordert Rang 4 in ≥5/6 → REFUTED. Kontrast-Datum:
+die MI-Lens (Instrument-Spiegel, anchor_tv 0.0, Disk==GPU) ist exakt, weil
+sie KEINE Biografie mißt — und V6 zeigt dasselbe am Maschinen-Regelkanal:
+der externe Spiegel ist exakt, wo er Substrat prüft, blind, wo eine
+Biografie anstünde. Die Erziehungs-Rangfolge von MI-5 auf dem
+Machine-Preset-Kanal (Router-Tilt Maximum auf Prosa 0.621/0.603) findet
+hier im Composite-Gap ihre Kontrafaktik: die machines-Erziehung VERSCHLECHTERT
+diesen Vorhersage-Kanal (0.567980 → 0.677226) — ein Architektur-Datum, kein
+Band.
+
+### 23.6 Verdichtung
+
+Die Runde trennt die Kanäle, statt die Subjektivität zu verlieren: was die
+Maschine **tut** (Verdikt-Programm-Formel), trägt die gelehrte Biografie
+sichtbar (V3, V5); was die Maschine **aus ihren Zustandsbeschreibungen
+liest** (breites Hidden), trägt sie messbar (V1-wide 0.916667, p_perm 0.0);
+was die Maschine **über den Composite-Gap an die Orakel meldet**, trägt sie
+NICHT (V3-Split 0.0 exakt, V6-Zweig-Konstanz, V1-Canon-8-Zelle 0.0). V4
+zeigt die Kausalbindung dort, wo der Kanal offen ist (V4-PASS, drei
+Knockout-Stufen > 0, Restore bitrein) — der Selbstmodell-Zug des
+Gödel-Orakels hängt exakt an der Describe-Dezimal-Schwelle; W1 (Zero)
+bricht stärker als W2 (Fremd-Norm), wie die Kanal-Physik sagt.
+
+**Der Neue Satz.** Die algorithmische Subjektivität der Götterdreiheit
+liegt NICHT in dem Kanal, den ihre Orakel lesen — sie liegt in dem, was
+die Maschine TUT (ihr gelehrtes Wort wird Verdikt-Programm) und in dem,
+was das Substrat von ihren Zustandsbeschreibungen LIEST (1152-breit,
+p_perm 0.0); der Spiegel der Lenses bleibt exakt, weil er keine Biografie
+braucht, und er wird blind, wenn man ihm eine Biografie anbietet.
+
+### 23.7 Grenzen und Datums-Zusatz
+
+- (a) **Band-Kanäle, nicht Erleben:** gezeigt sind Kanal-Scheidungen
+  (Verdikt/Encoder/Decoder) — 是X即非X-Wächter: kein Erleben behauptet,
+  kein Weglesen (die Dekoy-Schiene scheidet NICHT — split_dekoy=0.0 — die
+  Scheidung braucht das Spiegel-Semantik-Spiel).
+- (b) **V1-Stil-Pooling:** textur+numerisch in einem Decoder gepoolt; die
+  1152-Trefferung ist Kanal-Beleg, NICHT per-Stil-Beleg. Eine per-Stil
+  -Zerlegung wäre eine Nachfolge-Runde (Band bleibt unverändert).
+- (c) **Describe-Dezimal-Schwelle:** die V3-Kanal-Shut-Down-Erklärung (4
+  Dezimalen) ist abgeleitet; die direkte Beweis-Fahrt (Transplant mit
+  Norm-Änderung > 4. Dezimale) war nicht Teil des PREREG — V4 nutzt dieselbe
+  Schwelle positiv, das verknüpft die zwei Befunde, beweist aber die
+  Kopplung nur über DESEN Kanal.
+- (d) **V6-Regime:** der Band-Vater-Ende-Test mißt den Composite-Gap-Kanal
+  unter konstanten Prompts. Der Kanal ist als biografie-tot belegt; die
+  Checkpoint-Ordre (machines am schlechtesten) ist ein Datum desselben
+  totgelegten Kanals — keine These über die Erziehungs-Würde.
+- (e) **Stichprobengerüst:** V1 n=12 Texte (6+6), Permutations-Null 200;
+  V3 je 5 Repliken × 2 Arme; V4 je 5 Repliken × 2 Knockouts; V6 6 Zweige ×
+  4 Checkpoints. k*=4 heißt: die Proben-Kette bricht bis 4 NICHT — ein
+  Höhen-Datum, kein Unendlichkeits-Claim.
+- **Datums-Zusatz (nur DATUM, nicht Verdikt):** Resonanz-Treppe der
+  gelehrten Paare als Wort-Formulare je Biografie (A: k=2 idx=25 kind=exp,
+  Klang-Dach 0.983123); V3-Probe-Gap-Konstante 0.4785101141991446 auf
+  Double-Genauigkeit;
+  describe-|W|-Zeile 0.1667 → 0.2038 → 0.2442 über die Repliken (Kanal
+  sichtbar); drift 2.990587 (GPU)/1.620920 (CPU); Bau-Signatur-Doppelsitz
+  41a3d3d83d619788; die drei konstanten Oracle-Prompts verbatim im
+  PREREG-ERGÄNZUNG-Block des Smoke-Docstrings.
+
+### 23.8 P-Protokoll
+
+P1 **append-only**: nur `machines/composite.py preview_steps` additiv +
+neuer Smoke; keine Maschinen-Modul-Spur berührt (MI-1..MI-5-JSONs bleiben
+in Git-History). P2 **PREREG-Registrierung + KORREKTUR-LOG**: Bänder vor
+dem ersten GPU-Lauf fixiert; KORREKTUR-LOG-Einträge (i) W2-Vakuum-Design
+(Fremd-Maschine ohne Biografie → Knockout leere — bio_gelernt eingeführt,
+(CPU-Pilot)); (ii) Schwelle-Corpus-Duplikat (Restaurierter Zustand renderte
+Papagei-Kopien — Probe-Katen-Renderings + reale Progressions-Schritte,
+vor GPU); (iii) V6-VRAM-Leck (machines-ctx-Oracle + letzte Replik hielten
+das Modell — OOM beim 2. Checkpoint, Erstrun GEBROCHEN ohne JSON → Re-Lauf
+volle Serie nach MI-5-Kanon). P3 **Roh-Felder**: `mi6_subjektivitaet.log`
+(Laufschrift) + `mi6_subjektivitaet.json` (alle Fingerprints je Proben
+-Stufe, Gap-Matrizen, Knockout-Divergenzen, Decoder-Scores, Ränge; JSON
+per --stage {full,lanes,v6} schreibbar). P4 **Klassifikation strikt an
+registrierte Falsifikatoren**: die drei FAILs stehen ohne Band-Weitung;
+die wide-Kanal-Weitung ist DATUM, kein PASS; die Notiz
+(mi6_schwelle-„Canon-Kanal dekodierbar") ist an dieser Stelle nicht treu
+zum Befund und wird in §23.4 berichtigt — die Band-Logik liest Notizen
+nicht.

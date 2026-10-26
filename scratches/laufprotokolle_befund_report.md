@@ -985,3 +985,77 @@ gemma Paris-Träger ℓ17 MLP-dominant (dp_attn 0.2205 vs dp_mlp 0.7139,
 share 0.236) gegen Argon-Linie Attention-dominant (0.83) — Träger-
 Verlagerung durch den MoE-Upcycling, ein Architektur-Datum.
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §22.
+
+## 25. MI-6 — Algorithmische Subjektivität über die Spiegel-Linie, 2026-10-26
+
+**Scout zuerst** (vor jedem Schreiben): machines/composite.py (observe /
+_snapshot-_restore / step_autonomous-APIs unverändert), smoke_endogene
+_agency.py (fingerprint / bias_fingerprint / gpu_context-Signaturen,
+ Imports unverändert re-verwendet), smoke_lexical_grounding.py (LEX_PAIR,
+lexicon_game), SP14-Announcement-Zeilen verbatim gebucht
+(sprachspiel_bericht.md:1037/:1191, laufprotokolle_befund_report.md:652/:695
+— „zwei baugleiche Maschinen, verschiedene Biografien"), Snapshot
+-Oberflächen inkl. axiom_pool-Sicherung (SP13-USER-FUND) verifiziert.
+
+**Sonde-Erweiterung, rein additiv** (XX/YY): `CompositeMachine.preview_steps`
+(mechanisch MI-6-Helper, machines/composite.py:252–271) — dieselbe Snapshot
+→step→Restore-Struktur wie observe(), k-fach geschlossen; sonst keine
+Spur (P1 append-only).
+
+**Smoke** `scratches/smoke_mi6_subjektivitaet.py`: 8 Verdikte (l0-Anker +
+V1–V6 + Determinismus-Doppellauf) + Datums-Zusatz + 6 R2-Piloten; PREREG
+-Bänder fixiert vor dem ersten GPU-Lauf; PREREG-ERGÄNZUNG (drei konstante
+Oracle-Prompts; V3 misst Zustands-Kopplung; Semantik in Verdikt/Textur
+/Decoder) eingeschrieben vor dem GPU-Erstrun — Bänder unverändert.
+
+**Run-Folge.** CPU-Piloten: (2 GEBROCHENE Debug-Läufe — NameError
+learn_and_pin ohne Import, dann ValueError ndarray-gegen-String im
+W2-Knockout; beide sofort repariert, kein Band berührt) dann der saubere
+8-Verdikte-Lauf — 6 PASS, 2 OFFEN (mi6_schwelle/mi6_oracle als GPU-Lanes),
+exit 2 OFFEN, Determinismus bitidentisch. GPU Erstrun 1 (3000 s-Wand): im
+stummen CPU-Teil scheinbar hängend — SIGUSR1-Stackdump via faulthandler
+zeigt AutoTokenizer-Load (json parse unter GC, verify_machines.py:353) und
+direkt danach „Stufe: V1" — kein Hänger, nur langsamer Loader; gestoppt
+(planerisch). GPU Erstrun 2: Wand-Plan korrigiert (predict_value-Greedy
+-Züge macht jeden Composite-Schritt ≈5–7 s → ETA-Batterie > 54 min > 3000 s
+-Wand) — gestoppt vor Bruch, Neustart mit timeout 5400 + --stage-Zerlegung
+als Absicherung. GPU Erstrun-VOLL (5400 s): V1–V5 sauber durch, dann in
+lane_oracle_rang beim ZWEITEN Checkpoint-Lade **OOM GEBROCHEN** — VRAM-Leck:
+die machines-ctx-Oracle (_oracle) und die letzte Replik (machine hält ihr
+eigenes Oracle) hielten das Modell fest; kein JSON. **KORREKTUR-LOG** ×3
+(i) W2-Vakuum-Design (CPU-Pilot), (ii) Schwelle-Corpus-Duplikat (vor GPU),
+(iii) V6-VRAM-Leck (GPU-Erstrun) — Re-Lauf **volle Serie** nach MI-5-Kanon
+(gebrochen ohne JSON → volle Serie, keine Teil-Serien-Verwirrung. GPU Re
+-Lauf (5400 s, voll): **VOLL durch** — json komplett geschrieben.
+
+**Verdikt-Ergebnis** (alle Zahlen aus `mi6_subjektivitaet.json`): 8 Verdikte
+— mi6_l0_anker PASS; mi6_horizont PASS (k=1..4 alle Stufen
+fingerprint+bias restored, k*=4, Positivkontrolle LOOP + ('identity','x')
+auf beiden Schienen); mi6_kausal PASS (GPU diverg_w1 0.0014406 / w2
+0.0010270 / w12 0.0014104, restore_all True; CPU 0.277067/0.248671/0.028474,
+ties-Datum True); mi6_individuierung PASS (sig_equal True, Bau-Signatur
+41a3d3d83d619788 doppelsitzig, phase_a 6×LOOP mit Expansionen step1..3:LOOP,
+phase_b 6×HALTED [('negate','x')], cross A→LOOP/('identity','x') gap
+0.680369 vs B→HALTED/None gap 0.846139, drift 2.990587 GPU/1.620920 CPU);
+mi6_det_doppellauf PASS; DAGEGEN mi6_selbstfremd **FAIL** (split_spiegel
+0.0 exakt, split_dekoy 0.0 — doch Verdikt-Split satt: 5× LOOP vs 5× HALTED,
+Dekoy 5× HALTED/HALTED); mi6_schwelle **FAIL** (canon-8-dim acc 0.0,
+p_perm 1.0 — Band >0.6 verletzt; wide-1152-dim acc 0.916667, p_perm 0.0 als
+DATUM); mi6_oracle **FAIL** (vater_ranks [1,1,1,1,1,1], vater_last_count=0
+gegen Band ≥5; Gap konstant über 6 Zweige je Checkpoint — Ordre machines
+0.677226 > ml 0.570030 > specialized 0.568448 > Vater 0.567980).
+
+**BILANZ: 5 PASS; 3 FEHLGESCHLAGEN; 0 OFFEN — exit 1 ROT** (Band-Weitung
+wurde keine; drei FAILs stehen mit gleicher Würde; Falsifikatoren
+V3/V1/V6).
+
+**Datums-Zusatz** (DATUM, nicht Verdikt): k*=4 (Proben-Horizont nicht
+geborsam bis 4); V3-Probe-Gap-Konstante 0.4785101141991446 auf Double
+-Genauigkeit (10 Zwillingspaare × 2 Arme); describe-|W|-Zeile 0.1667 →
+0.2038 → 0.2442 über die 5 GPU-Repliken — der einzige offene
+Oracle-Kanal; drift 2.990587/1.620920; n_classes 6/6 (V1-Korpus); die drei
+konstanten Oracle-Prompts verbatim im PREREG-ERGÄNZUNG-Block des Smoke
+-Docstrings; SIGUSR1-Stackdump (faulthandler) zum langsamen Loader als
+Buchung des Erstruns 1.
+
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §23.

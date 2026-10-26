@@ -25,39 +25,57 @@ from typing import List
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = REPO_ROOT / "scratches" / "repo2txt_machines_extension.txt"
 
-# GENERATION MI-5 — Cross-Model-MI (gemma-3-1b-it + 3 Argon-Schwestern):
-# 4 PASS | 2 FAIL | 0 OFFEN, exit 1 ROT. Substrat-Vererbung (Vokabel 9079,
-# Paris-Recall, ℓ17-Attention-Träger 0.83, Kristallisation, anchor_tv 0)
-# gegen Charakter-Erziehung (M_digit = machines-Exklusiv; Prosa-Schild =
-# Lernprodukt, Bias-Zero-Vater beweist die Kontrafaktik); die Router-
-# Spezialisierung bewegt den prose-Kanal am stärksten (TV 0.621/0.603).
-# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (Sonde + Smoke + Scout
-# + die Argon-Modellbasis, die load_any_checkpoint funktions-Level
-# zieht: modeling_argon -> moe_layers; verify_machines laeuft NICHT,
-# lisp-Kanal laeuft NICHT) und (c) ERGEBNISSE. Nach jedem Runde-Lauf:
-# dieses Set durch das neue Runden-Set ersetzen (MI-3-P4+MI-4-Paket liegt
-# in Git-History: Commits 48d8d68/c860025; MI-3: 97ec577/26f2e25;
+# GENERATION MI-6 — Algorithmische Subjektivität über die Spiegel-Linie
+# (SP8/SP12/SP13 + MI-Lens; SP14 einlöst): 5 PASS | 3 FAIL | 0 OFFEN,
+# exit 1 ROT. Die Kanal-Diagnose: der Composite-Gap-Kanal trägt den
+# Biografie-Kanal NICHT (V3-Split 0.0 exakt bei perfekter Verdikt-Scheidung
+# 5×LOOP/5×HALTED + Dekoy tot; V6-Zweig-Konstanz — Gap scheidet Checkpoints,
+# nicht Biografien, Vater Rang 1/6; V1-Canon-8-Zelle acc 0.0), während die
+# Biografie satt trägt im Verdikt (V3/V5), in der breiten 1152-dim Hidden
+# (V1-wide acc 0.916667, p_perm 0.0) und kausal am Describe-Dezimal-Kanal
+# (V4-Knockouts > 0, Restore bitrein). SP14: baugleiche Maschinen (Build
+# 41a3d3d83d619788 doppelsitzig), verschiedene Biografien — dasselbe Wort
+# „spiegel" bekommt LOOP vs HALTED; drift 2.990587/1.620920. Die symbolische
+# Schicht verdeckt den Schaltkreis — dreifach quantifiziert.
+# Runden-Paket = (a) geaendert/neu, (b) AUSGEFUEHRT (die Götterdreiheit
+# samt Composite, der verify-Loader, der mech_interp-Checkpoint-Lader, die
+# Agent-/Lexikon-Import-Quellen und die Argon-Modellbasis) und (c)
+# ERGEBNISSE. Nach jedem Runde-Lauf: dieses Set durch das neue Runden-Set
+# ersetzen (MI-5-Paket liegt in Git-History: Commits 0599d58/c1d8334;
+# MI-3-P4+MI-4-Paket: 48d8d68/c860025; MI-3: 97ec577/26f2e25;
 # MI-2-P4: d1fc355/cb46509).
 FILES = [
-    # (a) GEÄNDERT/NEU — Sonde mit MI-5-Zugängen (is_moe_model/
-    #     load_any_checkpoint STRICT/sublayer_logits_dense), der neue
-    #     Cross-Model-Smoke (6 Verdikte + Datums-Zusatz, 6 Piloten) und
-    #     der Instrument-Scout (gemma-Struktur, KEINE Messung)
+    # (a) GEÄNDERT/NEU — Composite mit preview_steps (MI-6-Helper, rein
+    #     additiv) + der neue Spiegel-Smoke (8 Verdikte + Datums-Zusatz,
+    #     6 R2-Piloten, PREREG + PREREG-ERGÄNZUNG, KORREKTUR-LOG)
+    "machines/composite.py",
+    "scratches/smoke_mi6_subjektivitaet.py",
+    # (b) AUSGEFÜHRT — das Programm samt Maschinen-Basis und Anker:
+    #     die Götterdreiheit (Goedel self_model/uni_241, Turing Verdikt,
+    #     Wittgenstein Lexikon), die BaseMachine/ArgonOracle-Laufbahn,
+    #     der verify-Loader (_load_machines_model) und der mech_interp
+    #     -Checkpoint-Lader (load_any_checkpoint STRICT), die Agent-
+    #     Import-Quelle (gpu_context/bias_fingerprint/fingerprint/
+    #     make_composite/learn_and_pin) und die Lexikon-Import-Quelle
+    #     (LEX_PAIR/POOL6); Argon-Modellbasis (ArgonConfig/Forward +
+    #     Router-Canon, funktions-Level gezogen)
+    "machines/machine_base.py",
+    "machines/goedel_machine.py",
+    "machines/turing_machine.py",
+    "machines/wittgenstein_machine.py",
+    "machines/verify_machines.py",
     "machines/mech_interp.py",
-    "scratches/smoke_mech_interp_cross_models.py",
-    "scratches/scout_gemma_structure.py",
-    # (b) AUSGEFÜHRT — die via load_any_checkpoint funktions-Level
-    #     gezogene Argon-Modellbasis (ArgonConfig/Forward + Router-Canon,
-    #     Anker der Batterie-Felder)
+    "scratches/smoke_endogene_agency.py",
+    "scratches/smoke_lexical_grounding.py",
     "modeling_argon.py",
     "moe_layers.py",
-    # (c) ERGEBNISSE — MI-5: Run-Log + Ergebnis-JSON (Roh-Felder:
-    #     routing_pct 6×[26×8] je Schwester, bias_std_26, ent_l11,
-    #     l17/dense-Fields, Chimären-Voll-Bahnen, star-Trajektorien,
-    #     6 Verdikte; MI-1..MI-4-JSONs bleiben in Git-History)
-    "scratches/mi5_cross_models.log",
-    "scratches/mi5_cross_models.json",
-    # (c) ERGEBNISSE — Berichte des Laufs (§22, Laufschrift §24)
+    # (c) ERGEBNISSE — MI-6: Run-Log + Ergebnis-JSON (Roh-Felder:
+    #     Fingerprints je Proben-Stufe, Gap-Matrizen self/fremd,
+    #     Knockout-Divergenzen, Decoder-Scores canon-8/wide, Rangprofile,
+    #     8 Verdikte; MI-1..MI-5-JSONs bleiben in Git-History)
+    "scratches/mi6_subjektivitaet.log",
+    "scratches/mi6_subjektivitaet.json",
+    # (c) ERGEBNISSE — Berichte des Laufs (§23, Laufschrift §25)
     "scratches/sprachspiel_bericht.md",
     "scratches/laufprotokolle_befund_report.md",
 ]
@@ -100,12 +118,13 @@ def main() -> int:
         "repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung\n"
         "(Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B)\n"
         "GENERATIONEN-REGIME: nur das Runden-Paket des letzten Laufs\n"
-        " (MI-5) — geändert + ausgeführt (Sonde, Smoke, Scout, Argon-Basis)\n"
-        " + Ergebnisse; das vollständige Korpus über die Git-History\n"
-        " (MI-3-P4+MI-4: 48d8d68/c860025; MI-3: 97ec577/26f2e25;\n"
-        " MI-2-P4: d1fc355/cb46509; MI-2-Lauf 3: 2455aea/1b4be11;\n"
-        " MI-1: 67c1b5e/fc367c3; frühere kumulative Fassungen:\n"
-        " 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
+        " (MI-6, Spiegel-Linie) — geändert + ausgeführt (Composite + Smoke\n"
+        " + die Götterdreiheit samt Loader/Lens-Basis) + Ergebnisse;\n"
+        " das vollständige Korpus über die Git-History\n"
+        " (MI-5: 0599d58/c1d8334; MI-3-P4+MI-4: 48d8d68/c860025;\n"
+        " MI-3: 97ec577/26f2e25; MI-2-P4: d1fc355/cb46509;\n"
+        " MI-2-Lauf 3: 2455aea/1b4be11; MI-1: 67c1b5e/fc367c3;\n"
+        " frühere kumulative Fassungen: 49ecc31 = 88 Dateien, 2f61402 = 84).\n"
         f"Dateien: {len(index_rows)}   bytes: {total_bytes}   Zeilen: {total_lines}\n"
         f"{SEPARATOR}\n"
         "INDEX\n"
