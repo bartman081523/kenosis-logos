@@ -114,6 +114,10 @@ FILES: List[str] = [
     "scratches/smoke_paradigm_ursprung.py",
     "scratches/paradigm_ursprung_experiment.log",
     "scratches/paradigm_ursprung_experiment.json",
+    # -- SP12 Lexical Grounding (das gelernte Wort wird Programm) ----------------
+    "scratches/smoke_lexical_grounding.py",
+    "scratches/lexical_grounding_experiment.log",
+    "scratches/lexical_grounding_experiment.json",
 ]
 
 SEPARATOR = "=" * 78

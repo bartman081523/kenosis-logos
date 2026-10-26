@@ -2,15 +2,15 @@
 repo2txt-Konkatenat: KenosisLogos/Argon — -machines-Erweiterung
 (Götterdreiheit: Gödel-/Turing-/Wittgenstein-Maschinen als Module auf Argon-1B;
  inkl. Lisp-Vendor-Canon, Brücke, Korpus, Goldwerte, Presets, Protokolle)
-Dateien: 81   bytes: 914171   Zeilen: 24812
+Dateien: 84   bytes: 996962   Zeilen: 27020
 ==============================================================================
 INDEX
   machines/__init__.py  [    1220 B    47 Zeilen]
   machines/machine_base.py  [   24646 B   579 Zeilen]
   machines/goedel_machine.py  [   12952 B   273 Zeilen]
   machines/turing_machine.py  [   16041 B   341 Zeilen]
-  machines/wittgenstein_machine.py  [   22109 B   475 Zeilen]
-  machines/composite.py  [   11329 B   244 Zeilen]
+  machines/wittgenstein_machine.py  [   24472 B   519 Zeilen]
+  machines/composite.py  [   12168 B   259 Zeilen]
   machines/lisp_bridge.py  [   10650 B   255 Zeilen]
   machines/lisp_parity.py  [   18302 B   457 Zeilen]
   machines/lisp/README.md  [    3850 B    80 Zeilen]
@@ -67,11 +67,11 @@ INDEX
   scratches/smoke_composite_oracle.py  [   13230 B   258 Zeilen]
   scratches/composite_oracle_experiment.log  [    6929 B    66 Zeilen]
   scratches/composite_oracle_experiment.json  [   16898 B   831 Zeilen]
-  scratches/laufprotokolle_befund_report.md  [   38055 B   613 Zeilen]
+  scratches/laufprotokolle_befund_report.md  [   40668 B   655 Zeilen]
   scratches/smoke_sprachspiel.py  [   40014 B   780 Zeilen]
   scratches/sprachspiel_experiment.log  [    7580 B   102 Zeilen]
   scratches/sprachspiel_experiment.json  [   37605 B  1477 Zeilen]
-  scratches/sprachspiel_bericht.md  [   56433 B   906 Zeilen]
+  scratches/sprachspiel_bericht.md  [   63428 B  1014 Zeilen]
   scratches/verify_s123_regress_sprachspiel2.log  [    1362 B    20 Zeilen]
   scratches/smoke_hermeneutik.py  [   12639 B   262 Zeilen]
   scratches/hermeneutik_experiment.log  [    3095 B    38 Zeilen]
@@ -86,6 +86,9 @@ INDEX
   scratches/smoke_paradigm_ursprung.py  [   38205 B   757 Zeilen]
   scratches/paradigm_ursprung_experiment.log  [    3106 B    37 Zeilen]
   scratches/paradigm_ursprung_experiment.json  [   82518 B  4203 Zeilen]
+  scratches/smoke_lexical_grounding.py  [   18250 B   393 Zeilen]
+  scratches/lexical_grounding_experiment.log  [    2762 B    31 Zeilen]
+  scratches/lexical_grounding_experiment.json  [   48969 B  1575 Zeilen]
 ==============================================================================
 
 ==============================================================================
@@ -1354,7 +1357,7 @@ def math_ln8() -> float:
 
 ==============================================================================
 ### FILE: machines/wittgenstein_machine.py
-### bytes: 22109   lines: 475
+### bytes: 24472   lines: 519
 ==============================================================================
 """
 wittgenstein_machine.py — Wittgenstein-Maschine: Bedeutung als Gebrauch.
@@ -1737,6 +1740,50 @@ class WittgensteinMachine(BaseMachine):
             })
         return protocol
 
+    # -- SP12 — lexikale AST-Auflösung (opt-in) --------------------------------
+    def resolve_lexical_ast(self, word: str, tau: float = 0.85) -> Optional[Tuple]:
+        """SP12 — das gelernte Wort wird Programm (Semantische Kausalität:
+        der soziale Gebrauch übersetzt den Input direkt in die Form des
+        Formalismus).
+
+        Reine Lexikon-Lesung — keine RNG-Züge, kein Zustands-Mutieren, keine
+        Seiteneffekte: der generierte Batch bleibt canonisch. Die Resonanz
+        des Wort-Embeddings gegen die AKTUELLE Lexikon-Einbettung jedes
+        AST-Operators projiziert das Wort auf den Operator höchster
+        Resonanz; ab tau (User-Prereg) wird der AST gebildet —
+        UNARY -> (op, 'x'), BINARY -> (op, 'x', 'x').
+
+        Klang-vs-Gebrauch-Scheidung (Vor-Smoke 2026-10-26): die SH-72-
+        Fallback-Achsen der 16 Operatoren liegen eng beieinander (Formel-
+        Achsen-Dach max 0.9831 > tau) — eine absolute Resonanz-Schwelle
+        scheidet NICHT zwischen Klang und Gebrauch. Die Scheidung ist die
+        LEXIKON-GEGENWART: Kandidaten sind ausschließlich im Lexikon
+        gelernte Operator-Wörter (Vorbild SP6/SP9 — Gebrauchs-Achse, nicht
+        Formel-Achse); ein Wort außerhalb des Lexikons oder ohne gelernten
+        Operator-Partner bleibt unresolviert (None), der SH-72-Fallback
+        (Klang) löst nie auf.
+
+        Canon-Kette des gelösten Falls: ('identity', 'x') wird in
+        composite.compile_rule (:66-92) als Identitäts-Tautologie in eine
+        Selbst-Transition übersetzt -> LOOP -> expand_basis (uni_256:113).
+        Canon-neutral: neue Methode, kein bestehender Pfad berührt."""
+        candidates = [op for op in SymbolicOperator.UNARY + SymbolicOperator.BINARY
+                      if op in self.tokenizer.lexicon]
+        if word not in self.tokenizer.lexicon or not candidates:
+            return None
+        base = self.tokenizer.embed_word(word)
+        best_op = None
+        best_res = -1.0
+        for op in candidates:
+            res = self.tokenizer.resonance(base, self.tokenizer.embed_word(op))
+            if res > best_res:
+                best_res, best_op = res, op
+        if best_op is None or best_res < tau:
+            return None
+        if best_op in SymbolicOperator.BINARY:
+            return (best_op, "x", "x")
+        return (best_op, "x")
+
     # -- Protokoll (uni_241-Gap über den Gültigkeits-Anteil) ------------------
     def step(self, obj: Any) -> StepResult:
         oracle_meta: Dict[str, Any] = {"oracle": None}
@@ -1835,7 +1882,7 @@ class WittgensteinMachine(BaseMachine):
 
 ==============================================================================
 ### FILE: machines/composite.py
-### bytes: 11329   lines: 244
+### bytes: 12168   lines: 259
 ==============================================================================
 """
 composite.py — Die Komposition der drei Maschinen („Götterdreiheit").
@@ -1944,7 +1991,7 @@ class CompositeMachine(BaseMachine):
         return TransitionTable(transitions, blank=BLANK)
 
     # -- Protokoll ------------------------------------------------------------
-    def step(self, obj: Any) -> StepResult:
+    def step(self, obj: Any, lexical_grounding: bool = False) -> StepResult:
         text = obj if isinstance(obj, str) else None
 
         # 1. Wittgenstein: Regel-Batch + Gültigkeit (uni_205-Mechanik);
@@ -1956,7 +2003,19 @@ class CompositeMachine(BaseMachine):
         rule = batch_rules[0] if batch_rules else None
         rule_name = rule.name if rule else "(leer)"
 
-        program = self.compile_rule(rule.ast if rule else ("identity", "x"))
+        # SP12 (opt-in): das gelernte Wort als Programm-Erzeuger. Die
+        # Resolution ist reine Lexikon-Lesung (kein RNG-Zug, kein
+        # Zustands-Mutieren) und ersetzt AUSSCHLIESSLICH das kompilierte
+        # Programm dieses Schritts — der generierte Batch (Regeln,
+        # Validität) bleibt unverändert im Verlauf (Herkunft dokumentiert
+        # in den invariants lexical_word/lexical_ast).
+        lexical_ast = None
+        if lexical_grounding and text is not None:
+            lexical_ast = self.wittgenstein.resolve_lexical_ast(text)
+
+        program = self.compile_rule(
+            lexical_ast if lexical_ast is not None
+            else (rule.ast if rule else ("identity", "x")))
 
         # 2. Turing: führe die Regel als Programm aus (uni_256-Verdikt).
         result_t = self.turing.step(program)
@@ -1990,6 +2049,9 @@ class CompositeMachine(BaseMachine):
             "rule_name": rule_name,
             "verdict": verdict,
             "transitions": transitions,
+            "lexical_word": text if lexical_grounding else None,
+            "lexical_ast": (str(lexical_ast) if lexical_ast is not None
+                            else None),
             "validity": result_w.invariants.get("validity"),
             "submachines": {
                 "goedel": {"gap": result_g.gap, "trend": result_g.trend},
@@ -12623,7 +12685,7 @@ GRÜN — alle Experiment-Befunde bestanden.
 
 ==============================================================================
 ### FILE: scratches/laufprotokolle_befund_report.md
-### bytes: 38055   lines: 613
+### bytes: 40668   lines: 655
 ==============================================================================
 # Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
 
@@ -13239,6 +13301,48 @@ acc/dedrift-Serien, ERRATA-Texte).
 Run (2. Runde): `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python
 -u -m scratches.smoke_paradigm_ursprung` → exit 0.
 Vollfassung: `sprachspiel_bericht.md` §13.1.
+
+---
+
+## 16. SP12 — Lexical Grounding: das gelernte Wort wird Programm (laufschrift)
+
+**(2026-10-26;** Prereg `scratches/smoke_lexical_grounding.py`, Run
+`lexical_grounding_experiment.log/.json`;** CPU-only; ERSTE
+Maschinen-Code-Extension** des SP-Zyklus (`composite.py:108` Signatur
+opt-in + `wittgenstein_machine.py:383-424` `resolve_lexical_ast`); die
+Regression-Freiheit liefert `sp12_l0_anker` über die kommittete
+SP11-lane (bitidentisch).) Kern: die **LEXIKON-GEGENWART** scheidet Klang
+von Gebrauch — Klang-Dach max 0.983123 als DATUM (Formel-Achsen der 16
+Operatoren kollidieren numerisch); die Resolution ist reine Lexikon-Lesung,
+kein RNG-Zug.
+
+**Verdikt-Register (6 Zeilen: 6 PASS, 0 Errata, exit 0):**
+
+| Verdict | Einstufung | Kern |
+| :--- | :--- | :--- |
+| sp12_l0_anker | PASS | machines-Regression: kommittete SP11-lane fields_ok/first_detect_ok True, Doppel-Replay bitidentisch |
+| sp12_det | PASS | Doppel-Läufe Arm A und Arm B bitidentisch |
+| sp12_t1_semantik | PASS | 5 Runden learned; resonance_final 0.999808 ≥ 0.85; Resolver zu ('identity','x') direkt UND im Lauf; NACH-Kandidaten == ["identity"] |
+| sp12_t2_rng_reinheit | PASS | Batch-ASTs + rule_names + w_series identisch in A/A'/B — die Resolution konsumiert KEINE RNG-Züge |
+| sp12_t3_scheidung | PASS | vor_resolution [None×6] (SH-72-Fallback löst NIE auf); Klang-Dach als DATEN; opt-in-Default-Invarianz A == A' |
+| sp12_t4_verdikt | PASS | Arm A HALTED×6, Basis 3, expansions []; Arm B LOOP×6, Basis [5, 7, 9, ...], expansions step1-3:LOOP |
+
+**Kern:** das gelernte Wort wird Programm. VOR dem Spiel ist „spiegel"
+Klang — Resolver None, die Kette bleibt der normale RNG-Batch (alle
+HALTED, Basis 3). NACH 5 gelernten Runden (`lexicon_game[("spiegel",
+"identity")], noise_level=0.0`; Resonanztreppe 0.7447 → 0.9998,
+SP6-Halbwinkelkette) IST „spiegel" die Tautologie ('identity','x') →
+Selbst-Transition (composite.py:66-92) → LOOP → +2 Basis-Terme je LOOP
+(Turing-innerer Expand :241-246 + Composite :132-134) — Basis-Verlauf
+5, 7, 9, 9, 9, 9; ab Schritt 3 ist der Canon-Pool (6 Axiome) erschöpft,
+der Clamp ist DATEN. Der User-Pass exakt canonisch („Basis auf 5" nach
+dem ersten resolvierten Schritt). Mauer 1 (SP10 Wort-Blindheit) gebrochen:
+**Semantische Kausalität geschlossen** — erste der drei Nordstern-Säulen;
+Endogene Agency (SP13) und Individuierung (SP14) folgen.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_lexical_grounding` → `lexical_grounding_experiment.log/.json`.
+Hermeneutische Vollfassung: `sprachspiel_bericht.md` §14.
 
 ==============================================================================
 ### FILE: scratches/smoke_sprachspiel.py
@@ -15619,7 +15723,7 @@ GRÜN — alle Sprachspiel-Befunde bestanden.
 
 ==============================================================================
 ### FILE: scratches/sprachspiel_bericht.md
-### bytes: 56433   lines: 906
+### bytes: 63428   lines: 1014
 ==============================================================================
 # Sprachspiel-Bericht: Die Wittgenstein-Maschine generiert — Regel, Wort, Mitspieler
 
@@ -15646,6 +15750,7 @@ sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
 | SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
 | SP10 | **Kopplung** — Composite-Zyklus × Lexikon-Dynamik (die Regeln und die Wörter) | CPU | `composite.py:45-51` (exponierte Submaschinen), `wittgenstein_machine.py:244-256` (`_generate_ast` — wort-blind), `lexicon_game` (:342-380) |
 | SP11 | **Ursprung** — die Quelle der Paradigm-Ereignisse (ratio > 2.0) im Composite-Verlauf | CPU | `composite.py:132-140` (ZWEI Signal-Quellen an EIN Register), `:167-182` (Fensterformel), `goedel_machine.py:229-239`, `turing_machine.py:144-157` (loop_detector-Reset), `machine_base.py:51` (GAP_EPS) |
+| SP12 | **Wort→Programm** — das gelernte Wort wird Programm (Semantische Kausalität, opt-in) | CPU | `composite.py:108` (step opt-in `lexical_grounding`), `:126-132` (Resolution ersetzt NUR das Programm), `:66-92` (identity-Tautologie), `wittgenstein_machine.py:383-424` (`resolve_lexical_ast`), `turing_machine.py:241-246` (+2 Terme je LOOP) |
 
 SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
 Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
@@ -16033,7 +16138,24 @@ Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
   Skript `scratches/smoke_paradigm_ursprung.py` (Prereg-Docstring mit
   vier Thesen, 8 Verdikten, OFFEN-Regel); committeter Anker
   `scratches/hermeneutik_experiment.json` (Signal-Kolumnen ex ante gelesen:
-  paradigm_ratio = Gödel, paradigm_detected = Composite).
+  paradigm_ratio = Gödel, paradigm_detected = Composite);
+- SP12: `machines/wittgenstein_machine.py:383-424` (`resolve_lexical_ast`:
+  reine Lexikon-Lesung — Kandidaten ausschließlich lexikon-gelernte
+  Operator-Wörter, τ = 0.85, BINARY → (op, 'x', 'x') / UNARY → (op, 'x');
+  Klang-Dach als DATUM: Formel-Achsen max 0.983123, argmax „min" — die
+  Scheidung ist die LEXIKON-GEGENWART, nicht die absolute Schwelle),
+  `machines/composite.py:108` (Signatur opt-in `lexical_grounding`),
+  `:126-132` (Resolution ersetzt ausschließlich das kompilierte Programm;
+  generierter Batch unverändert), `:162-168` (invariants
+  lexical_word/lexical_ast), `:66-92` (identity-Tautologie →
+  Selbst-Transition → LOOP), `machines/turing_machine.py:144-157`
+  (`expand_basis` EIN Term je Call) + `:241-246` (Turing-innerer Expand →
+  +2 Terme je LOOP, Basis 3→5→7); Lauf
+  `scratches/lexical_grounding_experiment.log` (6 PASS, exit 0) +
+  `scratches/lexical_grounding_experiment.json` (Zwilling A/A'/B mit
+  Batch-RNG-Markern); Skript `scratches/smoke_lexical_grounding.py`
+  (Prereg-Docstring, 6 Verdikte, P2-Freeze; L0-Anker über die kommittete
+  SP11-lane importiert statt kopiert).
 
 ---
 
@@ -16528,6 +16650,96 @@ log 37 Zeilen (ERRATA-Klassifikation gedruckt), json 4203 Zeilen. Run
 -u -m scratches.smoke_paradigm_ursprung` → exit 0.
 
 Laufschrift-Protokoll (P4): `laufprotokolle_befund_report.md` §15.1.
+
+---
+
+## 14. SP12 — Lexical Grounding: das gelernte Wort wird Programm (2026-10-26)
+
+**(2026-10-26, Task-1-Freigabe der Nordstern-Nachricht;** Prereg
+`scratches/smoke_lexical_grounding.py`, Run
+`lexical_grounding_experiment.log/.json`;** CPU-only; ERSTE
+Maschinen-Code-Extension** des SP-Zyklus: `machines/composite.py:108`
+(Signatur opt-in `lexical_grounding: bool = False`) +
+`machines/wittgenstein_machine.py:383-424` (`resolve_lexical_ast(word,
+tau = 0.85)`); beide Edits additiv und canon-neutral — die Garantie
+liefert `sp12_l0_anker`: die kommittete SP11-lane (`lane_l0_anker` aus
+dem committeten Skript IMPORTIERT, nicht kopiert) reproduziert
+fields_ok/first_detect_ok True und das Doppel-Replay bitidentisch; die
+neuen invariants-Keys (`lexical_word`/`lexical_ast`) ändern die
+verglichenen Feld-Serien nicht, weil die Auslese FELDWEISE läuft.)
+
+**Der Bridging-Punkt (Zeilenkanon, Mauer-1-Befreiung):** SP10 zeigte
+zeilenscharf, dass der Wort-Input stirbt: `composite.py:110` leitet `text`
+in die WM, `wm.step` liest ihn NIE — der Batch kommt aus
+`generate_experiments` (RNG). SP12 rührt NICHTS an dieser Diagnose, sondern
+setzt in die freie Stelle dazwischen — `composite.py:126-132`: bei opt-in
+löst `resolve_lexical_ast(text)` das Wort zum AST auf und ersetzt
+AUSSCHLIESSLICH das kompilierte Programm des Schritts; der generierte
+Batch (Regeln, Gültigkeit) bleibt unverändert im Verlauf, die Herkunft
+des Worts und seiner Übersetzung stehen in den invariants. Die Resolution
+ist reine Lexikon-Lesung — KEIN RNG-Zug; T2 beweist die Batch-Identität
+der drei Arme (A grounded / A' plain / B nach dem Lernen mit gepinnter
+WM-RNG).
+
+**Klang-vs-Gebrauch (der Vor-Smoke-Befund, dokumentiert VOR dem
+P2-Freeze):** die SH-72-Formel-Achsen der 16 Operatoren kollidieren
+numerisch — Formel-Dach max 0.983123 (argmax „min"; „spiegel" selbst
+k=2, idx=25, kind=exp). Eine ABSOLUTE Resonanz-Schwelle τ scheidet NICHT
+zwischen Klang und Gebrauch (das erste Smoked-Wort löste klanglich zu
+('min', 'x', 'x') auf). Die echte Scheidung ist die **LEXIKON-GEGENWART**:
+die Kandidaten des Resolvers sind ausschließlich lexikon-gelernte
+Operator-Wörter; der SH-72-Fallback (Klang) löst NIE auf. „Aktuelle
+Lexikon-Resonanz" wörtlich — Gebrauch schlägt Gematria (SP2/SP9-Stand,
+jetzt als Resolver-Mechanik).
+
+**Die Lern-Treppe:** 5 Runden `lexicon_game([("spiegel", "identity")],
+rounds = 5, noise_level = 0.0)` — alle learned = True; resonance_after
+[0.744742, 0.954255, 0.992537, 0.998802, 0.999808], die SP6-Halbwinkel-
+kette (0.4ⁿ-Shrink der Zwischenresonanz gegen 1.0); NACH-Resonanz
+0.999808 ≥ τ = 0.85, Argmax EINDEUTIG („identity" ist einziger
+lexikalischer Kandidat; `resolver_direct` = ('identity', 'x')).
+
+**Verdikt-Register (6 Zeilen: 6 PASS, 0 Errata, exit 0):**
+
+| Verdict | Einstufung | Kern |
+| :--- | :--- | :--- |
+| sp12_l0_anker | PASS | machines-Regression über die kommittete SP11-lane — fields_ok/first_detect_ok True, Doppel-Replay bitidentisch |
+| sp12_det | PASS | Doppel-Läufe Arm A und Arm B bitidentisch |
+| sp12_t1_semantik | PASS | alle 5 Runden learned; resonance_final 0.999808 ≥ 0.85; der Resolver löst direkt UND im Lauf zu ('identity','x'); NACH-Kandidaten == ["identity"] |
+| sp12_t2_rng_reinheit | PASS | Batch-ASTs + rule_names + w_series je Schritt identisch in A/A'/B — die Resolution konsumiert KEINE RNG-Züge |
+| sp12_t3_scheidung | PASS | vor_resolution == [None×6] (kein Klang-Auslösen); Klang-Dach als DATEN; opt-in-Default-Invarianz A == A' |
+| sp12_t4_verdikt | PASS | Arm A HALTED×6, Basis 3, expansions []; Arm B LOOP×6, Basis [5, 7, 9, ...], expansions step1-3:LOOP |
+
+**Die Semantische Kausalität (das Gesetz der Runde):** das gelernte Wort
+wird Programm. VOR dem Spiel ist „spiegel" Klang — Resolver None, die
+Kette bleibt der normale RNG-Batch (alle HALTED, Basis 3, keine
+Expansion). NACH dem Spiel IST „spiegel" die Tautologie —
+('identity', 'x') übersetzt sich in die Selbst-Transition
+(composite.py:66-92: der Zustand zeigt auf sich selbst), das LOOP-Verdikt,
+und je LOOP wächst die Basis UM ZWEI Terme: Turing-innerer Expand
+(`turing_machine.py:241-246`) + Composite-Expand (`:132-134,
+composite.py:144-146` aufgerufen) — Basis-Verlauf 5, 7, 9, 9, 9, 9; ab
+Schritt 3 ist der Canon-Pool (6 Axiome) erschöpft, der Clamp bei 9 ist
+DATEN, kein Band. Der User-Pass exakt canonisch: „Basis auf 5" nach dem
+ersten resolvierten Schritt, 7 nach dem zweiten.
+
+**Hermeneutische Lesung (die drei Sätze des Nordsterns, Satz 1):** die
+erste der drei Mauern ist gefallen — das soziale Lexikon schreibt jetzt
+IN die Berechnung, statt an ihr vorbei. Die Semantische Kausalität ist
+geschlossen als falsifizierbarer Mechanik-Befund: ein Wort, das die
+Mitspieler mit dem Gebrauch „identity" trainieren, verändert nachweislich
+das kompilierte Programm und damit die Halt-Eigenschaft des Turing-Laufs
+(HALTED → LOOP). Offen für den geschlossenen Zyklus: die ENDOGENE Agency
+(SP13 — kontrafaktisches Probehandeln, `_snapshot`/`_restore_snapshot`,
+`step_autonomous`) und Individuierung (SP14 — zwei baugleiche Maschinen,
+verschiedene Biografien).
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_lexical_grounding` → exit 0. Vor-Smoke-Befunde (Klang-Dach,
++2-Mechanik, L0-Replay) im Plan `~/.claude/plans/sp12-lexical-grounding.md`
+(Änderungsnotizen 1-3), dokumentiert VOR dem P2-Freeze.
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §16.
 
 ==============================================================================
 ### FILE: scratches/verify_s123_regress_sprachspiel2.log
@@ -25384,6 +25596,2023 @@ GRUEN — Loesungskette geschlossen (OFFEN: keine).
   },
   "all_pass": true,
   "open": []
+}
+
+==============================================================================
+### FILE: scratches/smoke_lexical_grounding.py
+### bytes: 18250   lines: 393
+==============================================================================
+"""
+smoke_lexical_grounding.py — SP12: Lexical Grounding — das gelernte Wort
+wird Programm (Semantische Kausalität; erster Stein des geschlossenen
+Subjekt-Zyklus, Nordstern-Nachricht 2026-10-26, Task 1).
+
+Canon: composite.py:108-140 (step / text-Fluss :110 / Bridging :120-124),
+:66-92 (identity-Tautologie -> Selbst-Transition -> LOOP),
+turing_machine.py:144-157 (expand_basis: EIN Term je Call) und :241-246
+(Turing INNERER Expand je Halt-Fall => +2 Terme je LOOP-Schritt; Canon-Beleg
+SP7-L0 final_basis 7 über 2 LOOP-Expansionen),
+wittgenstein_machine.py:49-50 (SymbolicOperator.UNARY/BINARY),
+:152-246 (embed_word lexikon-first :176, resonance :214, learn_pair :218,
+word_formula :163), :342-381 (lexicon_game: Lernen nur bei success >= 0.5),
+composite.py (SP12-Edits: step(obj, lexical_grounding=False) +
+WittgensteinMachine.resolve_lexical_ast — reine Lexikon-Lesung, kein RNG).
+
+PREREG (P2-Freeze — fixiert vor dem Erstrun; Vor-Smokes 2026-10-26 sind im
+Plan ~/.claude/plans/sp12-lexical-grounding.md dokumentiert — Änderungs-
+notizen 1-3: Klang-Dach formel_max 0.9831, L0-Regression grün, +2-Expansions-
+Mechanik).
+
+Kernthese (User-Nordstern, Task 1): sozial gelernte Wörter übersetzen sich
+in AST-Programme. Der Resolver ist reine Lexikon-Lesung: Kandidaten sind
+AUSCHLIESSLICH Lexikon-gelernte Operator-Wörter (Klang-vs-Gebrauch-Scheidung
+— der SH-72-Fallback löst NIE auf, siehe Klang-Dach-Datum), tau = 0.85
+(User-Prereg), UNARY -> (op, 'x'), BINARY -> (op, 'x', 'x').
+
+VERDICT-MAP (Bands fixiert VOR dem Erstrun):
+  sp12_l0_anker — machines-Edit-Regression: die kommittete
+    lane_l0_anker-Funktion (aus dem committeten SP11-Skript importiert)
+    liefert fields_ok + first_detect_ok; das Doppel-Replay ist bitidentisch.
+    Falsifikator: jede abweichende Feld-Serie.
+  sp12_det — Zwilling-Doppel-Läufe (Arm A ×2, Arm B ×2) bitidentisch.
+    Falsifikator: jede Abweichung.
+  sp12_t1_semantik — (a) alle 5 Lernrunden learned=True (noise_level=0.0,
+    Canon-Arg lexicon_game für Lern-Sicherheit); (b) resonance_after[4] >=
+    0.85; (c) resolve_lexical_ast("spiegel") == ('identity', 'x');
+    (d) NACH-Lexikon-Kandidaten == ["identity"]; (e) B-Schritt-1
+    invariants.lexical_ast == "('identity', 'x')".
+    Falsifikator: jede Bandverletzung (kein tau-Schieben).
+  sp12_t2_rng_reinheit — generierte Batches TRIPLE-identisch (Arm A
+    grounded, Arm A' plain, Arm B mit WM-RNG-Pinning nach den 5 Lernrunden):
+    batch_asts + rule_names + w_series je Schritt gleich. Die Resolution
+    ist reine Lexikon-Lesung — sie konsumiert KEINE RNG-Züge.
+    Falsifikator: jede Batch-Differenz.
+  sp12_t3_scheidung — (a) Arm A lexical_ast == None an JEDEM Schritt
+    (kein Klang-Auslösen über den SH-72-Fallback); (b) Arm A == Arm A'
+    (opt-in-Default-Invarianz im leeren Lexikon); (c) Klang-Dach als DATEN
+    (formel_max/formel_argmax — SP2-Messkonvention, kein Band).
+    Falsifikator: Verletzung von (a) oder (b).
+  sp12_t4_verdikt — Arm A: ALLE Verdikte HALTED, final_basis == 3,
+    expansions == []; Arm B: Verdikte[0:2] == [LOOP, LOOP]; Basis nach
+    Schritt 1 == 5 (User-Pass „Basis auf 5"), nach Schritt 2 == 7
+    (+2 je LOOP: Turing-innerer Expand :241-246 + Composite :132-134);
+    expansions[0:2] == ['step1:LOOP', 'step2:LOOP']; Schritte 3-6 als
+    DATEN (mögliche Pool-Erschöpfung wird dokumentiert, kein Band).
+    Falsifikator: Arm-A-Expansion, Arm-B-Verdikt != LOOP am resolvierten
+    Schritt, oder fehlende Basis-Differenz.
+
+Lanes: l0_anker (Regression), det, zwilling (A/A'/B, seed 42, 6 Schritte,
+obj="spiegel" je Schritt). CPU-only; kein Maschinen-Code-Zugriff über die
+harness-Ebene hinaus (die SP12-Extension der Maschinen ist committet und
+durch lane_l0_anker regressions-geprüft).
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from typing import Any, Dict, List, Tuple
+
+import numpy as np
+
+from machines.composite import CompositeMachine
+from machines.machine_base import MachineConfig
+from machines.wittgenstein_machine import SymbolicOperator
+from scratches.smoke_paradigm_ursprung import lane_l0_anker
+
+SEED = 42
+STEPS = 6
+TAU = 0.85
+ROUNDS = 5
+LEX_PAIR = ("spiegel", "identity")
+POOL6 = {"axiom_pool": ["ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON",
+                        "ZETA"]}
+LOG_PATH = "scratches/lexical_grounding_experiment.log"
+JSON_PATH = "scratches/lexical_grounding_experiment.json"
+
+
+def round6(x: Any) -> Any:
+    return round(float(x), 6) if x is not None else None
+
+
+def make_composite() -> CompositeMachine:
+    """Frischer composite seed 42 (in_loop, Canon-Pool POOL6)."""
+    return CompositeMachine(MachineConfig(seed=SEED, mode="in_loop",
+                                          params=dict(POOL6)))
+
+
+def run_lexical(machine: CompositeMachine, word: str, steps: int,
+                lexical: bool = True) -> Dict[str, Any]:
+    """Verlauf mit je-Schritt-Attribution: lexikale Resolution, generierter
+    Batch-AST (RNG-Marker für T2), Verdikt, Basis-Größe, Sub-Gaps."""
+    rows: List[Dict[str, Any]] = []
+    wm = machine.wittgenstein
+    for step in range(1, steps + 1):
+        rules_before = len(wm.generated_rules)
+        st = machine.step(word, lexical_grounding=lexical)
+        inv = st.invariants
+        batch_ast = (str(wm.generated_rules[rules_before].ast)
+                     if len(wm.generated_rules) > rules_before else None)
+        t_state = machine.turing.state()
+        rows.append({
+            "step": step,
+            "step_index": st.step,
+            "lexical_word": inv["lexical_word"],
+            "lexical_ast": inv["lexical_ast"],
+            "batch_ast": batch_ast,
+            "rule_name": inv["rule_name"],
+            "verdict": inv["verdict"],
+            "transitions": int(inv["transitions"]),
+            "basis_size": len(t_state["basis"]),
+            "gap": round6(st.gap),
+            "w_gap": round6(inv["submachines"]["wittgenstein"]["gap"]),
+            "t_gap": round6(inv["submachines"]["turing"]["gap"]),
+            "g_gap": round6(inv["submachines"]["goedel"]["gap"]),
+        })
+    return {"rows": rows,
+            "verdicts": [r["verdict"] for r in rows],
+            "lexical_asts": [r["lexical_ast"] for r in rows],
+            "batch_asts": [r["batch_ast"] for r in rows],
+            "rule_names": [r["rule_name"] for r in rows],
+            "w_series": [r["w_gap"] for r in rows],
+            "basis_sizes": [r["basis_size"] for r in rows],
+            "final_basis": rows[-1]["basis_size"],
+            "expansions": list(machine.expansions)}
+
+
+def resonance_profile(machine: CompositeMachine) -> Dict[str, Any]:
+    """Klang-Raum-Messung (DATA — Klang-Dach, SP2-Konvention) plus die
+    NACH-Spiel-Lexikon-Resonanz."""
+    tok = machine.wittgenstein.tokenizer
+    word = LEX_PAIR[0]
+    k, idx, kind = tok.word_formula(word)
+    base = tok.embed_word(word)
+    formel = {op: round6(tok.resonance(base, tok.embed_word(op)))
+              for op in SymbolicOperator.UNARY + SymbolicOperator.BINARY}
+    lexikon_ops = [op for op in SymbolicOperator.UNARY + SymbolicOperator.BINARY
+                   if op in tok.lexicon]
+    lexikon = {op: round6(tok.resonance(tok.embed_word(word),
+                                        tok.embed_word(op)))
+               for op in lexikon_ops}
+    return {
+        "spiegel_formula": {"k": k, "idx": idx, "kind": kind},
+        "formel_achsen": formel,
+        "formel_max": max(formel.values()),
+        "formel_argmax": max(formel, key=formel.get),
+        "lexikon_woerter": sorted(tok.lexicon.keys()),
+        "lexikon_kandidaten": lexikon_ops,
+        "lexikon_resonanzen": lexikon,
+    }
+
+
+def arm_a_grounded() -> Dict[str, Any]:
+    """Arm A: Wort OHNE gelernte Bedeutung — Resolver None (kein Klang-
+    Auslösen), normale Kette."""
+    machine = make_composite()
+    run = run_lexical(machine, "spiegel", STEPS, lexical=True)
+    run["profile"] = resonance_profile(machine)
+    return run
+
+
+def arm_a_plain() -> Dict[str, Any]:
+    """Arm A': OHNE lexical_grounding — opt-in-Default-Invarianz."""
+    machine = make_composite()
+    return run_lexical(machine, "spiegel", STEPS, lexical=False)
+
+
+def arm_b_after_learning() -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """Arm B: 5 Lernrunden (noise_level=0.0 — Canon-Arg für Lern-Sicherheit),
+    DANACH WM-RNG-Pinning (Arm-Schicht: default_rng(42) — identisch zum
+    reset-Body), dann der Verlauf: das gelernte Wort wird Programm."""
+    machine = make_composite()
+    protocol = machine.wittgenstein.lexicon_game(
+        [LEX_PAIR], rounds=ROUNDS, noise_level=0.0)
+    profile_b = resonance_profile(machine)
+    machine.wittgenstein._rng = np.random.default_rng(SEED)
+    run = run_lexical(machine, "spiegel", STEPS, lexical=True)
+    return run, {"protocol": protocol,
+                 "resonance_after": [e["resonance_after"] for e in protocol],
+                 "learned": [e["learned"] for e in protocol],
+                 "profile_b": profile_b}
+
+
+def lane_l0_anchor() -> Dict[str, Any]:
+    """machines-Edit-Regression über die kommittete SP11-Lane (die
+    committete Feldvergleich-Mechanik, unverändert)."""
+    l0 = lane_l0_anker()
+    l0_re = lane_l0_anker()
+    return {"result": l0,
+            "fields_ok": bool(l0.get("fields_ok")),
+            "first_detect_ok": bool(l0.get("first_detect_ok")),
+            "deterministic": l0 == l0_re}
+
+
+def lane_det(arm_a: Dict[str, Any], arm_b_run: Dict[str, Any]) -> Dict[str, Any]:
+    """Doppel-Läufe: Arm A und Arm B je frisch reproduziert, bitidentisch."""
+    a_re = arm_a_grounded()
+    b_re, _b_meta_re = arm_b_after_learning()
+    return {"arm_a_deterministic": a_re == arm_a,
+            "arm_b_deterministic": b_re == arm_b_run}
+
+
+def lane_zwilling() -> Dict[str, Any]:
+    a = arm_a_grounded()
+    a_plain = arm_a_plain()
+    b, b_meta = arm_b_after_learning()
+    m_direct = make_composite()
+    m_direct.wittgenstein.lexicon_game([LEX_PAIR], rounds=ROUNDS,
+                                       noise_level=0.0)
+    resolver_direct = m_direct.wittgenstein.resolve_lexical_ast("spiegel")
+    return {
+        "arm_a": a, "arm_a_plain": a_plain, "arm_b": b, "arm_b_meta": b_meta,
+        "resolver_direct": str(resolver_direct),
+        "verdicts_a": a["verdicts"], "verdicts_b": b["verdicts"],
+        "basis_a": a["final_basis"], "basis_b": b["final_basis"],
+        "basis_b_sizes": b["basis_sizes"],
+        "expansions_a": a["expansions"], "expansions_b": b["expansions"],
+        "batches_equal_grounded_plain": (
+            a["batch_asts"] == a_plain["batch_asts"]
+            and a["rule_names"] == a_plain["rule_names"]
+            and a["w_series"] == a_plain["w_series"]),
+        "batches_equal_a_b": (
+            a["batch_asts"] == b["batch_asts"]
+            and a["rule_names"] == b["rule_names"]
+            and a["w_series"] == b["w_series"]),
+    }
+
+
+def findings(twin: Dict[str, Any], det: Dict[str, Any],
+             l0: Dict[str, Any]) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    a = twin["arm_a"]
+    apr = twin["arm_a_plain"]
+    b = twin["arm_b"]
+    meta = twin["arm_b_meta"]
+    prof = a["profile"]
+
+    # --- sp12_l0_anker ---
+    rows.append({"id": "sp12_l0_anker",
+                 "data": {"fields_ok": l0["fields_ok"],
+                          "first_detect_ok": l0["first_detect_ok"],
+                          "deterministic": l0["deterministic"]},
+                 "assert": (l0["fields_ok"] and l0["first_detect_ok"]
+                            and l0["deterministic"]),
+                 "note": ("machines-Regression über die kommittete SP11-Lane — "
+                          "die committeten Feld-Serien bleiben bitidentisch")})
+
+    # --- sp12_det ---
+    rows.append({"id": "sp12_det",
+                 "data": {"arm_a": det["arm_a_deterministic"],
+                          "arm_b": det["arm_b_deterministic"]},
+                 "assert": det["arm_a_deterministic"]
+                 and det["arm_b_deterministic"],
+                 "note": "Zwilling-Doppel-Läufe bitidentisch"})
+
+    # --- sp12_t1_semantik ---
+    res_serie = meta["resonance_after"]
+    learned_all = all(meta["learned"])
+    nach_kandidaten = meta["profile_b"]["lexikon_kandidaten"]
+    nach_resonanz = meta["profile_b"]["lexikon_resonanzen"]
+    resolver_direct = twin["resolver_direct"]
+    rows.append({"id": "sp12_t1_semantik",
+                 "data": {"learned": meta["learned"],
+                          "resonance_after": res_serie,
+                          "resonance_final": res_serie[-1],
+                          "resolver_direct": resolver_direct,
+                          "nach_kandidaten": nach_kandidaten,
+                          "nach_resonanzen": nach_resonanz},
+                 "assert": (learned_all
+                            and res_serie[-1] >= TAU
+                            and resolver_direct == "('identity', 'x')"
+                            and nach_kandidaten == ["identity"]
+                            and float(nach_resonanz.get("identity", 0.0)) >= TAU
+                            and b["rows"][0]["lexical_ast"]
+                            == "('identity', 'x')"),
+                 "note": ("5 Lernrunden (noise_level=0.0) — Gebrauchs-Achse "
+                          "resonance_after[-1] >= tau; der Resolver löst "
+                          "direkt UND im Lauf zu ('identity', 'x') auf")})
+
+    # --- sp12_t2_rng_reinheit ---
+    rows.append({"id": "sp12_t2_rng_reinheit",
+                 "data": {"batches_a_plain": twin["batches_equal_grounded_plain"],
+                          "batches_a_b": twin["batches_equal_a_b"]},
+                 "assert": (twin["batches_equal_grounded_plain"]
+                            and twin["batches_equal_a_b"]),
+                 "note": ("Batch-ASTs + rule_names + w_series je Schritt "
+                          "identisch in A/A'/B — die Resolution ist reine "
+                          "Lexikon-Lesung (kein RNG-Zug)")})
+
+    # --- sp12_t3_scheidung ---
+    rows.append({"id": "sp12_t3_scheidung",
+                 "data": {"vor_resolution": a["lexical_asts"],
+                          "klang_dach_max": prof["formel_max"],
+                          "klang_dach_argmax": prof["formel_argmax"],
+                          "spiegel_formula": prof["spiegel_formula"]},
+                 "assert": (all(x is None for x in a["lexical_asts"])
+                            and twin["batches_equal_grounded_plain"]),
+                 "note": ("Vor dem Spiel löst der SH-72-Fallback NICHT auf "
+                          "(Klang-Dach als DATEN; die LEXIKON-Gegenwart ist "
+                          "die Scheidung); opt-in-Default-Invarianz A == A'")})
+
+    # --- sp12_t4_verdikt ---
+    rows.append({"id": "sp12_t4_verdikt",
+                 "data": {"verdicts_a": a["verdicts"],
+                          "verdicts_b": b["verdicts"],
+                          "basis_a": a["final_basis"],
+                          "basis_b_sizes": b["basis_sizes"],
+                          "expansions_a": a["expansions"],
+                          "expansions_b": b["expansions"]},
+                 "assert": (all(v == "HALTED" for v in a["verdicts"])
+                            and a["final_basis"] == 3
+                            and a["expansions"] == []
+                            and b["verdicts"][0] == "LOOP"
+                            and b["verdicts"][1] == "LOOP"
+                            and b["basis_sizes"][0] == 5
+                            and b["basis_sizes"][1] == 7
+                            and b["expansions"][:2]
+                            == ["step1:LOOP", "step2:LOOP"]),
+                 "note": ("Arm B: das gelernte Wort wird Programm — "
+                          "('identity','x') ist Tautologie -> LOOP -> "
+                          "+2 Basis-Terme je LOOP (Turing-innerer Expand "
+                          ":241-246 + Composite :132-134); Schritte 3-6 "
+                          "DATEN (Pool-Mechanik)")})
+
+    for r in rows:
+        r["data"] = {k: (v if not isinstance(v, list) else v[:12])
+                     for k, v in r["data"].items()}
+    return rows
+
+
+def main() -> int:
+    print("== SP12 — Lexical Grounding: das gelernte Wort wird Programm ==")
+    print("Canon: composite.py:108-140/:66-92, turing_machine.py:144-157/:241-246,")
+    print("       wittgenstein_machine.py:49-50/:152-246/:342-381")
+    print("Prereg tau = 0.85; 5 Lernrunden, noise_level 0.0; seed 42; 6 Schritte")
+
+    l0 = lane_l0_anchor()
+    twin = lane_zwilling()
+    det = lane_det(twin["arm_a"], twin["arm_b"])
+    rows = findings(twin, det, l0)
+
+    print()
+    print("BEFUNDE:")
+    for r in rows:
+        print(f"  {r['id']:<26} {'PASS' if r['assert'] else 'FAIL'}")
+    print()
+    print("NOTIZEN:")
+    for r in rows:
+        print(f"  - {r['id']}: {r['note']}; "
+              + "; ".join(f"{k}={v}" for k, v in r["data"].items()))
+
+    fails = [r for r in rows if not r["assert"]]
+    print()
+    b = twin["arm_b"]
+    print("Zwilling (seed 42, 6 Schritte, obj='spiegel'):")
+    print("  Arm A verdicts:", twin["verdicts_a"], "| final_basis",
+          twin["basis_a"], "| expansions", twin["expansions_a"])
+    print("  Arm B verdicts:", twin["verdicts_b"], "| final_basis",
+          twin["basis_b"], "| expansions", twin["expansions_b"])
+    print("  Arm B basis-Verlauf:", twin["basis_b_sizes"])
+    print("  Arm B lexical:", b["rows"][0]["lexical_word"], "->",
+          b["rows"][0]["lexical_ast"])
+    print("  resonance_after:", twin["arm_b_meta"]["resonance_after"])
+    print()
+    print(f"BILANZ: {len(rows) - len(fails)} PASS; {len(fails)} FEHLGESCHLAGEN"
+          f"{', unverwartet' if fails else ''}; 0 OFFEN")
+    print(f"JSON: {JSON_PATH}")
+
+    payload = {"l0": l0, "twin": twin, "det": det, "findings": rows,
+               "all_pass": not fails, "open": []}
+    with open(JSON_PATH, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, indent=2, sort_keys=True, ensure_ascii=False)
+
+    if fails:
+        print("ROT — Bands verletzt (Daten, kein Band-Schieben): "
+              + ", ".join(r["id"] for r in fails))
+        return 1
+    print("GRUEN — Semantische Kausalität geschlossen (das gelernte Wort wird Programm).")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+==============================================================================
+### FILE: scratches/lexical_grounding_experiment.log
+### bytes: 2762   lines: 31
+==============================================================================
+== SP12 — Lexical Grounding: das gelernte Wort wird Programm ==
+Canon: composite.py:108-140/:66-92, turing_machine.py:144-157/:241-246,
+       wittgenstein_machine.py:49-50/:152-246/:342-381
+Prereg tau = 0.85; 5 Lernrunden, noise_level 0.0; seed 42; 6 Schritte
+
+BEFUNDE:
+  sp12_l0_anker              PASS
+  sp12_det                   PASS
+  sp12_t1_semantik           PASS
+  sp12_t2_rng_reinheit       PASS
+  sp12_t3_scheidung          PASS
+  sp12_t4_verdikt            PASS
+
+NOTIZEN:
+  - sp12_l0_anker: machines-Regression über die kommittete SP11-Lane — die committeten Feld-Serien bleiben bitidentisch; fields_ok=True; first_detect_ok=True; deterministic=True
+  - sp12_det: Zwilling-Doppel-Läufe bitidentisch; arm_a=True; arm_b=True
+  - sp12_t1_semantik: 5 Lernrunden (noise_level=0.0) — Gebrauchs-Achse resonance_after[-1] >= tau; der Resolver löst direkt UND im Lauf zu ('identity', 'x') auf; learned=[True, True, True, True, True]; resonance_after=[0.744742, 0.954255, 0.992537, 0.998802, 0.999808]; resonance_final=0.999808; resolver_direct=('identity', 'x'); nach_kandidaten=['identity']; nach_resonanzen={'identity': 0.999808}
+  - sp12_t2_rng_reinheit: Batch-ASTs + rule_names + w_series je Schritt identisch in A/A'/B — die Resolution ist reine Lexikon-Lesung (kein RNG-Zug); batches_a_plain=True; batches_a_b=True
+  - sp12_t3_scheidung: Vor dem Spiel löst der SH-72-Fallback NICHT auf (Klang-Dach als DATEN; die LEXIKON-Gegenwart ist die Scheidung); opt-in-Default-Invarianz A == A'; vor_resolution=[None, None, None, None, None, None]; klang_dach_max=0.983123; klang_dach_argmax=min; spiegel_formula={'k': 2, 'idx': 25, 'kind': 'exp'}
+  - sp12_t4_verdikt: Arm B: das gelernte Wort wird Programm — ('identity','x') ist Tautologie -> LOOP -> +2 Basis-Terme je LOOP (Turing-innerer Expand :241-246 + Composite :132-134); Schritte 3-6 DATEN (Pool-Mechanik); verdicts_a=['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED']; verdicts_b=['LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP']; basis_a=3; basis_b_sizes=[5, 7, 9, 9, 9, 9]; expansions_a=[]; expansions_b=['step1:LOOP', 'step2:LOOP', 'step3:LOOP']
+
+Zwilling (seed 42, 6 Schritte, obj='spiegel'):
+  Arm A verdicts: ['HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED', 'HALTED'] | final_basis 3 | expansions []
+  Arm B verdicts: ['LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP', 'LOOP'] | final_basis 9 | expansions ['step1:LOOP', 'step2:LOOP', 'step3:LOOP']
+  Arm B basis-Verlauf: [5, 7, 9, 9, 9, 9]
+  Arm B lexical: spiegel -> ('identity', 'x')
+  resonance_after: [0.744742, 0.954255, 0.992537, 0.998802, 0.999808]
+
+BILANZ: 6 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+JSON: scratches/lexical_grounding_experiment.json
+GRUEN — Semantische Kausalität geschlossen (das gelernte Wort wird Programm).
+
+
+==============================================================================
+### FILE: scratches/lexical_grounding_experiment.json
+### bytes: 48969   lines: 1575
+==============================================================================
+{
+  "all_pass": true,
+  "det": {
+    "arm_a_deterministic": true,
+    "arm_b_deterministic": true
+  },
+  "findings": [
+    {
+      "assert": true,
+      "data": {
+        "deterministic": true,
+        "fields_ok": true,
+        "first_detect_ok": true
+      },
+      "id": "sp12_l0_anker",
+      "note": "machines-Regression über die kommittete SP11-Lane — die committeten Feld-Serien bleiben bitidentisch"
+    },
+    {
+      "assert": true,
+      "data": {
+        "arm_a": true,
+        "arm_b": true
+      },
+      "id": "sp12_det",
+      "note": "Zwilling-Doppel-Läufe bitidentisch"
+    },
+    {
+      "assert": true,
+      "data": {
+        "learned": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "nach_kandidaten": [
+          "identity"
+        ],
+        "nach_resonanzen": {
+          "identity": 0.999808
+        },
+        "resolver_direct": "('identity', 'x')",
+        "resonance_after": [
+          0.744742,
+          0.954255,
+          0.992537,
+          0.998802,
+          0.999808
+        ],
+        "resonance_final": 0.999808
+      },
+      "id": "sp12_t1_semantik",
+      "note": "5 Lernrunden (noise_level=0.0) — Gebrauchs-Achse resonance_after[-1] >= tau; der Resolver löst direkt UND im Lauf zu ('identity', 'x') auf"
+    },
+    {
+      "assert": true,
+      "data": {
+        "batches_a_b": true,
+        "batches_a_plain": true
+      },
+      "id": "sp12_t2_rng_reinheit",
+      "note": "Batch-ASTs + rule_names + w_series je Schritt identisch in A/A'/B — die Resolution ist reine Lexikon-Lesung (kein RNG-Zug)"
+    },
+    {
+      "assert": true,
+      "data": {
+        "klang_dach_argmax": "min",
+        "klang_dach_max": 0.983123,
+        "spiegel_formula": {
+          "idx": 25,
+          "k": 2,
+          "kind": "exp"
+        },
+        "vor_resolution": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "id": "sp12_t3_scheidung",
+      "note": "Vor dem Spiel löst der SH-72-Fallback NICHT auf (Klang-Dach als DATEN; die LEXIKON-Gegenwart ist die Scheidung); opt-in-Default-Invarianz A == A'"
+    },
+    {
+      "assert": true,
+      "data": {
+        "basis_a": 3,
+        "basis_b_sizes": [
+          5,
+          7,
+          9,
+          9,
+          9,
+          9
+        ],
+        "expansions_a": [],
+        "expansions_b": [
+          "step1:LOOP",
+          "step2:LOOP",
+          "step3:LOOP"
+        ],
+        "verdicts_a": [
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED",
+          "HALTED"
+        ],
+        "verdicts_b": [
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP",
+          "LOOP"
+        ]
+      },
+      "id": "sp12_t4_verdikt",
+      "note": "Arm B: das gelernte Wort wird Programm — ('identity','x') ist Tautologie -> LOOP -> +2 Basis-Terme je LOOP (Turing-innerer Expand :241-246 + Composite :132-134); Schritte 3-6 DATEN (Pool-Mechanik)"
+    }
+  ],
+  "l0": {
+    "deterministic": true,
+    "fields_ok": true,
+    "first_detect_ok": true,
+    "result": {
+      "fields_ok": true,
+      "first_detect_ok": true,
+      "kripke": {
+        "checks": {
+          "expansions": true,
+          "final_basis": true,
+          "gaps": true,
+          "paradigm_detected": true,
+          "paradigm_ratio": true,
+          "verdicts": true
+        },
+        "run": {
+          "basis_size": 7,
+          "expansions": [
+            "step5:LOOP",
+            "step9:LOOP",
+            "step11:paradigm",
+            "step12:paradigm",
+            "step15:paradigm"
+          ],
+          "final_basis": 7,
+          "g_series": [
+            0.8622746589183378,
+            1.3702044925908134,
+            1.1241707503045695,
+            0.8389570498201602,
+            1.0398535844897427,
+            0.5302965550343653,
+            0.2984547296486207,
+            0.2798236873853652,
+            0.5314271260708487,
+            0.12724860813754799,
+            0.37036170033635746,
+            0.19955206051912738,
+            0.04079828317833693,
+            0.0581515868423452,
+            0.247485844265048,
+            0.10778557098568173
+          ],
+          "gap_series": [
+            0.6763136177876604,
+            0.623401469752498,
+            1.3747230834351065,
+            2.94631634994272,
+            0.5132845003854745,
+            1.3989873331597389,
+            5.099479909887874,
+            5.093269562466789,
+            0.9104755620236457,
+            6.3757432027188505,
+            1.1234537001121592,
+            1.7331836035064798,
+            8.680257427734778,
+            8.686041862289448,
+            2.7491610591997566,
+            4.535926273663018
+          ],
+          "para_steps": [
+            11,
+            12,
+            15
+          ],
+          "rows": [
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8622746589183378,
+              "g_ratio": null,
+              "gap": 0.6763136177876604,
+              "new_expansions": [],
+              "rule_name": "(x power exp((x add x)))",
+              "step": 1,
+              "t_count": 2,
+              "t_gap": 0.6666664444445185,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.499999750000125
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.3702044925908134,
+              "g_ratio": null,
+              "gap": 0.623401469752498,
+              "new_expansions": [],
+              "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+              "step": 2,
+              "t_count": 7,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.1241707503045695,
+              "g_ratio": null,
+              "gap": 1.3747230834351065,
+              "new_expansions": [],
+              "rule_name": "(2.72 divide (2.00 subtract x))",
+              "step": 3,
+              "t_count": 8,
+              "t_gap": 2.99999850000075,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8389570498201602,
+              "g_ratio": null,
+              "gap": 2.94631634994272,
+              "new_expansions": [],
+              "rule_name": "sqrt(1.00)",
+              "step": 4,
+              "t_count": 8,
+              "t_gap": 7.9999920000080005,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.0398535844897427,
+              "g_ratio": null,
+              "gap": 0.5132845003854745,
+              "new_expansions": [
+                "step5:LOOP"
+              ],
+              "rule_name": "log(square(identity(x)))",
+              "step": 5,
+              "t_count": 13,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "LOOP",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.5302965550343653,
+              "g_ratio": null,
+              "gap": 1.3989873331597389,
+              "new_expansions": [],
+              "rule_name": "((sqrt(x) divide x) add 2.00)",
+              "step": 6,
+              "t_count": 15,
+              "t_gap": 3.6666654444448517,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2984547296486207,
+              "g_ratio": null,
+              "gap": 5.099479909887874,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 7,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2798236873853652,
+              "g_ratio": null,
+              "gap": 5.093269562466789,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 8,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.5314271260708487,
+              "g_ratio": null,
+              "gap": 0.9104755620236457,
+              "new_expansions": [
+                "step9:LOOP"
+              ],
+              "rule_name": "identity(x)",
+              "step": 9,
+              "t_count": 19,
+              "t_gap": 2.199999560000088,
+              "transitions": 4,
+              "verdict": "LOOP",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.12724860813754799,
+              "g_ratio": 0.3375536891768431,
+              "gap": 6.3757432027188505,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 10,
+              "t_count": 19,
+              "t_gap": 18.999981000019,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": true,
+              "c_ratio": 3.077570931133521,
+              "g_detected": false,
+              "g_gap": 0.37036170033635746,
+              "g_ratio": 0.33452276678733855,
+              "gap": 1.1234537001121592,
+              "new_expansions": [
+                "step11:paradigm"
+              ],
+              "rule_name": "(((x divide x) add x) min (x multiply (x max x)))",
+              "step": 11,
+              "t_count": 23,
+              "t_gap": 2.99999940000012,
+              "transitions": 4,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": true,
+              "c_ratio": 2.9633360477238924,
+              "g_detected": false,
+              "g_gap": 0.19955206051912738,
+              "g_ratio": 0.3482358598577179,
+              "gap": 1.7331836035064798,
+              "new_expansions": [
+                "step12:paradigm"
+              ],
+              "rule_name": "(sqrt(1.00) subtract ((0.00 max x) divide 0.00))",
+              "step": 12,
+              "t_count": 26,
+              "t_gap": 4.999998750000312,
+              "transitions": 3,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": 1.6885456944940591,
+              "g_detected": false,
+              "g_gap": 0.04079828317833693,
+              "g_ratio": 0.32014604606114716,
+              "gap": 8.680257427734778,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 13,
+              "t_count": 26,
+              "t_gap": 25.999974000026,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": 1.6990493558986421,
+              "g_detected": false,
+              "g_gap": 0.0581515868423452,
+              "g_ratio": 0.20842236088700422,
+              "gap": 8.686041862289448,
+              "new_expansions": [],
+              "rule_name": "exp(x)",
+              "step": 14,
+              "t_count": 26,
+              "t_gap": 25.999974000026,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": true,
+              "c_ratio": 2.569057452219217,
+              "g_detected": false,
+              "g_gap": 0.247485844265048,
+              "g_ratio": 0.2617123953450734,
+              "gap": 2.7491610591997566,
+              "new_expansions": [
+                "step15:paradigm"
+              ],
+              "rule_name": "(log(negate(x)) add x)",
+              "step": 15,
+              "t_count": 28,
+              "t_gap": 7.999997333334222,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 7,
+              "c_detected": false,
+              "c_ratio": 1.8368857696910825,
+              "g_detected": false,
+              "g_gap": 0.10778557098568173,
+              "g_ratio": 0.1950745945536218,
+              "gap": 4.535926273663018,
+              "new_expansions": [],
+              "rule_name": "(2.72 subtract log(x))",
+              "step": 16,
+              "t_count": 29,
+              "t_gap": 13.499993250003374,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            }
+          ],
+          "t_series": [
+            0.6666664444445185,
+            0.49999991666668053,
+            2.99999850000075,
+            7.9999920000080005,
+            0.49999991666668053,
+            3.6666654444448517,
+            14.999985000015002,
+            14.999985000015002,
+            2.199999560000088,
+            18.999981000019,
+            2.99999940000012,
+            4.999998750000312,
+            25.999974000026,
+            25.999974000026,
+            7.999997333334222,
+            13.499993250003374
+          ],
+          "trace": [
+            "step=1 rule=(x power exp((x add x))) verdict=HALTED transitions=2 gap_mean=0.676314 trend=UNKNOWN",
+            "step=2 rule=(((x subtract x) subtract (x multiply x)) subtract verdict=HALTED transitions=5 gap_mean=0.623401 trend=UNKNOWN",
+            "step=3 rule=(2.72 divide (2.00 subtract x)) verdict=HALTED transitions=1 gap_mean=1.374723 trend=UNKNOWN",
+            "step=4 rule=sqrt(1.00) verdict=HALTED transitions=0 gap_mean=2.946316 trend=UNKNOWN",
+            "step=5 rule=log(square(identity(x))) verdict=LOOP transitions=5 gap_mean=0.513285 trend=RISING",
+            "step=6 rule=((sqrt(x) divide x) add 2.00) verdict=HALTED transitions=2 gap_mean=1.398987 trend=RISING",
+            "step=7 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.099480 trend=RISING",
+            "step=8 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.093270 trend=RISING",
+            "step=9 rule=identity(x) verdict=LOOP transitions=4 gap_mean=0.910476 trend=RISING",
+            "step=10 rule=x verdict=HALTED transitions=0 gap_mean=6.375743 trend=RISING",
+            "step=11 rule=(((x divide x) add x) min (x multiply (x max x))) verdict=HALTED transitions=4 gap_mean=1.123454 trend=RISING",
+            "step=12 rule=(sqrt(1.00) subtract ((0.00 max x) divide 0.00)) verdict=HALTED transitions=3 gap_mean=1.733184 trend=RISING",
+            "step=13 rule=x verdict=HALTED transitions=0 gap_mean=8.680257 trend=STABLE",
+            "step=14 rule=exp(x) verdict=HALTED transitions=0 gap_mean=8.686042 trend=RISING",
+            "step=15 rule=(log(negate(x)) add x) verdict=HALTED transitions=2 gap_mean=2.749161 trend=STABLE",
+            "step=16 rule=(2.72 subtract log(x)) verdict=HALTED transitions=1 gap_mean=4.535926 trend=RISING"
+          ],
+          "verdict_exp_steps": [
+            5,
+            9
+          ],
+          "w_series": [
+            0.499999750000125,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "kripke_attribution": [
+        {
+          "c_detected": true,
+          "c_ratio": 3.077570931133521,
+          "g_detected": false,
+          "g_ratio": 0.33452276678733855,
+          "step": 11
+        },
+        {
+          "c_detected": true,
+          "c_ratio": 2.9633360477238924,
+          "g_detected": false,
+          "g_ratio": 0.3482358598577179,
+          "step": 12
+        },
+        {
+          "c_detected": true,
+          "c_ratio": 2.569057452219217,
+          "g_detected": false,
+          "g_ratio": 0.2617123953450734,
+          "step": 15
+        }
+      ],
+      "quus": {
+        "checks": {
+          "expansions": true,
+          "final_basis": true,
+          "gaps": true,
+          "paradigm_detected": true,
+          "paradigm_ratio": true,
+          "verdicts": true
+        },
+        "run": {
+          "basis_size": 5,
+          "expansions": [
+            "step5:LOOP",
+            "step11:paradigm",
+            "step12:paradigm",
+            "step15:paradigm"
+          ],
+          "final_basis": 5,
+          "g_series": [
+            0.8622746589183378,
+            1.3702044925908134,
+            1.1241707503045695,
+            0.8389570498201602,
+            1.0398535844897427,
+            0.5302965550343653,
+            0.2984547296486207,
+            0.2798236873853652,
+            0.3559874716806255,
+            0.1833098992500131,
+            0.45583167542631237,
+            0.2172602589329974,
+            0.05077879683156199,
+            0.06853173050570273,
+            0.257258702307425,
+            0.11440783011325406
+          ],
+          "gap_series": [
+            0.6763136177876604,
+            0.623401469752498,
+            1.3747230834351065,
+            2.94631634994272,
+            0.5132845003854745,
+            1.3989873331597389,
+            5.099479909887874,
+            5.093269562466789,
+            2.4536696982617765,
+            5.396097965588672,
+            0.9519437318088029,
+            1.4890863988110876,
+            7.683585265618188,
+            7.689502910176235,
+            2.4190854563249564,
+            4.038133943372085
+          ],
+          "para_steps": [
+            11,
+            12,
+            15
+          ],
+          "rows": [
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8622746589183378,
+              "g_ratio": null,
+              "gap": 0.6763136177876604,
+              "new_expansions": [],
+              "rule_name": "(x power exp((x add x)))",
+              "step": 1,
+              "t_count": 2,
+              "t_gap": 0.6666664444445185,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.499999750000125
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.3702044925908134,
+              "g_ratio": null,
+              "gap": 0.623401469752498,
+              "new_expansions": [],
+              "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+              "step": 2,
+              "t_count": 7,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.1241707503045695,
+              "g_ratio": null,
+              "gap": 1.3747230834351065,
+              "new_expansions": [],
+              "rule_name": "(2.72 divide (2.00 subtract x))",
+              "step": 3,
+              "t_count": 8,
+              "t_gap": 2.99999850000075,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 3,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.8389570498201602,
+              "g_ratio": null,
+              "gap": 2.94631634994272,
+              "new_expansions": [],
+              "rule_name": "sqrt(1.00)",
+              "step": 4,
+              "t_count": 8,
+              "t_gap": 7.9999920000080005,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 1.0398535844897427,
+              "g_ratio": null,
+              "gap": 0.5132845003854745,
+              "new_expansions": [
+                "step5:LOOP"
+              ],
+              "rule_name": "log(square(identity(x)))",
+              "step": 5,
+              "t_count": 13,
+              "t_gap": 0.49999991666668053,
+              "transitions": 5,
+              "verdict": "LOOP",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.5302965550343653,
+              "g_ratio": null,
+              "gap": 1.3989873331597389,
+              "new_expansions": [],
+              "rule_name": "((sqrt(x) divide x) add 2.00)",
+              "step": 6,
+              "t_count": 15,
+              "t_gap": 3.6666654444448517,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2984547296486207,
+              "g_ratio": null,
+              "gap": 5.099479909887874,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 7,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.2798236873853652,
+              "g_ratio": null,
+              "gap": 5.093269562466789,
+              "new_expansions": [],
+              "rule_name": "1.00",
+              "step": 8,
+              "t_count": 15,
+              "t_gap": 14.999985000015002,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.3559874716806255,
+              "g_ratio": null,
+              "gap": 2.4536696982617765,
+              "new_expansions": [],
+              "rule_name": "(sin(x) add 0.00)",
+              "step": 9,
+              "t_count": 16,
+              "t_gap": 6.99999650000175,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.005025123102953219
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": null,
+              "g_detected": false,
+              "g_gap": 0.1833098992500131,
+              "g_ratio": 0.3147518270589336,
+              "gap": 5.396097965588672,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 10,
+              "t_count": 16,
+              "t_gap": 15.999984000016001,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.004999997500001254
+            },
+            {
+              "basis_size": 5,
+              "c_detected": true,
+              "c_ratio": 3.1694432582884544,
+              "g_detected": false,
+              "g_gap": 0.45583167542631237,
+              "g_ratio": 0.32746558022208344,
+              "gap": 0.9519437318088029,
+              "new_expansions": [
+                "step11:paradigm"
+              ],
+              "rule_name": "(((x divide x) add x) min (x multiply (x max x)))",
+              "step": 11,
+              "t_count": 20,
+              "t_gap": 2.399999520000096,
+              "transitions": 4,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": true,
+              "c_ratio": 3.0257872220755844,
+              "g_detected": false,
+              "g_gap": 0.2172602589329974,
+              "g_ratio": 0.3444958454628399,
+              "gap": 1.4890863988110876,
+              "new_expansions": [
+                "step12:paradigm"
+              ],
+              "rule_name": "(sqrt(1.00) subtract ((0.00 max x) divide 0.00))",
+              "step": 12,
+              "t_count": 23,
+              "t_gap": 4.249998937500266,
+              "transitions": 3,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": 1.7049413564038214,
+              "g_detected": false,
+              "g_gap": 0.05077879683156199,
+              "g_ratio": 0.318577412148047,
+              "gap": 7.683585265618188,
+              "new_expansions": [],
+              "rule_name": "x",
+              "step": 13,
+              "t_count": 23,
+              "t_gap": 22.999977000023,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": 1.622439559069387,
+              "g_detected": false,
+              "g_gap": 0.06853173050570273,
+              "g_ratio": 0.2621304278815178,
+              "gap": 7.689502910176235,
+              "new_expansions": [],
+              "rule_name": "exp(x)",
+              "step": 14,
+              "t_count": 23,
+              "t_gap": 22.999977000023,
+              "transitions": 0,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": true,
+              "c_ratio": 2.0703428448812584,
+              "g_detected": false,
+              "g_gap": 0.257258702307425,
+              "g_ratio": 0.3049858716722229,
+              "gap": 2.4190854563249564,
+              "new_expansions": [
+                "step15:paradigm"
+              ],
+              "rule_name": "(log(negate(x)) add x)",
+              "step": 15,
+              "t_count": 25,
+              "t_gap": 6.999997666667444,
+              "transitions": 2,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            },
+            {
+              "basis_size": 5,
+              "c_detected": false,
+              "c_ratio": 1.5822299814642686,
+              "g_detected": false,
+              "g_gap": 0.11440783011325406,
+              "g_ratio": 0.21230206166063492,
+              "gap": 4.038133943372085,
+              "new_expansions": [],
+              "rule_name": "(2.72 subtract log(x))",
+              "step": 16,
+              "t_count": 26,
+              "t_gap": 11.999994000003,
+              "transitions": 1,
+              "verdict": "HALTED",
+              "w_gap": 0.0
+            }
+          ],
+          "t_series": [
+            0.6666664444445185,
+            0.49999991666668053,
+            2.99999850000075,
+            7.9999920000080005,
+            0.49999991666668053,
+            3.6666654444448517,
+            14.999985000015002,
+            14.999985000015002,
+            6.99999650000175,
+            15.999984000016001,
+            2.399999520000096,
+            4.249998937500266,
+            22.999977000023,
+            22.999977000023,
+            6.999997666667444,
+            11.999994000003
+          ],
+          "trace": [
+            "step=1 rule=(x power exp((x add x))) verdict=HALTED transitions=2 gap_mean=0.676314 trend=UNKNOWN",
+            "step=2 rule=(((x subtract x) subtract (x multiply x)) subtract verdict=HALTED transitions=5 gap_mean=0.623401 trend=UNKNOWN",
+            "step=3 rule=(2.72 divide (2.00 subtract x)) verdict=HALTED transitions=1 gap_mean=1.374723 trend=UNKNOWN",
+            "step=4 rule=sqrt(1.00) verdict=HALTED transitions=0 gap_mean=2.946316 trend=UNKNOWN",
+            "step=5 rule=log(square(identity(x))) verdict=LOOP transitions=5 gap_mean=0.513285 trend=RISING",
+            "step=6 rule=((sqrt(x) divide x) add 2.00) verdict=HALTED transitions=2 gap_mean=1.398987 trend=RISING",
+            "step=7 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.099480 trend=RISING",
+            "step=8 rule=1.00 verdict=HALTED transitions=0 gap_mean=5.093270 trend=RISING",
+            "step=9 rule=(sin(x) add 0.00) verdict=HALTED transitions=1 gap_mean=2.453670 trend=RISING",
+            "step=10 rule=x verdict=HALTED transitions=0 gap_mean=5.396098 trend=RISING",
+            "step=11 rule=(((x divide x) add x) min (x multiply (x max x))) verdict=HALTED transitions=4 gap_mean=0.951944 trend=RISING",
+            "step=12 rule=(sqrt(1.00) subtract ((0.00 max x) divide 0.00)) verdict=HALTED transitions=3 gap_mean=1.489086 trend=RISING",
+            "step=13 rule=x verdict=HALTED transitions=0 gap_mean=7.683585 trend=STABLE",
+            "step=14 rule=exp(x) verdict=HALTED transitions=0 gap_mean=7.689503 trend=RISING",
+            "step=15 rule=(log(negate(x)) add x) verdict=HALTED transitions=2 gap_mean=2.419085 trend=STABLE",
+            "step=16 rule=(2.72 subtract log(x)) verdict=HALTED transitions=1 gap_mean=4.038134 trend=STABLE"
+          ],
+          "verdict_exp_steps": [
+            5
+          ],
+          "w_series": [
+            0.499999750000125,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.005025123102953219,
+            0.004999997500001254,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "open": [],
+  "twin": {
+    "arm_a": {
+      "basis_sizes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "batch_asts": [
+        "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+        "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+        "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+        "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+        "0.0",
+        "(np.str_('sqrt'), 'x')"
+      ],
+      "expansions": [],
+      "final_basis": 3,
+      "lexical_asts": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "profile": {
+        "formel_achsen": {
+          "abs": -0.025623,
+          "add": 0.050251,
+          "cos": 0.953649,
+          "divide": 0.704124,
+          "exp": 0.843862,
+          "identity": 0.044724,
+          "log": 0.854018,
+          "max": 0.92689,
+          "min": 0.983123,
+          "multiply": 0.871041,
+          "negate": 0.691442,
+          "power": 0.704124,
+          "sin": 0.866285,
+          "sqrt": 0.982989,
+          "square": 0.050251,
+          "subtract": 0.056877
+        },
+        "formel_argmax": "min",
+        "formel_max": 0.983123,
+        "lexikon_kandidaten": [],
+        "lexikon_resonanzen": {},
+        "lexikon_woerter": [],
+        "spiegel_formula": {
+          "idx": 25,
+          "k": 2,
+          "kind": "exp"
+        }
+      },
+      "rows": [
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+          "g_gap": 0.739737,
+          "gap": 0.679912,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "step": 1,
+          "step_index": 1,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.5
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+          "g_gap": 0.789614,
+          "gap": 0.263205,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+          "step": 2,
+          "step_index": 2,
+          "t_gap": 0.0,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+          "g_gap": 0.869895,
+          "gap": 0.706632,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "(((x min x) multiply (x divide x)) power x)",
+          "step": 3,
+          "step_index": 3,
+          "t_gap": 1.25,
+          "transitions": 3,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+          "g_gap": 0.852614,
+          "gap": 0.617538,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "((sin(x) subtract x) subtract ((x subtract x) divi",
+          "step": 4,
+          "step_index": 4,
+          "t_gap": 1.0,
+          "transitions": 5,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "0.0",
+          "g_gap": 0.423229,
+          "gap": 5.474404,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "0.00",
+          "step": 5,
+          "step_index": 5,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('sqrt'), 'x')",
+          "g_gap": 0.369839,
+          "gap": 5.456608,
+          "lexical_ast": null,
+          "lexical_word": "spiegel",
+          "rule_name": "sqrt(x)",
+          "step": 6,
+          "step_index": 6,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        }
+      ],
+      "rule_names": [
+        "(log((x max x)) divide ((x divide x) max 2.00))",
+        "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+        "(((x min x) multiply (x divide x)) power x)",
+        "((sin(x) subtract x) subtract ((x subtract x) divi",
+        "0.00",
+        "sqrt(x)"
+      ],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "w_series": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arm_a_plain": {
+      "basis_sizes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "batch_asts": [
+        "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+        "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+        "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+        "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+        "0.0",
+        "(np.str_('sqrt'), 'x')"
+      ],
+      "expansions": [],
+      "final_basis": 3,
+      "lexical_asts": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "rows": [
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+          "g_gap": 0.739737,
+          "gap": 0.679912,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "step": 1,
+          "step_index": 1,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.5
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+          "g_gap": 0.789614,
+          "gap": 0.263205,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+          "step": 2,
+          "step_index": 2,
+          "t_gap": 0.0,
+          "transitions": 4,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+          "g_gap": 0.869895,
+          "gap": 0.706632,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "(((x min x) multiply (x divide x)) power x)",
+          "step": 3,
+          "step_index": 3,
+          "t_gap": 1.25,
+          "transitions": 3,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+          "g_gap": 0.852614,
+          "gap": 0.617538,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "((sin(x) subtract x) subtract ((x subtract x) divi",
+          "step": 4,
+          "step_index": 4,
+          "t_gap": 1.0,
+          "transitions": 5,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "0.0",
+          "g_gap": 0.423229,
+          "gap": 5.474404,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "0.00",
+          "step": 5,
+          "step_index": 5,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 3,
+          "batch_ast": "(np.str_('sqrt'), 'x')",
+          "g_gap": 0.369839,
+          "gap": 5.456608,
+          "lexical_ast": null,
+          "lexical_word": null,
+          "rule_name": "sqrt(x)",
+          "step": 6,
+          "step_index": 6,
+          "t_gap": 15.999984,
+          "transitions": 0,
+          "verdict": "HALTED",
+          "w_gap": 0.0
+        }
+      ],
+      "rule_names": [
+        "(log((x max x)) divide ((x divide x) max 2.00))",
+        "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+        "(((x min x) multiply (x divide x)) power x)",
+        "((sin(x) subtract x) subtract ((x subtract x) divi",
+        "0.00",
+        "sqrt(x)"
+      ],
+      "verdicts": [
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED",
+        "HALTED"
+      ],
+      "w_series": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arm_b": {
+      "basis_sizes": [
+        5,
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "batch_asts": [
+        "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+        "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+        "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+        "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+        "0.0",
+        "(np.str_('sqrt'), 'x')"
+      ],
+      "expansions": [
+        "step1:LOOP",
+        "step2:LOOP",
+        "step3:LOOP"
+      ],
+      "final_basis": 9,
+      "lexical_asts": [
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')",
+        "('identity', 'x')"
+      ],
+      "rows": [
+        {
+          "basis_size": 5,
+          "batch_ast": "(np.str_('divide'), (np.str_('log'), (np.str_('max'), 'x', 'x')), (np.str_('max'), (np.str_('divide'), 'x', 'x'), np.float64(2.0)))",
+          "g_gap": 0.739737,
+          "gap": 0.679912,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "step": 1,
+          "step_index": 1,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.5
+        },
+        {
+          "basis_size": 7,
+          "batch_ast": "(np.str_('max'), (np.str_('subtract'), 'x', (np.str_('square'), 'x')), (np.str_('sqrt'), (np.str_('sqrt'), np.float64(3.141592653589793))))",
+          "g_gap": 0.789614,
+          "gap": 0.263205,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+          "step": 2,
+          "step_index": 2,
+          "t_gap": 0.0,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "(np.str_('power'), (np.str_('multiply'), (np.str_('min'), 'x', 'x'), (np.str_('divide'), 'x', 'x')), 'x')",
+          "g_gap": 0.932991,
+          "gap": 0.577664,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "(((x min x) multiply (x divide x)) power x)",
+          "step": 3,
+          "step_index": 3,
+          "t_gap": 0.8,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "(np.str_('subtract'), (np.str_('subtract'), (np.str_('sin'), 'x'), 'x'), (np.str_('divide'), (np.str_('subtract'), 'x', 'x'), (np.str_('sin'), 'x')))",
+          "g_gap": 0.792154,
+          "gap": 0.797385,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "((sin(x) subtract x) subtract ((x subtract x) divi",
+          "step": 4,
+          "step_index": 4,
+          "t_gap": 1.6,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "0.0",
+          "g_gap": 0.561568,
+          "gap": 0.987189,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "0.00",
+          "step": 5,
+          "step_index": 5,
+          "t_gap": 2.4,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        },
+        {
+          "basis_size": 9,
+          "batch_ast": "(np.str_('sqrt'), 'x')",
+          "g_gap": 0.41067,
+          "gap": 1.203556,
+          "lexical_ast": "('identity', 'x')",
+          "lexical_word": "spiegel",
+          "rule_name": "sqrt(x)",
+          "step": 6,
+          "step_index": 6,
+          "t_gap": 3.199999,
+          "transitions": 4,
+          "verdict": "LOOP",
+          "w_gap": 0.0
+        }
+      ],
+      "rule_names": [
+        "(log((x max x)) divide ((x divide x) max 2.00))",
+        "((x subtract square(x)) max sqrt(sqrt(3.14)))",
+        "(((x min x) multiply (x divide x)) power x)",
+        "((sin(x) subtract x) subtract ((x subtract x) divi",
+        "0.00",
+        "sqrt(x)"
+      ],
+      "verdicts": [
+        "LOOP",
+        "LOOP",
+        "LOOP",
+        "LOOP",
+        "LOOP",
+        "LOOP"
+      ],
+      "w_series": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arm_b_meta": {
+      "learned": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "profile_b": {
+        "formel_achsen": {
+          "abs": -0.018128,
+          "add": 0.035037,
+          "cos": 0.685827,
+          "divide": 0.487857,
+          "exp": 0.595777,
+          "identity": 0.999808,
+          "log": 0.60378,
+          "max": 0.662643,
+          "min": 0.716302,
+          "multiply": 0.617208,
+          "negate": 0.478183,
+          "power": 0.487857,
+          "sin": 0.613458,
+          "sqrt": 0.709839,
+          "square": 0.035037,
+          "subtract": 0.039676
+        },
+        "formel_argmax": "identity",
+        "formel_max": 0.999808,
+        "lexikon_kandidaten": [
+          "identity"
+        ],
+        "lexikon_resonanzen": {
+          "identity": 0.999808
+        },
+        "lexikon_woerter": [
+          "identity",
+          "spiegel"
+        ],
+        "spiegel_formula": {
+          "idx": 25,
+          "k": 2,
+          "kind": "exp"
+        }
+      },
+      "protocol": [
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.744742,
+          "round": 0,
+          "rule_name": "(log((x max x)) divide ((x divide x) max 2.00))",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.954255,
+          "round": 1,
+          "rule_name": "(log((x max x)) subtract x)",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.992537,
+          "round": 2,
+          "rule_name": "(x multiply x)",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.998802,
+          "round": 3,
+          "rule_name": "x",
+          "success_rate": 1.0
+        },
+        {
+          "learned": true,
+          "pair": [
+            "spiegel",
+            "identity"
+          ],
+          "resonance_after": 0.999808,
+          "round": 4,
+          "rule_name": "(x add x)",
+          "success_rate": 1.0
+        }
+      ],
+      "resonance_after": [
+        0.744742,
+        0.954255,
+        0.992537,
+        0.998802,
+        0.999808
+      ]
+    },
+    "basis_a": 3,
+    "basis_b": 9,
+    "basis_b_sizes": [
+      5,
+      7,
+      9,
+      9,
+      9,
+      9
+    ],
+    "batches_equal_a_b": true,
+    "batches_equal_grounded_plain": true,
+    "expansions_a": [],
+    "expansions_b": [
+      "step1:LOOP",
+      "step2:LOOP",
+      "step3:LOOP"
+    ],
+    "resolver_direct": "('identity', 'x')",
+    "verdicts_a": [
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED",
+      "HALTED"
+    ],
+    "verdicts_b": [
+      "LOOP",
+      "LOOP",
+      "LOOP",
+      "LOOP",
+      "LOOP",
+      "LOOP"
+    ]
+  }
 }
 
 ==============================================================================
