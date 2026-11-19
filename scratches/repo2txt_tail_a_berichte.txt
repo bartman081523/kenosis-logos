@@ -1,0 +1,3833 @@
+### FILE: scratches/laufprotokolle_befund_report.md
+### bytes: 36111   lines: 581
+==============================================================================
+# Befund-Report: Lauf-Protokolle der Götterdreiheit-Erweiterung
+
+Quellen (alle in `scratches/`): `argon_1b_machines_train.log` (Joint-6-Domänen-Lauf),
+`build_corpus_re_sync.log` (Korpus-Re-Auth + Phase-A), `verify_machines_full.log`
+(6-Stufen-Verifikation), plus `machine_registry.json` (Golden-Digests, version 2);
+ab §10 Experiment-Zyklen: `composite_oracle_experiment.log`,
+`sprachspiel_experiment.log`, `hermeneutik_experiment.log`.
+
+---
+
+## 1. Trainingslauf — 60 Schritte, Joint über 6 Domänen
+
+| Größe | Wert |
+| :--- | :--- |
+| Trainierbare Parameter (Freeze) | 239.616 von 2.245.605.632 (**0,01 %**) — nur Router-Gates; Basis/Embeddings/Attention/Shared Expert eingefroren |
+| CE+Ent-Loss | 4.8446 → 4.3638 (**−9,9 %**) |
+| Subspace-Sep-Loss | 0.2389 → 0.0370 (**−84,5 %**; nach ~30 Schritten weit konvergiert: 0.0500 → Rest 0.037) |
+| Zeit | 974.8 s (≈ 16,2 s/Schritt, CUDA) |
+| Korpus | `--corpus all` (6 Domänen × 24 = 72 Zeilen), sha `f6c0b5de…` |
+| Save-Modus | `router_diff`: 52 geänderte Keys (Gate.weight + expert_bias über 26 Layer) statt 5-GB-Vollkopie |
+
+**Korpus-Re-Auth (Re-Sync-Lauf):** die Signum-Korrektur (`err = actual − prediction`,
+uni_241:220) veränderte die Zahlenschwänze der Gödel-Trajektorien-Samples → kanonischer
+Rebuild `f6c0b5de…`, Phase-A-Baseline unverändert kohärent (TV zwischen Maschinen
+2,87–4,12 %), Expertenwahl je Domäne „plan-defaults (baseline collision)" (Baseline-Top-2
+kollidierten auf [1,4]/[1,0]; disjunkte Defaults {2,7}/{0,6}/{1,3} gegriffen).
+
+## 2. Entropie-Kalibrierung — Solls vs. Messwerte
+
+| Domäne | Ziel H | gemessen H | Δ | Top-2 (Anteile) |
+| :--- | :--- | :--- | :--- | :--- |
+| prose | 0.85 | 1.01 | +0.16 | E3 38.8 % / E7 38.2 % |
+| code | 1.35 | 1.42 | +0.07 | E4 33.1 % / E1 26.5 % |
+| math_logic | 1.85 | 1.67 | −0.18 | E5 35.4 % / E2 21.0 % |
+| **goedel** | **1.30** | **1.41** | **+0.11** | **E2 33.1 % / E7 30.7 %** |
+| **turing** | **1.65** | **1.57** | **−0.08** | **E6 32.6 % / E0 28.4 %** |
+| **wittgenstein** | **1.90** | **1.68** | **−0.22** | **E3 30.6 % / E1 28.2 %** |
+
+Alle sechs Domänen liegen in einem **±0.22-Band** um die Solls — die Hierarchie
+(Prosa eng → Sprachspiel breit) ist erhalten, keine Domäne hat das Soll übersprungen.
+Die Maschinen-H-Werte sind inzwischen als `trained_entropy` in der Registry
+persistiert (Herkunftsfeld `trained_entropy_source`; Presets persistieren `mean_h`
+selbst ab `cd6c009`).
+
+**Baselines:** vor dem Training alle 6 Domänen H≈2.06 (≈ ln 8 = 2.079, diffus) —
+das Training hat die Entropie-Hierarchie aus der diffusen Basis geformt.
+
+## 3. Routing-Trennung und Subspace-Kopplung
+
+- TV-Paare **vor**: 2.6–5.6 % (diffuse Basis) → **nach**: 40.3–71.1 %
+  (min code/wittgenstein 40.3 %, max math/prose 71.1 %).
+- Maschinen-Maschinen-Paare: goedel/turing 56.3 %, goedel/wittgenstein 55.8 %,
+  turing/wittgenstein 52,1 % — überdemäßig scharf getrennt bei nur 24 Samples/Domäne.
+- **Ko-Subspace-Kopplung (Befund, kein Fehler):** die Maschinen-Cluster überlappen
+  mit den Alt-Domänen-Stärken — E2/E6 (math), E3/E7 (prose), E0/E1 (code); E4/E5
+  bleiben Top-Anchor von Code/Math (Brücken-Subspace). Die Maschinen-Korpora sind
+  aus diesen Domänen-Stilen gebaut (Trajektorien-, AST-, Transitions-Formate), der
+  geteilte Subspace ist die *Anbindung* an das antrainierte Verständnis — genau das
+  Plan-Ziel „auf dem antrainierten Verständnis aufbauen“.
+
+## 4. Sprachinvarianz & Wissens-Erhalt
+
+| Messgröße | vor | nach | Befund |
+| :--- | :--- | :--- | :--- |
+| Math EN↔ZH (ungesehene Probes) | 5.5 % | 8.5 % | **Kosten-Note** (eine gegenläufige Bewegung; unter dem 20-%-Schwell) |
+| Math DE↔ZH | 4.5 % | 9.1 % | ebenso |
+| Prose EN↔ZH | 7.2 % | **3.1 %** | verbessert |
+| Trennung Math(EN)/Prose(EN) | 7.8 % | **70.6 %** | Domänen-Schärfe ≈ 9:1-Verhältnis |
+| Paris EN/DE | ✓ | ✓ | Basiswissen geschützt |
+
+## 5. Verifikation — alle 6 Stufen grün (Exit 0)
+
+| Stufe | Befund |
+| :--- | :--- |
+| 1 Mini-Smoke | Digests `1594f06485ef` (goedel) / `459575a8eb35` (turing) / `094df3c57a2f` (wittgenstein) / `660ffead6c40` (composite) — bitidentisch in 2 Läufen, NaN-frei |
+| 2 Korpus | 72 Zeilen, 24 je Domäne, kinds ≥ 3; Raw-Bytes == Registry-sha (roh-gelesen, universal-newline-Falle vermieden) |
+| 3 Canon-Parität | alle Kanon-Werte == Goldwerte (`parity/python_fixtures.json`) |
+| 4 SBCL-Parität | P1 bitgenau + P2 strukturell (Philosopher: len 52, thoughts 6) |
+| 5 Real-Lauf | steer Δ-TVs 0.362/0.390/0.411 (Δ-Semantik auf dem trainierten Router, Schwell 0.3), Anteil 1.000, `copy_`-Restaurierung True; Konvergenz 0.7437 → 0.3777; Trennung min 0.52 (Maschinen) / 0.40 (vs. Alt-Domänen); Invarianz 8.5/3.1 % + Paris |
+| 6 Regression | Paradigm ratio 2.60 RISING; Axiom-Expansion LOOP + „ALPHA“; Registry version 2 incl. Golden-Digests; compare-Suite unangetastet |
+
+**Kohärenz-Quercheck:** die Stufe-5-Re-Messung der Invarianz-Probes gibt bitidentisch
+die Trainings-Werte zurück (H 1.63/1.68/1.64/1.07/1.03/1.01, TVs 8.5/3.1/70.6) —
+der Verifikator misst dieselben Zahlen wie der Trainingslauf, keine Drift zwischen
+dem Save-Zeitpunkt und der Nach-Betrachtung.
+
+## 6. Notizen zu Log-Ordnung und Fehlalarmen
+
+- **Druck-Ordnung im Verifikations-Log:** die Invarianz-Tabelle steht *vor* STUFE 1,
+  weil Stufen-Findings gesammelt und am Ende gedruckt werden, während der
+  Invarianz-Druck von Stufe 5 während der Ausführung bereits erscheint — kein
+  Ausführung-Anomalie.
+- **Tokenizer-Warnung (`fix_mistral_regex`)** erscheint in allen drei Logs —
+  dokumentierter **Falsch-Positiv** (README, Tokenizer-Hinweis): der Test-Tokenizer
+  tokenisiert Proben token-für-token identisch zum Original, die Flag darf nicht
+  gesetzt werden.
+- **Idempotenz der Stufe 6:** `trained_entropy` wird aus `preset.mean_h` übernommen
+  bzw. ein vorhandener Messwert nicht auf null zurückgesetzt — mehrfache
+  Verifikationsläufe überschreiben keine Messwerte mehr.
+- **Mini-Digests sind umweltstabil innerhalb, nicht zwischen Umgebungen:** der
+  Goedel-Zweig rechnet `tanh(W @ state)` (BLAS-Matmul); ein venv-Lauf
+  (Stufe 1: `1594f06485ef`) und ein System-Python-Lauf (`1b0aee4e688b`)
+  unterscheiden sich in 1-ulp-Matmul-Reduktion bei identischem `gap0` (0.7437),
+  der composite-Digest folgt dem Goedel-Zweig. Turing/Wittgenstein (elementweise)
+  stimmen. Stufe 6 füllt die Mini-Digests (3-Schritt-Familie) selbst — kein
+  Golden-Ersatz nötig, kein Code-Drift (`machines/` unverändert seit `d1a6cee`).
+
+---
+
+## 7. Experiment: CompositeMachine — Oracle vs. In-Loop unter Preset-Steering
+
+(`scratches/smoke_composite_oracle.py` → `composite_oracle_experiment.log` / `.json`;
+6 Lanes à 16 Schritte, Seed 42, Checkpoint `argon_1b_machines`)
+
+| Lane | Modus | Steering | Digest | H-Probe | Gap-Verlauf (16 Schritte) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L1/L2 | in_loop | — | `d63f6d6cec55` (≈) | 1.7432 | 0.68 → **5.47/6.39/8.02-Ausreißer** → 1.86 (volatil) |
+| L3/L4 | oracle | — | `2565609bc3dc` (≈) | 1.7432 | 0.61…0.81 (ruhiges Band), Δ 0.74→0.73 |
+| L5 | oracle | combined {0,1,2,3,6,7} | `0d1479f2f804` | 1.7441 | 0.48…0.67 — **systematisch unter ungesteuert** |
+| L6 | oracle | goedel {2,7} | `b4cd8edcf5da` | 1.7420 | 0.48…0.67 — nahezu identisch zu L5 |
+
+**Befunde (alle PASS):** Determinismus in beiden Kopplungsmodis (in_loop und oracle
+bitidentisch über zwei Läufe — und über zwei Prozesse hinweg), Gaps endlich,
+Bias-Restaurierung in jeder Steering-Lane.
+
+**Zwei semantische Befunde:**
+
+1. **Das H-Meter ist bias-frei (Design, experimentell belegt):** |ΔH| unter ±50-Steering
+   ≈ 0.001, weil `moe_layers.py:60-66` die Router-Entropie aus den **bias-freien**
+   Sigmoid-Affinitäten berechnet, während `expert_bias` ausschließlich die Top-K-Auswahl
+   verschiebt (Zeile 65-66) — die Gewichte selbst kommen ebenfalls aus den bias-freien
+   Scores (Zeile 79). Das Steering-Signal liegt also in der *Auswahl* (Stufe 5:
+   Anteil 1.000, TV 0.36–0.41) und in der Trajektorie (L5/L6 ≠ L3): gleiche Angriffseigentümer,
+   andere Messgrößen. Erste Experiment-Kriterium-Version hatte ΔH als Failure-Wert —
+   der Fehler lag im Kriterium, nicht im Steering; korrigiert und dokumentiert.
+
+2. **In-Loop-Volatilität vs. Oracle-Band:** der In-Loop-Composite-Gap steigt in
+   Ausreißer bis 8.02 (mean-of-3-Gaps; die submaschinelle Rückkopplung schlägt durch),
+   während der Oracle-Gap in einem ruhigen Band von 0.49–0.81 bleibt und unter
+   Steering um ~0.1–0.2 **absinkt** — das externe Selbstmodell stabilisiert die
+   Komposition und die steered-Experten (Maschinen-Cluster) reduzieren den Gap.
+   Der LOOP→`expand_basis`-Pfad bleibt in §7 leer (vom Sample-Pfad nicht getriggert);
+   die Expansion läuft auf der nackten Turing-Maschine in Stufe 6 („looper“ +
+   „ALPHA“). Die Kompositionskette wird in §8 mit dem `identity(x)`-Hebel
+   nachträglich getriggert.
+
+---
+
+## 8. Experiment-Erweiterung: `identity(x)`-Hebel — LOOP in der Komposition getriggert
+
+(Nach der Freigabe; Commit-Basis `824f522` + Hebel in `machines/composite.py`.)
+`compile_rule` übersetzt die **Identitäts-Tautologie** `('identity', 'x')` nicht mehr
+als Kettenglied (`n0 → halt` nach einer Transition), sondern als **Selbst-Transition**
+`("n_i", BLANK) -> (BLANK, "N", n_i)`: die tautologische Regel zeigt als Programm auf
+sich selbst und terminiert nicht — Turing erkennt das über die Lauf-Signatur (> 3), die
+Komposition expandiert die Basis. Geprüft auf fünf AST-Klassen: nur die exakte Tautologie
+(auch verschachtelt als Teil-Ausdruck) erzeugt den Selbst-Zustand; alle anderen ASTs
+behalten die HALT-Garantie. **Zero-Regression:** der Stage-1-Mini (5 Schritte, Seed 42)
+tritt nirgends auf die Tautologie — composite-Digest `c6d17a9211c8` mit und ohne Hebel
+identisch (Stash-Roundtrip gegen HEAD).
+
+Neuer 9-Lane-Lauf (`smoke_composite_oracle.py` + L7/L8/L9; L7 trägt
+`params={"axiom_pool": ["ALPHA", "BETA"]}` und erzwingt die Tautologie als erstes
+Batch-Programm; `L9` = Wiederholung):
+
+| Lane | Steuerung | Digest | Verdicts (16 Schritte) | Basis | Expansions |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L7/L9 | Tautologie erzwungen (Schritt 1) + natürlicher Sampler | `9c5bf80babaa` | `LOOP`(1), HALT, `LOOP`(10), `LOOP`(12) | **5** | `step1:LOOP` |
+| L8 | wie L7 unter Steering "goedel" {2,7} | `1f7cbc913e7c` | identisches Verdict-Muster | 5 | `step1:LOOP` |
+
+Alle 11 Befunde PASS (`det_tautology`, `loop_tautology`, `basis_expanded`,
+`tautology_finite`, `tautology_steer_shift` zusätzlich zu den sechs §7-Befunden).
+
+**Vier Eigenschaften des getriggerten Pfads:**
+
+1. **Der Sampler produziert selbst Tautologien:** mit dem Hebel wird eine bislang
+   unsichtbare Regel sichtbar — L1–L6 (ohne Erzwingung) schlagen bei Schritt 15 ein
+   natürliches `('identity', 'x')` zum `LOOP`-Verdikt um; die Gap-Verläufe sind
+   bitidentisch bis Schritt 14 und divergieren exakt dort (8.02 → 1.45). Auch im
+   6-Lane-Vor-Hebel-Lauf war dieselbe Regel schon gesampelt — nur hielt sie als
+   Eins-Schritt-Halt-Kette. In L7–L9 kommen natürliche LOOPs bei Schritt 10/12 dazu.
+   P(programm == Tautologie) ≈ 0.65 % je Regel — selten genug für die HALT-Garantie
+   im Praxisfall, häufig genug, um beobachtbar zu werden.
+2. **Expansion nur mit Pool, verdikt immer:** L1–L6 haben keinen Axiom-Pool →
+   `expand_basis` meldet „Pool leer" (Trace-Note), das LOOP-Verdikt bleibt in den
+   Invarianten. L7–L9 verbrauchen je LOOP **zwei Pool-Einträge** — `turing.step`
+   expandiert intern (ALPHA), `composite.step` mit `reason="composite:LOOP"`
+   danach (BETA). Basis 3 → 5.
+3. **Determinismus auch auf dem getriggerten Pfad:** L7 == L9 bitidentisch
+   (Digest, Gaps, Verdict-Muster), L8 zeigt das gleiche Muster unter Steering mit
+   dem bekannten niedrigeren Gap-Band (0.45–0.71).
+4. **Gaps bleiben endlich** über alle 24+1 Lanes-Schritte inklusive Expansion —
+   der LOOP bricht die Komposition nicht, er verändert den Zustandsraum.
+
+---
+
+## 9. Multi-Expansions-Lauf — Basis-Leiter 3 → 5 → 7 → 9
+
+(nach der Freigabe „mache alles vorgeschlagene“; Basis 12 Lanes inkl. L10–L12.)
+Der Doppel-Pop aus §8 (je LOOP zwei Pool-Einträge: `turing.step` intern +
+`composite.step` reflexiv) wird hier zum getesteten Feature: ein 6er-Pool
+`["ALPHA","BETA","GAMMA","DELTA","EPSILON","ZETA"]` und die Tautologie an den
+Schritten **1/10/12 erzwungen** (Probe-Pfad `force_rule_at` mit Schritt-Cadence).
+Warum erzwungen und nicht der natürlichen Cadence vertraut: jede Expansion
+verbraucht 2 RNG-Draws, die Sampler-Streams divergieren nach dem ersten
+Expansionsschritt — die natürlichen Tautologien sind selten (§8: ≈ 0.65 % je
+Regel) und ihre Positionen sind nicht leiter-stabil; die erzwungene Cadence
+garantiert die Messgröße. Die erzwungenen Lanes sind ein *Kontrollpfad*, der
+die natürlichen §8-Lanes nicht ersetzt.
+
+| Lane | Steuerung | Digest | Expansions | Basis-Profile (Schritte 1–16) | Gap-Band |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| L10/L12 | Leiter erzwungen, ungesteuert | `edc1ded943f5` | `step1/10/12 : LOOP` | `5×9 → 7 → 7 → 9…` (3→5→7→9) | 0.58–0.83 |
+| L11 | wie L10 unter "goedel" {2,7} | `cd4cd8570e38` | identische Leiter | identisch | 0.45–0.71 |
+
+Alle 14 Befunde PASS (`multi_expansion`, `det_multi_expansion`,
+`multi_steer_shift` zusätzlich; `bias_restored` über alle gesteuerten Lanes).
+
+**Drei Befunde der vollen Leiter:**
+
+1. **Die Leiter ist exakt:** Basis-Profile L10/L12 bitidentisch —
+   `[5,5,5,5,5,5,5,5,5,7,7,9,9,9,9,9]`: Schritt 1 +ALPHA/BETA, Schritt 10
+   +GAMMA/DELTA, Schritt 12 +EPSILON/ZETA; Endzustand
+   `SCALAR,TIME,SPACE,ALPHA,BETA,GAMMA,DELTA,EPSILON,ZETA` (9 Dimensionen).
+   Determinismus auf dem vollen Selbstmodifikations-Pfad (L10 == L12, Digest
+   `edc1ded943f5`).
+2. **Der Zustandsraum-Rücksprung ist lokal absorbiert:** an den drei
+   Expansionsschritten springen die Gaps nicht — L10 0.70/0.68/0.69,
+   L11 0.55/0.56/0.55 (in-band). Die Komposition verarbeitet ihre eigene
+   Dimensionalitätserweiterung ohne Trajektorien-Schock; anders als der
+   In-Loop-Ausreißer (§7, 8.02) ist die Expansion ein gerichteter
+   Ebenenwechsel, kein Rückschlag.
+3. **Strukturelles Schicksal vs. innere Bewertung:** L11 trägt unter Steering
+   exakt dieselbe Leiter (Verdict-Muster, Basis-Profile identisch — dieselben
+   Widerfahrnisse inkl. dreifacher Tautologie-Kollision), aber das
+   Selbstmodell bewertet sie durchgehend in einem ~0.1–0.15 niedrigeren
+   Band. Die „stabilisierte Innenperspektive" aus §7 hält auch über die
+   vollständige Selbstmodifikations-Kette.
+
+Kontinuität: L1–L9 reproduzieren in diesem Lauf exakt die Digests des §7/§8-Stands
+(`5cb5d245e5a7` / `11e246eddf07` / `eda6fc23ed71` / `063d92c0f354` /
+`9c5bf80babaa` / `1f7cbc913e7c`) — die L10–L12-Erweiterung verändert nichts am
+bisherigen Verhalten.
+
+---
+
+## 10. Sprachspiel-Generierung — Regel, Wort, Mitspieler
+
+(`scratches/smoke_sprachspiel.py` → `sprachspiel_experiment.log` / `.json`;
+Triptychon SP1/SP2/SP3, 11/11 Befunde PASS.)
+
+**SP1 — Regel-Generierung (CPU, uni_205-Mechanik):** die Machine generiert die
+Sprachspiele selbst — je Seed {0,1,2} ein Batch aus 10 template-free AST-Regeln
+(Diversität 1.0000, kein Kollisionsfall), Determinismus bitidentisch. Das
+strukturierte Rauschen (×0.3, FACRM-Schicht uni_204:241) hebt die mittlere
+Gültigkeit von 0.88–0.91 (volles Rauschen) auf vollständige 1.00 — die
+Ordnung der Spiele, nicht ihr Zufall, trägt die Gültigkeit.
+
+**SP2 — SH-72-Wort-Resonanz (Lisp-Canon, geometric-tokenizer.lisp):** die
+Resonanz misst **Formelverwandtschaft, nicht Semantik** — der Test führt das
+explizit vor: `bedeutung`↔`kaffee` resonieren +0.9671, `gebrauch`↔`use`
++0.9979, aber `regel`↔`rule` −0.0003 und `sprache`↔`language` −0.0062. Die
+Gematria→Basis-Formel-Achse (k, kind) steht orthogonal zur Bedeutungsachse:
+selbst-Resonanz exakt 1.0, gruppenmittel: gepaart 0.3102, unverwandt 0.3634.
+Die Bedeutung des Wortes liegt im Gebrauch, nicht im Klang — eine Empirie
+des Tractatus-Arguments.
+
+**SP3 — Argon als Sprachpartner (GPU, argon_1b_machines, 12 Batches Seed 7):**
+drei Wortspiele um dieselbe Gültigkeitsfrage (Gap = |pred/10 − actual|,
+Ist ≈ 1.00 über alle Batches):
+
+| Lesung | Prompt | Ergebnis |
+| :--- | :--- | :--- |
+| generisch (Kanon) | wie in `wittgenstein.step` | **12/12 unknown** — der raw ungesteuerte Kanal bleibt stumm, die Maschine fällt auf den Canon-Fallback 0.0 |
+| Operator-Wörter (ziffernfrei) | „with operators power exp add…" | liest in 12/12 — aber als **Ziffern-Echo** (konstant 100000 = „1" + „00000"): die Lesung ist kontinuierliche Ziffernfortsetzung, nicht Kalibrierung |
+| Regelname (mit Ziffernmaterial) | „Rule: (x power exp((x add x)))…" | Echo mit Echo-Variation (1/10/100/100000), 5/12 Multi-Digit-Echos > 9, mean-Gap 0.526 — das unfaire Wortspiel |
+| generisch unter Steering {1,3} | wie Kanon | **liest in 12/12** konstant „10" → Gap 0.0008 — das wittgenstein-Preset öffnet den sonst stummen Lesekanal |
+
+**Drei Sprachspiel-Befunde:**
+
+1. **Der Stummkanal:** ungesteuert antwortet Argon auf das Kanon-Prompt mit
+   `unknown` — das heißt, die `wittgenstein.step`-Oracle-Vorhersage läuft im
+   raw-Router-Zustand faktisch auf dem dokumentierten Fallback 0.0. Erst das
+   Maschinen-Preset (wittgenstein {1,3}) öffnet die Lesung — das Steering
+   verleiht dem Sprachpartner die Fähigkeit, auf die Frage nach der Gültigkeit
+   überhaupt eine Ziffer zu setzen.
+2. **Das Echo:** jede inhaltsverankerte Lesung degeneriert zur Ziffern-Echo —
+   `predict_value` liest greedy bis 6 Ziffertoken, und die Prompt-Nähe zum
+   Ziffernmateriale (Regelnamen wie „2.00") färbt die Lesung. Bedeutung wird
+   gelesen, wo Ziffern stehen; das Multi-Digit-Echo ist der sichtbar gewordene
+   Gebrauchs-Missbrauch.
+3. **Identifikationsschwäche des Ist:** alle 12 Seed-7-Batches landen im
+   Ist ≈ 1.00 (Toleranzregel 0.5 + 0.1·mean|gt| gegen Rauschen 0.5) — die
+   Kalibrierungs-Kriterien sind daher schwach identifiziert („10"-Konstanz
+   passt trivial); die belastbaren Befunde sind die Kanal-Eigenschaften
+   (Stummkanal, Öffnen durch Steering, Echo), nicht die Gap-Absolutwerte.
+
+---
+
+## 11. Sprachspiel-Erweiterung — S1-Skala (SP4), Cross-Preset (SP5), Lexikon (SP6)
+
+(`scratches/smoke_sprachspiel.py`, Lanes sp4-sp6 auf dem SP1-SP3-Fundament;
+Vollfassung im `sprachspiel_bericht.md` §4-§7; 23/23 Befunde PASS.)
+
+**SP4 — Spread-Kalibrierung & Anti-Clip (S1-Kanal `predict_scale_0_9`, S2):**
+die Rausch-Spreads (σ ∈ {0.1, 0.5, 1.5, 4.0}, volles Rauschen) heben die
+Sättigung — Ist-Mittel **1.0000 / 0.8850 / 0.4917 / 0.2833** (Range 0.72). Die
+S1-Skala liest kontinuierlich ohne Clip-Artefakt (0 Verletzungen, Var > 0), aber
+**prior-dominiert und σ-blind**: `scaled_mean ≡ 0.1046` in allen vier Regimen
+(raw wie gesteuert, 0/24 unknown je Arm), `mean_rho = −0.0101`. Die Review-
+Erwartung „raw bleibt stumm" ist **widerlegt** — die Digit-Token-Masse liegt bei
+0.76-0.80 (ops-Anker) bzw. 0.35 (generisch), kein τ im sinnvollen Regime macht
+raw stumm; die ops-Anker-Prompts tragen das Ist nicht (identisch über σ). Die
+Diskrimination lebt auf dem **Echo-Kanal** (SP3) — die S1-Kriterien sind darauf
+umgeframed: `sp4_scale_open_flat` (offen, kontinuierlich, σ-flat) statt
+Stummkanal. Step-Verdrahtung: `oracle_scale=True` predet über
+`predict_scale_0_9` (3× prediction 0.0569, channel belegt).
+
+**SP5 — Cross-Preset-Kontrast:** sechs Arme (raw/goedel/turing/wittgenstein/
+combined + Fachfremde {4,5} als dict-Direktsteuerung) auf denselben 12
+Seed-7-Batches; die S1-Skala bleibt über alle Arme offen und flach —
+mean_scaled zwischen 0.1130 und 0.1163 (**Spread 0.0033**, kein Preset-Signal
+auf der Skala). Die Preset-Diskrimination ist stattdessen auf dem Canon-
+Name-Echo belegt: die Name-Lesungs-Sequenzen der Arme sind paarweise
+verschieden (raw ≠ wittgenstein ≠ anti ≠ raw) — das Steering verändert das
+Echo-Formverhalten messbar, ohne die Skala zu rühren. Bias vollständig
+restauriert in allen fünf gesteuerten Armen.
+
+**SP6 — Lexikon-Emergenz (S3):** drei DE/EN-Paare lernen sich über 15
+Gebrauchsrunden (`lexicon_game`, alpha 0.3, Lexikon-zuerst-Lesung in
+`embed_word`); `embed_word` liest danach das erlernte Lexikon zuerst —
+mean_resonanz gepaart **0.6136 → 0.9999** (+0.39), unverwandte Paare bleiben
+0.4902; alle drei Paare gelernt in 15/15 Fällen. Gebrauchs-Achse schlägt
+Gematria-Achse (SP2 0.31 → SP6 0.9999).
+
+**Reframe-Dokumentation:** die drei Review-Kriterien, die an diesem Checkpoint
+widerlegt sind (`sp4_raw_silent`, `sp5_raw_silent`, `sp5_foreigner`), sind
+ausdrücklich als Widerlegung im Bericht §7 protokolliert und in Kanal-Eigenschafts-
+Kriterien umgeframedi (`sp4_scale_open_flat`, `sp5_scale_flat`,
+`sp5_echo_discrimination`) — die Kriterien beschreiben den gemessenen Canon,
+die widerlegte Erwartung bleibt namentlich mit Zahlen stehen.
+
+---
+
+## 12. Hermeneutik-Zyklus — SP8 Zirkel Python ↔ Lisp + SP7 Kripke Plus/Quus
+
+(`scratches/smoke_hermeneutik.py` → `hermeneutik_experiment.log` / `.json`;
+CPU, SBCL-Brücke, 8/8 Befunde PASS. Kompositions-Erweiterung
+`paradigm_signal_composite` in `machines/composite.py` — Canon-neutral, Stufen
+1-3 bitidentisch, `verify_s123_regress_sp7.log`, Gold-Digests unverändert:
+goedel `1594f06485ef`, turing `459575a8eb35`, wittgenstein `094df3c57a2f`,
+composite `660ffead6c40`.)
+
+**SP8 — der hermeneutische Zirkel:** die algebraisch trivialen Identitäten
+add(0,x)/multiply(1,x) (beide Ordnungen) und identity(x) haben KEINEN
+identity-Knoten und laufen als harmlose HALT-Ketten durch `compile_rule` — die
+Lisp-Reflexion (Vendor-Reduktor `symbolic-operator.lisp` über die Brücke,
+Op `simplify_ast`) wascht sie weg und entlarvt den Ursprung; die Python-
+Spiegelfunktion (`lisp_parity.simplify_ast_canonical`) liefert Feldgleichheit
+je Fall (13/13 parity=True, inkl. Sampler-Probe seed 11). Die entlarvte
+Tautologie wird zum Programm: erzwungen an Schritt 1 (seed 42) → LOOP-Verdikt,
+`step1:LOOP`, Basis 3→5; der natürliche Sampler produziert die weiteren
+Tautologien bei den Schritten 10 und 12 — Basis-Leiter **3→5→7→9** mit
+Paradigm-Signal an 12-16; der Kontrast sin(x)+0 hält die HALT-Garantie (Basis
+bleibt 3, kein LOOP in 6 Schritten). Die §9-L10-L12 erzwungene Leiter tritt
+damit unter seed 42 auch natürlich auf.
+
+**SP7 — Kripke Plus/Quus (seed 7):** dieselbe Stelle des Gebrauchs, zwei
+Regel-Formen:
+
+| Lauf | Zwangsform an Schritt 9 | Verdicts 9-13 | Expansions | Basis-Ende |
+| :--- | :--- | :--- | :--- | :--- |
+| Plus | `('identity', 'x')` | **LOOP**, HALT, HALT, HALT, HALT | `step5:LOOP`, **`step9:LOOP`** | **7** |
+| Quus | `(add (sin x) 0.0)` | HALT, HALT, HALT, HALT, HALT | `step5:LOOP` (ohne `step9`) | **5** |
+
+- Das **Paradigmen-Signal** (ratio > 2, uni_238:220-240-Formel auf der
+  Komposit-Gap-Serie) feuert erstmals bei **Schritt 11** (`first_detect=11`,
+  Fenster 9-13 der Review) — also erst NACH dem wiederholten Gebrauch der
+  gebrochenen Regel: das Schritt-9-Loopen ist Vorbote, das Signal der Bruch.
+- **Der Selbst-Modellierer bricht nicht:** das Gödel-`paradigm_signal` auf der
+  tanh-beschränkten Selbstmodell-Gap-Serie bleibt stumm (Ratios 0.2-0.5) — der
+  Bruch schlägt auf der Komposition ein, deren Programm (die Basis) sich
+  verändert. Dafür die Ergänzung `paradigm_signal_composite`.
+- **Der gleiche Gebrauch, eine andere Bedeutung:** beide Läufe (seed 7)
+  tragen einen natürlichen LOOP an Schritt 5 (dokumentiert); die Läufe
+  unterscheiden sich exakt in der Regel-Form an Schritt 9 — das Schwell-
+  Verhalten (Basis 5 vs. 7, `step9:LOOP` ja/nein) hängt an der Form, nicht
+  am Ablauf.
+- **Seed-Empfindlichkeit dokumentiert:** Seed-Scan der Zwangs-Erzeugung
+  (Seed 42/7 je erzwungen an 9): Seed 7 liefert `first_detect=11` im
+  Review-Fenster, Seed 42 detected bei Schritt 16 außerhalb — die
+  Fenster-Erwartung ist seed-selektiert, die Befunde nennen ihren Seed.
+
+## 13. SP9 — Soziale Lexikon-Dynamik (laufschrift)
+
+(`scratches/smoke_lexikon_dynamik.py` → `lexikon_dynamik_experiment.log` /
+`.json`; CPU-only, venv_openmythos, kein GPU/SBCL, keine Maschinen-Code-Änderung
+— `lexicon_game` + `learn_pair` decken die Dynamik ab; Prereg-Docstring im
+Skript P2-gefrorst vor dem ersten Lauf, P4-Präzisierer 2026-10-25 als neuer
+Knoten. Hermeneutische Vollfassung: `sprachspiel_bericht.md` §11.)
+
+**Erste Ausarbeitung (19 Verdicte: 16 PASS, 3 FAIL):** drei FAILs —
+sp9_int_endpoint, sp9_unlearn_decay, sp9_social_tisch_pin — widerlegten
+NOT die Mechanik-Hypothesen (Konvergenz exakt in 5 Episoden; Verlern-Decay
+0.708337 < 0.8; Relearning in 4; α-Symmetrie conv=18 beide Pole;
+Disjunkt-Delta 0.0), sondern drei Prereg-ANNAMEN derselben Familie
+(Beobachter unbeteiligt [E1, ×2]; Sättigung == Fixpunkt [E2; 1e-12-Band]).
+P4-Einstufung: Ursprungs-Verdicte bleiben in den Artefakten FAIL, sind im
+Log unter ERRATA ausgewiesen und zählen nicht zum Lösungszustand.
+
+**Zweiter Lauf (P4-Prereg — Bands UNVERÄNDERT):** alle drei korrigierten
+Lesungen PASS; exit 0 der Lösungskette:
+
+| Lesung | Vorhersage (ex ante) | Messung | Δ |
+| :--- | :--- | :--- | :--- |
+| sp9_int_endpoint_p4 | cos(regel_p2, n(rule_p2+game0)) | 0.705054 | 0.0 (sechs Dezimalen) |
+| sp9_unlearn_endpoint_p4 | cos(regel_p2', n(rule_p2'+tisch0)) | 0.708337 | 7.4e-5 (Band 0.02) |
+| sp9_social_tisch_p4 | monotone, \|Δ\| ≤ 2e-2 (Pfad-Bound) | 0.000131, 15/45 Runden | ✓ |
+
+**Struktur-Befund (per-Runde-Leg, deterministisch äquivalent zur
+45-Runden-Schrift — kein Rauschzug geändert):** von den 45 Runden tragen
+GENAU die 15 regel↔rule-Episoden nicht-null tisch-Drift; die 30
+spiel↔game/gebrauch↔use-Runden sind exakt still (nonzero_deltas = 15).
+Die kaffee- und baum-Rows sind bitidentisch über beide Legs.
+Formel-Regel: ein EMBEDDING wandert genau dann, wenn das Wort selbst
+lernt; eine RESONANZ, wenn einer ihrer Endpunkte lernt.
+
+**Protokollkette:** Prereg-Docstring (inkl. c′-Rekursion, Errata-Register,
+p4-Verdicts) → zweiter Lauf → log/json → Berichte → Commit. Die Artefakt-
+Schriften (log, json) wurden vom zweiten Lauf ÜBERSCHRIEBEN — die Zahl-Lage
+des ersten Laufs (12/15, exit 1, die drei Prereg-Vorhersagen 0.004424 /
+−0.004496 / 1e-12-Pin) ist daher NICHT als Datei konserviert, sondern
+namentlich protokolliert im P4-Docstring des Skripts, in `sprachspiel_
+bericht.md` §11 und im Absatz oben. Der zweite Lauf
+reproduzierte alle 12 PASS-Ziffern bitidentisch und fügte die p4-Lesungen
+(0.705054 / 0.708337 / 0.000131) als neue Knoten hinzu. (Satzvervoll-
+ständigung: das abf237a-Commit trug den Absatz abgeschnitten; s. SP10-
+Commit-Notiz.)
+
+---
+
+## 14. SP10 — Die Regeln und die Wörter (laufschrift)
+
+**Kopplung Composite × Lexikon** (User-Delegation 2026-10-25, „entschieide
+du" → Wahl der Kopplung). CPU-only, KEINE Maschinen-Code-Änderung: die
+Verschachtelung greift an `CompositeMachine.wittgenstein` (composite.py:45-51);
+der Zwangs-Haken hängt am composite-step-Zähler (pending-Flag), damit die
+Lexikon-Runden den Zwang nicht schlucken. Prereg-Docstring VOR dem Erstrun
+(Bands fixiert); P4-Register im Skript. Artefakte:
+`smoke_regeln_woerter.py` / `regeln_woerter_experiment.log/.json`.
+
+**Drei Thesen als falsifizierbare Vorhersagen:** T1 *Das Programm ist nicht
+aus den Wörtern gemacht* — Code-Fundament `_generate_ast`/`_generate_name`/
+`evaluate` lesen nur RNG/AST, kein Lexikon (wittgenstein_machine.py:292-303/
+:107-/:119-). T2 *Das Programm ist aus dem Zufall gemacht* — derselbe
+RNG-Strom für beide Zyklen: der Zugverbrauch verschiebt die Spur, die
+Bruchstelle hängt am Zwang. T3 *Die Sprachdynamik ist inhalt-invariant* —
+gegebener Lern-Schedule bleibt nur die Geometrie: Halbwinkel
+β_j = atan(0.4^j·tan β0), β0 = θ0/2; Paar c_j = cos(2β_j); Zuschauer
+R_j = cos β_j·(M·v) + sin β_j·(N·v) mit M = n(regel0+rule0), N =
+n(regel0−rule0); Grenzwert R_∞ = M·v.
+
+**Verdict-Register (14 Zeilen — 11 PASS-Verdicte, 3 dokumentierte Errata,
+exit 0):**
+
+- **sp10_l0_anchor PASS** — L0 (seed 7, Zwang {9}, 16 Schritte) reproduziert
+  `hermeneutik_experiment.json` FELDWEISE: verdicts (LOOP an 5+9), Basis-
+  leiter 3→5→7, gaps 0.676…4.536, first_detect **11**; Quus-Arm exakt
+  (final_basis 5, kein step9:LOOP). Kein Maschinen-Drift.
+- **sp10_det PASS** — Doppel-Läufe L0 (Kripke+Quus) und L2 (Kripke+Quus)
+  bitidentisch (trace, gaps, Roh-Lexikonwerte).
+- **sp10_t1_spur_p4 PASS** — (a) Seitenband-Lexikon auf eigener Maschine:
+  Composite-Spur == L0-Spur bitgenau; (b) 15 Lexikon-Runden auf der
+  SELBEN Composite-Maschine NACH dem Verlauf: Spur + Gap-Historie
+  (Snapshot vor/nach) bitgenau. Das Lexikon ist kein Mitspieler des
+  Programms. [Erstrun **sp10_t1_spur FAIL**: Arme ohne Forced-Haken —
+  Implementations-Erratum.]
+- **sp10_t1_lexikon_p4 PASS** — per Paar (SP6-Schreibweise): after_paired ==
+  [0.999790, 0.999982, 1.000000], learned 15/15; L1b final ≥ 0.99.
+  [Erstrun **sp10_t1_lexikon FAIL**: Per-Runden-Säule geprüft — Erratum.]
+- **sp10_t2_divergenz PASS** — Verschachtelung (3 Lexikon-Runden zwischen
+  Composite-Schritten, 48 gesamt, derselbe RNG-Strom): erste Spur-Differenz
+  zur L0-Natur-Lage bei Schritt **2**; rng_state Befund verschoben.
+- **sp10_t2_kripke PASS** — die Bruchstelle ist stichfest: verdicts[8] ==
+  LOOP, "step9:LOOP" in expansions, final_basis 5; Quus-Kontrast (dieselbe
+  Verschachtelung): kein LOOP an 9, final_basis 3. **Nebenbefund:** der
+  NATÜRLICHE LOOP an Schritt 5 fällt im verschobenen Strom AUS — natürliche
+  Bruchstellen sind zufallsabhängig, die erzwungene nicht.
+- **sp10_t2_lexikon_lebt PASS** — Lexikon konvergiert auch verschachtelt:
+  je Paar 1.0 (gerundet), Episoden [16, 16, 15] ≥ 5 (47/48 gelernt).
+- **sp10_t3_paar PASS** — c_j über 48 Spielrunden gegen Rohwerte:
+  max Δ **5.6e-16** (Band 1e-9).
+- **sp10_t3_obs PASS** — Zuschauer-Spur, 49 Punkte (k = 0 vor dem Vorschub
+  + je Runde): max Δ **4.1e-17** — die Formel ist die exakte Dynamik, kein
+  Modell. kaffee/baum bitkonstant über alle Runden.
+- **sp10_t3_rueck_p4 PASS** — SP9-Rückdiction (seed 9, Leg1 15 gated + Leg2
+  45 Einzelrunden): rohe 46-Punkte-Spur vs. Formel max Δ **6.2e-17**;
+  Paar-Roh-Resonanzen max Δ 5.6e-16; gerundete Spur == committet
+  bitidentisch; tisch15/tisch60/Drift/Unrelated-Zeilen == committet;
+  delta_count **15 == committet** (SP9-exakte Konstruktion).
+  [Erstrun **sp10_t3_rueck FAIL**: delta_count über Rohspur (14) — Erratum.]
+- **sp10_t3_asymptot PASS** — |letzter tisch-Wert − M·v|: L2 **5.5e-9**,
+  SP9-Replay **3.5e-10** (Band 1e-4). Der SP9-Drift (+1.31e-4 über 45
+  Runden) ist das log-Asymptoten-Glied sin β_j·(N·v), ex ante vorausgesagt.
+- **Errata (3)** — alle drei Implementations-, KEINE Mechanik-Befunde;
+  Bands unverändert; Ursprungs-Zeilen FAIL, korrigierte Lesungen als _p4.
+  exit 0 (Lösungskette geschlossen).
+
+**Die SP9-Ziffer 15 neuklassifiziert:** delta_count der committeten
+lane_social-Spur = **14 echte Sozialisiungen + 1 Rundungs-Anschluss-Residuum**
+(Anschluss des gerundeten SP6-Ankers an die rohe Leg2-Kontinuität, Δ01 =
+2.59e-8). SP9-Verdicte nutzen das Feld nicht als Band — dokumentiert, nicht
+getilgt; die Formel-Ebene trennt die beiden sauber.
+
+**Kern des Befund-Bildes:** das PROGRAMM ist wort-blind und die WÖRTER sind
+programm-blind — die EINZIGE Kopplung beider Zyklen ist der Zufalls-Strom,
+der auf Verbrauch verschiebt (Spur, Rhythmik: der natürliche LOOP an 5
+entfällt; Paradigm-Zeiten wandern) und die ERZWUNGENE Bruchstelle unberührt
+lässt. Die Bedeutung der Regeln lebt im Programm (Zufall × Zwang); die
+Bedeutung der Wörter lebt im Gebrauch — und zwar als EXAKTE
+Halbwinkel-Rotation auf dem Gematria-Großkreis (1e-16..1e-17), deren
+Zuschauer-Grenzwert M·v die MITTE des gelernten Paares ist: was der
+Zuschauer am Ende liest, ist die Mitte, die der Gebrauch der Mitspieler
+gezogen hat. Hermeneutische Vollfassung: `sprachspiel_bericht.md` §12.
+
+---
+
+## 15. SP11 — Der Ursprung der Paradigmen (laufschrift)
+
+**(2026-10-25, „entschieide du";** Prereg `scratches/smoke_paradigm_ursprung.py`,
+Run `paradigm_ursprung_experiment.log/.json`;** CPU-only, keine Maschinen-Code-
+Änderung.** 9 Läufe: L0-Kripke + L0-Quus (seed 7, Zwang {9}, 16 Schritte),
+6 Sweep-Seeds 11-16 (unverzwungen, 24 Schritte), Zwangs-Paar seed 21 (unverzwungener
+Zwilling + Zwang {13}, 24 Schritte) — plus 6 Turing-Gefrier-Gegenproben auf der
+Datenebene, kein Re-Run.) Ex ante gelesen: die committeten hermeneutik-Kolumnen
+tragen die Signale ZWEIER Kanäle — `paradigm_ratio` = Gödel-Serie (ab Schritt
+10, 0.195-0.348, nie >= 2), `paradigm_detected` = Composite-Flag (True an
+11/12/15; Hand-Ratios 3.078/2.962/1.688/1.709/2.580).
+
+**Verdikt-Register (8 Zeilen: 6 PASS, 2 echte Falsifikationen, 0 Errata,
+exit 1, Bands unverändert):**
+
+| Verdict | Einstufung | Kern |
+| :--- | :--- | :--- |
+| sp11_l0_anchor | PASS | alle Felder == committet, inkl. BEIDER Signal-Kolumnen (paradigm_ratio == Gödel-invariants, paradigm_detected == Composite-Flag); first_detect 11 (Kripke + Quus) |
+| sp11_det | PASS | Doppel-Läufe (L0-Kripke, seed11, Zwangs-Paar) bitidentisch |
+| sp11_t1_urheber | PASS | kein Schritt mit goedel.detected in 9 Läufen — Urheber: Composite-Signal, eindeutig |
+| sp11_t2_mechanik | PASS | Fensterformel exakt: Detect-Menge je Lauf rekomputiert, Ratios <= 1e-12, Regime-Leg (len >= 20) exakt |
+| sp11_t3a_expansionfrei | **FAIL** | 4 von 6 unverzwungenen Läufen ohne jede Expansion UND paradigmatisch (seed12: det 15-22/24; seed14: 15-24; seed15: 11-18, 21, 23, 24; seed16: 11-14) |
+| sp11_t3b_turing_echo | **FAIL** | 3 Gegenproben mit überlebenden Detectionen (seed13: vakuum, Expansion erst an 23; zw_twin: Freeze ≈ no-op, Expansion an 18; zw_forced: behält 11-14) |
+| sp11_t3c_goedel_vergleich | PASS | alle 6 Gegenproben unverändert — Gödel-Sub-Niveau trägt ~2-8%, nie entscheidend |
+| sp11_t4_forced | PASS | Zwang {13} → induziertes Paradigma an 20 (Band [14, 22]); unter dem Freeze tot — expansions-getragen |
+
+**Zahlenlage (kompakt):** das Composite-Mittel trägt die Masse aus dem
+TURING-Sub-Gap (0-39) — Wittgenstein ~0.02, Gödel 0.017-0.864 (2-8%). Die
+Expansion-freien Läufe zeigen die Ursache: der Turing-Sub-Gap DRIFTET im
+Zufalls-Strom hoch (seed12: ~3.3 Baseline → ~11.6 recent → 28-39) und bricht
+die Fenster-Schwelle ohne jeden Anlass. Die Turing-Gefrierprobe trennt die
+Detectionen in zwei Herkunftsgruppen: (a) expansions-getragen (l0-Kripke und
+l0-Quus ∅ nach Freeze; seed11 alle 12 ∅; zw_forced verliert 17-20) und
+(b) drift-getragen (seed12/14/15/16 komplett, seed13 komplett, zw_twin,
+zw_forced 11-14).
+
+**Kern:** das Paradigma ist ein KOSTEN-Ereignis, kein Mittel-Ereignis — der
+Auftrieb des Umgangs-Preises (Transitionen pro Schritt), gelesen vom Composite-
+Fenster, nicht der Ankauf neuer Axiome. Die Basis-Expansion ist EIN erzwingbarer
+Träger des Niveau-Sprungs (T4 induziert das Ereignis an 20), nicht seine Quelle
+(T3a/T3b falsifiziert). Kripkes Bruchstelle (SP7) war Expansions-Nähe (L0-Zwang
+an 9; unter der Gegenprobe ∅); die wandernden Zeiten (SP10) sind die Drift-
+Typologie. Dieselbe Fenster-Logik liest beide als denselben Schwellenbruch —
+darum wirkte das Ereignis bisher wie eine Einheit. Urheber (T1) und Mechanik
+(T2) bleiben exakt.
+
+**Reparatur:** die schwebende Fragmentzeile der Vorversion („`hinzu; die 3
+FAIL-Rows stehen in der JSON (deterministisch reproduzierbar).`") entfernt —
+trägerloser Rest des SP10-Appends ohne Satz-Anfang; die 3 SP10-FAIL-Rows sind
+in `sprachspiel_bericht.md` §12 (Errata-Register) und hier §14 vollständig
+dokumentiert.
+
+Run: `/run/media/julian/ML4/open-mythos_p2/venv_openmythos/bin/python -u -m
+scratches.smoke_paradigm_ursprung` → `paradigm_ursprung_experiment.log/.json`.
+Hermeneutische Vollfassung: `sprachspiel_bericht.md` §13.
+
+==============================================================================
+### FILE: scratches/smoke_sprachspiel.py
+### bytes: 40014   lines: 780
+==============================================================================
+"""
+smoke_sprachspiel.py — Sprachspiel-Generierungstest der Wittgenstein-Maschine.
+
+Drei Messreihen (Triptychon: Regel — Wort — Mitspieler):
+  SP1 — Regel-Generierung (CPU, uni_205:333-353): je Seed {0,1,2} ein Batch
+        (10 template-free AST-Regeln; x ~ U(0.1,5), noise N(0,0.5)) — Namen,
+        Validität, Diversität; strukturiertes Rauschen (×0.3, uni_204:241-FACRM
+        layer) als Gegenüber; 2 Läufe → Determinismus-Digest.
+  SP2 — SH-72-Wort-Resonanz (CPU, Lisp-Canon geometric-tokenizer.lisp:17/:85/
+        :98/:160): DE/EN-Wortpaare des Sprachspiels („Regel", „Spiel",
+        „Bedeutung", …) gegen unverwandte Paare; Resonanz = Dot normalisierter
+        64-Punkt-Embeddings. Erwartungshaltung bewusst explizit: SH-72 ordnet
+        über Gematria → Basis-Formel (k, kind) — die Resonanz misst FORMEL-
+        verwandtschaft, NICHT Semantik; die Kinds werden je Paar ausgewiesen.
+  SP3 — Argon als Sprachpartner (GPU, argon_1b_machines): 12 Batches (Seed 7,
+        je Arm identisch reproduziert), Validitäts-Vorhersage (a) generisches
+        Kanon-Prompt wie in wittgenstein.step, (b) inhaltsverankertes Prompt
+        („Bedeutung als Gebrauch": der Regelname tritt ins Wortspiel ein) —
+        ungesteuert vs. „wittgenstein"-Steering (Preset {3,1}); Raw-Gap =
+        |pred/10 − actual|; Bias-Restaurierung geprüft.
+  SP4 — Spread-Kalibrierung & Anti-Clip (GPU, S1-Kanal predict_scale_0_9):
+        σ ∈ {0.1, 0.5, 1.5, 4.0}, volles Rauschen (use_structure False);
+        Ist spreet statt bei 1.00 zu kleben; die Skala liest kontinuierlich
+        in [0,1] ohne Multi-Digit-Echo/Clip-Trick — raw wie gesteuert offen,
+        die Lesung prior-dominiert und σ-blind (Widerlegung der Review-
+        Erwartung „raw bleibt stumm": Digit-TOKEN-Masse 0.76-0.80 ≫ τ=0.01,
+        Bericht §7); wittgenstein.step mit oracle_scale=True verdrahtet
+        denselben Kanal (S1-Opts).
+  SP5 — Cross-Preset-Kontrast (GPU, S1-Skala + Echo-Diskrimination):
+        dieselben 12 Batches unter raw / goedel / turing / wittgenstein /
+        combined / Anti-Preset {4,5} (dict-Direktsteuerung); die S1-Skala
+        bleibt über alle Arme offen und flach (kein Preset-Signal auf der
+        Skala), die Diskrimination lebt auf dem Canon-Name-Echo-Kanal
+        (Name-Lesungen je Arm paarweise verschieden, Bericht §7).
+  SP6 — Lexikon-Emergenz (CPU, S3): das Lexikon-Spiel — DE/EN-Paare lernen
+        sich über 15 Gebrauchsrunden (learn_pair-Konvergenz); gepaarte
+        Resonanz wandert von der Gematria-Achse (SP2: 0.31 < unverwandt)
+        in die Gebrauchs-Achse (> 0.75 > unverwandt).
+
+Pass-Kriterien:
+  sp1_det      — zwei CPU-Läufe erzeugen bitidentische Batch-Digests
+  sp1_finite   — alle Validitäten ∈ [0,1], Diversität > 0.3 (10 AST-Regeln
+                 der Tiefe ≤ 3 kollidieren selten)
+  sp1_structure— strukturiertes Rauschen (×0.3) erhöht die mittlere Validität
+                 gegenüber vollem Rauschen (Canon-Erwartung aus uni_204:241)
+  sp2_identity — Resonanz eines Wortes mit sich selbst > 0.999
+  sp2_finite   — alle Paar-Resonanzen in [−1−1e-9, 1+1e-9]
+  sp3_det      — zwei ungesteuerte Arme liefern identische Digit-Sequenzen
+  sp3_awaken   — der raw ungesteuerte Kanon-Kanal bleibt stumm (>50 % unknown,
+                 Kanon-Fallback 0.0), das wittgenstein-Steering öffnet die
+                 Lesung (≥1 Ziffer im gesteuerten Arm) — Sprachspiel-Befund
+  sp3_ops      — der ziffernfreie Operator-Anker liest in >50 % der Batches
+  sp3_name_echo— der regelnamen-Anker (Ziffernmaterial!) geht mind. einmal in
+                 das Multi-Digit-Echo (>9) — dokumentiertes unfares Wortspiel
+  sp3_steer    — das Steering verschiebt die Prediction-Trajektorie UND
+                 expert_bias wird vollständig restauriert
+  sp3_calib    — die gesteuerte Lesung bleibt innerhalb eines Gap < 0.3
+                 gegen das batch-eigene Ist
+  sp4_spread   — das Ist spreet identifizierbar: min(sigma-Mittel) <= 0.8
+                 UND range >= 0.3 (Ent-Sättigung: kein all-1.00-Regime)
+  sp4_scale_open_flat — Widerlegung des Skalen-Stummkanals: raw UND Steering
+                 offen (0 unknown je Arm), Lesungen kontinuierlich in [0,1],
+                 σ-flat (|Δ scaled_mean| <= 0.05) — die S1-Skala trägt einen
+                 Tokenizer-Prior, kein σ-Signal; die Review-Erwartung „raw
+                 bleibt stumm" ist widerlegt (Bericht §7)
+  sp4_open     — das wittgenstein-Steering öffnet die Skala (< 1/2 unknown)
+  sp4_noclip   — kein Echo-Artefakt: lesbar heißt Float in [0,1], keine
+                 Multi-Digit-Werte > 1 und keine Ganzzahl-Echos (S1-These)
+  sp4_var_rho  — Varianz der gesteuerten Lesung > 0 ODER Spearman ρ > 0
+  sp4_step_wired — wittgenstein.step mit params oracle_scale=True nutzt
+                 predict_scale_0_9 und predet kontinuierlich in [0,1]
+  sp5_scale_flat — die S1-Skala ist über alle sechs Arme offen (0/12 unknown)
+                 und flach (max-min der mean_scaled <= 0.01): kein Preset-
+                 Signal auf der Skala (Widerlegung, Bericht §7)
+  sp5_witt_open — wittgenstein öffnet (unknown <= 2/12, < 20 %)
+  sp5_combined_open — combined öffnet (unknown <= 2/12, < 20 %)
+  sp5_echo_discrimination — auf dem Canon-Name-Kanal sind die Arme paarweise
+                 verschieden: raw≠wittgenstein, wittgenstein≠anti, raw≠anti —
+                 das Preset-Steering verändert das Sprachverhalten messbar
+                 (Echo-Kanal statt Skala, Bericht §7)
+  sp5_restored — expert_bias vollständig restauriert in jedem gesteuerten Arm
+  sp6_lexicon  — nach 15 Gebrauchsrunden: mean(paired) > 0.75 UND
+                 mean(paired) > mean(unrelated) (Gebrauch schlägt Gematria)
+
+Run (voll):   PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
+              venv_openmythos/bin/python -u -m scratches.smoke_sprachspiel \
+              --checkpoint_base ./argon_1b --checkpoint_machines ./argon_1b_machines \
+              2>&1 | tee scratches/sprachspiel_experiment.log
+Run (CPU):    python3 -m scratches.smoke_sprachspiel --lanes sp1,sp2,sp6
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+import numpy as np  # noqa: E402
+import torch  # noqa: E402
+
+from machines.machine_base import ArgonOracle, MachineConfig  # noqa: E402
+from machines.verify_machines import _load_machines_model  # noqa: E402
+from machines.wittgenstein_machine import (  # noqa: E402
+    GeometricTokenizer, WittgensteinMachine)
+
+BATCHES = 12
+GENERIC_PROMPT = ("Validity of a symbolic experiment batch, "
+                  "single digit per ten percent: ")
+PROBE = ("Die Wittgenstein-Regel wird Programm: Turing führt den AST aus, "
+         "Gödel predet das Ergebnis; die Regel zeigt, wie man sie ausführt.")
+
+# Wortpaare des Sprachspiels — bewusst ASCII-only (Gematria = Summe der ords,
+# Lisp-Parität; Umlaute verfälschen nichts, sie sind nur nicht in der Quelle).
+PAIRED = [("regel", "rule"), ("sprache", "language"), ("spiel", "game"),
+          ("bedeutung", "meaning"), ("gebrauch", "use"), ("wort", "word")]
+IDENTITY = [("form", "form"), ("regel", "regel"), ("spiel", "spiel")]
+UNRELATED = [("regel", "tisch"), ("bedeutung", "kaffee"), ("sprache", "stein"),
+             ("wort", "baum")]
+
+# -- SP4/SP5/SP6 — Review-Setup (S1-Skala, S2-Spread, S3-Lexikon) --------------
+SPREAD_SIGMAS = (0.1, 0.5, 1.5, 4.0)   # Ent-Sättigung: vier Rausch-Regime (S2)
+SPREAD_SEEDS = (0, 1, 2, 3, 4, 5)      # 6 Batches je Sigma (S2 rotiert je Aufruf)
+GAME_PAIRS = [("regel", "rule"), ("spiel", "game"), ("gebrauch", "use")]
+UNRELATED_GAME = [("regel", "tisch"), ("bedeutung", "kaffee"), ("wort", "baum")]
+
+# SP5-Arme: Preset-Name oder dict-Direktsteuerung (machine_base._preset_experts
+# nimmt dict verbatim). Anti-Preset = die Fachfremden: die Experten der drei
+# Maschinen-Domänen sind {2,7}/{0,6}/{1,3} — {4,5} gehört keiner symbolischen
+# Domäne an, also muss der Fachfremde-Kanal stumm bleiben.
+SP5_ARMS: List[Tuple[str, Any]] = [
+    ("raw", None), ("goedel", "goedel"), ("turing", "turing"),
+    ("wittgenstein", "wittgenstein"), ("combined", "combined"),
+    ("anti", {"experts": [4, 5], "steer": 50.0}),
+]
+
+
+def batch_digest(batch: List[Dict[str, Any]]) -> str:
+    payload = json.dumps(
+        [(e["rule_ast"], round(e["success_rate"], 9)) for e in batch],
+        sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
+
+
+def make_batch(seed: int, structure: bool, count: int = 10):
+    config = MachineConfig(seed=seed, mode="in_loop",
+                           params={"use_structure": structure})
+    machine = WittgensteinMachine(config)
+    return machine.generate_experiments(count=count)
+
+
+def make_sigma_batch(seed: int, sigma: float, count: int = 10):
+    """SP4/S2-Rausch-Regime: volles Rauschen (use_structure False — sonst
+    ×0.3, das 1.00-Kleben der Canon-Batches), noise_level = sigma."""
+    config = MachineConfig(seed=seed, mode="in_loop",
+                           params={"noise_level": sigma, "use_structure": False})
+    machine = WittgensteinMachine(config)
+    return machine.generate_experiments(count=count)
+
+
+# -- SP1: Regel-Generierung ---------------------------------------------------
+def lane_rules() -> Dict[str, Any]:
+    rows: List[Dict[str, Any]] = []
+    for seed in (0, 1, 2):
+        noisy = make_batch(seed, structure=False)
+        structured = make_batch(seed, structure=True)
+        rows.append({
+            "seed": seed,
+            "digest_noisy": batch_digest(noisy),
+            "digest_structured": batch_digest(structured),
+            "validity_noisy": float(np.mean([e["success_rate"] for e in noisy])),
+            "validity_structured": float(np.mean([e["success_rate"] for e in structured])),
+            "sample_names": [noisy[0]["rule_name"], noisy[1]["rule_name"],
+                             noisy[2]["rule_name"]],
+        })
+    digests_a = batch_digest(make_batch(0, False)) + batch_digest(make_batch(1, False)) \
+        + batch_digest(make_batch(2, False))
+    digests_b = "".join(r["digest_noisy"] for r in rows)
+    validities = [r["validity_noisy"] for r in rows] + \
+        [r["validity_structured"] for r in rows]
+    div = WittgensteinMachine(MachineConfig(seed=0, mode="in_loop"))
+    div.generate_experiments(count=10)
+    diversity = div.rule_diversity()
+    structure_gain = np.mean([r["validity_structured"] - r["validity_noisy"]
+                              for r in rows])
+    return {"rows": rows, "deterministic": digests_a == digests_b,
+            "validities_finite": all(0.0 <= v <= 1.0 for v in validities),
+            "diversity": float(diversity),
+            "structure_gain": float(structure_gain),
+            "digest_repeat": digests_a}
+
+
+# -- SP2: SH-72-Wort-Resonanz -------------------------------------------------
+def lane_words() -> Dict[str, Any]:
+    tokenizer = GeometricTokenizer()
+    embed = {w: tokenizer.embed_word(w)
+             for pair in (*PAIRED, *IDENTITY, *UNRELATED) for w in pair}
+
+    def formulas(word: str) -> Dict[str, Any]:
+        k, idx, kind = tokenizer.word_formula(word)
+        return {"word": word, "gematria": tokenizer.string_gematria(word),
+                "idx": idx, "k": k, "kind": kind}
+
+    def measure(pairs: List[Tuple[str, str]]) -> List[Dict[str, Any]]:
+        out = []
+        for a, b in pairs:
+            f_a, f_b = formulas(a), formulas(b)
+            resonance = tokenizer.resonance(embed[a], embed[b])
+            out.append({**f_a, "b": {**f_b}, "resonance": round(float(resonance), 6),
+                        "same_kind": f_a["kind"] == f_b["kind"]})
+        return out
+
+    self_res = [round(float(tokenizer.resonance(tokenizer.embed_word(w),
+                                                tokenizer.embed_word(w))), 6)
+                for w, _ in IDENTITY]
+    rows = {"paired": measure(PAIRED), "identity_str": measure(IDENTITY),
+            "unrelated": measure(UNRELATED)}
+    all_res = [r["resonance"] for group in rows.values() for r in group]
+    means = {g: float(np.mean([r["resonance"] for r in rows[g]]))
+             for g in rows}
+    same_kind_share = float(np.mean([
+        float(r["same_kind"]) for r in rows["unrelated"]]))
+    return {"rows": rows, "self_resonance": self_res,
+            "self_ok": all(v > 0.999 for v in self_res),
+            "finite": all(-1.0 - 1e-9 <= v <= 1.0 + 1e-9 for v in all_res),
+            "means": means,
+            "same_kind_share_unrelated": same_kind_share}
+
+
+# -- SP3: Argon als Sprachpartner ---------------------------------------------
+def machine_batches(seed: int) -> List[List[Dict[str, Any]]]:
+    machine = WittgensteinMachine(MachineConfig(seed=seed, mode="in_loop"))
+    return [machine.generate_experiments(count=10) for _ in range(BATCHES)]
+
+
+def anchored_name_prompt(batch: List[Dict[str, Any]]) -> str:
+    """Wort-Anker MIT Ziffernmaterial (Regelname) — das unfaire Wortspiel:
+    der Name trägt Ziffern, die Lesung kann ins Echo kippen."""
+    return (f"Rule: {batch[0]['rule_name']}. " + GENERIC_PROMPT)
+
+
+OPS_SET = {"identity", "negate", "square", "sqrt", "sin", "cos", "exp", "log",
+           "abs", "add", "subtract", "multiply", "divide", "power", "max", "min"}
+
+
+def ops_of(batch: List[Dict[str, Any]]) -> str:
+    """Ziffernfreie Operator-Wörter des ersten Batch-Programms (Reihenfolge der
+    Erstdurchsicht) — der faire Wort-Anker: Bedeutung ohne Ziffernmateriale."""
+    import re
+    seen: List[str] = []
+    for token in re.findall(r"[a-z]+", batch[0]["rule_ast"]):
+        if token in OPS_SET and token not in seen:
+            seen.append(token)
+    return " ".join(seen)
+
+
+def anchored_ops_prompt(batch: List[Dict[str, Any]]) -> str:
+    ops = ops_of(batch) or "(leaf)"
+    return (f"Symbolic experiment with operators {ops}. " + GENERIC_PROMPT)
+
+
+def run_arm(oracle: ArgonOracle, preset: str | None) -> Dict[str, Any]:
+    batches = machine_batches(7)
+    restored = True
+    rows: List[Dict[str, Any]] = []
+    if preset is None:
+        for b in batches:
+            rows.append(predict_pair(oracle, b))
+    else:
+        bias_before = [layer.moe.gate.expert_bias.data.clone()
+                       for layer in oracle.model.model.layers]
+        with oracle.steer(preset) as info:
+            experts = list(info["experts"])
+            for b in batches:
+                rows.append(predict_pair(oracle, b))
+        bias_after = [layer.moe.gate.expert_bias.data
+                      for layer in oracle.model.model.layers]
+        restored = all(torch.equal(a, c) for a, c in zip(bias_before, bias_after))
+    return {"rows": rows, "restored": bool(restored),
+            "experts": experts if preset else []}
+
+
+def predict_pair(oracle: ArgonOracle, batch: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Drei Lesungen desselben Batches: (gen) Kanon-Prompt wie in wittgenstein.step,
+    (ops) ziffernfreie Operator-Anker, (name) regelnamen-Anker mit Ziffern-Echo-Risiko."""
+    actual = float(np.mean([e["success_rate"] for e in batch]))
+    values = {
+        "p_generic": oracle.predict_value(GENERIC_PROMPT),
+        "p_ops": oracle.predict_value(anchored_ops_prompt(batch)),
+        "p_name": oracle.predict_value(anchored_name_prompt(batch)),
+    }
+    row: Dict[str, Any] = {"rule_name": batch[0]["rule_name"],
+                           "actual": round(actual, 4),
+                           "op_anchors": ops_of(batch),
+                           "unknown_count": 0}
+    for key, value in values.items():
+        if value == "unknown":
+            row.update({key: None, f"unknown_{key}": True})
+            row["unknown_count"] += 1
+        else:
+            row.update({key: int(value), f"unknown_{key}": False,
+                        f"gap_{key}": round(abs(min(max(value / 10.0, 0.0), 1.0)
+                                                - actual), 4)})
+    return row
+
+
+def lane_oracle(checkpoint_base: str, checkpoint_machines: str,
+                oracle: Optional[ArgonOracle] = None) -> Dict[str, Any]:
+    if oracle is None:
+        model, tokenizer = _load_machines_model(checkpoint_base, checkpoint_machines)
+        device_build = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        oracle = ArgonOracle(model, tokenizer, device=device_build)
+    device = oracle.device
+    h_probe = oracle.entropy_scalar(PROBE)
+    arm_a = run_arm(oracle, preset=None)
+    arm_a2 = run_arm(oracle, preset=None)
+    arm_b = run_arm(oracle, preset="wittgenstein")
+    seq_a = [(r["p_generic"], r["p_ops"], r["p_name"]) for r in arm_a["rows"]]
+    seq_a2 = [(r["p_generic"], r["p_ops"], r["p_name"]) for r in arm_a2["rows"]]
+    seq_b = [(r["p_generic"], r["p_ops"], r["p_name"]) for r in arm_b["rows"]]
+    unknowns = {key: sum(1 for r in arm_a["rows"] if r[f"unknown_{key}"])
+                for key in ("p_generic", "p_ops", "p_name")}
+    unknowns["p_generic_steer"] = sum(1 for r in arm_b["rows"]
+                                      if r["unknown_p_generic"])
+    echo_name = sum(1 for r in arm_a["rows"]
+                    if r["p_name"] is not None and r["p_name"] > 9)
+    steer_shift = seq_a != seq_b
+
+    def mean_gap(rows, key):
+        vals = [r[f"gap_{key}"] for r in rows if f"gap_{key}" in r]
+        return float(np.mean(vals)) if vals else None
+
+    return {"device": str(device), "h_probe": float(h_probe),
+            "arm_generic": arm_a, "arm_repeat": arm_a2,
+            "arm_wittgenstein": arm_b,
+            "deterministic": seq_a == seq_a2,
+            "unknowns": unknowns,
+            "name_echo_count": echo_name,
+            "ops_shifts": sum(1 for r in arm_a["rows"]
+                              if (r["p_generic"] is not None)
+                              != (r["p_ops"] is not None)
+                              or (r["p_generic"] is not None
+                                  and r["p_ops"] is not None
+                                  and r["p_generic"] != r["p_ops"])),
+            "steer_shift": bool(steer_shift),
+            "restored": arm_b["restored"] and arm_a["restored"],
+            "experts": arm_b["experts"],
+            "mean_gap_generic": mean_gap(arm_a["rows"], "p_generic"),
+            "mean_gap_ops": mean_gap(arm_a["rows"], "p_ops"),
+            "mean_gap_name": mean_gap(arm_a["rows"], "p_name"),
+            "mean_gap_steer": mean_gap(arm_b["rows"], "p_generic")}
+
+
+# -- SP4/SP5: S1-Skala-Kanal (predict_scale_0_9) -------------------------------
+def _rank(values: Sequence[float]) -> List[float]:
+    """Ränge mit averaged ties (Spearman-Restbestand, keine scipy-Nutzung)."""
+    order = sorted(range(len(values)), key=lambda i: values[i])
+    ranks = [0.0] * len(values)
+    i = 0
+    while i < len(order):
+        j = i
+        while j + 1 < len(order) and values[order[j + 1]] == values[order[i]]:
+            j += 1
+        rank = (i + j) / 2.0
+        for k in range(i, j + 1):
+            ranks[order[k]] = rank
+        i = j + 1
+    return ranks
+
+
+def spearman_rho(xs: Sequence[float], ys: Sequence[float]) -> Optional[float]:
+    """Rang-Korrelation (Review-OR-Kriterium); None bei n<4 oder Degenerate."""
+    if len(xs) < 4 or len(xs) != len(ys):
+        return None
+    rx, ry = _rank(xs), _rank(ys)
+    mx = sum(rx) / len(rx)
+    my = sum(ry) / len(ry)
+    num = sum((a - mx) * (b - my) for a, b in zip(rx, ry))
+    den = math.sqrt(sum((a - mx) ** 2 for a in rx)
+                    * sum((b - my) ** 2 for b in ry))
+    if den <= 0.0:
+        return None
+    return float(num / den)
+
+
+def scale_pair(oracle: ArgonOracle, batch: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Eine S1-Lesung: predict_scale_0_9 — kontinuierlich in [0,1] oder
+    ehrlich "unknown" (kein Clip-Trick, kein Multi-Digit-Echo)."""
+    prompt = anchored_ops_prompt(batch)
+    value = oracle.predict_scale_0_9(prompt)
+    actual = float(np.mean([e["success_rate"] for e in batch]))
+    readable = value != "unknown"
+    return {"rule_name": batch[0]["rule_name"],
+            "actual": round(actual, 4), "op_anchors": ops_of(batch),
+            "scaled": round(float(value), 6) if readable else None,
+            "unknown": not readable}
+
+
+def echo_name_read(oracle: ArgonOracle, batch: List[Dict[str, Any]]) -> Any:
+    """Canon-Name-Lesung (predict_value) für die Echo-Diskrimination (SP5):
+    "unknown" bleibt explizit stehen — kein stiller Fallback; die Sequenz
+    dokumentiert, wie das Steering die Echo-Form verschiebt."""
+    value = oracle.predict_value(anchored_name_prompt(batch))
+    return "unknown" if value == "unknown" else int(value)
+
+
+def lane_lexicon() -> Dict[str, Any]:
+    """SP6/S3 — Gebrauch schlägt Gematria: 15 Runden lexicon_game (alpha 0.3),
+    danach liest embed_word das erlernte Lexikon ZUERST (geometric-tokenizer
+    .lisp-Parität :95-98)."""
+    machine = WittgensteinMachine(MachineConfig(seed=9, mode="in_loop"))
+    tokenizer = machine.tokenizer
+
+    def res(pair: Tuple[str, str]) -> float:
+        a, b = pair
+        return round(float(tokenizer.resonance(tokenizer.embed_word(a),
+                                              tokenizer.embed_word(b))), 6)
+
+    before_paired = [res(p) for p in GAME_PAIRS]
+    before_unrelated = [res(p) for p in UNRELATED_GAME]
+    protocol = machine.lexicon_game(GAME_PAIRS, rounds=15, alpha=0.3)
+    after_paired = [res(p) for p in GAME_PAIRS]
+    after_unrelated = [res(p) for p in UNRELATED_GAME]
+    learned_all = all(tokenizer.lexicon.get(w) is not None
+                      for pair in GAME_PAIRS for w in pair)
+    return {
+        "before_paired": before_paired,
+        "after_paired": after_paired,
+        "before_unrelated": before_unrelated,
+        "after_unrelated": after_unrelated,
+        "mean_before": round(float(np.mean(before_paired)), 4),
+        "mean_after": round(float(np.mean(after_paired)), 4),
+        "mean_unrelated_after": round(float(np.mean(after_unrelated)), 4),
+        "learned_all": learned_all,
+        "learned_rounds": sum(1 for r in protocol if r["learned"]),
+        "protocol_rows": len(protocol),
+        "protocol_tail": protocol[-3:],
+    }
+
+
+def lane_spread(oracle: ArgonOracle) -> Dict[str, Any]:
+    """SP4 — Spread-Kalibrierung & Anti-Clip: vier Rausch-Regime (S2-Schedule-
+    Stände via noise_level), raw vs. wittgenstein-Steering, alles über den
+    S1-Skala-Kanal; plus step-Verdrahtung (oracle_scale=True)."""
+    groups: Dict[str, Any] = {}
+    for sigma in SPREAD_SIGMAS:
+        raw_rows: List[Dict[str, Any]] = []
+        steer_rows: List[Dict[str, Any]] = []
+        for seed in SPREAD_SEEDS:
+            batch = make_sigma_batch(seed, sigma)
+            raw_rows.append(scale_pair(oracle, batch))
+            with oracle.steer("wittgenstein"):
+                steer_rows.append(scale_pair(oracle, batch))
+        actuals = [r["actual"] for r in steer_rows]
+        read = [r for r in steer_rows if r["scaled"] is not None]
+        rho = spearman_rho([r["actual"] for r in read],
+                           [r["scaled"] for r in read])
+        groups[f"sigma_{sigma}"] = {
+            "raw_rows": raw_rows, "steer_rows": steer_rows,
+            "actual_mean": round(float(np.mean(actuals)), 4),
+            "scaled_mean": (round(float(np.mean([r["scaled"] for r in read])), 4)
+                            if read else None),
+            "raw_unknown": sum(r["unknown"] for r in raw_rows),
+            "steer_unknown": sum(r["unknown"] for r in steer_rows),
+            "rho": None if rho is None else round(float(rho), 4),
+        }
+    total = len(SPREAD_SIGMAS) * len(SPREAD_SEEDS)
+    scaled_all = [r["scaled"] for g in groups.values()
+                  for r in g["steer_rows"] if r["scaled"] is not None]
+    # sp4_step_wired — dieselbe Skala über den Maschinen-Schritt (S1-Opts).
+    wired_machine = WittgensteinMachine(
+        MachineConfig(seed=7, mode="oracle",
+                      params={"oracle_scale": True}), oracle=oracle)
+    wired_rows: List[Dict[str, Any]] = []
+    with oracle.steer("wittgenstein"):
+        for _ in range(3):
+            result = wired_machine.step(None)
+            wired_rows.append({
+                "prediction": float(result.invariants["prediction"]),
+                "channel": result.argon_meta.get("oracle"),
+                "readable": "value" in result.argon_meta,
+            })
+    wired_ok = (all(r["channel"] == "predict_scale_0_9"
+                    and 0.0 <= r["prediction"] <= 1.0
+                    and math.isfinite(r["prediction"]) for r in wired_rows)
+                and sum(r["readable"] for r in wired_rows) >= 1)
+    rhos = [g["rho"] for g in groups.values() if g["rho"] is not None]
+    return {
+        "groups": groups,
+        "total_reads": total,
+        "raw_unknown_total": sum(g["raw_unknown"] for g in groups.values()),
+        "steer_unknown_total": sum(g["steer_unknown"] for g in groups.values()),
+        "actual_means": {f"sigma_{s}": groups[f"sigma_{s}"]["actual_mean"]
+                         for s in SPREAD_SIGMAS},
+        "scaled_means": {f"sigma_{s}": groups[f"sigma_{s}"]["scaled_mean"]
+                         for s in SPREAD_SIGMAS},
+        "scaled_var": round(float(np.var(scaled_all)), 6) if scaled_all else None,
+        "noclip_violations": sum(1 for v in scaled_all if v < 0.0 or v > 1.0),
+        "rho_per_sigma": {f"sigma_{s}": groups[f"sigma_{s}"]["rho"]
+                          for s in SPREAD_SIGMAS},
+        "mean_rho": round(float(np.mean(rhos)), 4) if rhos else None,
+        "any_rho_positive": any(r is not None and r > 0.0 for r in rhos),
+        "wired_rows": wired_rows,
+        "wired_ok": wired_ok,
+    }
+
+
+def lane_presets(oracle: ArgonOracle) -> Dict[str, Any]:
+    """SP5 — Cross-Preset-Kontrast: dieselben 12 Canon-Batches unter sechs
+    Armladungen; die S1-Skala bleibt offen-flach in allen Armen (Widerlegung,
+    Bericht §7), die Preset-Diskrimination lebt auf dem Canon-Name-Echo
+    (name_seq je Arm, paarweise verschieden)."""
+    batches = machine_batches(7)
+    arms: Dict[str, Any] = {}
+    for name, preset in SP5_ARMS:
+        arm_experts: List[int] = []
+        restored = True
+        rows: List[Dict[str, Any]] = []
+        name_seq: List[Any] = []
+        if preset is None:
+            for b in batches:
+                rows.append(scale_pair(oracle, b))
+                name_seq.append(echo_name_read(oracle, b))
+        else:
+            bias_before = [layer.moe.gate.expert_bias.data.clone()
+                           for layer in oracle.model.model.layers]
+            with oracle.steer(preset) as info:
+                arm_experts = list(info["experts"])
+                for b in batches:
+                    rows.append(scale_pair(oracle, b))
+                    name_seq.append(echo_name_read(oracle, b))
+            bias_after = [layer.moe.gate.expert_bias.data
+                          for layer in oracle.model.model.layers]
+            restored = all(torch.equal(a, c) for a, c in zip(bias_before, bias_after))
+        read = [r for r in rows if r["scaled"] is not None]
+        gaps = [abs(r["scaled"] - r["actual"]) for r in read]
+        arms[name] = {
+            "unknown": sum(r["unknown"] for r in rows),
+            "mean_scaled": (round(float(np.mean([r["scaled"] for r in read])), 4)
+                            if read else None),
+            "mean_gap": round(float(np.mean(gaps)), 4) if gaps else None,
+            "restored": bool(restored), "experts": arm_experts,
+            "name_seq": name_seq,
+        }
+    return {"batch0_digest": batch_digest(batches[0]), "arms": arms}
+
+
+# -- Main ---------------------------------------------------------------------
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Sprachspiel-Generierungstest")
+    parser.add_argument("--checkpoint_base", default="./argon_1b")
+    parser.add_argument("--checkpoint_machines", default="./argon_1b_machines")
+    parser.add_argument("--lanes", default="sp1,sp2,sp3")
+    args = parser.parse_args()
+    selected = set(args.lanes.split(","))
+
+    report: Dict[str, Any] = {}
+    if "sp1" in selected:
+        print("[SP1] Regel-Generierung (CPU) …")
+        report["sp1"] = lane_rules()
+    if "sp2" in selected:
+        print("[SP2] SH-72-Wort-Resonanz (CPU) …")
+        report["sp2"] = lane_words()
+    oracle: Optional[ArgonOracle] = None
+    if {"sp3", "sp4", "sp5"} & selected:
+        print("[Load] Argon-1B + machines-Checkpoint …")
+        model, tokenizer = _load_machines_model(args.checkpoint_base,
+                                                args.checkpoint_machines)
+        device_load = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        oracle = ArgonOracle(model, tokenizer, device=device_load)
+    if "sp3" in selected:
+        print("[SP3] Argon als Sprachpartner (GPU) …")
+        report["sp3"] = lane_oracle(args.checkpoint_base, args.checkpoint_machines,
+                                    oracle=oracle)
+    if "sp4" in selected:
+        print("[SP4] Spread-Kalibrierung & Anti-Clip (GPU, S1-Kanal) …")
+        report["sp4"] = lane_spread(oracle)
+    if "sp5" in selected:
+        print("[SP5] Cross-Preset-Kontrast (GPU, S1-Kanal) …")
+        report["sp5"] = lane_presets(oracle)
+    if "sp6" in selected:
+        print("[SP6] Lexikon-Emergenz (CPU, S3) …")
+        report["sp6"] = lane_lexicon()
+
+    print("=" * 88)
+    print("SPRACHSPIEL-GENERIERUNG — REGEL, WORT, MITSPIELER")
+    print("=" * 88)
+
+    if "sp1" in report:
+        sp1 = report["sp1"]
+        for row in sp1["rows"]:
+            print(f"  seed={row['seed']} digest={row['digest_noisy']} "
+                  f"validity(noisy)={row['validity_noisy']:.4f} "
+                  f"validity(structured)={row['validity_structured']:.4f}")
+            for name in row["sample_names"]:
+                print(f"      {name}")
+        print(f"  diversity(10 AST-Regeln)={sp1['diversity']:.4f} "
+              f"structure_gain={sp1['structure_gain']:+.4f} "
+              f"deterministisch={sp1['deterministic']}")
+
+    if "sp2" in report:
+        sp2 = report["sp2"]
+        for group in ("paired", "identity_str", "unrelated"):
+            print(f"  -- {group} --")
+            for r in sp2["rows"][group]:
+                print(f"    {r['word']}({r['kind']},k={r['k']}) <-> "
+                      f"{r['b']['word']}({r['b']['kind']},k={r['b']['k']}) "
+                      f"resonance={r['resonance']:+.4f} "
+                      f"same_kind={r['same_kind']}")
+        print(f"  self_resonance={sp2['self_resonance']} "
+              f"means={ {g: round(v, 4) for g, v in sp2['means'].items()} } "
+              f"same_kind_share_unrelated={sp2['same_kind_share_unrelated']:.4f}")
+
+    if "sp3" in report:
+        sp3 = report["sp3"]
+        print(f"  device={sp3['device']} h_probe={sp3['h_probe']:.4f} "
+              f"experts={sp3['experts']}")
+        for i, r in enumerate(sp3["arm_generic"]["rows"]):
+            steer_row = sp3["arm_wittgenstein"]["rows"][i]
+            print(f"    [{i:2d}] {r['rule_name'][:40]:40s} actual={r['actual']:.2f} "
+                  f"ops=[{r['op_anchors'][:18]:18s}] gen={r['p_generic']} "
+                  f"ops_pred={r['p_ops']} name={r['p_name']} "
+                  f"steer={steer_row['p_generic']}")
+        print(f"  unknown(gen/ops/name; steer+gen)={sp3['unknowns']} "
+              f"name_echo(multi-digit)={sp3['name_echo_count']} "
+              f"ops_shifts={sp3['ops_shifts']} steer_shift={sp3['steer_shift']} "
+              f"restored={sp3['restored']} det={sp3['deterministic']}")
+        print(f"  mean_gap: gen={sp3['mean_gap_generic']} "
+              f"ops={sp3['mean_gap_ops']} name={sp3['mean_gap_name']} "
+              f"steered+gen={sp3['mean_gap_steer']}")
+
+    if "sp4" in report:
+        sp4 = report["sp4"]
+        for sigma in SPREAD_SIGMAS:
+            g = sp4["groups"][f"sigma_{sigma}"]
+            print(f"    sigma={sigma:<3} actual_mean={g['actual_mean']:.4f} "
+                  f"scaled_mean={g['scaled_mean']} "
+                  f"raw_unknown={g['raw_unknown']}/{len(SPREAD_SEEDS)} "
+                  f"steer_unknown={g['steer_unknown']}/{len(SPREAD_SEEDS)} "
+                  f"rho={g['rho']}")
+        print(f"  raw_unknown={sp4['raw_unknown_total']}/{sp4['total_reads']} "
+              f"steer_unknown={sp4['steer_unknown_total']}/{sp4['total_reads']} "
+              f"scaled_var={sp4['scaled_var']} "
+              f"noclip_violations={sp4['noclip_violations']} "
+              f"mean_rho={sp4['mean_rho']}")
+        for r in sp4["wired_rows"]:
+            print(f"    wired: prediction={r['prediction']:.4f} "
+                  f"channel={r['channel']} readable={r['readable']}")
+
+    if "sp5" in report:
+        sp5 = report["sp5"]
+        for name, arm in sp5["arms"].items():
+            print(f"    {name:13s} unknown={arm['unknown']:2d}/{BATCHES} "
+                  f"mean_scaled={arm['mean_scaled']} mean_gap={arm['mean_gap']} "
+                  f"restored={arm['restored']} experts={arm['experts']} "
+                  f"name_seq={arm['name_seq']}")
+
+    if "sp6" in report:
+        sp6 = report["sp6"]
+        print(f"  mean_before={sp6['mean_before']} mean_after={sp6['mean_after']} "
+              f"mean_unrelated_after={sp6['mean_unrelated_after']} "
+              f"learned_all={sp6['learned_all']} "
+              f"learned_rounds={sp6['learned_rounds']}/{sp6['protocol_rows']}")
+        for pair, before, after in zip(GAME_PAIRS, sp6["before_paired"],
+                                       sp6["after_paired"]):
+            print(f"    {pair[0]}<->{pair[1]:10s} {before:+.4f} -> {after:+.4f}")
+
+    findings: List[Tuple[str, str]] = []
+    if "sp1" in report:
+        findings.append(("sp1_det", "PASS" if report["sp1"]["deterministic"] else "FAIL"))
+        findings.append(("sp1_finite", "PASS" if (report["sp1"]["validities_finite"]
+                                                  and report["sp1"]["diversity"] > 0.3)
+                         else "FAIL"))
+        findings.append(("sp1_structure",
+                         "PASS" if report["sp1"]["structure_gain"] > 0.0 else "FAIL"))
+    if "sp2" in report:
+        findings.append(("sp2_identity",
+                         "PASS" if report["sp2"]["self_ok"] else "FAIL"))
+        findings.append(("sp2_finite", "PASS" if report["sp2"]["finite"] else "FAIL"))
+    if "sp3" in report:
+        sp3 = report["sp3"]
+        findings.append(("sp3_det", "PASS" if sp3["deterministic"] else "FAIL"))
+        # Befund-Kriterium: der raw ungesteuerte Kanon-Kanal bleibt stumm
+        # (>50 % unknown → Kanon-Fallback 0.0), das wittgenstein-Steering
+        # öffnet die Lesung (≥1 Ziffer im gesteuerten Arm).
+        awakened = ((sp3["unknowns"]["p_generic"] > BATCHES / 2)
+                    and (sp3["unknowns"]["p_generic_steer"] < BATCHES / 2))
+        findings.append(("sp3_awaken", "PASS" if awakened else "FAIL"))
+        # Der faire ops-Anker (ziffernfrei) liest in der Mehrzahl der Batches.
+        findings.append(("sp3_ops_channel",
+                         "PASS" if sp3["unknowns"]["p_ops"] < BATCHES / 2 else "FAIL"))
+        find_echo = sp3["name_echo_count"] > 0
+        findings.append(("sp3_name_echo", "PASS" if find_echo else "FAIL"))
+        findings.append(("sp3_steer",
+                         "PASS" if (sp3["steer_shift"] and sp3["restored"]) else "FAIL"))
+        calib = sp3["mean_gap_steer"] is not None and sp3["mean_gap_steer"] < 0.3
+        findings.append(("sp3_calib", "PASS" if calib else "FAIL"))
+    if "sp4" in report:
+        sp4 = report["sp4"]
+        means = [sp4["groups"][f"sigma_{s}"]["actual_mean"] for s in SPREAD_SIGMAS]
+        spread_ok = min(means) <= 0.8 and (max(means) - min(means)) >= 0.3
+        findings.append(("sp4_spread", "PASS" if spread_ok else "FAIL"))
+        total = sp4["total_reads"]
+        # sp4_scale_open_flat — Widerlegung der Skalen-Stummkanal-Erwartung:
+        # raw und Steering lesen kontinuierlich (0 unknown), σ-flat und ohne
+        # Artefakt; die Diskrimination lebt auf dem Echo-Kanal (SP3/SP5).
+        scaled_means = [g["scaled_mean"] for g in sp4["groups"].values()
+                        if g["scaled_mean"] is not None]
+        open_flat = (sp4["raw_unknown_total"] == 0
+                     and sp4["steer_unknown_total"] == 0
+                     and scaled_means
+                     and (max(scaled_means) - min(scaled_means)) <= 0.05)
+        findings.append(("sp4_scale_open_flat", "PASS" if open_flat else "FAIL"))
+        findings.append(("sp4_open", "PASS" if sp4["steer_unknown_total"] < total / 2
+                         else "FAIL"))
+        noclip = (sp4["noclip_violations"] == 0 and sp4["scaled_var"] is not None)
+        findings.append(("sp4_noclip", "PASS" if noclip else "FAIL"))
+        var_rho = ((sp4["scaled_var"] is not None and sp4["scaled_var"] > 0.0)
+                   or sp4["any_rho_positive"])
+        findings.append(("sp4_var_rho", "PASS" if var_rho else "FAIL"))
+        findings.append(("sp4_step_wired", "PASS" if sp4["wired_ok"] else "FAIL"))
+    if "sp5" in report:
+        arms = report["sp5"]["arms"]
+        scale_means = [arms[name]["mean_scaled"] for name, _ in SP5_ARMS
+                       if arms[name]["mean_scaled"] is not None]
+        # sp5_scale_flat — Widerlegung der Stumm-Erwartung auf der Skala:
+        # alle Arme offen, mean_scaled flach (kein Preset-Signal auf der
+        # S1-Skala — Digit-Masse 0.76 ops-Anker / 0.35 generisch, Bericht §7).
+        scale_flat = (all(arms[name]["unknown"] == 0 for name, _ in SP5_ARMS)
+                      and scale_means
+                      and (max(scale_means) - min(scale_means)) <= 0.01)
+        findings.append(("sp5_scale_flat", "PASS" if scale_flat else "FAIL"))
+        witt_open = (arms["wittgenstein"]["unknown"] <= 2
+                     and arms["wittgenstein"]["restored"])
+        findings.append(("sp5_witt_open", "PASS" if witt_open else "FAIL"))
+        comb_open = (arms["combined"]["unknown"] <= 2
+                     and arms["combined"]["restored"])
+        findings.append(("sp5_combined_open", "PASS" if comb_open else "FAIL"))
+        # sp5_echo_discrimination — die Preset-Diskrimination auf dem Canon-
+        # Name-Kanal: die Arme lesen paarweise verschiedene Echo-Sequenzen
+        # (raw ≠ wittgenstein ≠ anti ≠ raw); Fachfremde vs. Fach-Preset.
+        seqs = {name: arms[name]["name_seq"] for name, _ in SP5_ARMS}
+        discrim = (seqs["raw"] != seqs["wittgenstein"]
+                   and seqs["wittgenstein"] != seqs["anti"]
+                   and seqs["raw"] != seqs["anti"])
+        findings.append(("sp5_echo_discrimination",
+                         "PASS" if discrim else "FAIL"))
+        restored_all = all(arms[name]["restored"] for name in
+                           ("goedel", "turing", "wittgenstein", "combined", "anti"))
+        findings.append(("sp5_restored", "PASS" if restored_all else "FAIL"))
+    if "sp6" in report:
+        sp6 = report["sp6"]
+        lex = (sp6["mean_after"] > 0.75
+               and sp6["mean_after"] > sp6["mean_unrelated_after"])
+        findings.append(("sp6_lexicon", "PASS" if lex else "FAIL"))
+
+    print("-" * 88)
+    print("BEFUNDE")
+    for label, status in findings:
+        print(f"  {label:16s} {status}")
+
+    out = REPO_ROOT / "scratches" / "sprachspiel_experiment.json"
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str),
+                   encoding="utf-8")
+    print(f"[Save] {out.relative_to(REPO_ROOT)}")
+    failed = [name for name, status in findings if status != "PASS"]
+    if failed:
+        print(f"FEHLGESCHLAGEN: {len(failed)} — {', '.join(failed)}")
+        return 1
+    print("GRÜN — alle Sprachspiel-Befunde bestanden.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+==============================================================================
+### FILE: scratches/sprachspiel_experiment.log
+### bytes: 7580   lines: 102
+==============================================================================
+[SP1] Regel-Generierung (CPU) …
+[SP2] SH-72-Wort-Resonanz (CPU) …
+[Load] Argon-1B + machines-Checkpoint …
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+[SP3] Argon als Sprachpartner (GPU) …
+[SP4] Spread-Kalibrierung & Anti-Clip (GPU, S1-Kanal) …
+[SP5] Cross-Preset-Kontrast (GPU, S1-Kanal) …
+[SP6] Lexikon-Emergenz (CPU, S3) …
+========================================================================================
+SPRACHSPIEL-GENERIERUNG — REGEL, WORT, MITSPIELER
+========================================================================================
+  seed=0 digest=5e8d3b9d1b82 validity(noisy)=0.9100 validity(structured)=1.0000
+      square(0.00)
+      ((log(0.00) min sqrt(2.00)) max exp((x power x)))
+      exp(abs((2.00 multiply x)))
+  seed=1 digest=bc13fbe35f1d validity(noisy)=0.9100 validity(structured)=1.0000
+      (negate((x subtract x)) add ((x add x) multiply sq
+      (2.00 subtract (3.14 min (0.00 min x)))
+      x
+  seed=2 digest=c122d7a93d9c validity(noisy)=0.8800 validity(structured)=1.0000
+      x
+      ((sin(x) multiply (2.00 add x)) min ((x divide 2.7
+      (((2.00 power x) add square(x)) multiply (x add id
+  diversity(10 AST-Regeln)=1.0000 structure_gain=+0.1000 deterministisch=True
+  -- paired --
+    regel(cos,k=12) <-> rule(sin,k=9) resonance=-0.0003 same_kind=False
+    sprache(cos,k=11) <-> language(inv_add,k=9) resonance=-0.0062 same_kind=False
+    spiel(inv_add,k=2) <-> game(log,k=3) resonance=+0.8433 same_kind=False
+    bedeutung(exp,k=4) <-> meaning(cos,k=4) resonance=-0.0116 same_kind=False
+    gebrauch(inv_add,k=6) <-> use(inv_add,k=10) resonance=+0.9979 same_kind=True
+    wort(exp,k=5) <-> word(cos,k=1) resonance=+0.0379 same_kind=False
+  -- identity_str --
+    form(sin,k=5) <-> form(sin,k=5) resonance=+1.0000 same_kind=True
+    regel(cos,k=12) <-> regel(cos,k=12) resonance=+1.0000 same_kind=True
+    spiel(inv_add,k=2) <-> spiel(inv_add,k=2) resonance=+1.0000 same_kind=True
+  -- unrelated --
+    regel(cos,k=12) <-> tisch(exp,k=12) resonance=-0.0061 same_kind=False
+    bedeutung(exp,k=4) <-> kaffee(exp,k=11) resonance=+0.9671 same_kind=True
+    sprache(cos,k=11) <-> stein(inv_add,k=8) resonance=-0.0068 same_kind=False
+    wort(exp,k=5) <-> baum(square,k=2) resonance=+0.4994 same_kind=False
+  self_resonance=[1.0, 1.0, 1.0] means={'paired': 0.3102, 'identity_str': 1.0, 'unrelated': 0.3634} same_kind_share_unrelated=0.2500
+  device=cuda h_probe=1.7552 experts=[1, 3]
+    [ 0] (x power exp((x add x)))                 actual=1.00 ops=[power exp add     ] gen=None ops_pred=100000 name=1 steer=10
+    [ 1] (((x subtract x) subtract (x multiply x) actual=1.00 ops=[subtract multiply ] gen=None ops_pred=100000 name=10 steer=10
+    [ 2] (2.72 divide (2.00 subtract x))          actual=1.00 ops=[divide subtract   ] gen=None ops_pred=100000 name=1 steer=10
+    [ 3] sqrt(1.00)                               actual=1.00 ops=[sqrt              ] gen=None ops_pred=100000 name=100 steer=10
+    [ 4] log(square(identity(x)))                 actual=1.00 ops=[log square identit] gen=None ops_pred=100000 name=10 steer=10
+    [ 5] ((sqrt(x) divide x) add 2.00)            actual=1.00 ops=[add divide sqrt   ] gen=None ops_pred=100000 name=100000 steer=10
+    [ 6] 1.00                                     actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+    [ 7] 1.00                                     actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+    [ 8] log(1.00)                                actual=0.99 ops=[log               ] gen=None ops_pred=100000 name=100000 steer=10
+    [ 9] (sin(0.00) subtract exp((x power x)))    actual=1.00 ops=[subtract sin exp p] gen=None ops_pred=100000 name=1 steer=10
+    [10] 1.00                                     actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+    [11] x                                        actual=1.00 ops=[                  ] gen=None ops_pred=100000 name=1 steer=10
+  unknown(gen/ops/name; steer+gen)={'p_generic': 12, 'p_ops': 0, 'p_name': 0, 'p_generic_steer': 0} name_echo(multi-digit)=5 ops_shifts=12 steer_shift=True restored=True det=True
+  mean_gap: gen=None ops=0.0008333333333333334 name=0.5258333333333334 steered+gen=0.0008333333333333334
+    sigma=0.1 actual_mean=1.0000 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=None
+    sigma=0.5 actual_mean=0.8850 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=0.0448
+    sigma=1.5 actual_mean=0.4917 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=-0.1912
+    sigma=4.0 actual_mean=0.2833 scaled_mean=0.1046 raw_unknown=0/6 steer_unknown=0/6 rho=0.116
+  raw_unknown=0/24 steer_unknown=0/24 scaled_var=1.8e-05 noclip_violations=0 mean_rho=-0.0101
+    wired: prediction=0.0569 channel=predict_scale_0_9 readable=True
+    wired: prediction=0.0569 channel=predict_scale_0_9 readable=True
+    wired: prediction=0.0569 channel=predict_scale_0_9 readable=True
+    raw           unknown= 0/12 mean_scaled=0.1163 mean_gap=0.8829 restored=True experts=[] name_seq=[1, 10, 1, 100, 10, 100000, 1, 1, 100000, 1, 1, 1]
+    goedel        unknown= 0/12 mean_scaled=0.1161 mean_gap=0.8831 restored=True experts=[2, 7] name_seq=[1, 1, 100, 100, 10, 100000, 1, 1, 100000, 1, 1, 1]
+    turing        unknown= 0/12 mean_scaled=0.1149 mean_gap=0.8842 restored=True experts=[0, 6] name_seq=[1, 10, 1, 100, 10, 100000, 1, 1, 1000, 1, 1, 1]
+    wittgenstein  unknown= 0/12 mean_scaled=0.113 mean_gap=0.8862 restored=True experts=[1, 3] name_seq=[1, 1, 1, 100, 100000, 100000, 1, 1, 100000, 1, 1, 1]
+    combined      unknown= 0/12 mean_scaled=0.1142 mean_gap=0.8849 restored=True experts=[0, 1, 2, 3, 6, 7] name_seq=[1, 1, 100, 100, 10, 100000, 0, 0, 100, 1, 0, 1]
+    anti          unknown= 0/12 mean_scaled=0.1148 mean_gap=0.8843 restored=True experts=[4, 5] name_seq=[1, 1, 1, 100, 10, 100000, 1, 1, 100000, 1, 1, 1]
+  mean_before=0.6136 mean_after=0.9999 mean_unrelated_after=0.4902 learned_all=True learned_rounds=15/15
+    regel<->rule       -0.0003 -> +0.9998
+    spiel<->game       +0.8433 -> +1.0000
+    gebrauch<->use        +0.9979 -> +1.0000
+----------------------------------------------------------------------------------------
+BEFUNDE
+  sp1_det          PASS
+  sp1_finite       PASS
+  sp1_structure    PASS
+  sp2_identity     PASS
+  sp2_finite       PASS
+  sp3_det          PASS
+  sp3_awaken       PASS
+  sp3_ops_channel  PASS
+  sp3_name_echo    PASS
+  sp3_steer        PASS
+  sp3_calib        PASS
+  sp4_spread       PASS
+  sp4_scale_open_flat PASS
+  sp4_open         PASS
+  sp4_noclip       PASS
+  sp4_var_rho      PASS
+  sp4_step_wired   PASS
+  sp5_scale_flat   PASS
+  sp5_witt_open    PASS
+  sp5_combined_open PASS
+  sp5_echo_discrimination PASS
+  sp5_restored     PASS
+  sp6_lexicon      PASS
+[Save] scratches/sprachspiel_experiment.json
+GRÜN — alle Sprachspiel-Befunde bestanden.
+
+
+==============================================================================
+### FILE: scratches/sprachspiel_experiment.json
+### bytes: 37605   lines: 1477
+==============================================================================
+{
+  "sp1": {
+    "rows": [
+      {
+        "seed": 0,
+        "digest_noisy": "5e8d3b9d1b82",
+        "digest_structured": "6a92f5e7e5e9",
+        "validity_noisy": 0.9099999999999999,
+        "validity_structured": 1.0,
+        "sample_names": [
+          "square(0.00)",
+          "((log(0.00) min sqrt(2.00)) max exp((x power x)))",
+          "exp(abs((2.00 multiply x)))"
+        ]
+      },
+      {
+        "seed": 1,
+        "digest_noisy": "bc13fbe35f1d",
+        "digest_structured": "a6520761a7ee",
+        "validity_noisy": 0.9099999999999999,
+        "validity_structured": 1.0,
+        "sample_names": [
+          "(negate((x subtract x)) add ((x add x) multiply sq",
+          "(2.00 subtract (3.14 min (0.00 min x)))",
+          "x"
+        ]
+      },
+      {
+        "seed": 2,
+        "digest_noisy": "c122d7a93d9c",
+        "digest_structured": "b4b6971da9e7",
+        "validity_noisy": 0.8800000000000001,
+        "validity_structured": 1.0,
+        "sample_names": [
+          "x",
+          "((sin(x) multiply (2.00 add x)) min ((x divide 2.7",
+          "(((2.00 power x) add square(x)) multiply (x add id"
+        ]
+      }
+    ],
+    "deterministic": true,
+    "validities_finite": true,
+    "diversity": 1.0,
+    "structure_gain": 0.10000000000000002,
+    "digest_repeat": "5e8d3b9d1b82bc13fbe35f1dc122d7a93d9c"
+  },
+  "sp2": {
+    "rows": {
+      "paired": [
+        {
+          "word": "regel",
+          "gematria": 527,
+          "idx": 23,
+          "k": 12,
+          "kind": "cos",
+          "b": {
+            "word": "rule",
+            "gematria": 440,
+            "idx": 8,
+            "k": 9,
+            "kind": "sin"
+          },
+          "resonance": -0.000263,
+          "same_kind": false
+        },
+        {
+          "word": "sprache",
+          "gematria": 742,
+          "idx": 22,
+          "k": 11,
+          "kind": "cos",
+          "b": {
+            "word": "language",
+            "gematria": 836,
+            "idx": 44,
+            "k": 9,
+            "kind": "inv_add"
+          },
+          "resonance": -0.006237,
+          "same_kind": false
+        },
+        {
+          "word": "spiel",
+          "gematria": 541,
+          "idx": 37,
+          "k": 2,
+          "kind": "inv_add",
+          "b": {
+            "word": "game",
+            "gematria": 410,
+            "idx": 50,
+            "k": 3,
+            "kind": "log"
+          },
+          "resonance": 0.843313,
+          "same_kind": false
+        },
+        {
+          "word": "bedeutung",
+          "gematria": 963,
+          "idx": 27,
+          "k": 4,
+          "kind": "exp",
+          "b": {
+            "word": "meaning",
+            "gematria": 735,
+            "idx": 15,
+            "k": 4,
+            "kind": "cos"
+          },
+          "resonance": -0.011648,
+          "same_kind": false
+        },
+        {
+          "word": "gebrauch",
+          "gematria": 833,
+          "idx": 41,
+          "k": 6,
+          "kind": "inv_add",
+          "b": {
+            "word": "use",
+            "gematria": 333,
+            "idx": 45,
+            "k": 10,
+            "kind": "inv_add"
+          },
+          "resonance": 0.997866,
+          "same_kind": true
+        },
+        {
+          "word": "wort",
+          "gematria": 460,
+          "idx": 28,
+          "k": 5,
+          "kind": "exp",
+          "b": {
+            "word": "word",
+            "gematria": 444,
+            "idx": 12,
+            "k": 1,
+            "kind": "cos"
+          },
+          "resonance": 0.037898,
+          "same_kind": false
+        }
+      ],
+      "identity_str": [
+        {
+          "word": "form",
+          "gematria": 436,
+          "idx": 4,
+          "k": 5,
+          "kind": "sin",
+          "b": {
+            "word": "form",
+            "gematria": 436,
+            "idx": 4,
+            "k": 5,
+            "kind": "sin"
+          },
+          "resonance": 1.0,
+          "same_kind": true
+        },
+        {
+          "word": "regel",
+          "gematria": 527,
+          "idx": 23,
+          "k": 12,
+          "kind": "cos",
+          "b": {
+            "word": "regel",
+            "gematria": 527,
+            "idx": 23,
+            "k": 12,
+            "kind": "cos"
+          },
+          "resonance": 1.0,
+          "same_kind": true
+        },
+        {
+          "word": "spiel",
+          "gematria": 541,
+          "idx": 37,
+          "k": 2,
+          "kind": "inv_add",
+          "b": {
+            "word": "spiel",
+            "gematria": 541,
+            "idx": 37,
+            "k": 2,
+            "kind": "inv_add"
+          },
+          "resonance": 1.0,
+          "same_kind": true
+        }
+      ],
+      "unrelated": [
+        {
+          "word": "regel",
+          "gematria": 527,
+          "idx": 23,
+          "k": 12,
+          "kind": "cos",
+          "b": {
+            "word": "tisch",
+            "gematria": 539,
+            "idx": 35,
+            "k": 12,
+            "kind": "exp"
+          },
+          "resonance": -0.006132,
+          "same_kind": false
+        },
+        {
+          "word": "bedeutung",
+          "gematria": 963,
+          "idx": 27,
+          "k": 4,
+          "kind": "exp",
+          "b": {
+            "word": "kaffee",
+            "gematria": 610,
+            "idx": 34,
+            "k": 11,
+            "kind": "exp"
+          },
+          "resonance": 0.967089,
+          "same_kind": true
+        },
+        {
+          "word": "sprache",
+          "gematria": 742,
+          "idx": 22,
+          "k": 11,
+          "kind": "cos",
+          "b": {
+            "word": "stein",
+            "gematria": 547,
+            "idx": 43,
+            "k": 8,
+            "kind": "inv_add"
+          },
+          "resonance": -0.006789,
+          "same_kind": false
+        },
+        {
+          "word": "wort",
+          "gematria": 460,
+          "idx": 28,
+          "k": 5,
+          "kind": "exp",
+          "b": {
+            "word": "baum",
+            "gematria": 421,
+            "idx": 61,
+            "k": 2,
+            "kind": "square"
+          },
+          "resonance": 0.499426,
+          "same_kind": false
+        }
+      ]
+    },
+    "self_resonance": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "self_ok": true,
+    "finite": true,
+    "means": {
+      "paired": 0.3101548333333333,
+      "identity_str": 1.0,
+      "unrelated": 0.36339849999999996
+    },
+    "same_kind_share_unrelated": 0.25
+  },
+  "sp3": {
+    "device": "cuda",
+    "h_probe": 1.7551528215408325,
+    "arm_generic": {
+      "rows": [
+        {
+          "rule_name": "(x power exp((x add x)))",
+          "actual": 1.0,
+          "op_anchors": "power exp add",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+          "actual": 1.0,
+          "op_anchors": "subtract multiply identity log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "(2.72 divide (2.00 subtract x))",
+          "actual": 1.0,
+          "op_anchors": "divide subtract",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "sqrt(1.00)",
+          "actual": 1.0,
+          "op_anchors": "sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "log(square(identity(x)))",
+          "actual": 1.0,
+          "op_anchors": "log square identity",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "((sqrt(x) divide x) add 2.00)",
+          "actual": 1.0,
+          "op_anchors": "add divide sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "log(1.00)",
+          "actual": 0.99,
+          "op_anchors": "log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.01,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.01
+        },
+        {
+          "rule_name": "(sin(0.00) subtract exp((x power x)))",
+          "actual": 1.0,
+          "op_anchors": "subtract sin exp power",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "x",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        }
+      ],
+      "restored": true,
+      "experts": []
+    },
+    "arm_repeat": {
+      "rows": [
+        {
+          "rule_name": "(x power exp((x add x)))",
+          "actual": 1.0,
+          "op_anchors": "power exp add",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+          "actual": 1.0,
+          "op_anchors": "subtract multiply identity log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "(2.72 divide (2.00 subtract x))",
+          "actual": 1.0,
+          "op_anchors": "divide subtract",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "sqrt(1.00)",
+          "actual": 1.0,
+          "op_anchors": "sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "log(square(identity(x)))",
+          "actual": 1.0,
+          "op_anchors": "log square identity",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 10,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "((sqrt(x) divide x) add 2.00)",
+          "actual": 1.0,
+          "op_anchors": "add divide sqrt",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "log(1.00)",
+          "actual": 0.99,
+          "op_anchors": "log",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.01,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.01
+        },
+        {
+          "rule_name": "(sin(0.00) subtract exp((x power x)))",
+          "actual": 1.0,
+          "op_anchors": "subtract sin exp power",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "x",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 1,
+          "p_generic": null,
+          "unknown_p_generic": true,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        }
+      ],
+      "restored": true,
+      "experts": []
+    },
+    "arm_wittgenstein": {
+      "rows": [
+        {
+          "rule_name": "(x power exp((x add x)))",
+          "actual": 1.0,
+          "op_anchors": "power exp add",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(((x subtract x) subtract (x multiply x)) subtract",
+          "actual": 1.0,
+          "op_anchors": "subtract multiply identity log",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "(2.72 divide (2.00 subtract x))",
+          "actual": 1.0,
+          "op_anchors": "divide subtract",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "sqrt(1.00)",
+          "actual": 1.0,
+          "op_anchors": "sqrt",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "log(square(identity(x)))",
+          "actual": 1.0,
+          "op_anchors": "log square identity",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "((sqrt(x) divide x) add 2.00)",
+          "actual": 1.0,
+          "op_anchors": "add divide sqrt",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.0
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "log(1.00)",
+          "actual": 0.99,
+          "op_anchors": "log",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.01,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.01,
+          "p_name": 100000,
+          "unknown_p_name": false,
+          "gap_p_name": 0.01
+        },
+        {
+          "rule_name": "(sin(0.00) subtract exp((x power x)))",
+          "actual": 1.0,
+          "op_anchors": "subtract sin exp power",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "1.00",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        },
+        {
+          "rule_name": "x",
+          "actual": 1.0,
+          "op_anchors": "",
+          "unknown_count": 0,
+          "p_generic": 10,
+          "unknown_p_generic": false,
+          "gap_p_generic": 0.0,
+          "p_ops": 100000,
+          "unknown_p_ops": false,
+          "gap_p_ops": 0.0,
+          "p_name": 1,
+          "unknown_p_name": false,
+          "gap_p_name": 0.9
+        }
+      ],
+      "restored": true,
+      "experts": [
+        1,
+        3
+      ]
+    },
+    "deterministic": true,
+    "unknowns": {
+      "p_generic": 12,
+      "p_ops": 0,
+      "p_name": 0,
+      "p_generic_steer": 0
+    },
+    "name_echo_count": 5,
+    "ops_shifts": 12,
+    "steer_shift": true,
+    "restored": true,
+    "experts": [
+      1,
+      3
+    ],
+    "mean_gap_generic": null,
+    "mean_gap_ops": 0.0008333333333333334,
+    "mean_gap_name": 0.5258333333333334,
+    "mean_gap_steer": 0.0008333333333333334
+  },
+  "sp4": {
+    "groups": {
+      "sigma_0.1": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 1.0,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 1.0,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 1.0,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 1.0,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 1.0,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 1.0,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 1.0,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 1.0,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 1.0,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 1.0,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": null
+      },
+      "sigma_0.5": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.91,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.91,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.88,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.84,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.89,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.88,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.91,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.91,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.88,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.84,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.89,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.88,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 0.885,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": 0.0448
+      },
+      "sigma_1.5": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.57,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.53,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.4,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.43,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.59,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.43,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.57,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.53,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.4,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.43,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.59,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.43,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 0.4917,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": -0.1912
+      },
+      "sigma_4.0": {
+        "raw_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.38,
+            "op_anchors": "square",
+            "scaled": 0.097736,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.29,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.109881,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.21,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.25,
+            "op_anchors": "",
+            "scaled": 0.118369,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.41,
+            "op_anchors": "min divide",
+            "scaled": 0.106412,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.16,
+            "op_anchors": "divide max",
+            "scaled": 0.104301,
+            "unknown": false
+          }
+        ],
+        "steer_rows": [
+          {
+            "rule_name": "square(0.00)",
+            "actual": 0.38,
+            "op_anchors": "square",
+            "scaled": 0.098853,
+            "unknown": false
+          },
+          {
+            "rule_name": "(negate((x subtract x)) add ((x add x) multiply sq",
+            "actual": 0.29,
+            "op_anchors": "add negate subtract multiply square",
+            "scaled": 0.108284,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.21,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "x",
+            "actual": 0.25,
+            "op_anchors": "",
+            "scaled": 0.107923,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x min (1.00 min (x divide 2.72)))",
+            "actual": 0.41,
+            "op_anchors": "min divide",
+            "scaled": 0.105828,
+            "unknown": false
+          },
+          {
+            "rule_name": "(x divide (x divide (x max 1.00)))",
+            "actual": 0.16,
+            "op_anchors": "divide max",
+            "scaled": 0.098544,
+            "unknown": false
+          }
+        ],
+        "actual_mean": 0.2833,
+        "scaled_mean": 0.1046,
+        "raw_unknown": 0,
+        "steer_unknown": 0,
+        "rho": 0.116
+      }
+    },
+    "total_reads": 24,
+    "raw_unknown_total": 0,
+    "steer_unknown_total": 0,
+    "actual_means": {
+      "sigma_0.1": 1.0,
+      "sigma_0.5": 0.885,
+      "sigma_1.5": 0.4917,
+      "sigma_4.0": 0.2833
+    },
+    "scaled_means": {
+      "sigma_0.1": 0.1046,
+      "sigma_0.5": 0.1046,
+      "sigma_1.5": 0.1046,
+      "sigma_4.0": 0.1046
+    },
+    "scaled_var": 1.8e-05,
+    "noclip_violations": 0,
+    "rho_per_sigma": {
+      "sigma_0.1": null,
+      "sigma_0.5": 0.0448,
+      "sigma_1.5": -0.1912,
+      "sigma_4.0": 0.116
+    },
+    "mean_rho": -0.0101,
+    "any_rho_positive": true,
+    "wired_rows": [
+      {
+        "prediction": 0.05689948134952121,
+        "channel": "predict_scale_0_9",
+        "readable": true
+      },
+      {
+        "prediction": 0.05689948134952121,
+        "channel": "predict_scale_0_9",
+        "readable": true
+      },
+      {
+        "prediction": 0.05689948134952121,
+        "channel": "predict_scale_0_9",
+        "readable": true
+      }
+    ],
+    "wired_ok": true
+  },
+  "sp5": {
+    "batch0_digest": "7ddafdeaa0e0",
+    "arms": {
+      "raw": {
+        "unknown": 0,
+        "mean_scaled": 0.1163,
+        "mean_gap": 0.8829,
+        "restored": true,
+        "experts": [],
+        "name_seq": [
+          1,
+          10,
+          1,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      },
+      "goedel": {
+        "unknown": 0,
+        "mean_scaled": 0.1161,
+        "mean_gap": 0.8831,
+        "restored": true,
+        "experts": [
+          2,
+          7
+        ],
+        "name_seq": [
+          1,
+          1,
+          100,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      },
+      "turing": {
+        "unknown": 0,
+        "mean_scaled": 0.1149,
+        "mean_gap": 0.8842,
+        "restored": true,
+        "experts": [
+          0,
+          6
+        ],
+        "name_seq": [
+          1,
+          10,
+          1,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          1000,
+          1,
+          1,
+          1
+        ]
+      },
+      "wittgenstein": {
+        "unknown": 0,
+        "mean_scaled": 0.113,
+        "mean_gap": 0.8862,
+        "restored": true,
+        "experts": [
+          1,
+          3
+        ],
+        "name_seq": [
+          1,
+          1,
+          1,
+          100,
+          100000,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      },
+      "combined": {
+        "unknown": 0,
+        "mean_scaled": 0.1142,
+        "mean_gap": 0.8849,
+        "restored": true,
+        "experts": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        "name_seq": [
+          1,
+          1,
+          100,
+          100,
+          10,
+          100000,
+          0,
+          0,
+          100,
+          1,
+          0,
+          1
+        ]
+      },
+      "anti": {
+        "unknown": 0,
+        "mean_scaled": 0.1148,
+        "mean_gap": 0.8843,
+        "restored": true,
+        "experts": [
+          4,
+          5
+        ],
+        "name_seq": [
+          1,
+          1,
+          1,
+          100,
+          10,
+          100000,
+          1,
+          1,
+          100000,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  },
+  "sp6": {
+    "before_paired": [
+      -0.000263,
+      0.843313,
+      0.997866
+    ],
+    "after_paired": [
+      0.99979,
+      0.999982,
+      1.0
+    ],
+    "before_unrelated": [
+      -0.006132,
+      0.967089,
+      0.499426
+    ],
+    "after_unrelated": [
+      0.003954,
+      0.967089,
+      0.499426
+    ],
+    "mean_before": 0.6136,
+    "mean_after": 0.9999,
+    "mean_unrelated_after": 0.4902,
+    "learned_all": true,
+    "learned_rounds": 15,
+    "protocol_rows": 15,
+    "protocol_tail": [
+      {
+        "round": 12,
+        "pair": [
+          "regel",
+          "rule"
+        ],
+        "rule_name": "x",
+        "success_rate": 0.9,
+        "learned": true,
+        "resonance_after": 0.99979
+      },
+      {
+        "round": 13,
+        "pair": [
+          "spiel",
+          "game"
+        ],
+        "rule_name": "((x max (3.14 max x)) max x)",
+        "success_rate": 0.8,
+        "learned": true,
+        "resonance_after": 0.999982
+      },
+      {
+        "round": 14,
+        "pair": [
+          "gebrauch",
+          "use"
+        ],
+        "rule_name": "((x power (x add x)) add abs((3.14 min x)))",
+        "success_rate": 1.0,
+        "learned": true,
+        "resonance_after": 1.0
+      }
+    ]
+  }
+}
+
+==============================================================================
+### FILE: scratches/sprachspiel_bericht.md
+### bytes: 51898   lines: 837
+==============================================================================
+# Sprachspiel-Bericht: Die Wittgenstein-Maschine generiert — Regel, Wort, Mitspieler
+
+**Artefakte:** `scratches/smoke_sprachspiel.py` (Skript), `scratches/sprachspiel_experiment.log` /
+`sprachspiel_experiment.json` (Lauf). **Basis:** HEAD `b1fe3c5` + S1-S3-Maschinen-Erweiterung
+ dieses Zyklus (Maschinen-Commits), Checkpoints `argon_1b` + `argon_1b_machines`
+(venv_openmythos, CUDA). **Ergebnis:** 23/23 Befunde PASS (SP1-SP6, inkl. Review-Reframes
+§7). Kompaktfassung in §10/§11 des `laufprotokolle_befund_report.md`; dieser Bericht
+ist die Vollfassung.
+
+## 0. Aufbau — das Triptychon
+
+Die Frage „können wir mal eine Sprachspiel-Generierung testen?" wird als
+sechs-Messreihen-Prüfung der Wittgenstein-Maschine in vollem Gebrauch gefasst:
+
+| Lane | Ebene | Umgebung | Canon-Anker |
+| :--- | :--- | :--- | :--- |
+| SP1 | **Regel** — die Maschine generiert ihre Sprachspiele (template-free AST-Batches) | CPU | uni_205:333-353 (AST-Sampler), uni_204:241 (FACRM-Struktur ×0.3) |
+| SP2 | **Wort** — SH-72-Wort-Resonanz des Sprachspiel-Vokabulars | CPU | geometric-tokenizer.lisp:17/:85/:98/:160 (Gematria → Basis-Formel → 64-Punkt-Embedding) |
+| SP3 | **Mitspieler** — Argon liest die Gültigkeit generierter Batches unter drei Wortspielen | GPU | `predict_value` (machine_base.py:239-269), wittgenstein-Preset {1,3} |
+| SP4 | **Kalibrierung** — Spread-Kalibrierung & Anti-Clip (σ ∈ {0.1,0.5,1.5,4.0}) auf der S1-Skala | GPU | `predict_scale_0_9` (machine_base), Rausch-Spreads (S2), `oracle_scale=True` |
+| SP5 | **Kontrast** — Cross-Preset-Kontrast: sechs Arme (raw/goedel/turing/wittgenstein/combined/anti) | GPU | S1-Skala + Canon-Name-Echo (`name_seq` je Arm) |
+| SP6 | **Lexikon** — Lexikon-Emergenz im Gebrauch (S3) | CPU | `lexicon_game`/`learn_pair`/`embed_word` (Lexikon-zuerst) |
+| SP9 | **Verlauf** — Sozial-Ebene: Interferenz, Sättigung, Verlernung über lange Verläufe | CPU | `learn_pair` (:218-234), `lexicon_game` (:342-380), `language-learning.lisp:22-25` (kein Zerfallsterm) |
+| SP10 | **Kopplung** — Composite-Zyklus × Lexikon-Dynamik (die Regeln und die Wörter) | CPU | `composite.py:45-51` (exponierte Submaschinen), `wittgenstein_machine.py:244-256` (`_generate_ast` — wort-blind), `lexicon_game` (:342-380) |
+| SP11 | **Ursprung** — die Quelle der Paradigm-Ereignisse (ratio > 2.0) im Composite-Verlauf | CPU | `composite.py:132-140` (ZWEI Signal-Quellen an EIN Register), `:167-182` (Fensterformel), `goedel_machine.py:229-239`, `turing_machine.py:144-157` (loop_detector-Reset), `machine_base.py:51` (GAP_EPS) |
+
+SP1/SP2 sind Mechanik-Proben (deterministisch, reproduzierbar); SP3 ist die
+Mitspieler-Messung: derselbe Fragen-Satz über dieselben 12 Batches (Seed 7), dreifach
+gebrochen — (gen) das Kanon-Prompt aus `wittgenstein.step`, (ops) ziffernfreie
+Operator-Wörter als Anker, (name) der Regelname mit seinem Ziffernmateriale —
+je einmal ungesteuert, einmal unter wittgenstein-Steering. SP4/SP5 kalibrieren
+und kontrastieren den Review-S1-Skala-Kanal (`predict_scale_0_9`): Rausch-Spreads
+statt Sättigung, sechs Arme statt ein Preset; SP6 lernt die Übersetzung nach dem
+Gebrauch statt der Gematria.
+
+---
+
+## 1. SP1 — Regel-Generierung: die Spiele werden gespielt
+
+Je Seed {0,1,2} ein Batch aus 10 AST-Regeln (x ~ U(0.1, 5.0), Rauschen N(0, 0.5),
+Toleranz 0.5 + 0.1·mean|gt|); daran zwei Läufe → Determinismus-Digest.
+
+| Seed | Batch-Digest | Gültigkeit (volles Rauschen) | Gültigkeit (strukturiert ×0.3) |
+| :--- | :--- | :--- | :--- |
+| 0 | `5e8d3b9d1b82` | 0.9100 | 1.0000 |
+| 1 | `bc13fbe35f1d` | 0.9100 | 1.0000 |
+| 2 | `c122d7a93d9c` | 0.8800 | 1.0000 |
+
+- **Diversität 10 AST-Regeln: 1.0000** — kei­ne Struktur-Kollision (Tiefe ≤ 3,
+  16 Operatoren, 5 Konstanten).
+- **Strukturgewinn +0.10** — das strukturierte Rauschen (×0.3, FACRM-Alternativ)
+  hebt die Gültigkeit auf vollständige 1.00. Die Ordnung der Spiele, nicht ihr
+  Zufall, trägt die Gültigkeit.
+- **Determinismus bitidentisch** (SP1-Lauf wiederholt, Digests `deterministic=True`).
+- Probenamen zeigen die Bandbreite des generierten Stils: `square(0.00)` (Konstante),
+  `exp(abs((2.00 multiply x)))` (unär-invers), `((sin(x) multiply (2.00 add x)) min …)`
+  (binär-verschachtelt), nacktes `x` (das nackte Blatt).
+- Befunde: `sp1_det` PASS, `sp1_finite` PASS (alle Validitäten ∈ [0,1], Diversität > 0.3),
+  `sp1_structure` PASS.
+
+---
+
+## 2. SP2 — SH-72-Wort-Resonanz: Formel-Achse, nicht Bedeutungs-Achse
+
+Resonanz = Dot normalisierter 64-Punkt-Embeddings nach SH-72 (Gematria = Summe
+der Char-Codes; idx = gematria mod 72; k = 1 + mod(idx, 12); kind = floor(idx/12)
+→ kind-Familie sin/cos/exp/inv_add/log/square/identity).
+
+### 2.1 Messreihen
+
+| Paar | forms (k, kind) | Resonanz | gleiche kind |
+| :--- | :--- | :--- | :--- |
+| spiel ↔ game | inv_add k=2 ↔ log k=3 | **+0.8433** | nein |
+| gebrauch ↔ use | inv_add k=6 ↔ inv_add k=10 | **+0.9979** | ja |
+| regel ↔ rule | cos k=12 ↔ sin k=9 | **−0.0003** | nein |
+| wort ↔ word | exp k=5 ↔ cos k=1 | +0.0379 | nein |
+| bedeutung ↔ meaning | exp k=4 ↔ cos k=4 | −0.0116 | nein |
+| sprache ↔ language | cos k=11 ↔ inv_add k=9 | −0.0062 | nein |
+| form ↔ form (identisch) | sin k=5 | +1.0000 | ja |
+| regel ↔ regel | cos k=12 | +1.0000 | ja |
+| spiel ↔ spiel | inv_add k=2 | +1.0000 | ja |
+| regel ↔ tisch | cos k=12 ↔ exp k=12 | −0.0061 | nein |
+| **bedeutung ↔ kaffee** | exp k=4 ↔ exp k=11 | **+0.9671** | ja |
+| sprache ↔ stein | cos k=11 ↔ inv_add k=8 | −0.0068 | nein |
+| wort ↔ baum | exp k=5 ↔ square k=2 | +0.4994 | nein |
+| regel ↔ regel (identität) | cos k=12 | +1.0000 | ja |
+
+Gruppenmittel: gepaart **0.3102**, unverwandt **0.3634** — das unverwandte Paar
+resoniert im Mittel *stärker* als das Übersetzungs-Paar. Anteil gleicher kind
+unter den unverwandten: 0.25.
+
+### 2.2 Lesung
+
+Die SH-72-Achse ist eine **Formel-Achse, nicht eine Bedeutungs-Achse**: der
+Klang (Character-Code-Summe → Basis-Formel) entscheidet, nicht die Semantik.
+`bedeutung`↔`kaffee` ist für SH-72 *verwandter* als `regel`↔`rule`. Damit
+scheint „Resonanz ≈ 1" als Verwandtschaft desselben **kinds**/k-Bandes
+(`gebrauch`↔`use`: inv_add-in-Group), nicht als Verwandtschaft der Bedeutungen.
+Das ist keine Schwäche, sondern eine Empirie der Canon-These selbst: *die
+Bedeutung des Wortes ist sein Gebrauch, nicht sein Klang* — wer SH-72
+semantisch liest, hat das Gebrauch-Wirklichkeits-Verhältnis invertiert.
+Selbst-Resonanz exakt 1.0 (ein Wort mit sich selbst) → alle Paar-Resonanzen
+sind in [−1−1e-9, 1+1e-9] (Befund `sp2_finite`, `sp2_identity` PASS). Die
+Identitäts-Paare (`form`↔`form`, `regel`↔`regel`, `spiel`↔`spiel`)
+normalisieren exakt auf 1.0000 — die Canon-Mechanik ist deterministisch stabil.
+
+---
+
+## 3. SP3 — Argon als Sprachpartner: drei Wortspiele um dieselbe Frage
+
+12 Batches (Seed 7, je Arm identisch reproduziert), Ist-Gültigkeit ≈ 1.00 über
+alle Batches; drei Lesungen (gen / ops / name) ungesteuert + dieselbe generische
+Frage unter wittgenstein-Steering {1,3}; `h_probe=1.7552`, `experts=[1,3]`.
+
+| # | Regelname | ops-Anker | gen | ops-pred | name-pred | steer gen |
+| :--- | :--- | :--- | :--- | :---- | :--- | :--- |
+| 0 | (x power exp((x add x))) | power exp add | **unknown** | 100000 | 1 | 10 |
+| 1 | ((x subtract x) subtract … | subtract multiply | unknown | 100000 | 10 | 10 |
+| 2 | (2.72 divide (2.00 subtract x)) | divide subtract | unknown | 100000 | 1 | 10 |
+| 3 | sqrt(1.00) | sqrt | unknown | 100000 | 100 | 10 |
+| 4 | log(square(identity(x))) | log square identity | unknown | 100000 | 10 | 10 |
+| 5 | ((sqrt(x) divide x) add 2.00) | add divide sqrt | unknown | 100000 | 100000 | 10 |
+| 6 | 1.00 | — | unknown | 100000 | 1 | 10 |
+| 7 | 1.00 | — | unknown | 100000 | 1 | 10 |
+| 8 | log(1.00) | log | unknown | 100000 | 100000 | 10 |
+| 9 | (sin(0.00) subtract exp((x power x))) | subtract sin exp power | unknown | 100000 | 1 | 10 |
+| 10 | 1.00 | — | unknown | 100000 | 1 | 10 |
+| 11 | x | — | unknown | 100000 | 1 | 10 |
+
+Aggregat: unknown gen **12/12**, unknown ops **0/12**, unknown name **0/12**,
+unknown gen steered **0/12**; Multi-Digit-Echo im name-Kanal **5/12**; ops-Kanal
+verschiebt die Lesung gegen gen in **12/12** Batches; `steer_shift=True`,
+`restored=True`, `det=True`.
+
+Mean-Gap (|pred/10 − Ist|): gen — (stumm), ops **0.0008**, name **0.5258**,
+steer gen **0.0008**.
+
+Befunde: `sp3_det` PASS, `sp3_awaken` PASS (Stummkanal + Öffnung durch Steering),
+`sp3_ops_channel` PASS (der faire ziffernfreie Anker liest), `sp3_name_echo` PASS
+(Multi-Digit-Echo > 9), `sp3_steer` PASS (Verschiebung + Bias-Restaurierung),
+`sp3_calib` PASS (Gap < 0.3 unter Steering).
+
+### 3.1 Der Stummkanal
+
+Ungesteuert antwortet Argon auf das Kanon-Prompt („Validity of a symbolic
+experiment batch, single digit per ten percent: ") **12/12 mit `unknown`**. Das
+heißt empirisch: die `wittgenstein.step`-Oracle-Vorhersage (wittgenstein_machine.py:293-298)
+läuft im raw-Router-Zustand faktisch auf dem dokumentierten Fallback **0.0** —
+alle §7-Oracle-Lanes (L3–L9) messen dieses Fallback-Verhalten mit, nicht eine
+kalibrierte Lesung. Erst das Maschinen-Preset (wittgenstein {1,3}) öffnet die
+Lesung: konstant **„10"** (= 100 % Gültigkeit) in 12/12 Batches. Das Preset
+verleiht dem Sprachpartner die Fähigkeit, die Gültigkeits-Frage überhaupt zu
+beantworten — die Bedeutung des Worts entsteht in seinem Gebrauch unter
+Spezialisierung.
+
+### 3.2 Das Echo
+
+Beide Anker-Varianten degenerieren zur **Ziffern-Echo**: `predict_value`
+(machine_base.py:239-269) liest greedy bis 6 Ziffern-Tokens, und die
+Prompt-Nähe zum Ziffernmateriale färbt die Fortsetzung. Der Regelname
+(„(x power exp((x add x)))" enthält „2.00"-artige Ziffern beim ops-Anker auch
+Konstanten) zieht den Lesekanal hinein: Konstant-Echo **100000** (= „1" gefolgt
+von „00000") im ops-Kanal, variables Echo **1/10/100/100000** im name-Kanal
+(mit 5/12 Lese-Ist > 9 → `Multi-Digit-Echo`-Befund). Die Lesung bleibt Form,
+keine Kalibrierung — aber der **Unterschied** zwischen den Kanälen ist
+sprachspiel-theoretisch der eigentliche Befund: das Wort *im* Prompt verändert
+die Lesung stark; wie es im Gebrauch stehen bleibt, entscheidet der Klang,
+nicht die Bedeutung.
+
+### 3.3 Identifikations-Grenze
+
+Alle 12 Seed-7-Batches landen bei Ist-Gültigkeit ≈ 1.00 (Toleranzregel 0.5 +
+0.1·mean|gt| gegen Rauschen 0.5). Damit sind die Kalibrierungs-Kriterien
+(`sp3_calib`, `mean_gap`-Absolutwerte) **schwach identifiziert**: die Konstant-
+Lesung „10" passt trivial auf das all-1.00-Regime. Die belastbaren Befunde
+sind die *Kanal-Eigenschaften* — Stummkanal raw, Öffnung durch Steering,
+Echo bei verankerten Prompts — nicht die Gap-Absolutwerte. Für eine echte
+Kalibrierungs-Prüfung bräuchte der Batch ein spread-Ist (z. B. noise_level 2.0
+oder Toleranz-Schwell gesenkt), sodass das Ist unter 1.0 variiert und die
+Steering-„10"-Konstanz als Bias sichtbar würde.
+
+---
+
+## 4. SP4 — Spread-Kalibrierung & Anti-Clip: die Skala liest Prior, kein Signal
+
+(S1-Kanal `predict_scale_0_9`, S2-Rausch-Spreads; σ ∈ {0.1, 0.5, 1.5, 4.0},
+6 Batches je σ mit vollem Rauschen (`use_structure=False`), je Batch raw +
+wittgenstein-Steering.)
+
+| σ | Ist-Mittel | scaled_mean (raw/steer) | raw unknown | steer unknown | rho |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 0.1 | 1.0000 | 0.1046 / 0.1046 | 0/6 | 0/6 | None |
+| 0.5 | 0.8850 | 0.1046 / 0.1046 | 0/6 | 0/6 | +0.0448 |
+| 1.5 | 0.4917 | 0.1046 / 0.1046 | 0/6 | 0/6 | −0.1912 |
+| 4.0 | 0.2833 | 0.1046 / 0.1046 | 0/6 | 0/6 | +0.1160 |
+
+- **Das Ist spreet (S2 funktioniert):** 1.00 → 0.28 über die vier Rausch-
+  Regime, Range 0.72 — die Ent-Sättigung ist mechanisch gegeben.
+- **Die S1-Skala ist kanal-ehrlich, aber σ-blind:** kontinuierliche Lesungen
+  in [0,1] (0 Clip-Verletzungen, Var 1.8e-05 > 0), keine unknown-Blanks (0/24
+  raw, 0/24 steer), kein Multi-Digit-Echo — aber `scaled_mean ≡ 0.1046` in
+  ALLEN vier Regimen in beiden Armen; `mean_rho = −0.0101`. Die Skala liest
+  einen Tokenizer-Prior, kein σ-Signal (Strukturbegründung in §7).
+- **Step-Verdrahtung:** `wittgenstein.step` mit `oracle_scale=True` predet
+  denselben Kanal (3× prediction 0.0569, channel=`predict_scale_0_9`,
+  readable=True) — die S1-Option ist im Maschinen-Schritt nutzbar.
+- Befunde: `sp4_spread` PASS, `sp4_scale_open_flat` PASS (die reframede
+  Widerlegung), `sp4_open` PASS, `sp4_noclip` PASS, `sp4_var_rho` PASS,
+  `sp4_step_wired` PASS. Die Widerlegung selbst ist §7.
+
+## 5. SP5 — Cross-Preset-Kontrast: die Skala flacht, das Echo diskriminiert
+
+(Sechs Arme auf denselben 12 Seed-7-Batches; Anti-Preset {4,5} als
+dict-Direktsteuerung (`_preset_experts` nimmt dicts verbatim).)
+
+| Arm | unknown | mean_scaled | mean_gap | experts | name_seq (Echo) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| raw | 0/12 | 0.1163 | 0.8829 | — | [1,10,1,100,10,100000,1,1,100000,1,1,1] |
+| goedel | 0/12 | 0.1161 | 0.8831 | {2,7} | [1,1,100,100,10,100000,1,1,100000,1,1,1] |
+| turing | 0/12 | 0.1149 | 0.8842 | {0,6} | [1,10,1,100,10,100000,1,1,1000,1,1,1] |
+| wittgenstein | 0/12 | 0.1130 | 0.8862 | {1,3} | [1,1,1,100,100000,100000,1,1,100000,1,1,1] |
+| combined | 0/12 | 0.1142 | 0.8849 | {0,1,2,3,6,7} | [1,1,100,100,10,100000,0,0,100,1,0,1] |
+| anti {4,5} | 0/12 | 0.1148 | 0.8843 | {4,5} | [1,1,1,100,10,100000,1,1,100000,1,1,1] |
+
+- **Die Skala trägt kein Preset-Signal:** Spread der mean_scaled über sechs
+  Arme 0.0033 (≤ 0.01), unknown 0/12 überall — `sp5_scale_flat` PASS. Die
+  Review-Erwartung „raw stumm, Fachfremder stumm" ist widerlegt (§7).
+- **Das Echo diskriminiert:** die Name-Echo-Sequenzen der Arme sind paarweise
+  verschieden — raw ≠ wittgenstein (Positionen 1, 4), wittgenstein ≠ anti
+  (Position 4: 100000 vs. 10), raw ≠ anti (Position 1). `sp5_echo_discrimination`
+  PASS. Das Steering verschiebt die Echo-Form; `combined` liest an drei
+  Positionen „0" — der weiteste Echo-Abstand vom raw-Arm.
+- `sp5_witt_open` / `sp5_combined_open` PASS (offen — trivial, alle Arme
+  sind offen und stehen als Kanal-Eigenschaft dokumentiert),
+  `sp5_restored` PASS (Bias vollständig restauriert in allen fünf gesteuerten
+  Armen).
+
+## 6. SP6 — Lexikon-Emergenz: Gebrauch schlägt Gematria
+
+(S3; drei DE/EN-Paare, 15 Gebrauchsrunden `lexicon_game` (alpha 0.3);
+`embed_word` liest danach das gelernte Lexikon ZUERST — Lisp-Parität
+geometric-tokenizer.lisp:95-98.)
+
+| Paar | vorher (Gematria-Achse) | nachher (Gebrauchs-Achse) |
+| :--- | :--- | :--- |
+| regel ↔ rule | −0.0003 | +0.9998 |
+| spiel ↔ game | +0.8433 | +1.0000 |
+| gebrauch ↔ use | +0.9979 | +1.0000 |
+
+- Mittel gepaart **0.6136 → 0.9999**; die unverwandten Paare (regel↔tisch,
+  bedeutung↔kaffee, wort↔baum) bleiben bei **0.4902** — das Lexikon trennt
+  gepaart/unverwandt scharf (> 0.75 > unverwandt), wo SH-72 es nicht konnte
+  (SP2: gepaart 0.3102 < unverwandt 0.3634).
+- Alle drei Paare in 15/15 Fällen gelernt; `sp6_lexicon` PASS.
+
+## 7. Widerlegung und Reframe — die Stummkanal-Erwartung auf der S1-Skala
+
+Die Review nahm drei Erwartungen an den neuen S1-Skala-Kanal: (a) **raw bleibt
+stumm** auf der Skala (≥ 2/3 unknown: `sp4_raw_silent`, `sp5_raw_silent`),
+weil der raw Router auf dem echo-freien Kanal nicht liest; (b) **der Fachfremde
+bleibt stumm oder gapt höher** (`sp5_foreigner`). Alle drei sind an diesem
+Checkpoint **empirisch widerlegt** — und die Widerlegung ist selbst der Befund:
+
+- **Die Digit-Token-Masse ist hoch, nicht null.** Direkte Mass-Probe
+  (Voll-Vokabular-Softmax, Summe der Ziffer-Tokens 0-9): ops-Anker-Prompt
+  **0.8011 (raw) / 0.7996 (gesteuert)**, dominiert vom Token „1" (0.766 raw,
+  0.758 gesteuert); generisches Prompt 0.3542 / 0.3981. Kein τ im sinnvollen
+  Regime (τ ≪ 0.35) kann raw stummschalten; τ > 0.8 würde jede ops-anchor-
+  Lesung auslöschen. Die Skalen-Masse ist prompt-getrieben, nicht
+  batch-getrieben.
+- **Der ops-Anker trägt das Ist nicht.** `make_sigma_batch(seed, σ)` rotiert
+  nur das Rauschen (die Experimentwerte), nicht die Regel-ASTs — der
+  ops-Prompt ist über σ identisch, die Skala liest folglich denselben Wert
+  (0.1046) in allen Regimen. Die σ-Blindheit ist prompt-strukturell
+  begründet, kein Maschinen-Fail.
+- **Steering verschiebt die Skala nicht (0.8011 → 0.7996)**, verschiebt aber
+  das Echo (SP5 `name_seq`, paarweise verschieden) und öffnet den generischen
+  Kanal (SP3: 12/12 unknown → 0/12). Die Maschinen-Empfindlichkeit ist
+  **Echo-Kanal-Empfindlichkeit auf der Form-Ebene und Öffnungs-Empfindlich-
+  keit auf dem generischen Kanal** — die Review-Prediction „Diskrimination auf
+  der Skala" war der falsche Ort, nicht die S1-Dualität.
+
+**Reframe (Projekt-Präzedenz: Kriterien beschreiben den gemessenen Canon,
+die widerlegte Erwartung bleibt namentlich mit Zahlen stehen):**
+
+| Review-Kriterium | widerlegt durch | Reframe (gemessener Canon) | Status |
+| :--- | :--- | :--- | :--- |
+| `sp4_raw_silent` (raw ≥ 2/3 unknown) | 0/24 unknown; Digit-Masse 0.76-0.80 | `sp4_scale_open_flat` — beide Arme offen, kontinuierlich, σ-flat | PASS |
+| `sp5_raw_silent` (raw ≥ 8/12 unknown) | 0/12 unknown | `sp5_scale_flat` — alle Arme offen, Spread 0.0033 | PASS |
+| `sp5_foreigner` (anti stumm ODER gapt höher) | anti 0/12 unknown; Gap 0.8843 < witt 0.8862 (marginal gegenteilig) | `sp5_echo_discrimination` — Echo-Sequenzen paarweise verschieden | PASS |
+
+Die S1-Implementierung selbst bleibt wie spezifiziert (ein Forward,
+Voll-Vokabular-Mass-Gate τ=0.01, kontinuierlicher Wert ohne Clip): die
+Kanal-Ehrlichkeit ist erhalten — was widerlegt ist, ist die Erwartung, der
+Kanal *diskriminiere* die Gültigkeit. Sie diskriminiert nicht; das Echo tun.
+
+## 8. Sprachspiel-Befunde (Kern, aus SP3-SP6)
+
+1. **Der Stummkanal:** der ungeführte Sprachpartner kann die Gültigkeits-Frage
+   nicht beantworten — die Oracle-Vorhersage der Wittgenstein-Maschine läuft
+   ohne Preset auf dem Canon-Fallback 0.0. Die Spezialisation ist nicht
+   Bewertung, sondern *Sprachfähigkeit*.
+2. **Das Echo:** jede inhaltsverankerte Lesung kippt in Ziffern-Echo;
+   Multi-Digit-Echos (> 9) machen den Gebrauchs-Missbrauch sichtbar. Das
+   Echo-Verhalten ist an den Prompt abhängig, nicht an den Batch —
+   Form statt Bedeutung.
+3. **Regelgenerierung als Ordnung:** die Maschine produziert ihre Spiele
+   deterministisch, max-divers (1.0) und der Struktur-Hebel (×0.3) trägt die
+   Gültigkeit auf 1.00 — die Generierung ist keine Störung, sie ist
+   die Ordnung.
+4. **SH-72 ist Formel-, nicht Bedeutungs-Achse:** die Resonanz
+   des unverwandten Paares kann das des Übersetzungs-Paares überbieten
+   (`bedeutung↔kaffee` +0.9671 vs `regel↔rule` −0.0003). Wer SH-72
+   semantisch liest, hat das Gebrauch-Wirklichkeits-Verhältnis invertiert.
+5. **Die Skala flacht, das Echo diskriminiert (SP4/SP5):** der S1-Skala-Kanal
+   liest einen Tokenizer-Prior (≈ 0.10-0.12) über alle Rausch-Regime und
+   Presets — kein Clip-Artefakt, aber kein σ- oder Preset-Signal (§7); die
+   Preset-Empfindlichkeit lebt auf dem Echo (`name_seq` paarweise verschieden)
+   und in der Öffnung des generischen Kanals (SP3). Die Diskrimination
+   schlägt auf der Form-Ebene ein, nicht als Kalibrierung.
+6. **Gebrauch schlägt Gematria (SP6):** nach 15 Lexikon-Runden liest
+   `embed_word` die Gebrauchs-Achse (0.9999) statt der Gematria-Achse (0.31)
+   — das gelernte Lexikon trennt gepaart/unverwandt (0.9999 vs. 0.4902),
+   wo SH-72 invertierte.
+
+---
+
+## 9. Grenzen und Folgen
+
+- **SP3-Kalibrierung schwach identifiziert** (all-1.00-Regime, §3.3):
+  Folgelauf mit `noise_level` ≥ 2.0 oder reduzierter Toleranz nötig, um
+  die „10"-Konstanz als Bias sichtbar zu machen. SP4 liefert diese
+  spread-Achse — aber nur für die Kanal-Eigenschaften: die Skala selbst
+  bleibt σ-blind (§7, prompt-strukturell begründet).
+- **Echo (§3.2)** schränkt die inhaltsverankerte Prompt-Praxis ein: für
+  kontent-abhängige Lesungen bräuchte der Oracle-Kanal eine
+  Ziffernlänge-Begrenzung (max_digits=1) oder einen digit-freien Prompt-Stil.
+- **SP2 ist kein Semantik-Test** — die Befunde dokumentieren die
+  Formel-Achse; ein semantischer Vergleich wäre ein Test des Modells
+  (Argon-„Embeddings"), nicht des Tokenizers.
+- **SP4/SP5-Identifikation:** die σ-Spreads variieren das Rauschen, nicht
+  die Regel-ASTs — der ops-Anker-Prompt ist über σ identisch und kann die
+  Skala strukturell nicht tragen. Kalibrierungsansprüche auf der Skala
+  bräuchten einen Prompt, der das Batch-Ist selbst enthält, nicht mehr
+  Rauschen; die Echo-Diskrimination (SP5 `name_seq`) ist Form-Level-Echo,
+  kein Bedeutungs-Claim.
+- **Reframe statt Zielstangen-Verschiebung:** die drei widerlegten Review-
+  Kriterien sind in §7 namentlich mit Zahlen protokolliert; die Kriterien
+  in `smoke_sprachspiel.py` beschreiben den gemessenen Canon
+  (`sp4_scale_open_flat`, `sp5_scale_flat`, `sp5_echo_discrimination`).
+  Artefakte (Skript, Log, JSON, dieser Bericht, §11/§12 im
+  `laufprotokolle_befund_report.md`) sind im Commit-Zyklus dieses Freigabe-
+  Laufs enthalten.
+
+---
+
+## 10. Quellen
+
+- `machines/wittgenstein_machine.py:46-97` (SymbolicOperator — 9 UNARY ohne inv,
+  7 BINARY, corrected-Pool), `:100-137` (GeneratedSymbolicRule.evaluate, NaN/Inf→0,
+  clip ±1e6), `:158-209` (GeometricTokenizer SH-72: string_gematria, basis_formula,
+  word_formula, embed_word mit Lisp-verbatim normalize `< 1e-9 → unverändert`),
+  `:244-256` (_generate_ast), `:289-322` (`step` — Kanon-Prompt, Fallback 0.0,
+  uni_241-Gap), `:383-432` (`step`-oracle-Pfad mit `oracle_scale=True`-Opt-in,
+  S1), `:232` region (`learn_pair`), `:342` region (`lexicon_game`, S3).
+- `machines/machine_base.py:239-269` (`predict_value` — greedy Ziffern-Lesung bis
+  6 Tokens, `unknown` ohne stillen Fallback), `:271-279` (`entropy_scalar`),
+  `:272` region (`predict_scale_0_9` — S1-Skala: Mass-Gate τ=0.01, kontinuier-
+  licher Wert, kein Clip, kein Echo), `:366-390` (`_preset_experts` — dict-
+  Direktsteuerung für den SP5-Anti-Arm), `:393` region (`steer`).
+- `machines/lisp/vendor/geometric-tokenizer.lisp` — SH-72-Canon (:17 string-gematria,
+  :85 get-sh-basis-formula, :98 embed-word mit Lexikon-zuerst-Lesung,
+  :160 resonance).
+- `machines/composite.py:183-217` (`run_facrm` — die FACRM-Alternativ-Schicht,
+  deren ×0.3 SP1 hier nachspielt).
+- Lauf: `scratches/sprachspiel_experiment.log` (23/23 PASS) und
+  `scratches/sprachspiel_experiment.json` (Volldaten).
+- SP9: `machines/wittgenstein_machine.py:218-234` (`learn_pair` — beidseitige
+  Mischung, Lexikon persistent), `:342-380` (`lexicon_game` — gate, round-robin,
+  Rausch-Züge je Runde), `machines/lisp/vendor/language-learning.lisp:22-25`
+  (Mittelwert-Blend α=0.2, kein Zerfallsterm); Lauf
+  `scratches/lexikon_dynamik_experiment.log` (16 PASS + 3 Errata = 19
+  Verdicte, exit 0) + `scratches/..._experiment.json` (Volldaten inklusive
+  Trajektorien); Skript `scratches/smoke_lexikon_dynamik.py` (Prereg-Docstring
+  mit c′-Rekursion, Bands, Falsifikatoren, Errata-Register).
+- SP10: `machines/composite.py:45-51` (exponierte Submaschinen — die
+  Verschachtelung greift ohne Code-Schnitt), `:108-165` (`step`: Batch →
+  Programm → Verdikt → Basis), `machines/wittgenstein_machine.py:244-256`
+  (`_generate_ast` — nur RNG aus fixen Pools, kein Lexikon), `:100-137`
+  (Name/Auswertung nur AST), `:342-380` (`lexicon_game` mit derselben
+  `_rng`); Lauf
+  `scratches/regeln_woerter_experiment.log` (11 PASS + 3 Errata = 14
+  Verdicte, exit 0) + `scratches/regeln_woerter_experiment.json`
+  (Volldaten inklusive Roh-Spuren); Skript
+  `scratches/smoke_regeln_woerter.py` (Prereg-Docstring mit drei Thesen,
+  geschlossenen Formen, Errata-Register).
+- SP11: `machines/composite.py:132-143` (`step`: Expansion- und Signal-
+  Behandlung VOR dem Gap-Append :143 — ZWEI Signal-Quellen `:135` Gödel /
+  `:138` Composite an EIN Register; `:167-182` Fensterformel: len ≥ 10,
+  recent 5, baseline [-20:-5] falls len ≥ 20 sonst [:-5], ratio =
+  recent/(baseline + 1e-6), Flag bei > 2.0),
+  `machines/goedel_machine.py:229-239` (dieselbe Formel auf der Gödel-Serie,
+  threshold 2.0 aus :119), `machines/turing_machine.py:144-157`
+  (`expand_basis`: Pool-Pop, Basis.append, `loop_detector = {}`-Reset :156;
+  GAP_EPS = 1e-6 in machine_base.py:51); Lauf
+  `scratches/paradigm_ursprung_experiment.log` (6 PASS + 2 echte
+  Falsifikationen = 8 Verdicte, exit 1) +
+  `scratches/paradigm_ursprung_experiment.json` (Sub-Serien je Schritt,
+  Counterfaktur-Daten);
+  Skript `scratches/smoke_paradigm_ursprung.py` (Prereg-Docstring mit
+  vier Thesen, 8 Verdikten, OFFEN-Regel); committeter Anker
+  `scratches/hermeneutik_experiment.json` (Signal-Kolumnen ex ante gelesen:
+  paradigm_ratio = Gödel, paradigm_detected = Composite).
+
+---
+
+## 11. SP9 — Soziale Lexikon-Dynamik: keine unbeteiligten Wörter
+
+**Framing (User-Delegation 2026-10-25, „entscheide du" → Wahl SP9):** SP6 zeigte
+die Emergenz (gebrauchstgetriebene Resonanz); SP9 dynamisiert sie über die
+*Verlaufsgeschichte* des Gebrauchs — dieselben Wörter über Ketten, hunderte
+Episoden und Neugebrauch weitergespielt. Die Wittgenstein-These, die das
+prüft, lautet: die Bedeutung eines Wortes ist der Verlauf seines Gebrauchs,
+nicht sein Endzustand. Design: 5 Lanes, CPU-only, keine Maschinen-Code-Änderung
+(`lexicon_game` + `learn_pair` decken die Dynamik ab); Prereg im Skript-
+Docstring VOR dem ersten Lauf (Bands fixiert, Weichung verboten).
+
+### 11.1 Ex-ante-Formel — die Paar-Rekursion
+
+Reine `learn_pair`-Episoden eines Paares (a, b) transformieren die Paar-
+Resonanz c nach
+
+    c′ = (A·c + B) / (A + B·c),  A = (1−α)² + α²,  B = 2α(1−α)
+
+(denn v1 ∝ (1−α)e1 + αe2, v2 ∝ (1−α)e2 + αe1 ⇒ v1·v2 = A·c + B,
+|v1|² = A + B·c), also 1−c′ = (A−B)·(1−c)/(A+B·c): die Defizit-Shrink hat
+den Faktor A−B (asymptotisch). α=0.3: Faktor 0.16; α=0.9/0.1 identisch
+(Symmetrie α↔1−α), Faktor 0.64. Diese Rekursion lieferte die SP6-Ziffern
+EXAKT und schrieb sie vor: c5(−0.000263) = 0.999790 und c5(0.843313) =
+0.999982 — beide nachträglich von `sp9_s6_regress` und
+`sp9_sat_alpha3_first` (first_at_threshold == 5 EXAKT) bestätigt. Die
+Vorhersage kam aus dem Canon, nicht aus dem Lauf.
+
+### 11.2 Sättigung ist eine Asymptote (Lane SP9.2)
+
+Ein Paar über 60 reine Episoden (α=0.3): Konvergenz exakt in Episode 5,
+dann Restwinkel-Shrink ~×0.4 je Episode, kein Dip, kein Overshoot
+(sat_alpha03 final 1.0, dip 0.0). Der α-Sweep über 100 Episoden: α=0.3
+konvergiert in 5, α=0.1 und α=0.9 in 18 Episoden (Vorhersage-Band [12, ∞])
+— die Konvergenz-Fläche ist NICHT-monoton in α, Minimum in der Mitte, und
+die beiden Pole sind IDENTisch (Symmetrie max ≤ 1e-12 über die volle
+Trajektorie), ex ante aus der Rekursion fixiert. Determinismus-Dopplung:
+bitidentisch.
+
+### 11.3 Interferenz — und der Beobachter-Fehler (Lane SP9.1)
+
+Kette: regel↔rule bis 0.99979 (5 Episoden), dann 30 Episoden rule↔game
+(geteiltes Wort 'rule'). Befunde:
+
+| Messung | Wert | Vorhersage (Ursprungs-Prereg) | p4-Lesung (Phase-2-Stände) |
+| :--- | :--- | :--- | :--- |
+| res(regel,rule) final | **0.705054** | cos(regel0, m(rule0,game0)) **= 0.004424** | cos(regel_p2, m(rule_p2,game0)) **= 0.705054 — EXAKT** |
+| res(regel,game) final | **0.705054** | 0.004424 | 0.705054 — EXAKT |
+| Peak→final | −0.2947 | Band ≥ 0.05 ✓ | — |
+| Disjunkt-Kontrast (tisch↔stuhl-lernt) | Δ res(regel,rule) = **0.0** | Band ≤ 1e-12 ✓ | — |
+
+Das DECAY stand nie zur Debatte — das Endpoint-Verdict (`sp9_int_endpoint`)
+widerlegte dagegen die Prereg-ANNahme „der Beobachter bleibt unbeteiligt":
+regel war selbst durch Phase 1 zu M_A ≈ Halbierende(regel0, rule0) gedreht
+worden (jeder Beobachter ist Mitspieler). Mit den TATSÄCHlichen Phase-2-
+Ständen trifft dieselbe Formel die Messung auf die sechste Dezimale. Der
+Befund ist stärker als die Annahme: **rule UND game nähern sich EXAKT
+derselben Halbierenden** (beide final = 0.705054 identisch) — das Lexikon
+konsolidiert zu einem Mischpunkt, und die Resonanz des Beobachters dorthin
+hat die ANALYTISCHE Gestalt cos(M, n(M+g)) = sqrt((1+c)/2) mit M = dem
+konvergierten regel/rule-VEktor und c = cos(M, game0) = −0.0058 (Rück-
+rechnung 2·0.705054²−1; game war nie im regel/rule-Spiel, Base-Nähe wie
+die SP2-Unverwandt-Baselinen ~1e-2). Im Orthogonal-Fall c ≈ 0 wäre der
+Wert exakt 1/√2 ≈ 0.7071 — gemessen 0.705054. **Die Interferenz lebt
+ausschließlich auf
+geteilten Wörtern** (Disjunkt-Delta exakt 0.0): Lernen ohne gemeinsames
+Wort verursacht KEINE Kollision.
+
+### 11.4 Verlernen ist Neugebrauch, kein Verlust (Lane SP9.3)
+
+regel↔rule voll gelernt (0.99979), dann 10 Episoden rule↔tisch:
+
+| Messung | Wert |
+| :--- | :--- |
+| final_use res(regel,rule) unter Neugebrauch | **0.708337** < 0.8 ✓ (Decay-Teil TRUE) |
+| Relearning regel↔rule: ≥ 0.999 in | **4 Episoden** (≤ Budget 6) — Gebrauch regeneriert |
+
+Trajektorien: use [0.919, 0.809, 0.749, 0.723, 0.712, 0.709, … 0.708337],
+relearn [0.9468, 0.9913, 0.9986, 0.999776] — die c′-Rekursion trifft ALLE
+vier Relearning-Ziffern (0.94684, 0.99130, 0.99860, 0.999776 ex ante
+aus c0 = 0.708337). Kein aktives Forget im Canon: Verlernen existiert nur
+ALS Neugebrauch, und es ist REVERSIBEL — es ist kein Zustandsverlust, der
+eine Erinnerung bräuchte, sondern die doppelte Überschreibung durch
+einem anderen Gebrauch; deshalb regeneriert der alte Gebrauch die Bedeutung
+vollständig. (Wie im LISP-Canon: `learn-from-input` blendet den Mittelwert
+hinein, es gibt keinen Zerfallsterm.)
+Der ursprüngliche Endpoint (m′ = n(rule0 + tisch0), Vorhersage −0.004496)
+ist dieselbe E1-Annahme-Familie (Beobachter unbeteiligt); die p4-Lesung
+(Observer = regel_p2, Mitte = rule_p2) trifft 0.708263 gegen
+0.708337 (Δ 7.4e-5 ≤ Band 0.02 — nach nur 10 Episoden asymptotisch nahe,
+Restwinkel ~0.4¹⁰ konsistent).
+
+### 11.5 Sozial-Ebene: der Sozialismus ist wortlokal (Lane SP9.4)
+
+SP6-Konfig + 45 gated Runden (insgesamt 60, RNG-Kontinuität):
+
+| Zeit | res(regel,tisch) | mean_unrelated | bedeutung/kaffee | wort/baum |
+| :--- | :--- | :--- | :--- | :--- |
+| Runde 15 | 0.003954 (= SP6 ✓ exakt) | 0.4902 | 0.967089 | 0.499426 |
+| Runde 60 | 0.004085 | 0.4902 | **0.967089 — EXAKT gleich** | **0.499426 — EXAKT gleich** |
+
+Der mean-Freeze (0.4902→0.4902) hatte SP6 verdeckt, dass die Mikro-Dynamik
+nicht still ist: tisch driftet über Leg 2 um +1.31e-4 — Sättigung ist
+Asymptote, nicht Fixpunkt. Die per-Runde-Leg-Betrachtung (deterministisch
+identisch zur 45-Runden-Einzel-Schrift — derselbe round-robin-Schedule,
+dasselbe Zufallsmuster; die per-Runde-Leg-Zerteilung ändert KEINEN Rausch-
+zug) zeigt die STRUKTUR: von den 45 Runden tragen GENAU die 15 regel↔rule-
+Episoden nicht-null tisch-Züge; die 30 Spiel↔game/gebrauch↔use-Runden
+bewegen die Lesung EXAKT still (nonzero_deltas = 15). Die Differenzierung,
+die SP6 so nicht sichtbar machte:
+
+1. **Das EMBEDDING eines nie-lernten Wortes friert exakt ein** — gemessen
+   für die unrelated-Zeilen (kaffee- und baum-Row bitidentisch über beide
+   Legs, `sp9_social_frozen_exact`); für alle übrigen nie-lernten Wörter
+   ist das Freeze eine Code-Eigenschaft (`learn_pair` greift nur die beiden
+   Paarwörter an — keine globale Ausgleichs-Mechanik): das Lexikon ist
+   lokal verdrahtet, kein Schwarm.
+2. **Die RESONANZ zu einem eingefrorenen Partner wandert trotzdem** —
+   tisch tut nichts, aber die Lesung res(regel, tisch) driftet, weil
+   der ANDERE Endpunkt (regel) weitermischt. Ein Partnerwort ist keine
+   stabile Referenzachse: die Resonanz hängt von beiden Endpunkten ab, und
+   nur EIN davon muss spielen.
+3. Der Vektor-Sozialismus ist wortlokal (nur gelernte Wörter bewegen
+   sich); die Lesungs-Sozialität ist endpunktlokal (eine Resonanz bewegt
+   sich, sobald einer ihrer zwei Endpunkte Gebrauch erlebt).
+
+Die genaue Formel: **ein EMBEDDING wandert genau dann, wenn das Wort
+selbst lernt; eine RESONANZ wandert genau dann, wenn einer ihrer
+Endpunkte lernt.** „Alle Wörter wandern" ist falsch (tisch exakt still);
+„das Lexikon friert nach Sättigung ein" ist ebenso falsch (regel
+asymptotisch weiter). Die ursprüngliche 1e-12-Pin-Band war ex ante
+falsch gewählt (E2) — die
+korrigierte p4-Lesung fordert konstantes Vorzeichen UND |Δ| ≤ 2e-2
+(Pfad-Längen-Bound) und misst 0.000131 mit konstantem Vorzeichen.
+
+### 11.6 Verdict-Register (19 Verdicte — 16 PASS, 3 dokumentierte Errata)
+
+PASS (16): sp9_s6_regress, sp9_det, sp9_sat_converged, sp9_sat_monotone,
+sp9_sat_alpha3_first, sp9_sat_sweep_final, sp9_sat_sweep_symmetry,
+sp9_sat_sweep_mid_fast, sp9_int_decay, sp9_int_endpoint_p4,
+sp9_int_disjoint, sp9_unlearn_endpoint_p4, sp9_unlearn_relearn,
+sp9_social_freeze, sp9_social_tisch_p4, sp9_social_frozen_exact.
+
+Errata (3 — FAIL dokumentiert, Ursprung bleibt in den Artefakten; P4-
+Einstufung ist ein NEUER Knoten, keine Verdict-Wechsel):
+- **sp9_int_endpoint** — [E1] Beobachter-Annahme widerlegt (regel ist
+  selbst Mitspieler); korrigierte Lesung: sp9_int_endpoint_p4 (EXAKT).
+- **sp9_unlearn_decay** — [E1] derselbe Beobachter-Fehler (Zerfall-Teil
+  < 0.8 war TRUE, 0.708337); korrigierte Lesung:
+  sp9_unlearn_endpoint_p4.
+- **sp9_social_tisch_pin** — [E2] Sättigung ist Asymptote, kein
+  Fixpunkt (Drift +1.31e-4); korrigierte Lesung: sp9_social_tisch_p4.
+
+Kein Band wurde geweitet; alle p4-Formeln benutzen dieselben Identitäten
+auf den tatsächlichen Ständen. exit 0 (Lösungskette geschlossen).
+
+### 11.7 Kern der SP9-These (Hermeneutik der Ziffern)
+
+1. **Nicht jedes Wort spielt — aber kein Wort ist eine stabile
+   Referenzachse.** Das EMBEDDING eines nie-lernten Wortes bewegt sich exakt
+   nicht (tisch, kaffee, baum: bitidentisch); trotzdem verschiebt sich jede
+   Lesung, die das Wort betrifft, mit dem anderen Endpunkt. Ein Embedding
+   wandert genau dann, wenn das Wort selbst lernt; eine Resonanz genau
+   dann, wenn einer ihrer Endpunkte lernt.
+2. **Bedeutung = Verlaufsgeschichte des Gebrauchs** — die Resonanz ist
+   eine Funktion des GESAMTEN Verlaufs (Rekursion über alle Episoden), nicht
+   des Endzustands; einen Zerfall außerhalb des Gebrauchs gibt es nicht
+   (und auch im Gebrauch keinen aktiven Forget — nur Überschreibung).
+3. **Verlernen ist Neugebrauch, keine Löschung** — 10 Neugebrauchs-Episoden
+   reduzieren die Resonanz (0.99979 → 0.708), aber 4 alte Gebrauchs-Episoden
+   regenerieren sie vollständig. Verlernen ist derselbe Mechanismus wie
+   Lernen, nur durch einen anderen Gebrauch — deshalb REVERSIBEL und kein
+   Zustandsverlust.
+4. **Interferenz lebt nur auf geteilten Wörtern** — Kettenlernen mit
+   disjunkten Wortpaaren verursacht ZERO Kollision (Δ = 0.0): das
+   Lexikon ist kein globaler Zustandsraum, sondern ein Verbund, der genau
+   die Knoten verbindet, die ein gemeinsames Wort haben.
+5. **Sättigung ist eine Asymptote** — auch bei c = 0.99979 mischt
+   weiter: der Gebrauch bewegt die Resonanz weiter (die Bewegung wird
+   klein, nicht null). Kein Fixpunkt außer der vollen Identität.
+6. **Die Konvergenz-Fläche ist nicht-monoton in α** — die Pole symmetrisch
+   (α↔1−α, IDENTisch), Mitte am schnellsten (5 vs 18): die Mitte liegt
+   optimal zwischen zu schwacher und zu starker Übernahme.
+7. **Der Beobachter-Fehler (E1) und der Saturation-Frame (E2) sind dieselbe
+   Fehlannahme in zwei Gestalten:** der Experimentier-Frame modellierte die
+   Messung als von der Bewegung UNBERÜHRT (regel0 als Beobachter; Sättigung
+   als Fixpunkt) — in beiden Fällen trifft die Messung der Formel exakt,
+   sobald die tatsächlichen Stände (regel_p2; Asymptote) einsetzen.
+   Messen im Lexikon ist Mitspielen; Messwerte im Lexikon sind
+   verlaufsinduziert, nicht zustandsstatisch. (Satzvervollständigung: das
+   abf237a-Commit trug diesen Schluss-Absatz abgeschnitten; s. SP10-Commit-
+   Notiz.)
+
+---
+
+## 12. SP10 — Die Regeln und die Wörter: die Kopplung ist der Zufall
+
+**Framing (User-Delegation 2026-10-25, „entschieide du" → Wahl der Kopplung):**
+SP7/SP8 bewiesen die Bruchstelle IM Programm (Zwang, nicht Zufall); SP9
+bewies die Bewegung der WÖRTER (Gebrauch, nicht Gematria). SP10 stellt die
+beiden Zyklen nebeneinander und fragt nach ihrem Verhältnis — mit drei
+falsifizierbaren Thesen (Prereg-Docstring vor dem Erstrun; Artefakte
+`regeln_woerter_experiment.log/.json`; Bands fixiert):
+
+- **These 1 (wort-blind):** das Programm ist nicht aus den Wörtern gemacht —
+  Code-Fundament: `_generate_ast` (`:244-256`), `_generate_name`/`evaluate`
+  (`:100-137`) lesen nur RNG und AST, NIE das Lexikon.
+- **These 2 (zufalls-gekoppelt):** das Programm IST aus dem Zufall gemacht —
+  `lexicon_game` entnimmt dieselbe `_rng`; die Verschachtelung (3 Lexikon-
+  Runden zwischen Composite-Schritten, 48 gesamt bei 16 Schritten) verschiebt
+  allein durch den Zugverbrauch den Verlauf; die Bruchstelle (erzwungene
+  Tautologie an Schritt 9, LOOP-Verdikt, Basis-Expansion) bleibt stichfest,
+  weil sie am Zwang hängt, nicht am Zufall.
+- **These 3 (inhalt-invariant):** die Sprachdynamik hat kein Thema — bei
+  gegebenem Lern-Schedule (welches Paar lernt wann) bleiben nur Geometrie
+  und Halbwinkel: M = n(regel0+rule0), N = n(regel0−rule0),
+  β0 = θ0/2, **β_j = atan(0.4^j·tan β0)** (α = 0.3 → 1−2α = 0.4), Paar
+  **c_j = cos(2β_j)**, Zuschauer **R_j = cos β_j·(M·v) + sin β_j·(N·v)**,
+  Grenzwert **R_∞ = M·v**.
+
+**Verdict-Register — 14 Zeilen (11 PASS-Verdicte, 3 dokumentierte Errata,
+exit 0; Bands unverändert; die Erstrun-Zeilen bleiben FAIL in den Artefakten):**
+
+| Verdict | Einstufung | Zahlenlage |
+| :--- | :--- | :--- |
+| sp10_l0_anchor | PASS | alle 9 L0-Felder == committet (LOOP an 5+9; Basisleiter 3→5→7; first_detect 11; Quus final_basis 5, kein step9:LOOP) |
+| sp10_det | PASS | Doppel-Läufe L0 (Kripke+Quus) und L2 (Kripke+Quus) bitidentisch (trace, gaps, Roh-Lexikonwerte) |
+| sp10_t1_spur | FAIL → _p4 PASS | Erstrun: Arme ohne Forced-Haken (Erratum); p4-Lesung: Spur bitinvariant gegen Seitenband-Lexikon UND Nacheinander-Lexikon auf derselben Maschine (Spur + Gap-Historie) |
+| sp10_t1_lexikon | FAIL → _p4 PASS | Erstrun: Per-Runden-Protokoll-Säule geprüft (Erratum); p4-Lesung: after_paired == SP6-Anker bitgenau [0.999790, 0.999982, 1.000000], learned 15/15; L1b final ≥ 0.99 |
+| sp10_t2_divergenz | PASS | erste Spur-Differenz zur L0-Natur-Lage bei Schritt **2**; rng-Zustand gemessen verschoben |
+| sp10_t2_kripke | PASS | verdicts[8] == LOOP, step9:LOOP in expansions, final_basis 5; Quus-Kontrast (dieselbe Verschachtelung): final_basis 3, kein LOOP an 9 |
+| sp10_t2_lexikon_lebt | PASS | alle drei Paare 1.0 (gerundet), Episoden [16, 16, 15], 47/48 gelernt (ein Gate-Skip) |
+| sp10_t3_paar | PASS | c_j über 48 Spielrunden vs. Rohwerte: max Δ **5.6e-16** (Band 1e-9) |
+| sp10_t3_obs | PASS | tisch-Zuschauer-Spur, 49 Punkte (k = 0 vor dem Vorschub + je Runde): max Δ **4.1e-17**; kaffee/baum bitkonstant über alle Runden |
+| sp10_t3_rueck | FAIL → _p4 PASS | Erstrun: delta_count über Rohspur (14 statt 15) — Erratum; p4-Lesung: 15 == committet (SP9-Schreibweise mit gerundetem Punkt 0), gerundete Spur == committet bitidentisch, tisch15/tisch60/Drift == committet, Spur vs. Formel Δ **6.2e-17** / Paar Δ **5.6e-16** |
+| sp10_t3_asymptot | PASS | \|letzter tisch-Wert − M·v\|: L2 **5.5e-9**, SP9-Replay **3.5e-10** (Band 1e-4) — der SP9-E2-Drift (+1.31e-4) ist ex ante das log-Asymptoten-Glied sin β_j·(N·v) |
+
+**Errata-Register (drei Implementations-, KEINE Mechanik-Befunde):** [1] die
+T1-Arme liefen ohne Forced-Haken (Zwang {9} fehlte → Spur-Divergenz erwartbar);
+[2] t1_lexikon prüfte die per-Runden-Protocol-Säule statt der per-Paar-SP6-
+Säule; [3] t3_rueck zählte Deltas auf einer Rohspur mit ungerundetem Punkt 0.
+Alle drei im Skript (ERRATA-Dict + Erstrun-Konstruktionen) dokumentiert.
+
+**Mechanik (Code-nah):** die Verschachtelung braucht keinen Code-Schnitt —
+`CompositeMachine.wittgenstein` (composite.py:45-51) ist exponiert. Der
+Zwangs-Haken hängt am COMPOSITE-step-Zähler (pending-Flag), weil die zwischen
+den Schritten liegenden Lexikon-Runden einen einfachen `wm._step_index`-Haken
+schlucken würden.
+
+**Zahlenlage (L2, die hermeneutische Mitte):**
+
+1. **Die Verschiebung startet sofort:** erste Spur-Differenz bei Schritt
+   **2** — der Lexikon-Vorschub (Rule-Generation + Rausch-Züge je Runde)
+   verbraucht den geteilten Strom, bevor der Composite-Sampler wieder am
+   Zug ist.
+2. **Der natürliche LOOP fällt, der erzwungene bleibt:** L0 zeigte LOOP an
+   Schritt 5 UND 9 (Basis 3→5→7); L2 zeigt den natürlichen an 5 NICHT mehr
+   (verdicts[4] == HALTED), den Erzwungenen an 9 stichfest; final_basis 5
+   statt 7; Paradigm-Zeiten wandern (L0: 11/12/15 → L2: 12/13/15/16).
+   **Natürliche Bruchstellen sind zufallsabhängig — die erzwungene ist es
+   nicht.** Das ist die scharfste Form von These 2.
+3. **Der Sozial-Bogen ist schedule-unabhängig:** die (regel, tisch)-Zeile
+   reist in 49 Punkten von −0.006132 (SP2-pre) nach 0.004085 (SP9-post) —
+   DIESELBE Anfangs- und Endlage über einem ganz anderen Verlaufsschema;
+   kaffee (0.967089) und baum (0.499426) frieren bitkonstant.
+4. **Die Formel ist die exakte Dynamik, kein Modell:** max Δ 4.1e-17
+   (Zuschauer-Spur) und 5.6e-16 (Paar-Roh-Resonanzen) — Maschinen-Präzision,
+   8-9 Größenordnungen unter den 1e-9-Bands. β_j = atan(0.4^j·tan β0):
+   der Gebrauch dreht die Wörter auf demselben Großkreis, auf dem sie
+   durch die Gematria starteten.
+5. **Die Mitte als Endpunkt:** M·v = **0.0040849** — der Zuschauer-Grenzwert
+   ist n(regel0+rule0)·v_tisch: was der Beobachter am Ende liest, ist die
+   MITTE der gelernten Übersetzung, nicht mehr ihr Gefälle. Der SP9-Drift
+   (+1.31e-4) ist die log-Annäherung sin β_j·(N·v) an genau diesen Punkt.
+
+**Die SP9-Ziffer 15 neuklassifiziert (ehrliche Nachtrag, kein Widerruf):**
+die committete SP9-lane_social-Spur trägt Punkt 0 GERUNDET (unrelated15[0])
+und die Punkte 1..45 roh — die Zählung „Deltas ≠ 0 an 15 Leg2-Runden"
+besteht aus **14 echten Sozialisierungs-Zügen + 1 Rundungs-Anschluss-
+Residuum** am Punkt-0-Stoss (Δ = res_roh − round6(res_roh) = **2.59e-8**).
+Kein SP9-Verdict nutzt dieses Feld als Band — dokumentiert, nicht getilgt;
+die Roh-Formelspur kennt nur die 14 echten Züge (Δ 6.2e-17).
+
+**Kern des Befund-Bildes:**
+
+- **Die Kopplung der beiden Zyklen ist der Zufall selbst** — kein Wort, keine
+  Regel, keine Semantik verbindet Programm und Lexikon; nur der gemeinsame
+  Zufalls-Vorrat, der bei jedem Zug abnimmt. Mitspielen heißt hier: denselben
+  Zufall konkurrieren.
+- **Wort-blind und programm-blind, beidseits bitgenau:** das Programm ändert
+  sich nicht mit dem Lexikon (T1), das Lexikon nicht mit dem Programm
+  (t1_lexikon: Konvergenz identisch, ob der Composite-Zyklus läuft oder
+  schweigt — die Erstrun-Konstruktion und die p4-Verdicte zeigen beide
+  Richtungen).
+- **Zwei Gesetze, ein Vorrat:** die Bedeutung der Regel lebt im Programm
+  (Zufall × Zwang), die Bedeutung der Wörter im Gebrauch (Halbwinkel ×
+  Schedule) — beide enden in Grenzwerten derselben Geometrie (M·v), aber
+  über drei verschiedenen Schedules (L0, L2, SP9) mit verschiedenen
+  Zufalls-Vorschüben.
+- **SP10 schließt das Triptychon-Dreieck:** Gödel/Turing/Wittgenstein
+  überlappen im Programm (SP7/SP8); das Lexikon teilt mit ihnen nur die
+  Zufalls-Quelle, nicht die Bedeutung. Denken und Sprechen sind zwei
+  Verläufe ÜBER EINE Quelle — nicht EIN Verlauf über zwei Quellen.
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §14.
+
+---
+
+## 13. SP11 — Der Ursprung der Paradigmen: Niveau-Sprung, nicht Ankauf
+
+**(2026-10-25, Mandat „entschieide du"; Plan `~/.claude/plans/sp11-paradigm-ursprung.md`;**
+Prereg-Docstring `scratches/smoke_paradigm_ursprung.py;` Run `paradigm_ursprung_experiment.log/.json`.**
+CPU-only, keine Maschinen-Code-Änderung, 9 Läufe + 6 Daten-Gegenproben.)
+
+Die Frage der Runde: WOHIN kommt ein Paradigm-Ereignis (ratio > 2.0) her, wenn
+kein Zwang es setzt? SP7 zeigte, DASS das Signal die Kripke-Bruchstelle
+markiert (first_detect 11); SP10 zeigte, DASS die Zeiten mit dem Zufalls-Strom
+wandernd das Lexikon durchlaufen (L0: 11/12/15 — L2: 12/13/15/16). Was fehlte,
+war die Erzeugungsebene des Ereignisses. Code-Grund:
+composite.py:132-140 hängt ZWEI unabhängige Signal-Quellen an EIN und dasselbe
+expansions-Register (goedel.paradigm_signal :135, composite.paradigm_signal
+:138) — die Urheber-Frage ist im Code zwiespältig angelegt und wird von SP11
+empirisch entschieden.
+
+**Ex-Ante-Befund am committeten Anker (2026-10-25, vor dem ersten Lauf):** die
+committeten hermeneutik-Kolumnen sind bereits die Signale zweier Kanäle —
+`paradigm_ratio` (Schritt 10-16, 0.195-0.348, nie >= 2) ist die GOEDEL-Serie
+(das Gödel-Gap sieht am Schritt n bereits die Serie 1..n, weil Goedel.step
+intern appendet), `paradigm_detected` (True an 11/12/15) ist die COMPOSITE-
+Flag (das Composite-Gap sieht am Schritt n nur die Serie 1..n-1, weil der
+Append an :143 NACH der Signal-Prüfung liegt). Hand-Replikation der Composite-
+Ratio aus den committeten Gaps: **3.078 / 2.962 / 1.688 / 1.709 / 2.580** an
+den Schritten 11-15 — exakt der committete Detect-Musterverlauf.
+
+### Drei Thesen, als falsifizierbare Vorhersagen geprüft
+
+1. **Urheber (T1):** das Paradigm-Ereignis kommt aus dem COMPOSITE-Signal
+   (Gap-Mittel der drei Sub-Gaps), nie aus dem Gödel-Signal. Falsifikator:
+   jeder Schritt mit goedel.detected == True.
+2. **Mechanik (T2):** das Signal ist ein exaktes Funktion der aufgezeichneten
+   Serie (Fensterformel: len ≥ 10; recent = mean über 5; baseline = mean über
+   [-20:-5] falls len ≥ 20, sonst [:-5]; ratio = recent/(baseline + 1e-6);
+   erkannt bei ratio > 2.0). Falsifikator: jede Mengen-, Ratio- oder Regime-
+   Abweichung zwischen Replikation und Register.
+3. **Ursprung (T3) in seiner Prereg-Fassung:** das Paradigma ist das ECHO der
+   Basis-Expansion — T3a kein Anlass, kein Echo (Expansion-freie Läufe
+   paradigmfrei); T3b Turing-Gap auf Vor-Niveau gefroren → alle Paradigmen
+   gebrochen; T3c Gödel-Gap gefroren → Menge unverändert. Falsifikatoren wie
+   am Skript fixiert.
+4. **Zwang (T4):** erzwungene Expansion (identity → LOOP, SP7-Mechanik) an
+   Schritt 13 (seed 21) erzeugt mindestens ein Paradigma in [14, 22], das im
+   unverzwungenen Zwilling fehlt.
+
+**Verdikt-Register — 8 Zeilen (6 PASS, 2 echte Falsifikationen, 0 Errata,
+exit 1; Bands unverändert — die FAIL-Zeilen sind die ehrliche Fassung):**
+
+| Verdict | Einstufung | Zahlenlage |
+| :--- | :--- | :--- |
+| sp11_l0_anchor | PASS | alle Felder == committet: verdicts, final_basis 7/5, Gaps, expansions, first_detect == 11 (Kripke + Quus), UND die committeten Signal-Kolumnen: paradigm_ratio == Gödel-invariants (Schritte 10-16), paradigm_detected == Composite-Flag |
+| sp11_det | PASS | Doppel-Läufe L0-Kripke, Sweep-seed11, Zwangs-Paar bitidentisch (trace, Gap-Serie, Sub-Serien, Flags) |
+| sp11_t1_urheber | PASS | kein Schritt mit goedel.detected in allen 9 Läufen; die Urheberschaft des Composite-Signals ist eindeutig |
+| sp11_t2_mechanik | PASS | rekomputierte Detect-Menge == aufgezeichnete Menge je Lauf; jede Ratio innerhalb 1e-12; auch das Regime-Leg (len ≥ 20) exakt reproduziert |
+| sp11_t3a_expansionfrei | **FAIL** | vier der sechs unverzwungenen Läufe (seed12/14/15/16) sind ganz ohne Expansion UND paradigmatisch — kein Anlass, doch Echo |
+| sp11_t3b_turing_echo | **FAIL** | drei Gegenproben mit überlebenden Detectionen: seed13 vollständig (seine einzige Expansion an 23 liegt NACH allen Detectionen 12-21), zw_twin vollständig (einzige LOOP-Expansion an 18; das Vor-Niveau ist bereits Drift-Niveau), zw_forced behält 11-14 (die vor dem Zwang bei 13 liegen) |
+| sp11_t3c_goedel_vergleich | PASS | in allen 6 Gegenproben unverändert — das Gödel-Sub-Niveau (0.017-0.864) trägt ~2-8% der Composite-Masse, ist nie entscheidend |
+| sp11_t4_forced | PASS | erzwungenes LOOP an 13 → induziertes Paradigma an Schritt **20** (Band [14, 22] ✓), fehlt im Zwilling; unter dem Freeze tot — das induzierte Ereignis IST expansions-getragen |
+
+### Mechanik und Zahlenlage
+
+- **Sub-Gap-Struktur des Composite-Mittels** (24-Schritt-Sweeps): Wittgenstein
+  (Regelgüte) ≈ 0.021 im Schnitt, nach dem ersten Schritt 0.000-0.005 — trägt
+  ~nichts; Gödel (Selbstmodell) 0.017-0.864 — trägt 2-8%; Turing (Verlaufskos-
+  ten) 0.0-39.0 — trägt die MASSE. Das Composite-Paradigma ist praktisch ein
+  Ereignis des Turing-Sub-Niveaus.
+- **Die Expansion-freien Paradigmen** (T3a-Falsifikation): seed12 ist ohne
+  jede Expansion und trotzdem paradigmatisch an den Schritten 15-22 und 24 —
+  sein Turing-Sub-Gap steigt von ~3.3 (Mittel der ersten 10 Schritte) auf
+  ~11.6 (Schritte 11-15) und erreicht bis zu 39 (Schritte 14-24). Die
+  Drift selbst bricht die Fenster-Schwelle. seed14 (15-24), seed15
+  (11-18, 21, 23, 24), seed16 (11-14 nach einem 8er-Plateau, danach Rückkehr
+  unter die Grenze).
+- **Die Gegenprobe-Aufstellung** (Turing-Gefrierszene, T3b): l0-Kripke und
+  l0-Quus: ALLE Detectionen gebrochen (∅; t_pre 3.0417) — die committete
+  L0-Lage ist expansions-getragen (Zwang an 9). seed11: alle 12 gebrochen
+  (∅; Expansionen an 5 und 13; t_pre 0.6667 basal). seed13: unverändert
+  (vakuum — die einzige Expansion an 23 liegt NACH allen Detectionen). zw_twin:
+  unverändert (Freeze ≈ no-op — die einzige LOOP-Expansion an 18; das
+  Vor-Fenster enthält bereits das Drift-Niveau, t_pre 8.3700). zw_forced:
+  verliert 17/18/19/20, behält 11-14 — die Drift-Gruppe liegt VOR dem Zwang.
+- **Die Doppel-Herkunft** (statt des ein-Faktor-Echos): (a) Expansion-getragene
+  Detectionen — l0-Kripke/Quus, seed11, zw_forced 17-20 (inkl. des T4-
+  induzierten 20): die Basis-Expansion setzt einen Niveau-Sprung, das Fenster
+  liest ihn. (b) Drift-getragene Detectionen — seed12/14/15/16 komplett,
+  seed13 komplett, zw_twin, zw_forced 11-14: der Verlaufs-Drift setzt
+  denselben Sprung ohne jeden Anlass.
+
+**Kern des Befund-Bildes:**
+
+- **Das Paradigma ist ein Kosten-Ereignis, kein Mittel-Ereignis.** Nicht der
+  Ankauf neuer Axiome (Basis-Expansion) erzeugt die Erkennung, sondern der
+  Auftrieb des Umgangs-Preises — Transitionen pro Schritt im Band, das
+  Composite-Mittel der Verlaufskosten. Die Basis-Expansion ist EIN erzwingbarer
+  Träger des Sprungs (T4), nicht seine Quelle (T3a/T3b FAIL).
+- **T1 und T2 bleiben stichfest und werden geschärft:** das Signal ist
+  urheber-eindeutig Composite-seitig und formel-exakt — es liest nur die
+  Serie. Und die Serie ist in ihrer Masse das Turing-Sub-Niveau: das Composite-
+  Signal liest praktisch die Verlaufskosten.
+- **Die früheren Befunde ordnen sich ein:** Kripkes Bruchstelle (SP7) war
+  Expansions-Nähe (L0-Konfiguration: Zwang an 9, Detectionen 11/12/15 im
+  direkten Nach-Fenster; unter der Gegenprobe ganz gebrochen). Die wandernden
+  Zeiten (SP10) sind die Drift-getragene Typologie unter dem Lexikon-Strom.
+  Dieselbe Fenster-Logik liest beide als denselben Schwellenbruch — deshalb
+  wirkte das Ereignis bisher wie eine Einheit.
+- **Kein Erratum die Runde:** 0 Implementations-Fehler; die 2 FAIL sind echte
+  Falsifikationen der Echo-These und stehen als solche im Register.
+
+**Reparatur: (SP11-Zyklus, 2026-10-25)** die schwebende Fragmentzeile am
+Dateiende der Vorversion („`   verlaufsinduziert, nicht zustandsstatisch.`")
+entfernt — reine Dublette des vollständig vorhandenen
+§11.7-Satzes (der mit seinem Reparatur-Marker an :586-588 steht). Der
+SP10-Append hatte das Fragment als Rest-Zeile hinterlassen.
+
+Laufschrift-Protokoll: `laufprotokolle_befund_report.md` §15.
+
+==============================================================================
+### FILE: scratches/verify_s123_regress_sprachspiel2.log
+### bytes: 1362   lines: 20
+==============================================================================
+======================================================================================
+GÖTTERDREIHEIT-VERIFIKATION
+======================================================================================
+--------------------------------------------------------------------------------------
+STUFE 1
+--------------------------------------------------------------------------------------
+  goedel                   PASS: digest=1594f06485ef gap0=0.7437
+  turing                   PASS: digest=459575a8eb35 gap0=0.5000
+  wittgenstein             PASS: digest=094df3c57a2f gap0=0.5000
+  composite                PASS: digest=660ffead6c40 gap0=0.6799
+--------------------------------------------------------------------------------------
+STUFE 2
+--------------------------------------------------------------------------------------
+  corpus                   PASS: {'goedel': 24, 'turing': 24, 'wittgenstein': 24} kinds=['ast_eval', 'prose', 'trajectory', 'transitions']
+--------------------------------------------------------------------------------------
+STUFE 3
+--------------------------------------------------------------------------------------
+  canon                    PASS: alle Kanon-Werte == Goldwerte (Erstersperrung)
+======================================================================================
+GRÜN — alle angeforderten Stufen bestanden.
+
+
+==============================================================================

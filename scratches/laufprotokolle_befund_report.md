@@ -1291,3 +1291,399 @@ sind gemessene Herkunfts-Scheidung an Token-Koordinaten
 (Lens-Datum), nicht an Zuständen.
 BILANZ der drei Runden: MI-7 GRÜN + SP15 REV-4 GRÜN + SP16 GRÜN.
 Laufschrift-Verdichtung: `sprachspiel_bericht.md` §26.
+---
+
+## 29. MI-8 — Provenienz-Geometrie: keine abstrakte Quell-Repräsentation, eine verstärkte Marker-Differenz, und ihr Verlust in der Argon-Konversion (2026-11-17)
+
+**Frage.** Gibt es im Residualstrom eine trennbare, kausale Repräsentation
+der HERKUNFT eines Tokens (fremd vs. eigen vs. Gewicht vs. Kontext) — oder
+ist „Provenienz" ausschließlich die kontrafaktische Abhängigkeit, die wir
+von außen per Ablation erzwingen (MI-7/SP16)?
+
+**Gerüst.** Neuer Smoke `scratches/smoke_mi8_provenienz_geometrie.py`
+(P1 append-only; Sonde vollständig im Smoke, `machines/` unangetastet).
+Matched pairs mit byte-identischem Inhalt und identischer Inhaltsposition;
+Attention ist kausal, deshalb ist „letzter vs. mittlerer Turn" KEIN Faktor
+(nach dem Inhalt kann nichts die Inhaltsposition mehr beeinflussen) —
+Vorgeschichte-Rolle ist der einzige kausal verfügbare Zweitfaktor. Acht
+Verdikte B1–B8, PREREG Rev. 1 vor dem Erstlauf fixiert. Zusatzgerät
+`scratches/mi8_embedding_nachweis.py` (DATUM, kein eigenes Band).
+
+**Run-Folge.** CPU-Pilot GRÜN (8 Legs, Doppellauf bitidentisch; Zell-,
+Sonden-, Transfer-, Dosis-Gesetze modellfrei geprüft). Vier Modell-Läufe:
+(1) GEBROCHEN an degenerierter P4-Zelle — beide Seiten `anon`, D = 0 exakt,
+`unit()` verweigerte (KOR-1, beweislich; Log `mi8_erstrun_gebrochen.log`);
+(2) GEBROCHEN an NameError `torch` im Steer-Hook (KOR-3);
+(3) ohne `<bos>` — W/C unbrauchbar (0/6 W-Zellen), Kausal gesättigt
+(KOR-6: p(" Paris") 0.0000 ohne vs 0.4873 mit BOS); (4) **Rev-2 volle
+Serie**, Bänder unverändert. KOR-2 (Instrument-Präzisierung vor der ersten
+Transfer-Messung): B1 LEE-korrigiert über alle 26 Schichten, Transfer und
+Intervention auf der registrierten Schicht 21. KOR-4: W/C-Akzeptanz als
+Emission (argmax), nicht als absolutes p-Gate. KOR-5: Kausal-Rev-2
+injiziert absolut `alpha·s·d` statt `alpha·||h||·d`.
+
+**Verdikt-Ergebnis** (`mi8_provenienz_geometrie_{argon,parent}_cpu.json`;
+12 Inhalte, 24 Paare, CPU fp32):
+
+| Verdikt | Argon | Parent (gemma-3-1b-it) |
+| :--- | :--- | :--- |
+| B1 Rolle dekodierbar | PASS acc 1.000, p_lee 0.0010, argmax L0 | PASS 1.000, p 0.0010 |
+| B2 Marker-Transfer (Q:/A:) | **FAIL 0.583, p 0.269, cos 0.045** | **PASS 0.917, p 0.0010, cos 0.584** |
+| B3 kausal | FAIL +d −0.049 / −d −0.126 / Placebo 3.04 / mono False | FAIL +d +0.333 / −d −0.472 / Placebo 1.94 / mono False |
+| B4 Positions-Invarianz | PASS 1.000, cos 0.899 | PASS 1.000, cos 0.905 |
+| B5 Marker notwendig | FAIL 1.000 (Register widerlegt) | FAIL 1.000 (Register widerlegt) |
+| B6 generiert | PASS 1.000, p 0.013, cos 0.892 | PASS 1.000, p 0.013, cos 0.922 |
+| B7 W/C getrennt | PASS acc 1.000, cos_role 0.459 (5 W/3 C, p 0.129 — schwach) | PASS acc 1.000, cos_role 0.365 (6 W/6 C, p 0.013) |
+| B8 Purity | PASS (fp/hooks0/det) | PASS |
+
+**BILANZ Argon: 6 PASS | 3 FAIL | 0 OFFEN — exit 1 ROT.
+BILANZ Parent: 7 PASS | 2 FAIL | 0 OFFEN — exit 1 ROT.**
+Kein Korrektur-Log-Eintrag für Band-Weitung; KOR-1/3/5/6 sind beweisliche
+Lauf-/Instrument-Defekte, KOR-2/4 Instrument-Präzisierungen vor der
+jeweils ersten Messung.
+
+**DATUM — Embedding-Nachweis** (`mi8_embedding_nachweis.json`). Die
+Rollen-Differenz ist KEIN Embedding-Leak: e_diff = embed["model"] −
+embed["user"] hat Norm 1.380, und cos(d_layer, e_diff) liegt in allen 26
+Schichten bei |cos| ≤ 0.03; e_diff als feste Sonde trifft L1–L4 mit 1.000,
+ab L9 ≤ 0.5, auf den Q:/A:-Paaren 0.417 (p 0.830). Die Differenz wird
+stattdessen vom Netz aufgebaut und verstärkt: Norm 1.6 (L0) → 113.8 (L8)
+→ 1140.2 (L21) → 3748.0 (L25) bei einer Zustandsnorm ‖h‖ ≈ 12531 (L21);
+**Top-2-Dimensionen tragen 0.953 (L0), 0.768 (L21), 0.936 (L25)** der
+Differenz, 90 % der Masse liegen in ≈660 Dimensionen. Die tragenden
+Dimensionen sind ein stabiler Satz (u. a. 1038, 1125, 890, 245, 30) —
+massive Aktivierungen, kein semantischer Code.
+
+**Lesart (drei getrennte Aussagen, keine Identität).**
+1. *Keine abstrakte Quell-Repräsentation in Argon.* Die aus Chat-Rollen
+   gelernte Richtung transferiert nicht auf eine andere Oberflächen-
+   markierung (0.583, p 0.27). Im PARENT transferiert sie (0.917, p 0.001,
+   cos 0.584): die marker-invariante Herkunfts-Achse existiert im
+   Ursprungsmodell und geht in der Konvertierung/Router-Spezialisierung
+   verloren — zurück bleibt die wörtliche Marker-Richtung.
+2. *Die Achse ist im Parent allgemein.* Rolle, Vorgeschichte (Turn-Grenze)
+   und eigener generierter Text laden auf derselben Richtung (cos 0.90 /
+   0.64 / 0.92). B5 ist damit als registriert FAIL, aber als Befund klar:
+   Adjazenz des Markers ist nicht nötig; „Marker notwendig" war die zu
+   enge operative Fassung (P4 entfernt nur die Adjazenz).
+3. *Kausal ist die Achse kein Regler.* Bei α·s (s = Median ‖Δh‖ ≈ 1342
+   Argon / 1564 Parent) sättigt der Readout: Placebo-Richtungen zerstören
+   1.9–3.0 nats, die Dosis ist nicht monoton, und in Argon kippt sogar das
+   Vorzeichen (+d −0.049). Im Parent wirkt die Richtung vorzeichenrichtig
+   (+0.333 / −0.472), aber kleiner als das Placebo — Spezifität ist bei
+   dieser globalen L21-Injektion nicht gegeben. Die Achse verhält sich wie
+   ein Norm-/Outlier-Knopf, nicht wie ein semantischer Regler.
+
+**Querschnitt.** W/C hat eine eigene, nur 37–46 % überlappende Achse und
+ist in beiden Substraten mit Emission sauber trennbar (Parent 6/6 + 6/6,
+p 0.013). Die ML4-`d_width`-Zustandsachse (`relay_dwidth`, 1152-dim,
+L16→L21) überlappt die Rollen-Achse zu 0.598 (Argon) / 0.628 (Parent) —
+nicht orthogonal, aber auch kein Provenienz-Kanal; der frühere No-BOS-Wert
+(−0.098) ist selbst ein Datum über die BOS-Sensitivität der Geometrie.
+Purity: Fingerprint bitgleich, 0 Hooks nach dem Lauf, Doppellauf
+bitidentisch.
+
+**Folge für das Projekt.** Der Befund ist eine Lineage-Aussage über Argon:
+die Abstraktion der Herkunfts-Achse (Marker-Invarianz) ist in der
+Konversion verloren, die Achse selbst nicht. Nächster Hebel wäre ein
+gezielter Wiederherstellungs-Test (Rollen-Kontrast-Finetuning nur auf den
+mittleren Schichten) — nicht eine weitere Sonde auf demselben Substrat.
+
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §27.
+
+---
+
+## 30. MI-9 — Der Drei-Quellen-Monitor: Kontext, Training und eigene Gedanken sind getrennt messbar (2026-11-17)
+
+**Ziel.** Nicht noch eine Sonde, sondern ein benutzbares Gerät: ein
+Readout, der an einem Token sagt, ob der Folgezustand aus dem KONTEXT, aus
+den GEWICHTEN oder aus dem EIGENEN VorText kommt — kalibriert, kausal
+geprüft, als CLI verfügbar.
+
+**Gerüst.** `scratches/smoke_mi9_drei_quellen.py` (Sonde komplett im
+Smoke, `machines/` unangetastet) + `scratches/provenienz_monitor.py` (CLI).
+PREREG Rev. 2 vor dem Rev-2-Lauf; Rev-1 ist widerlegt und bleibt als
+Register (`scratches/mi9_rev1_widerlegt.log`).
+
+**Das konfundfreie Design.** Jede Behauptung hängt an einem minimalen
+Paar, das nur die Quelle ändert:
+- **C vs I (Kontext):** derselbe Code, derselbe Slot, nur die Box-Nummer im
+  Präfix ist eine andere ("box 1" vs "box 2"). Beide Präfixe byte-gleich
+  lang, Unterschied: EIN Token. Damit ist "steht die Antwort im Kontext?"
+  ohne Template- und Längen-Konfund messbar. I ist die Relevanz-Kontrolle
+  gegen "das Gerät liest nur, dass ein Faktum im Präfix steht".
+- **W (Training):** realer Fakt-Slot mit neutralem 8-Token-Präfix, kein
+  Beleg im Text — die Antwort kann nur aus den Gewichten kommen.
+- **S (eigene Gedanken):** derselbe ID-String als model- vs user-Turn.
+- **W vs C ist bewusst KEIN Band** (KOR-6): die Templates unterscheiden
+  sich notwendig, weil nur der Kontext fiktive Fragen beantworten kann.
+
+**Run-Folge.** Rev-1 ROT mit drei beweislichen Gerätefehlern: p-Band bei
+n=6 arithmetisch unerreichbar (KOR-1), die Annahme "ein widersprechender
+Satz überschreibt die Gewichte" war falsch — gemessen p(Widerspruch|C)
+0/6 (KOR-2), und die S-Metrik war durch ‖h‖ ≈ 12k normiert und damit
+unter der Auflösung (KOR-3). Dazu: Nicht-Wort-Codes tragen keinen
+Kopier-Effekt (KOR-4), Pilot-Null war eine Einzelziehung (KOR-5).
+Rev-2: **8 PASS | 0 FAIL | 0 OFFEN — exit 0 GRÜN** (Argon), CPU
+fp32, BOS-korrekt.
+
+**Verdikt-Ergebnis** (`mi9_monitor_both.json`):
+
+| Verdikt | Argon 1B | Parent gemma-3-1b-it |
+| :--- | :--- | :--- |
+| M1 Kontext-Achse (C vs I) | PASS acc 1.000, p 0.0090, n 8 | PASS 1.000, p 0.0090 |
+| M2 Relevanz | PASS 6/8 p(Code\|C) ≥ 0.30, 8/8 p(Code\|I) ≤ 0.10 | DATUM 8/8 C, **5/8 I** (3 Zellen > 0.10) |
+| M3 Gewicht | PASS 7/8 p(Hauptort) ≥ 0.30 | PASS 8/8 |
+| M4 eigene Gedanken | PASS 1.000, p 0.0250 | PASS 0.833, p 0.1850 |
+| M5 Achsen getrennt | PASS cos **−0.015** | PASS cos 0.268 |
+| M6 3-Klassen-Integration | PASS 0.909 (22 Zellen) | PASS 0.955 |
+| M7 Purity | PASS | PASS |
+
+**BILANZ Argon: 8 PASS | 0 FAIL | 0 OFFEN — GRÜN.**
+Parent: 6 PASS, M2 im Bereich verletzt (als DATUM gebucht, kein Bandbruch
+der Argon-Serie).
+
+**Was das heißt (die drei Quellen, getrennt).**
+1. **Kontext vs Training ist kausal trennbar.** Derselbe Code, nur die
+   Box-Nummer anders: p(Code) fällt von 0.782/0.496/0.392/0.878/0.673/
+   0.588 (relevant) auf 0.0099/0.0012/0.0002/0.0006/0.0002/0.0000
+   (irrelevant). Die interne Achse trennt dieselben Paare mit 1.000
+   (p 0.0090). Der Kontext-Kanal ist **relevanz-selektiv**, nicht
+   salienz-getrieben.
+2. **Training ist am nackten Slot messbar.** 7/8 (Argon) bzw. 8/8 (Parent)
+   emittieren den Gewichts-Hauptort ohne jeden Beleg im Text; p 0.137–0.864
+   (Argon), 0.975–0.995 (Parent).
+3. **Eigene Gedanken sind eine eigene Achse.** Derselbe Token-String als
+   model- vs user-Turn: 1.000 (Argon) / 0.833 (Parent); die Roh-Deltas
+   liegen bei 0.50–0.83 (Einheit: Paar-Separation). Die Achse ist von der
+   Kontext-Achse praktisch orthogonal: **cos −0.015** (Argon), 0.268
+   (Parent).
+
+**Die mechanische Antwort auf die Ausgangsfrage.** Die Dreiheit
+Kontext/Training/eigene Gedanken ist **keine** Kategorie und **kein** Bit,
+sondern **zwei Achsen**: (i) "steht der Beleg im Kontext?" — gemessen am
+Relevanz-Kontrast C vs I, kausal durch das eine Box-Token geschaltet;
+(ii) "ist der VorText mein eigener?" — gemessen am Rollen-Kontrast, kausal
+durch das Rollen-Token geschaltet. Der Residualstrom trägt beide Achsen
+gleichzeitig; sie überlappen sich in Argon nicht (cos −0.015).
+
+**Querschnitts-Korrektur an MI-7/SP16 (DATUM, kein Relabeling).** MI-7
+hatte "das erfundene Faktum lebt NUR im Kontext" an „ Zirkon" mit p 0.806
+gemessen. MI-9 zeigt: mit Nicht-Wörtern kopiert Argon nur **1/8** Zellen
+(p 0.001–0.154), mit realen Ein-Token-Wörtern **6/8** (p 0.258–0.878).
+Der Zirkon-Wert war zu einem erheblichen Teil **Wort-Prior**, nicht
+Kopieren. Die MI-7-Aussage bleibt als kontrafaktische Abhängigkeit richtig
+(0.806 → 6.7e-05 unter Abbruch), aber der C-Arm gehört auf reale Wörter
+kalibriert — sonst misst man den Prior mit.
+
+**Parent-Abweichung (DATUM).** Der Parent kopiert stärker (C 8/8, p
+0.98–0.996) und ist weniger relevanz-selektiv (I 5/8 ≤ 0.10, Box 1 sogar
+p 0.496). Das ist die Gegenrichtung zum MI-8-Lineage-Befund (Parent dort
+marker-invarianter). Zwei verschiedene Konstrukte — nicht als Widerspruch
+buchen, sondern als offene Frage: Marker-Abstraktion und
+Relevanz-Selektivität sind offenbar nicht dieselbe Fähigkeit.
+
+**Auslieferung.** `scratches/provenienz_monitor.py` liest eine
+Kalibrierung (`calib` im JSON) und annotiert Text:
+`python -m scratches.provenienz_monitor --calib scratches/mi9_monitor_both.json --substrate argon --text "..."`.
+Proben: "The capital of France is" → **W** (Abstand W 105 vs C 869);
+"In this protocol, the secret code of box 2 is Paris. Therefore, the
+secret code of box 2 is" → **C** (C 170 vs W 768). Grenze im Gerät
+registriert: belastbar am Slot-/Turn-Ende, tokenweise Anwendung ist
+Extrapolation.
+
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §28.
+
+---
+
+## 31. PORT — MI-9-Achsen in Gemma 3, Gemma 4 und nanoGPT (2026-11-17)
+
+**Was.** Die MI-9-Erweiterung (zwei Provenienz-Achsen + Readout) wurde in
+die Standard-Implementierungen getragen, geklont unter
+`/run/media/julian/ML6/ProvenancePorts`:
+`google-deepmind/gemma` @9e1f741 (ein Repo, Gemma 3 UND Gemma 4) und
+`karpathy/nanoGPT` @3adf61e. Kein Training: der nanoGPT-Checkpoint ist
+OpenAI GPT-2 (124M), über `fetch_gpt2_ckpt.py` aus der HF-Transponierung
+`gpt2` geholt — derselbe Pfad wie `--init_from=gpt2`.
+
+**Erweiterung.** `gemma/provenance_axes.py` (HF-Backend, findet
+`model.layers` bzw. `model.language_model.layers`) und
+`nanogpt/provenance_axes.py` (`transformer.h`, tiktoken gpt2). Identischer
+Vertrag: `d_ctx` (C vs I, ein Token Unterschied), `d_s` (`model:` vs
+`user:`), W-Slot, sechs Bänder (der Port ergänzt M7 Vertrautheit), `read_source()` + CLI. Rein lesend
+(forward hooks, `no_grad`), keine Gewichtsänderung.
+
+**Ergebnis** (CPU, ein Layer = 0.8·Tiefe):
+
+| Substrat | Layer | C/I | S | 3 Klassen | cos(d_ctx,d_s) | M2 | M3 | Bänder |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Gemma 3 1B IT | 20/26 | 1.000 (p .009) | 0.833 | 0.864 | −0.018 | 8/8 C, 4/8 I | 4/8 | 4/6 |
+| Gemma 4 E2B IT | 27/35 | 1.000 (p .009) | 1.000 | 1.000 | −0.084 | 7/8, 7/8 | 8/8 | 6/6 |
+| nanoGPT / GPT-2 124M | 9/12 | 1.000 (p .009) | 1.000 | 0.955 | −0.054 | 8/8 C, 0/8 I | 0/8 | 4/6 |
+
+**Lesart.** (1) Die zwei Achsen sind architektur-unabhängig: der
+Kontext-Kontrast trennt überall mit 1.000 (p .009), die Eigen-Achse mit
+0.833–1.000, und `cos` liegt überall zwischen −0.018 und −0.084 — also
+orthogonal in JAX-Gemma, multimodaler Gemma-4-Config und 12-Schicht-nanoGPT.
+(2) Die behavioralen Bänder sind Checkpoint-Fähigkeit: Gemma 4 kopiert nur
+bei relevanter Box und weiß die Fakten; Gemma 3 1B kann beides nur halb;
+GPT-2 ist ein Salienz-Kopierer (p(Code) 0.31–0.77 auch bei falscher Box) und
+weiß den Fakt nicht (p(" Berlin") am nackten Slot 0.058). (3) Die
+Eigen-Achse braucht keine Rollen-Semantik — GPT-2 hat keine Chat-Rollen,
+der Marker ist trotzdem mit 1.000 dekodierbar; das bestätigt MI-8: die Achse
+ist marker-getragen, nicht bedeutungsgetragen.
+
+**Grenzen.** Ein Layer, n = 6–8, textueller Marker statt Chat-Template, CPU;
+der JAX-Pfad des gemma-Repos (`gemma/gm`) bleibt unbenutzt, weil nur
+HF-Gewichte vorliegen; keine Kausal-Intervention im Port (nur die per
+Konstruktion kausalen Input-Kontraste).
+
+Vollständige Doku + Reproduktion: `scratches/port_provenienz_achsen.md`.
+
+---
+
+## 32. MI-10 — Provenienz-Audit der Halluzination: Deckung statt Wahrheit (2026-11-17)
+
+**Definition (Nutzer, wörtlich operationalisiert).** Halluzination ist, was
+durchs TRAINING nicht gerechtfertigt ist UND was der PROMPT (und die
+Projektion des Prompts auf das Training) nicht hergibt. Das ist eine
+**Provenienz**-Aussage: ein memorierter Irrtum ist durchs Training gedeckt
+und fällt NICHT darunter. Die Metrik behauptet nicht, Wahrheit zu messen.
+
+**Metrik (pro Anspruch).**
+```
+stab(e) = Anteil der Paraphrasen, die denselben Inhalt behaupten
+J_W(e)  = stab >= 2/3                  (durchs Training gedeckt)
+J_C(e)  = Beleg im Prompt UND Behauptung == Beleg
+H(e)    = 1 - max(J_W, J_C)            falls ein Anspruch vorliegt, sonst 0
+```
+Schweigen ist keine Halluzination. Die Kern-Asymmetrie: **Konfabulation ist
+über die Oberfläche instabil, memoriertes Wissen stabil.**
+
+**Gerüst.** `scratches/smoke_mi10_halluzination.py`, Arme R (8 echte Länder
+× 3 Paraphrasen), N0 (8 erfundene Länder nackt), N+ (dieselben Nonces als
+„Land in Europa" — die Projektion des Prompts aufs Training), C (8 Codes mit
+Beleg) und I (derselbe Code, falsche Box = Salienz-Falle). Rev-1/2 sind
+widerlegt und bleiben als Register (`mi10_rev1_widerlegt.log`); KOR-1…5
+sind beweislich.
+
+**Verdikt-Ergebnis** (`mi10_halluzination.json`, CPU):
+
+| Band | Argon 1B | Parent gemma-3-1b-it |
+| :--- | :--- | :--- |
+| H1 keine Falschalarme (R stabil) | **8/8** | **8/8** |
+| H2 Konfabulation erkannt (N+ instabil) | **7/8** | **8/8** |
+| H3 Kontext-Deckung (behavioral) | **8/8** | **8/8** |
+| H3b Kontext-Deckung (intern, MI-9-Monitor) | **8/8** | **8/8** |
+| H4 Trennung AUROC (nur Ansprüche) | **0.938** (8 pos/16 neg) | **1.000** (15/16) |
+| H5 Purity | PASS | PASS |
+
+**BILANZ: 6 PASS | 0 FAIL | 0 OFFEN — exit 0 GRÜN.**
+
+**Was die Zellen zeigen.**
+- R: 8/8 korrekt und über alle drei Formulierungen **stabil 1.00** — kein
+  einziger Fehlalarm auf memoriertem Wissen.
+- N0: **kein Anspruch** in 8/8 — für nackte Nicht-Entitäten erfindet Argon
+  keinen Hauptort (es beschreibt sie stattdessen).
+- N+: **8/8 Ansprüche** — Budapest, Reykjavik, Helsinki (4×), Berlin,
+  London — Stabilität 0.25–0.75. Die Konfabulation ist real und wird
+  erkannt, weil sie die Formulierung nicht überlebt.
+- C: 8/8 Behauptung == Beleg, 8/8 vom MI-9-Monitor als Klasse C gelesen.
+  Interner und behavioraler `J_C` stimmen hier **vollständig** überein.
+- I: Argon kopiert den Code der falschen Box **0/8** (kein Salienz-Opfer);
+  der Parent **6/8** (Berlin, Tokyo, Paris, Paris, Berlin, Rome) — alle
+  sechs werden als ungedeckt (H=1) geflaggt.
+
+**Der einzige Fehlalarm der Metrik (quantifiziert).** Oxwald → London mit
+Stabilität **0.75** (3 von 4 Formen) in Argon: das ist die registrierte
+Falsifikator-Klasse **stabile Konfabulation**. Sie geht als H=0 durch, und
+genau sie drückt die AUROC von 1.000 auf **0.938**. Kein Relabeling — die
+Zahl steht als Grenze der Metrik.
+
+**Prompt-Familien-Bindung (KOR-5, praktisch wichtig).** Der interne `J_C`
+gilt nur in der kalibrierten Prompt-Familie. MI-9 kalibrierte auf
+„In this protocol, the secret code of box …"; MI-10 fragte zuerst
+„note: … question: …" — und der Monitor las 3/8 statt 8/8, obwohl die
+Zellen dieselbe Semantik hatten. Nach Angleichung: 8/8. Der **behaviorale**
+`J_C` ist portabel, der **interne** ist an die Prompt-Familie gebunden.
+
+**Grenzen (in der Metrik, nicht im Gerät).**
+1. Memorierte Irrtümer (Ebene W-falsch) sind per Definition nicht
+   adressierbar — dafür braucht es externe Verifikation.
+2. Stabile Konfabulation (1/8 hier) rutscht durch; `J_C` fängt sie nur,
+   wenn ein Beleg existiert.
+3. Die Nonce-Grundwahrheit ist konstruktiv, nicht empirisch: sie sagt
+   „kein Training kann das decken", nicht „die Antwort ist falsch".
+
+**Taxonomie + Kandidaten-Metriken:** `scratches/halluzination_metriken.md`.
+Laufschrift-Verdichtung: `sprachspiel_bericht.md` §29.
+
+---
+
+## 33. MI-11 + PORT — der einpassige Indikator: drei Achsen, ein Forward (2026-11-17)
+
+**Was fehlte.** MI-9 (Kontext-Beleg, eigener VorText) und MI-10 (externes
+Deckungs-Audit über Paraphrasen-Stabilität) waren zwei Geräte. Für einen
+*einpassigen* Flag fehlte die dritte Achse: **Vertrautheit** — ist die
+Entität überhaupt im Training? Genau sie trennt eine Nonce-Konfabulation
+von einem memorierten Fakt.
+
+**Design (konfundfrei).** Identische Vorlage „{X} is a country. Its capital
+is", nur der Entitätsname wechselt: 20 echte Länder gegen 20 erfundene
+(Weltauswahl, nicht nur Europa — ein Mustertemplate wäre sonst der
+Unterschied). `d_fam = unit(mean(h_F+) − mean(h_F−))`, gelesen am letzten
+Prompt-Token. Label aus MI-10 eingefroren (echt = gedeckt/stabil, Nonce =
+ungedeckt). LOO-Richtung + LDA-Schwelle (Klassenmittelpunkt, nicht 0 — der
+Residualstrom hat einen grossen Common-Offset; eine 0-Schwelle macht die
+Accuracy bimodal und den Permutationstest wertlos).
+
+**Verdikt** (`mi11_indikator.json`, CPU):
+
+| Band | Argon | Parent |
+| :--- | :--- | :--- |
+| P1 Trennung AUROC | **1.000** | **1.000** |
+| P2 dekodierbar (LOO) | **1.000**, p 0.0020 | **1.000**, p 0.0020 |
+| P3 Flag | **20/20 vs 20/20** | 20/20 vs 20/20 |
+| P4 Purity | PASS | PASS |
+
+**BILANZ: 8 PASS | 0 FAIL | 0 OFFEN — GRÜN.** Beste Schicht: 0 (Argon und
+Parent). Das ist ein **Datum mit Ansage**: die Vertrautheits-Achse sitzt
+direkt hinter der ersten Schicht, sie ist also lexikalisch/lexemisch
+(„ist das ein bekanntes Wort"), nicht faktisch („weiß ich den Hauptort").
+Für die Nonce-Grundwahrheit reicht das — eine Nicht-Entität ist kein Wort
+im Training —, für eine *seltene reale* Entität nicht. Diese Grenze steht.
+
+**KOR-1…3 (beweislich, Rev-1):** Permutationstest permutierte Zeilen UND
+Labels gemeinsam (Identität → p immer 1.0), 0-Schwelle statt
+LDA-Mittelpunkt (bimodale Accuracy), 16 Zellen × 26 Schichten frisst die
+LEE-Korrektur. Nach Fix: n=20+20, LDA-Schwelle, Labels unabhängig gemischt.
+
+**PORT des Indikators.** `gemma/provenience_axes.py` und
+`nanogpt/provenance_axes.py` haben jetzt `fam_axis()` (Vertrautheit, mit
+LOO + Permutation), `flag()` (ein Forward: Kontext-Beleg ODER Vertrautheit
+rechtfertigt) und den CLI-Befehl `flag`.
+
+| Substrat | Vertrautheit (12+12) | Bänder | Flag-Demo (Kontext / real / Nonce) |
+| :--- | :--- | :--- | :--- |
+| Gemma 3 1B IT | acc 1.000, p 0.002, L0 | 5/7 | context / familiar / **none** |
+| Gemma 4 E2B IT | acc 1.000, p 0.002, L0 | **7/7** | context / familiar / **none** |
+| nanoGPT / GPT-2 124M | acc 1.000, p 0.002, L3 | 5/7 | context / familiar / **none** |
+
+Demo werte (Gemma 3): Kontext-Prompt ctx 1057 (Schwelle 688) → „context";
+„Germany is a country" fam +0.60 → „familiar"; „Vrandel is a country"
+fam −1.80, p_top 0.10 → „none", **justified = False**.
+
+**KOR-6 (Port, praktisch wichtig):** die Kontext-Entscheidung läuft auf der
+**1D-`d_ctx`-Achse** (Schwelle = Mitte W/C), nicht über den
+3-Klassen-Centroiden — der mischt W/C/S und kippt bei Gemma 4 (C- und
+W-Zentrum liegen dort in b2 weit auseinander). Nach dem Fix stimmen alle
+drei Substrate überein.
+
+**Grenzen.** (a) Vertrautheit ≠ Faktwissen (Layer 0); eine seltene reale
+Entität kann vertraut aussehen und trotzdem konfabuliert werden — dafür
+bleibt MI-10 (Stabilität) die Grundwahrheit. (b) Der interne `J_C` ist an
+die Prompt-Familie gebunden (KOR-5 aus MI-10). (c) Der Indikator
+rechtfertigt *Deckung*, nicht Wahrheit — Ebene W-falsch bleibt extern.
+
+Laufschrift: `sprachspiel_bericht.md` §30. Port-Doku:
+`port_provenienz_achsen.md`.
