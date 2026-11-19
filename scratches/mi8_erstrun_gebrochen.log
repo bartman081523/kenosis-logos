@@ -1,0 +1,24 @@
+== MI-8 — Provenienz-Geometrie ==
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+CPU-Pilot: Zell-Gesetze + Sonden-Mathe + Dosis + Determinismus
+  {"pair_identity": true, "marker_len": true, "shift_law": true, "probe_recovers": true, "probe_null": true, "transfer_law": true, "dose_law": true}
+Modell-Lanes: substrate=['argon'] device=cpu stage=all
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+  [argon] geladen; load={'missing_base': 0, 'unexpected_base': 0, 'missing_diff': 968, 'unexpected_diff': 0}
+  [argon] P1 fertig: acc_max 1.000 p_lee 0.0020 layer 0
+Traceback (most recent call last):
+  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi8_provenienz_geometrie.py", line 1187, in <module>
+    sys.exit(main())
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi8_provenienz_geometrie.py", line 1081, in main
+    res["ablation"] = lane_probe_fixed(
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi8_provenienz_geometrie.py", line 675, in lane_probe_fixed
+    "cos": float(unit(D.mean(axis=0)) @ unit(d_role))}
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_mi8_provenienz_geometrie.py", line 222, in unit
+    raise RuntimeError("unit: Nullvektor — kein stiller Fallback.")
+RuntimeError: unit: Nullvektor — kein stiller Fallback.

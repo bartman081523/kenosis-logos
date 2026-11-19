@@ -1,0 +1,29 @@
+== MI-8 — Provenienz-Geometrie ==
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+CPU-Pilot: Zell-Gesetze + Sonden-Mathe + Dosis + Determinismus
+  {"pair_identity": true, "marker_len": true, "shift_law": true, "history_law": true, "probe_recovers": true, "probe_null": true, "transfer_law": true, "dose_law": true}
+Modell-Lanes: substrate=['argon'] device=cpu stage=all
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+  [argon] geladen; load={'missing_base': 0, 'unexpected_base': 0, 'missing_diff': 968, 'unexpected_diff': 0}
+  [argon] P1 fertig: acc_max 1.000 p_lee 0.0010 argmax_layer 0 (Transfer-Layer 21)
+  [argon] P2 0.583 / P3 1.000 / P4 1.000
+  [argon] P5 acc 1.000
+  [argon] P6 acc 1.0
+  [argon] P7 +d -0.0492 placebo 3.0437
+
+BEFUNDE:
+  mi8_cpu_pilot                PASS  
+  mi8_rolle_dekodierbar        PASS  acc_max 1.000 p_lee 0.0010 layer 0
+  mi8_marker_transfer          FAIL  acc 0.583 p 0.2687
+  mi8_kausal                   FAIL  +d -0.0492 -d -0.1262 placebo 3.0437 mono False
+  mi8_positions_invarianz      PASS  acc 1.000
+  mi8_marker_notwendig         FAIL  acc 1.000
+  mi8_generiert                PASS  acc 1.000 p 0.0130
+  mi8_wc_getrennt              PASS  acc 1.000 cos 0.459
+  mi8_purity                   PASS  fp True hooks0 True det True
+
+BILANZ: 6 PASS; 3 FEHLGESCHLAGEN; 0 OFFEN
+ROT — Bänder verletzt: mi8_marker_transfer, mi8_kausal, mi8_marker_notwendig
+JSON: scratches/mi8_provenienz_geometrie_argon_cpu.json

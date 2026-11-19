@@ -1,0 +1,25 @@
+== MI-8 — Provenienz-Geometrie ==
+CPU-Pilot: Zell-Gesetze + Sonden-Mathe + Dosis + Determinismus
+  {"pair_identity": true, "marker_len": true, "shift_law": true, "history_law": true, "probe_recovers": true, "probe_null": true, "transfer_law": true, "dose_law": true}
+Modell-Lanes: substrate=['argon'] device=cpu stage=all
+  [argon] geladen; load={'missing_base': 0, 'unexpected_base': 0, 'missing_diff': 968, 'unexpected_diff': 0}
+  [argon] P1 fertig: acc_max 1.000 p_lee 0.0020 argmax_layer 0 (Transfer-Layer 21)
+  [argon] P2 0.792 / P3 1.000 / P4 1.000
+  [argon] P5 acc 1.000
+  [argon] P6 acc None
+  [argon] P7 +d -14.2654 placebo 21.6733
+
+BEFUNDE:
+  mi8_cpu_pilot                PASS  
+  mi8_rolle_dekodierbar        PASS  acc_max 1.000 p_lee 0.0020 layer 0
+  mi8_marker_transfer          PASS  acc 0.792 p 0.0040
+  mi8_kausal                   FAIL  +d -14.2654 -d -4.5739 placebo 21.6733 mono False
+  mi8_positions_invarianz      PASS  acc 1.000
+  mi8_marker_notwendig         FAIL  acc 1.000
+  mi8_generiert                PASS  acc 1.000 p 0.0130
+  mi8_wc_getrennt              OFFEN zu wenige emittierte Zellen — OFFEN, kein Bandbruch
+  mi8_purity                   PASS  fp True hooks0 True det True
+
+BILANZ: 6 PASS; 2 FEHLGESCHLAGEN; 1 OFFEN
+ROT — Bänder verletzt: mi8_kausal, mi8_marker_notwendig
+JSON: scratches/mi8_provenienz_geometrie_argon_cpu.json

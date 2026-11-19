@@ -1,0 +1,121 @@
+{
+ "cpu": {
+  "legs": {
+   "pair_identity": true,
+   "marker_len": true,
+   "shift_law": true,
+   "history_law": true,
+   "probe_recovers": true,
+   "probe_null": true,
+   "transfer_law": true,
+   "dose_law": true
+  },
+  "verdict": true,
+  "deterministic": true,
+  "geometry_start": 16,
+  "n_cells": 48,
+  "delta": 5,
+  "dose_vals": [
+   0.085818,
+   0.155178,
+   0.255642
+  ]
+ },
+ "gpu": null,
+ "findings": [
+  {
+   "id": "mi8_cpu_pilot",
+   "assert": true,
+   "note": ""
+  },
+  {
+   "id": "mi8_rolle_dekodierbar",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_marker_transfer",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_kausal",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_positions_invarianz",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_marker_notwendig",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_generiert",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_wc_getrennt",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  },
+  {
+   "id": "mi8_purity",
+   "assert": null,
+   "note": "Modell-Lanes nicht gefahren"
+  }
+ ],
+ "prereg": {
+  "b1_acc_min": 0.8,
+  "b1_p_max": 0.01,
+  "b2_acc_min": 0.7,
+  "b2_p_max": 0.05,
+  "b3_dlog_min": 0.05,
+  "b3_placebo_max": 0.02,
+  "b3_doses": [
+   0.5,
+   1.0,
+   2.0
+  ],
+  "b4_acc_min": 0.75,
+  "b5_acc_max": 0.6,
+  "b6_acc_min": 0.7,
+  "b7_acc_min": 0.75,
+  "b7_cos_max": 0.5,
+  "n_perm": 1000,
+  "delta_shift": 5,
+  "n_gen": 12,
+  "contents": [
+   "The harbour lights fade after midnight.",
+   "A copper wire carries the signal faster than glass.",
+   "The old clock in the hallway loses two minutes a day.",
+   "Rain has been falling on the roof since noon.",
+   "The garden gate stays open in summer.",
+   "A single candle burns at the far end of the table.",
+   "The river bends twice before it reaches the bridge.",
+   "Papers on the desk are sorted by date.",
+   "The window faces east and catches the morning sun.",
+   "A small bird lands on the iron railing.",
+   "The tea has gone cold in the blue cup.",
+   "Footsteps echo along the empty corridor."
+  ],
+  "hist_q": "What follows the harbour note now?",
+  "hist_s": "The harbour note is ready now.",
+  "hist_len": 7
+ },
+ "all_pass": false,
+ "open": [
+  "mi8_rolle_dekodierbar",
+  "mi8_marker_transfer",
+  "mi8_kausal",
+  "mi8_positions_invarianz",
+  "mi8_marker_notwendig",
+  "mi8_generiert",
+  "mi8_wc_getrennt",
+  "mi8_purity"
+ ]
+}
