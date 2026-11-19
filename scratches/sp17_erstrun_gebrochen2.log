@@ -1,0 +1,25 @@
+== SP17 — die Beispiel-Suite der «unmöglichen Texte» (Chimären-Stream, Weichen-Vergleich, Zwillings-Dialoge, 10-Palette, chirurgisches Steering) ==
+CPU-Pilot: PASS (Doppellauf bitidentisch)
+GPU-Kontext laden (argon_1b + argon_1b_machines)
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from './argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Korpus (P4-P1a-Rezeptur verbatim — 24 Renderings)
+σ_bio-Decoder (MI-7-Rezept: 30 Texte, LogReg)
+B1 — Chimären-Stream (24 Token, Live-Annotation + Querspur)
+B2 — die Weiche im Live-Einsatz (5 Prompts × raw/weave)
+B3 — die Zwillings-Dialoge (natürliche Sprache)
+B4 — die 10-Palette (Fakten / Kontext / Register)
+B5 — chirurgisches gegen volles Steering
+B6 — Training-Determinismus (2 × _train_wide)
+Traceback (most recent call last):
+  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/run/media/julian/ML4/open-mythos_p2/venv_openmythos/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_sp17_diverse_examples.py", line 1115, in <module>
+    raise SystemExit(main())
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_sp17_diverse_examples.py", line 1075, in main
+    rows = findings(battery_out, cpu)
+  File "/run/media/julian/ML6/KenosisLogos/scratches/smoke_sp17_diverse_examples.py", line 993, in findings
+    "verdict": bool(gpu["chimaera"]["verdict"] and gpu["purity"]["equal"])},
+KeyError: 'equal'

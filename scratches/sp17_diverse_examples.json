@@ -1,0 +1,62 @@
+{
+ "cpu": {
+  "runs": [
+   {
+    "legs": {
+     "dominanz_dom": true,
+     "audit_threshold": true,
+     "tenpal_law": true,
+     "argmin_rule": true,
+     "differ_law": true,
+     "z_law": true,
+     "cap_gate_law": true,
+     "bands_26": true,
+     "det_law": true
+    },
+    "verdict": true
+   },
+   {
+    "legs": {
+     "dominanz_dom": true,
+     "audit_threshold": true,
+     "tenpal_law": true,
+     "argmin_rule": true,
+     "differ_law": true,
+     "z_law": true,
+     "cap_gate_law": true,
+     "bands_26": true,
+     "det_law": true
+    },
+    "verdict": true
+   }
+  ],
+  "verdict": true
+ },
+ "gpu": null,
+ "findings": [
+  {
+   "id": "sp17_chimaera_stream",
+   "verdict": null
+  },
+  {
+   "id": "sp17_weave_before_after",
+   "verdict": null
+  },
+  {
+   "id": "sp17_twin_dialogue",
+   "verdict": null
+  },
+  {
+   "id": "sp17_tenpal_detector",
+   "verdict": null
+  },
+  {
+   "id": "sp17_surgical_steering",
+   "verdict": null
+  },
+  {
+   "id": "sp17_purity_and_det",
+   "verdict": null
+  }
+ ]
+}
