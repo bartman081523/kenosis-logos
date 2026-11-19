@@ -1,0 +1,32 @@
+== MI-9 REV-2 — Drei-Quellen-Monitor ==
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+CPU-Pilot: Zell-Gesetze + Paar-Mathe
+  {"ci_paar_len_gleich": true, "ci_ein_token_diff": true, "neutral_8": true, "w_len_gleich": true, "box_1_token": true, "real_1_token": true, "loo_recovers": true, "loo_null": true}
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+  [argon] geladen
+  [argon] C/I acc 1.000 p 0.0090 | p(Code|C) 6/8 p(Code|I)<=.1 8/8
+  [argon] W p(Hauptort)>=.3 7/8
+  [argon] S acc 1.000
+  [argon] 3-Klassen 0.909 | cos -0.015
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights:   0%|          | 1/340 [00:00<01:06,  5.13it/s]Loading weights:  31%|███▏      | 107/340 [00:00<00:00, 313.96it/s]Loading weights:  41%|████      | 138/340 [00:00<00:00, 272.74it/s]Loading weights:  49%|████▊     | 165/340 [00:00<00:00, 264.00it/s]Loading weights:  56%|█████▌    | 191/340 [00:00<00:00, 192.91it/s]Loading weights:  62%|██████▏   | 212/340 [00:01<00:00, 174.22it/s]Loading weights:  68%|██████▊   | 230/340 [00:01<00:00, 145.30it/s]Loading weights:  72%|███████▏  | 246/340 [00:01<00:00, 124.93it/s]Loading weights:  76%|███████▌  | 259/340 [00:01<00:00, 108.64it/s]Loading weights:  80%|███████▉  | 271/340 [00:01<00:00, 103.82it/s]Loading weights:  83%|████████▎ | 282/340 [00:01<00:00, 89.81it/s] Loading weights:  86%|████████▌ | 292/340 [00:02<00:00, 85.46it/s]Loading weights:  89%|████████▉ | 302/340 [00:02<00:00, 88.25it/s]Loading weights:  93%|█████████▎| 315/340 [00:02<00:00, 87.77it/s]Loading weights:  96%|█████████▋| 328/340 [00:02<00:00, 94.65it/s]Loading weights: 100%|██████████| 340/340 [00:02<00:00, 139.55it/s]
+  [parent] geladen
+  [parent] C/I acc 1.000 p 0.0090 | p(Code|C) 8/8 p(Code|I)<=.1 5/8
+  [parent] W p(Hauptort)>=.3 8/8
+  [parent] S acc 0.833
+  [parent] 3-Klassen 0.955 | cos 0.268
+
+BEFUNDE:
+  mi9_cpu_pilot          PASS  
+  mi9_kontext_achse      PASS  acc 1.000 p 0.0090 n 8
+  mi9_relevanz           PASS  p(Code|C)>=0.3 6/8, p(Code|I)<=0.1 8/8
+  mi9_gewicht            PASS  p(Hauptort|W)>=0.3 7/8
+  mi9_eigene             PASS  acc 1.000 p 0.0250
+  mi9_achsen             PASS  cos -0.015
+  mi9_integration        PASS  3-Klassen-LOO 0.909 (Template-Vorbehalt)
+  mi9_purity             PASS  fp True hooks0 True det True
+
+BILANZ: 8 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+GRUEN — MI-9-REV2-Bänder eingehalten
+JSON: scratches/mi9_monitor_both.json
