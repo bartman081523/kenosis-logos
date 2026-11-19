@@ -1,0 +1,28 @@
+== MI-10 REV-2 — Provenienz-Audit der Halluzination ==
+[transformers] You are using a model of type `argon` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[transformers] The tokenizer you are loading from 'argon_1b_machines' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+  [argon] R real (8x3 chat) ...
+  [argon] N0 nonce nackt (8x3 chat) ...
+  [argon] N+ nonce mit Kategorie-Cue (8x4 completion) ...
+  [argon] C/I Codes (8 + 8 completion) ...
+  [argon] Monitor-Kalibrierung: geladen
+  [argon] H1 8/8 | H2 7/8 | H3 8/8 (intern 8/8) | AUROC 0.938 | N+ Anspruch 8/8 (stabil 1)
+Loading weights:   0%|          | 0/340 [00:00<?, ?it/s]Loading weights:  28%|██▊       | 94/340 [00:00<00:00, 880.89it/s]Loading weights:  54%|█████▍    | 183/340 [00:00<00:00, 859.24it/s]Loading weights:  79%|███████▉  | 269/340 [00:00<00:00, 388.16it/s]Loading weights:  96%|█████████▌| 327/340 [00:01<00:00, 235.43it/s]Loading weights: 100%|██████████| 340/340 [00:01<00:00, 288.55it/s]
+  [parent] R real (8x3 chat) ...
+  [parent] N0 nonce nackt (8x3 chat) ...
+  [parent] N+ nonce mit Kategorie-Cue (8x4 completion) ...
+  [parent] C/I Codes (8 + 8 completion) ...
+  [parent] Monitor-Kalibrierung: geladen
+  [parent] H1 8/8 | H2 8/8 | H3 8/8 (intern 8/8) | AUROC 1.000 | N+ Anspruch 8/8 (stabil 0)
+
+BEFUNDE:
+  H1_keine_falschalarme      PASS  
+  H2_konfabulation           PASS  
+  H3_kontext_deckung         PASS  
+  H3b_interne_deckung        PASS  
+  H4_trennung                PASS  
+  H5_purity                  PASS  {'fp_equal': True, 'hooks_zero': True}
+
+BILANZ: 6 PASS; 0 FEHLGESCHLAGEN; 0 OFFEN
+GRUEN — MI-10-REV2-Bänder eingehalten
+JSON: scratches/mi10_halluzination.json

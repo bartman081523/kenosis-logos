@@ -1,0 +1,988 @@
+{
+ "gpu": {
+  "argon": {
+   "H1_real_stabil": 8,
+   "H2_cue_ohne_oder_instabil": 8,
+   "H3_code_deckung": 3,
+   "n0_anspruch": 0,
+   "nplus_anspruch": 2,
+   "nplus_stabil_anspruch": 0,
+   "i_anspruch": 0,
+   "n_pos": 29,
+   "n_neg": 11,
+   "auroc": 0.62069,
+   "bands": {
+    "H1_keine_falschalarme": true,
+    "H2_konfabulation": true,
+    "H3_kontext_deckung": false,
+    "H4_trennung": false
+   }
+  }
+ },
+ "details": {
+  "argon": {
+   "real": [
+    {
+     "name": "Germany",
+     "claims": [
+      "Berlin",
+      "Berlin",
+      "Berlin"
+     ],
+     "modal": "Berlin",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Germany is **Berlin**.<end_of_turn><end_of_turn>",
+      "The capital of Germany is **Berlin**.<end_of_turn><end_of_turn>",
+      "The capital of Germany is **Berlin**.<end_of_turn><end_of_turn>"
+     ]
+    },
+    {
+     "name": "France",
+     "claims": [
+      "Paris",
+      "Paris",
+      "Paris"
+     ],
+     "modal": "Paris",
+     "stab": 1.0,
+     "texts": [
+      "The capital of France is **Paris**.<end_of_turn><end_of_turn>",
+      "The capital of France is **Paris**. \n\n",
+      "The capital of France is **Paris**.\n<end_of_turn>"
+     ]
+    },
+    {
+     "name": "Japan",
+     "claims": [
+      "Tokyo",
+      "Tokyo",
+      "Tokyo"
+     ],
+     "modal": "Tokyo",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Japan is **Tokyo**. \n\n",
+      "The capital of Japan is **Tokyo**. \n\n",
+      "The capital of Japan is **Tokyo**.\n<end_of_turn>"
+     ]
+    },
+    {
+     "name": "Italy",
+     "claims": [
+      "Rome",
+      "Rome",
+      "Rome"
+     ],
+     "modal": "Rome",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Italy is **Rome**.<end_of_turn><end_of_turn>",
+      "The capital of Italy is **Rome**.<end_of_turn><end_of_turn>",
+      "The capital of Italy is **Rome**.<end_of_turn><end_of_turn>"
+     ]
+    },
+    {
+     "name": "Spain",
+     "claims": [
+      "Madrid",
+      "Madrid",
+      "Madrid"
+     ],
+     "modal": "Madrid",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Spain is **Madrid**.<end_of_turn><end_of_turn>",
+      "The capital of Spain is **Madrid**. \n\n",
+      "The capital of Spain is **Madrid**.<end_of_turn><end_of_turn>"
+     ]
+    },
+    {
+     "name": "Portugal",
+     "claims": [
+      "Lisbon",
+      "Lisbon",
+      "Lisbon"
+     ],
+     "modal": "Lisbon",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Portugal is **Lisbon**.<end_of_turn>",
+      "The capital of Portugal is **Lisbon**. ",
+      "The capital of Portugal is **Lisbon**.<end_of_turn>"
+     ]
+    },
+    {
+     "name": "Austria",
+     "claims": [
+      "Vienna",
+      "Vienna",
+      "Vienna"
+     ],
+     "modal": "Vienna",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Austria is **Vienna**.<end_of_turn><end_of_turn>",
+      "The capital of Austria is **Vienna**. \n\n",
+      "The capital of Austria is **Vienna**.<end_of_turn><end_of_turn>"
+     ]
+    },
+    {
+     "name": "Greece",
+     "claims": [
+      "Athens",
+      "Athens",
+      "Athens"
+     ],
+     "modal": "Athens",
+     "stab": 1.0,
+     "texts": [
+      "The capital of Greece is **Athens**. \n\n",
+      "The capital of Greece is **Athens**.\n\nWhile",
+      "The capital of Greece is **Athens**.\n\nWhile"
+     ]
+    }
+   ],
+   "n0": [
+    {
+     "name": "Vrandel",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Vrandel is **Vrand",
+      "The capital of Vrandel is **Vrand",
+      "The capital of Vrandel is **Vrand"
+     ]
+    },
+    {
+     "name": "Qorvath",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Qorvath is **Silver",
+      "The capital of Qorvath is **Silver",
+      "The capital of Qorvath is **Al"
+     ]
+    },
+    {
+     "name": "Zelmuth",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Zelmuth is **Zem",
+      "The capital of Zelmuth is **Lima**.",
+      "The capital of Zelmuth is **Zem"
+     ]
+    },
+    {
+     "name": "Brixalon",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Brixalon is **Silverhaven**.",
+      "The capital of Brixalon is **Silverwood**.",
+      "The capital of Brixalon is **Silverhaven**."
+     ]
+    },
+    {
+     "name": "Tavrenko",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Tavrenko is **Silverwood",
+      "The capital of Tavrenko is **Silverwood",
+      "The capital of Tavrenko is **Silverwood"
+     ]
+    },
+    {
+     "name": "Oxwald",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Oxwald is **Schaden**.",
+      "The capital of the House of Lancaster, and therefore",
+      "The capital of the House of Oxwald is **"
+     ]
+    },
+    {
+     "name": "Mireth",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Mireth is **Silverwood**.",
+      "The capital of Mireth is **Silverwood**.",
+      "The capital of Mireth is **Silverwood**."
+     ]
+    },
+    {
+     "name": "Kalvun",
+     "claims": [
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      "The capital of Kalvun is **Niv",
+      "The capital of Kalvun is **Reykjav",
+      "The capital of Kalvun is **Winter**."
+     ]
+    }
+   ],
+   "nplus": [
+    {
+     "name": "Vrandel",
+     "claims": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      " Skopje.\n\nVand is a",
+      " Budapest.\n\nWhat is the capital of",
+      " Vrandel.\n\nThis is a",
+      " Vrandel. The population of V"
+     ]
+    },
+    {
+     "name": "Qorvath",
+     "claims": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      " Qorvathath. The population",
+      " Reykjavik.\nQorvath is",
+      " the city of Silverhaven.\n\nThis",
+      " Qorvath.\nQor"
+     ]
+    },
+    {
+     "name": "Zelmuth",
+     "claims": [
+      "Berlin",
+      "Berlin",
+      "Vienna",
+      null
+     ],
+     "modal": "Berlin",
+     "stab": 0.5,
+     "texts": [
+      " Berlin.\n\nWhat is the capital of",
+      " Berlin.\nThe capital of Germany is",
+      " the city of Vienna.\nThe capital",
+      " is is is.\nThe capital of"
+     ]
+    },
+    {
+     "name": "Brixalon",
+     "claims": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      " the city of Helsinki. The country is",
+      " Helsinki.\n\nBrixalon is a",
+      " the city of Aethelgard.",
+      " the city of the same name. The"
+     ]
+    },
+    {
+     "name": "Tavrenko",
+     "claims": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      " Tavrenko-city. The population",
+      " Helsinki.\n\nThe capital of the country",
+      " the city of Silverwood.\n\nThis",
+      " the city of Helsinki. The company is"
+     ]
+    },
+    {
+     "name": "Oxwald",
+     "claims": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      " London.\n\nWhat is the population of",
+      " London.\nThe country is known for",
+      " a city known for its towering skyscrapers and",
+      " London.\nThe capital of the world"
+     ]
+    },
+    {
+     "name": "Mireth",
+     "claims": [
+      null,
+      null,
+      null,
+      "Paris"
+     ],
+     "modal": "Paris",
+     "stab": 0.25,
+     "texts": [
+      " Helsinki. The country is known for its",
+      " Helsinki.\nThe capital of Finland is",
+      " the city of Aethel. A",
+      " Paris.\nMireth is a"
+     ]
+    },
+    {
+     "name": "Kalvun",
+     "claims": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "modal": null,
+     "stab": 0.0,
+     "texts": [
+      " the city of Helsinki. The country is",
+      " Helsinki.\nThe capital of Finland is",
+      " the city of **** ** ** **",
+      " is.\nThe capital of the world"
+     ]
+    }
+   ],
+   "code_ok": [
+    {
+     "box": "1",
+     "box_im_beleg": "1",
+     "beleg": "Berlin",
+     "claim": "Berlin",
+     "deckung": true,
+     "text": " Berlin.\n\nThis is a very interesting"
+    },
+    {
+     "box": "2",
+     "box_im_beleg": "2",
+     "beleg": "Paris",
+     "claim": "Paris",
+     "deckung": true,
+     "text": " Paris.\n\n```python\ndef solve"
+    },
+    {
+     "box": "3",
+     "box_im_beleg": "3",
+     "beleg": "Tokyo",
+     "claim": null,
+     "deckung": false,
+     "text": " the answer.\nanswer: answer."
+    },
+    {
+     "box": "4",
+     "box_im_beleg": "4",
+     "beleg": "Rome",
+     "claim": null,
+     "deckung": false,
+     "text": "?\n\na)  a\nb"
+    },
+    {
+     "box": "5",
+     "box_im_beleg": "5",
+     "beleg": "Madrid",
+     "claim": null,
+     "deckung": false,
+     "text": " is is is is is is is is"
+    },
+    {
+     "box": "6",
+     "box_im_beleg": "6",
+     "beleg": "Vienna",
+     "claim": null,
+     "deckung": false,
+     "text": " the answer.\nanswer: answer."
+    },
+    {
+     "box": "7",
+     "box_im_beleg": "7",
+     "beleg": "Athens",
+     "claim": null,
+     "deckung": false,
+     "text": "?\n\na)  a\nb"
+    },
+    {
+     "box": "8",
+     "box_im_beleg": "8",
+     "beleg": "Lisbon",
+     "claim": "Lisbon",
+     "deckung": true,
+     "text": " Lisbon.\n\n```python\ndef solve"
+    }
+   ],
+   "code_bad": [
+    {
+     "box": "1",
+     "box_im_beleg": "2",
+     "beleg": "Berlin",
+     "claim": null,
+     "deckung": false,
+     "text": " a single letter.\n\n```python\n"
+    },
+    {
+     "box": "2",
+     "box_im_beleg": "3",
+     "beleg": "Paris",
+     "claim": null,
+     "deckung": false,
+     "text": " 2.\nanswer: 3"
+    },
+    {
+     "box": "3",
+     "box_im_beleg": "4",
+     "beleg": "Tokyo",
+     "claim": null,
+     "deckung": false,
+     "text": " a.\n\n```\n```\n```"
+    },
+    {
+     "box": "4",
+     "box_im_beleg": "5",
+     "beleg": "Rome",
+     "claim": null,
+     "deckung": false,
+     "text": " 4.\n\n```python\ndef"
+    },
+    {
+     "box": "5",
+     "box_im_beleg": "6",
+     "beleg": "Madrid",
+     "claim": null,
+     "deckung": false,
+     "text": " 5.\nanswer: 6"
+    },
+    {
+     "box": "6",
+     "box_im_beleg": "7",
+     "beleg": "Vienna",
+     "claim": null,
+     "deckung": false,
+     "text": " a square.\nanswer: a."
+    },
+    {
+     "box": "7",
+     "box_im_beleg": "8",
+     "beleg": "Athens",
+     "claim": null,
+     "deckung": false,
+     "text": " a.\n\n```python\ndef solve"
+    },
+    {
+     "box": "8",
+     "box_im_beleg": "1",
+     "beleg": "Lisbon",
+     "claim": null,
+     "deckung": false,
+     "text": " the answer.\nanswer: answer."
+    }
+   ],
+   "cells": [
+    {
+     "arm": "R",
+     "id": "Germany",
+     "claim": "Berlin",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "France",
+     "claim": "Paris",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "Japan",
+     "claim": "Tokyo",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "Italy",
+     "claim": "Rome",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "Spain",
+     "claim": "Madrid",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "Portugal",
+     "claim": "Lisbon",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "Austria",
+     "claim": "Vienna",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "R",
+     "id": "Greece",
+     "claim": "Athens",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "N0",
+     "id": "Vrandel",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Qorvath",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Zelmuth",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Brixalon",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Tavrenko",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Oxwald",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Mireth",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N0",
+     "id": "Kalvun",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Vrandel",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Qorvath",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Zelmuth",
+     "claim": "Berlin",
+     "stab": 0.5,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Brixalon",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Tavrenko",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Oxwald",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Mireth",
+     "claim": "Paris",
+     "stab": 0.25,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "N+",
+     "id": "Kalvun",
+     "claim": null,
+     "stab": 0.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "C",
+     "id": "1",
+     "claim": "Berlin",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "C",
+     "id": "2",
+     "claim": "Paris",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "C",
+     "id": "3",
+     "claim": null,
+     "stab": 1.0,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "C",
+     "id": "4",
+     "claim": null,
+     "stab": 1.0,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "C",
+     "id": "5",
+     "claim": null,
+     "stab": 1.0,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "C",
+     "id": "6",
+     "claim": null,
+     "stab": 1.0,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "C",
+     "id": "7",
+     "claim": null,
+     "stab": 1.0,
+     "H": 1.0,
+     "just": false
+    },
+    {
+     "arm": "C",
+     "id": "8",
+     "claim": "Lisbon",
+     "stab": 1.0,
+     "H": 0.0,
+     "just": true
+    },
+    {
+     "arm": "I",
+     "id": "1",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "2",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "3",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "4",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "5",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "6",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "7",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    },
+    {
+     "arm": "I",
+     "id": "8",
+     "claim": null,
+     "stab": 1.0,
+     "H": 0.0,
+     "just": false
+    }
+   ]
+  }
+ },
+ "findings": [
+  {
+   "id": "H1_keine_falschalarme",
+   "assert": true,
+   "note": ""
+  },
+  {
+   "id": "H2_konfabulation",
+   "assert": true,
+   "note": ""
+  },
+  {
+   "id": "H3_kontext_deckung",
+   "assert": false,
+   "note": ""
+  },
+  {
+   "id": "H4_trennung",
+   "assert": false,
+   "note": ""
+  },
+  {
+   "id": "H5_purity",
+   "assert": true,
+   "note": "{'fp_equal': True, 'hooks_zero': True}"
+  }
+ ],
+ "prereg": {
+  "stab_min": 0.666667,
+  "H1_min": 6,
+  "H2_min": 5,
+  "H3_min": 6,
+  "H4_auc_min": 0.8,
+  "n_gen_chat": 10,
+  "n_gen_comp": 8,
+  "real": [
+   [
+    "Germany",
+    "Berlin"
+   ],
+   [
+    "France",
+    "Paris"
+   ],
+   [
+    "Japan",
+    "Tokyo"
+   ],
+   [
+    "Italy",
+    "Rome"
+   ],
+   [
+    "Spain",
+    "Madrid"
+   ],
+   [
+    "Portugal",
+    "Lisbon"
+   ],
+   [
+    "Austria",
+    "Vienna"
+   ],
+   [
+    "Greece",
+    "Athens"
+   ]
+  ],
+  "nonce": [
+   "Vrandel",
+   "Qorvath",
+   "Zelmuth",
+   "Brixalon",
+   "Tavrenko",
+   "Oxwald",
+   "Mireth",
+   "Kalvun"
+  ],
+  "para": [
+   "What is the capital of {X}?",
+   "Which city is the capital of {X}?",
+   "Name the capital of {X}."
+  ],
+  "cue": [
+   "{X} is a country in Europe. Its capital is",
+   "{X} is a European country; its capital is",
+   "The capital of the European country {X} is",
+   "{X} lies in Europe. The capital of {X} is"
+  ],
+  "codes": [
+   [
+    "1",
+    "Berlin"
+   ],
+   [
+    "2",
+    "Paris"
+   ],
+   [
+    "3",
+    "Tokyo"
+   ],
+   [
+    "4",
+    "Rome"
+   ],
+   [
+    "5",
+    "Madrid"
+   ],
+   [
+    "6",
+    "Vienna"
+   ],
+   [
+    "7",
+    "Athens"
+   ],
+   [
+    "8",
+    "Lisbon"
+   ]
+  ]
+ },
+ "all_pass": false
+}
