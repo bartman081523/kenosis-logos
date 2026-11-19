@@ -51,8 +51,9 @@ die `machines.*` absolut importieren (`machines/build_machine_corpus.py:42`).
 
 - **`google/gemma-3-1b-it`** — Paritäts-Referenz. Argon entsteht per
   topologischer Konvertierung aus diesen Gewichten (`README.md:3-5`,
-  `convert_gemma3_to_argon.py`). Gemessen: 97.5 % Logit-Parität
-  (`README.md:95`).
+  `convert_gemma3_to_argon.py`). Gemessen 2026-11-19: mittlere
+  Cosine-Similarity 0.9747, Top-1-Übereinstimmung 3/3
+  (`scratches/compare_run_2026-11-19.log`).
 - **`config.json`** — Architektur-Kontrakt: 26 Layer, `hidden_size` 1152,
   4 Attention-Heads, `head_dim` 256, `kv_lora_rank` 256,
   `sliding_window` 512 mit Muster 6 (5 lokal + 1 global),
@@ -277,5 +278,5 @@ Copy-Paste-Template).
 | `python train_moe_router_specialization.py --help` | verified | exit 0, usage | 2026-11-19 |
 | `python convert_gemma3_to_argon.py --help` | verified | exit 0, usage | 2026-11-19 |
 | `python machines/verify_machines.py --help` | verified | exit 0, usage | 2026-11-19 |
-| `python compare_gemma3_vs_argon.py` | UNVERIFIED | README.md:73, lädt zwei 4,8-GB-Modelle | 2026-11-19 |
+| `python compare_gemma3_vs_argon.py` | verified | exit 0, 6/6 Benchmarks GRÜN; Cosine 0.9747, Top-1 3/3, Cache 37,5 %, Routing-TV 74,8 % | 2026-11-19 |
 | `python3 verify_argon.py` (System-Python) | FAILED | `No module named 'transformers'` (3.14.10) | 2026-11-19 |
